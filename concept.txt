@@ -1,0 +1,58 @@
+Renderer
+RenderManager
+	RenderObjects (2D,3D)
+		Render(TransformMatrix2D)
+		Render(TransformMatrix3D)
+	Render()
+	ViewMatrix2D
+	ViewMatrix3D
+	ProjectionMatrix2D
+	ProjectionMatrix3D
+	AddObject2D(*RenderObject,*TransformableObject2D)
+	AddObject3D(*RenderObject,*TransformableObject3D)
+	CurrentShader
+	ForceShader
+ResourceManager
+	LoadTexture(Name,Path)
+	LoadMesh(Name,Path)
+	LoadShader(Name,VertexPath,FragmentPath,GeometryPath,...)
+	Map<string,texture>
+	Map<string,mesh>
+	Map<string,shader>
+	GetTexture(Name)
+	GetMesh(Name)
+	GetShader(Name)
+SceneManager
+	CurrentScene
+		Init()
+		Update()
+		Quit()
+	SwitchScene(*Scene)
+UpdateManager
+	UpdateObjects
+		Update()
+	Update()
+InputManager
+Framework
+MainLoop - loops and calls RenderManager.Render() and so on
+TransformableObject2D
+	Position
+		X
+		Y
+	Size
+		Width
+		Height
+	Scale
+		X
+		Y
+	TransformMatrix
+TransformableObject3D
+Camera3D
+	Position
+	Direction
+	ViewMatrix
+Camera2D
+	Position
+	Zoom
+	Rotation
+	ViewMatrix

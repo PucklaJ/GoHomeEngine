@@ -1,0 +1,2195 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"n",
+				"Name\tstring ν"
+			],
+			[
+				"preloaedM",
+				"preloadedMaterialDiffuseTexture"
+			],
+			[
+				"preloaedT",
+				"preloadedTextureData"
+			],
+			[
+				"REs",
+				"ResourceManager"
+			],
+			[
+				"preloaed",
+				"preloadedShader"
+			],
+			[
+				"preloaedMat",
+				"preloadedMaterialSpecularTextureChan\tchan preloadedMaterialSpecularTexture ν"
+			],
+			[
+				"finsihPreloadedMaterials",
+				"finsihPreloadedMaterialsSpecular"
+			],
+			[
+				"preloadedMA",
+				"preloadedMaterialSpecularTextureChan\tchan preloadedMaterialSpecularTexture ν"
+			],
+			[
+				"preloadedM",
+				"preloadedMeshesChan\tchan Mesh3D ν"
+			],
+			[
+				"sha",
+				"shader"
+			],
+			[
+				"pre",
+				"preloadedTextures\t[]preloadedTexture ν"
+			],
+			[
+				"prel",
+				"preloadedLevelsChan\tchan *Level ν"
+			],
+			[
+				"preloaedL",
+				"preloadedLevelsChan\tchan *Level ν"
+			],
+			[
+				"Lvl",
+				"Lvl\t*Level ν"
+			],
+			[
+				"finishPRe",
+				"finishPreloadedLevelObjects\t ƒ"
+			],
+			[
+				"preloadedLeve",
+				"preloadedLevelObjectsChan\tchan preloadedLevelObject ν"
+			],
+			[
+				"l",
+				"Lvlobj\tLevelObject ν"
+			],
+			[
+				"preloaedLev",
+				"preloadedLevelObjectsChan\tchan preloadedLevelObject ν"
+			],
+			[
+				"preloadedLe",
+				"preloadedLevelObjectsChan\tchan preloadedLevelObject ν"
+			],
+			[
+				"lvl",
+				"lvlobj"
+			],
+			[
+				"lv",
+				"lvlobj"
+			],
+			[
+				"preloaded",
+				"preloadedLevelObjectsChan\tchan preloadedLevelObject ν"
+			],
+			[
+				"Res",
+				"ResourceMgr"
+			],
+			[
+				"preloadedLevelO",
+				"preloadedLevelObject"
+			],
+			[
+				"LevelO",
+				"LevelObject"
+			],
+			[
+				"GEt",
+				"GetNumIndices\tuint32 ƒ"
+			],
+			[
+				"GET",
+				"GetName\tstring ƒ"
+			],
+			[
+				"G",
+				"GetHeight\tint ƒ"
+			],
+			[
+				"Pr",
+				"Println\t ƒ"
+			],
+			[
+				"Lo",
+				"LoadPreloadedResources\t ƒ"
+			],
+			[
+				"fin",
+				"finishPreloadedMeshes\t ƒ"
+			],
+			[
+				"D",
+				"DiffuseTexture\tTexture ν"
+			],
+			[
+				"PR",
+				"Println\t ƒ"
+			],
+			[
+				"Get",
+				"GetName\tstring ƒ"
+			],
+			[
+				"TESS",
+				"TESSELLETION"
+			],
+			[
+				"preloadedSh",
+				"preloadedShaderDataChan\tchan preloadedShaderData ν"
+			],
+			[
+				"preloadedS",
+				"preloadedShaderDataChan\tchan preloadedShaderData ν"
+			],
+			[
+				"preloadedTe",
+				"preloadedTextureDataChan\tchan preloadedTextureData ν"
+			],
+			[
+				"preloadedTEx",
+				"preloadedTextureData\tchan preloadedTextureData ν"
+			],
+			[
+				"preloade",
+				"preloadedTexturesChan\tchan Texture ν"
+			],
+			[
+				"preload",
+				"preloadedTexturesChan\tchan Texture ν"
+			],
+			[
+				"ResourceM",
+				"ResourceMgr"
+			],
+			[
+				"preloadedMa",
+				"preloadedMaterialDiffuseTexture"
+			],
+			[
+				"prelo",
+				"preloadedMaterialDiffuseTextureChan"
+			],
+			[
+				"preloadM",
+				"preloadedMaterialSpecularTexture"
+			],
+			[
+				"dire",
+				"directory"
+			],
+			[
+				"te",
+				"tangentsCalculated\tbool ν"
+			],
+			[
+				"tang",
+				"tangentsCalculated"
+			],
+			[
+				"loadPRe",
+				"loadPreloadedTextures\t ƒ"
+			],
+			[
+				"load",
+				"loadTexture\tTexture ƒ"
+			],
+			[
+				"loadPre",
+				"loadPreloadedShaders\t ƒ"
+			],
+			[
+				"Comput",
+				"ComputeShader"
+			],
+			[
+				"Eve",
+				"EveluationShader"
+			],
+			[
+				"Tes",
+				"TesselletionControlShader"
+			],
+			[
+				"Geome",
+				"GeometryShader"
+			],
+			[
+				"FragM",
+				"FragmentShader"
+			],
+			[
+				"Vertex",
+				"VertexShader"
+			],
+			[
+				"loadPrel",
+				"loadPreloadedShader"
+			],
+			[
+				"preloadT",
+				"preloadedTextures"
+			],
+			[
+				"Model",
+				"Model3D"
+			],
+			[
+				"pa",
+				"path"
+			],
+			[
+				"Wait",
+				"WaitGroup"
+			],
+			[
+				"Resour",
+				"ResourceManager"
+			],
+			[
+				"comp",
+				"compute_path"
+			],
+			[
+				"eve",
+				"eveluation_path"
+			],
+			[
+				"geome",
+				"geometry_path"
+			],
+			[
+				"fragment",
+				"fragment_path"
+			],
+			[
+				"NUM_GO",
+				"NUM_GO_ROUTINES_TANGENTS_CALCULATING"
+			],
+			[
+				"indi",
+				"indices"
+			],
+			[
+				"calculateT",
+				"calculateTangentsRoutine"
+			],
+			[
+				"start",
+				"startIndex"
+			],
+			[
+				"Mesh3D",
+				"Mesh3DVertex"
+			],
+			[
+				"vert",
+				"vertices"
+			],
+			[
+				"num",
+				"numVertices\tuint32 ν"
+			],
+			[
+				"ind",
+				"numIndices\tuint32 ν"
+			],
+			[
+				"Ptr",
+				"PtrOffset\tunsafe.Pointer ƒ"
+			],
+			[
+				"BufferS",
+				"BufferSubData\t ƒ"
+			],
+			[
+				"STAT",
+				"STATIC_DRAW\t Ɩ"
+			],
+			[
+				"re",
+				"renderRenderObject\t ƒ"
+			],
+			[
+				"lig",
+				"lightCollectionIndex"
+			],
+			[
+				"lightCol",
+				"lightCollectionIndex"
+			],
+			[
+				"C",
+				"CurrentTextureUnit\tuint32 ν"
+			],
+			[
+				"LightM",
+				"LightMgr\tLightManager ν"
+			],
+			[
+				"RE",
+				"RenderMgr\tgohome.RenderManager ν"
+			],
+			[
+				"Vec",
+				"Vec3\t[3]float32 ʈ"
+			],
+			[
+				"curr",
+				"CurrentLightCollection\tint32 ν"
+			],
+			[
+				"lightC",
+				"lightCollectionIndex"
+			],
+			[
+				"AddPo",
+				"AddPointLight"
+			],
+			[
+				"FIL",
+				"FILTERING_LINEAR\t Ɩ"
+			],
+			[
+				"FILT",
+				"FILTERING_NEAREST\t Ɩ"
+			],
+			[
+				"Plane",
+				"PlaneNormalMap"
+			],
+			[
+				"Krato",
+				"Kratos_head_d.tga"
+			],
+			[
+				"RES",
+				"ResourceMgr\tgohome.ResourceManager ν"
+			],
+			[
+				"pl",
+				"planeEntTobj"
+			],
+			[
+				"Set",
+				"SetWrapping\t ƒ"
+			],
+			[
+				"CLAMP",
+				"CLAMP_TO_EDGE\t Ɩ"
+			],
+			[
+				"CLAMP_",
+				"CLAMP_TO_BORDER\t Ɩ"
+			],
+			[
+				"WRAPPING_CLA",
+				"WRAPPING_CLAMP_TO_BORDER"
+			],
+			[
+				"spe",
+				"specularTextureLoaded"
+			],
+			[
+				"diffuse",
+				"diffuseTextureLoaded"
+			],
+			[
+				"NUM_",
+				"NUM_KRATOS_ROWS\t Ɩ"
+			],
+			[
+				"NUM_KR",
+				"NUM_KRATOS\t Ɩ"
+			],
+			[
+				"NUM",
+				"NUM_KRATOS_ROWS\t Ɩ"
+			],
+			[
+				"S",
+				"Shinyness\tfloat32 ν"
+			],
+			[
+				"M",
+				"SetMaterial\t ƒ"
+			],
+			[
+				"In",
+				"InitMesh\t ƒ"
+			],
+			[
+				"NUM_KRA",
+				"NUM_KRATOS_ROWS\t Ɩ"
+			],
+			[
+				"kra",
+				"kratosTobj\t[10]gohome.TransformableObject3D ν"
+			],
+			[
+				"Prin",
+				"Println\tn int, err error ƒ"
+			],
+			[
+				"Input",
+				"InputMgr\tgohome.InputManager ν"
+			],
+			[
+				"Ma",
+				"Mat3\t[9]float32 ʈ"
+			],
+			[
+				"v",
+				"viewMatrix\tmgl32.Mat3 ν"
+			],
+			[
+				"in",
+				"inverseViewMatrix\tmgl32.Mat4 ν"
+			],
+			[
+				"Camer",
+				"Camera3D\tstruct ʈ"
+			],
+			[
+				"Cam",
+				"Camera3D\t*Camera3D ν"
+			],
+			[
+				"CA",
+				"Camera3D\t*Camera3D ν"
+			],
+			[
+				"Cm",
+				"Camera2D\t*Camera2D ν"
+			],
+			[
+				"Render",
+				"RenderManager\tstruct ʈ"
+			],
+			[
+				"Is",
+				"IsRelativeToCamera\tbool ƒ"
+			],
+			[
+				"R",
+				"RenderObject\tRenderObject ν"
+			],
+			[
+				"FPS",
+				"FPSLimit\tgohome.FPSLimiter ν"
+			],
+			[
+				"Re",
+				"RenderMgr\tgohome.RenderManager ν"
+			],
+			[
+				"I",
+				"InitName\t ƒ"
+			],
+			[
+				"Load",
+				"LoadLevel\t ƒ"
+			],
+			[
+				"Tra",
+				"TransformableObject3D\tstruct ʈ"
+			],
+			[
+				"Resou",
+				"ResourceMgr\tgohome.ResourceManager ν"
+			],
+			[
+				"INVAL",
+				"INVALID_VALUE\t Ɩ"
+			],
+			[
+				"err",
+				"errString\tstring ν"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "src/gohome/light.go",
+			"settings":
+			{
+				"buffer_size": 7521,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/gohome/camera3d.go",
+			"settings":
+			{
+				"buffer_size": 2942,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "fragment3d.glsl",
+			"settings":
+			{
+				"buffer_size": 7469,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/gohome/testcameramovement3d.go",
+			"settings":
+			{
+				"buffer_size": 1680,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "src/gohome/entity3d.go",
+			"settings":
+			{
+				"buffer_size": 1473,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "src/gohome/model3d.go",
+			"settings":
+			{
+				"buffer_size": 1810,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "src/gohome/mesh3d.go",
+			"settings":
+			{
+				"buffer_size": 17842,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/gohome/framework.go",
+			"settings":
+			{
+				"buffer_size": 10118,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/gohome/glfwcallbacks.go",
+			"settings":
+			{
+				"buffer_size": 1366,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/gohome/inputmanager.go",
+			"settings":
+			{
+				"buffer_size": 1429,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "src/gohome/mainloop.go",
+			"settings":
+			{
+				"buffer_size": 2232,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "lightentity.go",
+			"settings":
+			{
+				"buffer_size": 1530,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/gohome/sprite2D.go",
+			"settings":
+			{
+				"buffer_size": 1763,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/gohome/keys.go",
+			"settings":
+			{
+				"buffer_size": 3819,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/gohome/renderer.go",
+			"settings":
+			{
+				"buffer_size": 5622,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/gohome/projection.go",
+			"settings":
+			{
+				"buffer_size": 2562,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/gohome/camera2d.go",
+			"settings":
+			{
+				"buffer_size": 1547,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/gohome/texture.go",
+			"settings":
+			{
+				"buffer_size": 5595,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/gohome/rendertexture.go",
+			"settings":
+			{
+				"buffer_size": 5540,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "testscene.go",
+			"settings":
+			{
+				"buffer_size": 5889,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/gohome/rendermanager.go",
+			"settings":
+			{
+				"buffer_size": 12850,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/gohome/transformableobject2d.go",
+			"settings":
+			{
+				"buffer_size": 2254,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/gohome/level.go",
+			"settings":
+			{
+				"buffer_size": 1411,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/gohome/transformableobject3d.go",
+			"settings":
+			{
+				"buffer_size": 1834,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/gohome/resourcemanager.go",
+			"settings":
+			{
+				"buffer_size": 16631,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "Searching 31 files for \"preloadedTexturesChan\" (case sensitive)\n\n/media/johnny/Daten/Meine_Projekte/go/src/github.com/PucklaMotzer09/gohomeengine/src/gohome/resourcemanager.go:\n   67  \tpreloadedLevels   []preloadedLevel\n   68  \n   69: \tpreloadedTexturesChan                chan Texture\n   70  \tpreloadedShadersChan                 chan Shader\n   71  \tpreloadedLevelsChan                  chan *Level\n   ..\n  414  \ttexture := rsmgr.loadTexture(name, path, true)\n  415  \tif texture != nil {\n  416: \t\trsmgr.preloadedTexturesChan <- texture\n  417  \t}\n  418  }\n  ...\n  449  \twg.Add(1)\n  450  \n  451: \tclose(rsmgr.preloadedTexturesChan)\n  452  \n  453: \tfor tex := range rsmgr.preloadedTexturesChan {\n  454  \t\ttex.Load(data, width, height)\n  455  \t\trsmgr.textures[tex.Name] = tex\n\n4 matches in 1 file\n",
+			"settings":
+			{
+				"buffer_size": 794,
+				"line_ending": "Unix",
+				"name": "Find Results",
+				"scratch": true
+			}
+		},
+		{
+			"file": "src/gohome/scenemanager.go",
+			"settings":
+			{
+				"buffer_size": 689,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/gohome/shader.go",
+			"settings":
+			{
+				"buffer_size": 14136,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/gohome/material.go",
+			"settings":
+			{
+				"buffer_size": 5745,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "fragment.glsl",
+			"settings":
+			{
+				"buffer_size": 188,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "vertex.glsl",
+			"settings":
+			{
+				"buffer_size": 517,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "vertex1.glsl",
+			"settings":
+			{
+				"buffer_size": 353,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "Packages/Golang Build/Go.sublime-build",
+	"build_system_choices":
+	[
+		[
+			[
+				[
+					"Packages/Golang Build/Go.sublime-build",
+					""
+				],
+				[
+					"Packages/Golang Build/Go.sublime-build",
+					"Run"
+				],
+				[
+					"Packages/Golang Build/Go.sublime-build",
+					"Test"
+				],
+				[
+					"Packages/Golang Build/Go.sublime-build",
+					"Install"
+				],
+				[
+					"Packages/Golang Build/Go.sublime-build",
+					"Cross-Compile (Interactive)"
+				],
+				[
+					"Packages/Golang Build/Go.sublime-build",
+					"Clean"
+				]
+			],
+			[
+				"Packages/Golang Build/Go.sublime-build",
+				"Install"
+			]
+		]
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 190.0,
+		"last_filter": "Package Control: in",
+		"selected_items":
+		[
+			[
+				"Package Control: in",
+				"Package Control: Install Package"
+			],
+			[
+				"Package Control: ins",
+				"Package Control: Install Package"
+			],
+			[
+				"Package Control: insta",
+				"Package Control: Install Package"
+			],
+			[
+				"Package Control: re",
+				"Package Control: Remove Package"
+			],
+			[
+				"Package Control: ",
+				"Package Control: List Packages"
+			],
+			[
+				"Package Control: Ins",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 497.0
+	},
+	"console":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/media/johnny/Daten/Meine_Projekte/go/src/github.com/PucklaMotzer09/gohomeengine/normalFrag.glsl",
+		"/E/Meine_Projekte/go/src/github.com/raedatoui/assimp/Anim.go",
+		"/C/Users/Jonas/AppData/Roaming/Sublime Text 3/Packages/GoSublime/CHANGELOG.md",
+		"/E/Meine_Projekte/go/src/github.com/PucklaMotzer09/gohomeengine/test.go",
+		"/E/Meine_Projekte/go/src/github.com/PucklaMotzer09/gohomeengine/src/gohome/updatemanager.go",
+		"/E/git_repositories/assimp/buildWin32GCC/assimp.pc",
+		"/E/git_repositories/assimp/buildWin32GCC/test/AssimpLog_Cpp.txt",
+		"/C/paths/include/assimp/anim.h",
+		"/C/paths/include/assimp/material.h",
+		"/E/git_repositories/JohnnyEngine/src/Mesh3D.cpp",
+		"/C/Users/Jonas/Desktop/log.txt",
+		"/media/johnny/Daten/Meine_Projekte/go/src/github.com/PucklaMotzer09/gohomeengine/src/gohome/glfwcallbacks.go",
+		"/media/johnny/Daten/Meine_Projekte/go/src/github.com/PucklaMotzer09/gohomeengine/fragment.glsl",
+		"/media/johnny/Daten/Meine_Projekte/go/src/github.com/PucklaMotzer09/gohomeengine/concept.txt",
+		"/media/johnny/Daten/Meine_Projekte/go/src/github.com/PucklaMotzer09/gohomeengine/vertex.glsl",
+		"/media/johnny/Daten/Meine_Projekte/go/src/github.com/PucklaMotzer09/gohomeengine/src/scenemanager.go",
+		"/media/johnny/Daten/Meine_Projekte/go/src/github.com/PucklaMotzer09/gohomeengine/src/updatemanager.go",
+		"/media/johnny/Daten/Meine_Projekte/go/src/github.com/PucklaMotzer09/gohomeengine/src/shader.go",
+		"/media/johnny/Daten/Meine_Projekte/go/src/github.com/PucklaMotzer09/gohomeengine/src/resourcemanager.go",
+		"/media/johnny/Daten/Meine_Projekte/go/src/github.com/PucklaMotzer09/gohomeengine/src/rendermanager.go",
+		"/media/johnny/Daten/Meine_Projekte/go/src/github.com/PucklaMotzer09/gohomeengine/src/renderer.go",
+		"/media/johnny/Daten/Meine_Projekte/go/src/github.com/PucklaMotzer09/gohomeengine/src/mainloop.go",
+		"/media/johnny/Daten/Meine_Projekte/go/src/github.com/PucklaMotzer09/gohomeengine/src/framework.go",
+		"/media/johnny/Daten/Meine_Projekte/go/src/github.com/PucklaMotzer09/gohomeengine/src/inputmanager.go",
+		"/media/johnny/Daten/Meine_Projekte/go/src/github.com/PucklaMotzer09/gohomeengine/src/keys.go",
+		"/media/johnny/Daten/Meine_Projekte/go/src/github.com/go-gl/example/gl41core-cube/cube.go",
+		"/media/johnny/Daten/Meine_Projekte/go/src/github.com/PucklaMotzer09/pixeltest2/main.go",
+		"/media/johnny/Daten/Meine_Projekte/go/src/github.com/faiface/pixel/examples/guide/04_pressing_keys_and_clicking_mouse/main.go",
+		"/home/johnny/.config/sublime-text-3/Packages/GoSublime/CHANGELOG.md",
+		"/media/johnny/Daten/Meine_Projekte/go/src/github.com/faiface/pixel/examples/guide/02_drawing_a_sprite/main.go",
+		"/media/johnny/Daten/Meine_Projekte/go/src/github.com/ByteArena/box2d/CollisionB2BroadPhase.go",
+		"/media/johnny/Daten/Meine_Projekte/go/src/github.com/faiface/pixel/text/text.go",
+		"/media/johnny/Daten/Meine_Projekte/go/src/github.com/faiface/pixel/geometry.go",
+		"/media/johnny/Daten/Meine_Projekte/go/src/github.com/PucklaMotzer09/pixeltest/objects/rotate_circle.go",
+		"/media/johnny/Daten/Meine_Projekte/go/src/github.com/PucklaMotzer09/pixeltest/main.go",
+		"/media/johnny/Daten/phaser.js",
+		"/run/user/1000/gvfs/ftp:host=schueler.bulme.at/cloud/Neukirchner_240118/Uebung1/index.html",
+		"/run/user/1000/gvfs/ftp:host=schueler.bulme.at/cloud/Neukirchner_240118/Uebung2/leds_form.php",
+		"/run/user/1000/gvfs/ftp:host=schueler.bulme.at/cloud/Neukirchner_240118/Uebung3/taster.php",
+		"/run/user/1000/gvfs/ftp:host=schueler.bulme.at/cloud/Neukirchner_240118/Uebung4/history.txt",
+		"/run/user/1000/gvfs/ftp:host=schueler.bulme.at/cloud/Neukirchner_240118/Uebung4/taster.php",
+		"/media/johnny/E84B-7A07/Xilinx/D_Flip_Flop/D_Flip_Flop/D_Flip_Flop.vhd",
+		"/media/johnny/E84B-7A07/Xilinx/D_Latch/D_Latch/D_Latch.vhd",
+		"/media/johnny/E84B-7A07/Xilinx/BIT_MUX/BIT_MUX/BIT_MUX.vhd",
+		"/media/johnny/E84B-7A07/Xilinx/BIT_MUX/BIT_MUX/BIT_MUX_tb.vhd",
+		"/media/johnny/8240DA0740DA01B9/Users/Jonas/Documents/Visual Studio 2015/Projects/3D-Engine/MeshGeneratorTest/Game.cpp",
+		"/home/johnny/Downloads/castle/serq_qaqlasi3.mtl",
+		"/media/johnny/Daten/Meine_Projekte/CodeLiteProjects/Linux/JohnnyEngine/MeshGeneratorTest/res/models/Lion.obj",
+		"/media/johnny/Daten/Meine_Projekte/CodeLiteProjects/Linux/JohnnyEngine/MeshGeneratorTest/res/models/Lion sculpture-obj.obj",
+		"/media/johnny/Daten/Meine_Projekte/CodeLiteProjects/Linux/JohnnyEngine/MeshGeneratorTest/res/shaders/fragmentShader.glsl",
+		"/home/johnny/Downloads/OWI1/main.cpp",
+		"/media/johnny/Daten/git_repositories/SDL2_ttf/ChangeLog",
+		"/media/johnny/Daten/git_repositories/SDL/INSTALL.txt",
+		"/media/johnny/Daten/git_repositories/SDL2_ttf/NEWS",
+		"/media/johnny/Daten/git_repositories/SDL2_ttf/README",
+		"/media/johnny/Daten/git_repositories/SDL2_ttf/AUTHORS",
+		"/media/johnny/Daten/git_repositories/SDL2_ttf/aclocal.m4",
+		"/media/johnny/Daten/git_repositories/SDL2_ttf/acinclude/sdl2.m4",
+		"/usr/include/SDL2/SDL.h",
+		"/home/johnny/.profile",
+		"/media/johnny/Daten/git_repositories/JohnnyEngine/README.md",
+		"/media/johnny/Daten/git_repositories/JohnnyEngine/setup_env_vars.sh",
+		"/media/johnny/Daten/git_repositories/tmxparser/src/TmxTile.h",
+		"/media/johnny/Daten/git_repositories/tmxparser/src/TmxTile.cpp",
+		"/media/johnny/Daten/git_repositories/tmxparser/src/TmxPropertySet.h",
+		"/media/johnny/Daten/git_repositories/tmxparser/src/TmxPropertySet.cpp",
+		"/media/johnny/Daten/git_repositories/tmxparser/src/TmxObjectGroup.h",
+		"/media/johnny/Daten/git_repositories/tmxparser/src/TmxObjectGroup.cpp",
+		"/media/johnny/Daten/git_repositories/tmxparser/src/TmxMap.cpp",
+		"/media/johnny/Daten/git_repositories/tmxparser/src/TmxLayer.h",
+		"/media/johnny/Daten/git_repositories/tmxparser/src/TmxLayer.cpp",
+		"/media/johnny/Daten/git_repositories/tmxparser/src/TmxColor.cpp",
+		"/media/johnny/Daten/git_repositories/tmxparser/README.md",
+		"/media/johnny/Daten/git_repositories/tmxparser/CMakeLists.txt",
+		"/media/johnny/Daten/git_repositories/tmxparser/Tmx.h.in",
+		"/media/johnny/Daten/git_repositories/JohnnyEngine/shaders/fragmentShaderTexture2D.glsl",
+		"/media/johnny/Daten/git_repositories/tmxparser/src/TmxUtil.cpp",
+		"/media/johnny/Daten/git_repositories/JohnnyEngine/docfiles/Tutorial.md",
+		"/media/johnny/Daten/git_repositories/JohnnyEngine/Doxyfile",
+		"/media/johnny/Daten/git_repositories/JohnnyEngine/download_deps.sh",
+		"/media/johnny/Daten/git_repositories/JohnnyEngine/include/Texture.h",
+		"/media/johnny/Daten/git_repositories/JohnnyEngine/docfiles/mainpage.md",
+		"/media/johnny/Daten/git_repositories/glftfont/GLFT_Font.hpp",
+		"/media/johnny/Daten/git_repositories/glftfont/test.cpp",
+		"/media/johnny/Daten/Meine_Projekte/CodeLiteProjects/Linux/JohnnyEngine/Shikoba-Test/res/shaders/fragmentShaderTexture2D.glsl",
+		"/usr/include/freetype2/ft2build.h",
+		"/usr/include/freetype2/freetype/config/ftheader.h",
+		"/home/johnny/love_test/main.lua",
+		"/media/johnny/Daten/git_repositories/JohnnyEngine/shaders/fragmentShader.glsl",
+		"/home/johnny/gotest/src/hello/hello.go",
+		"/home/johnny/gotest/src/hello/myWallet.dat",
+		"/home/johnny/Downloads/dogecoin-1.10.0/include/bitcoinconsensus.h",
+		"/media/johnny/Daten/git_repositories/libdb/docs/legal/ASM.txt",
+		"/media/johnny/Daten/git_repositories/libdb/docs/legal/BSD.txt",
+		"/media/johnny/Daten/git_repositories/libdb/LEGAL",
+		"/media/johnny/Daten/git_repositories/dogecoin/src/tinyformat.h",
+		"/home/johnny/Downloads/Mario/readme.txt",
+		"/home/johnny/Downloads/Mario/README",
+		"/home/johnny/Downloads/KNAPP/entities/CVS/Root",
+		"/home/johnny/Downloads/KNAPP/util/KContract.cs",
+		"/home/johnny/Downloads/KNAPP/entities/CVS/Repository",
+		"/home/johnny/Downloads/KNAPP/util/CsvReader.cs",
+		"/home/johnny/Downloads/KNAPP/input/kvp.csv",
+		"/home/johnny/Downloads/KNAPP/entities/CVS/Entries",
+		"/home/johnny/Downloads/KNAPP/util/StringArrayContainercs.cs",
+		"/home/johnny/Dokumente/Schule/Deutsch/Interpretation.txt",
+		"/media/johnny/Daten/Meine_Projekte/go/src/github.com/PucklaMotzer09/PixelExample/main.go",
+		"/media/johnny/Daten/Meine_Projekte/go/src/github.com/PucklaMotzer09/SDLGo/SDLGo.go",
+		"/media/johnny/Daten/Meine_Projekte/go/src/github.com/PucklaMotzer09/SDLGo/game.go",
+		"/home/johnny/bin/go/src/github.com/veandco/go-sdl2/examples/opengl/opengl.go",
+		"/home/johnny/bin/go/src/github.com/veandco/go-sdl2/examples/texture/texture.go",
+		"/media/johnny/Daten/Meine_Projekte/go/src/github.com/faiface/pixel/examples/guide/01_creating_a_window/main.go",
+		"/home/johnny/.cache/.fr-WHp5bz/Default (Linux).sublime-keymap",
+		"/home/johnny/.config/sublime-text-3/Packages/User/Glue.sublime-settings",
+		"/home/johnny/.config/sublime-text-3/Packages/ShellCommand/Default.sublime-keymap",
+		"/home/johnny/.config/sublime-text-3/Packages/ShellCommand/ShellCommand.sublime-settings",
+		"/home/johnny/.config/sublime-text-3/Packages/ShellCommand/Default.sublime-commands",
+		"/home/johnny/.config/sublime-text-3/Packages/Glue/Glue.sublime-settings",
+		"/home/johnny/.config/sublime-text-3/Packages/Glue/keymaps/Default (Linux).sublime-keymap",
+		"/home/johnny/.config/sublime-text-3/Packages/Glue/messages/help.txt",
+		"/media/johnny/Daten/Meine_Projekte/go/src/github.com/veandco/go-sdl2/examples/texture/texture.go",
+		"/home/johnny/.config/sublime-text-3/Packages/GoSublime/Default (Linux).sublime-keymap",
+		"/home/johnny/.config/sublime-text-3/Packages/GoSublime/GoSublime.sublime-settings",
+		"/home/johnny/.config/sublime-text-3/Packages/User/GoSublime.sublime-settings",
+		"/media/johnny/Daten/Meine_Projekte/go/src/github.com/veandco/go-sdl2/examples/text/text.go",
+		"/media/johnny/Daten/git_repositories/SDL2-2.0.6/SDL2-2.0.6/include/SDL_timer.h",
+		"/media/johnny/Daten/Meine_Projekte/go/src/github.com/veandco/go-sdl2/sdl/timer.go",
+		"/media/johnny/Daten/Meine_Projekte/go/src/github.com/veandco/go-sdl2/examples/opengl/opengl.go"
+	],
+	"find":
+	{
+		"height": 39.0
+	},
+	"find_in_files":
+	{
+		"height": 101.0,
+		"where_history":
+		[
+			""
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": true,
+		"find_history":
+		[
+			"preloadedTexturesChan",
+			"z+x",
+			"TEST_CAMERA_MOVEMENT_MOVE_SPEED",
+			")",
+			"Vector2f(",
+			"5f",
+			";",
+			"0f",
+			"size.z",
+			"size.y",
+			"size.x",
+			"gl.Str(name",
+			"GlfwKeysTogohomeKeys",
+			"C.",
+			"uint8",
+			"uint16",
+			"= C.GLFW_KEY_",
+			"Key",
+			"Shader",
+			"compileShader",
+			"Shader",
+			"path",
+			"init",
+			"Reset",
+			".mtl",
+			".jpg",
+			".png",
+			"AM_PATH",
+			"EXCLUDE",
+			"FILE",
+			"E:\\",
+			"FT_FREE",
+			"gs_comment",
+			"JoyAxisE",
+			"SDL_TouchID",
+			"TouchFinger",
+			"Touch",
+			"JoystickID",
+			"CommonEvent",
+			"SDL_Event",
+			"SDLEvent",
+			"SDL_CreateWindow",
+			"SDL_CReat",
+			"_001"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"i",
+			"speed",
+			"}",
+			"[2]float32{",
+			"5",
+			"",
+			"0",
+			"size[2]",
+			"size[1]",
+			"size[0]",
+			"gl.Str(name+\"\\x00\"",
+			"glfwKeysTogohomeKeys",
+			"glfw.",
+			"",
+			"Key",
+			"uint8",
+			"",
+			"OpenGLShader",
+			"compileOpenGLShader",
+			"OpenGLShader",
+			"contents"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 6,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "src/gohome/light.go",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 7521,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								5616,
+								5616
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/GoSublime/syntax/GoSublime-Go.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 2397.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 15,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "src/gohome/camera3d.go",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2942,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								667,
+								667
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/GoSublime/syntax/GoSublime-Go.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 180.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 19,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "fragment3d.glsl",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 7469,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/OpenGL Shading Language (GLSL)/GLSL.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 3015.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 20,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "src/gohome/testcameramovement3d.go",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1680,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								193,
+								193
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/GoSublime/syntax/GoSublime-Go.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 22,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "src/gohome/entity3d.go",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1473,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/GoSublime/syntax/GoSublime-Go.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 10,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "src/gohome/model3d.go",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1810,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1095,
+								1095
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/GoSublime/syntax/GoSublime-Go.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 153.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "src/gohome/mesh3d.go",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 17842,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								7732,
+								7732
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/GoSublime/syntax/GoSublime-Go.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 3927.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "src/gohome/framework.go",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 10118,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/GoSublime/syntax/GoSublime-Go.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 225.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 23,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "src/gohome/glfwcallbacks.go",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1366,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/GoSublime/syntax/GoSublime-Go.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 29,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "src/gohome/inputmanager.go",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1429,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/GoSublime/syntax/GoSublime-Go.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 24,
+					"type": "text"
+				},
+				{
+					"buffer": 10,
+					"file": "src/gohome/mainloop.go",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2232,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								76,
+								76
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/GoSublime/syntax/GoSublime-Go.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 12,
+					"type": "text"
+				},
+				{
+					"buffer": 11,
+					"file": "lightentity.go",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1530,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1039,
+								1039
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/GoSublime/syntax/GoSublime-Go.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 17,
+					"type": "text"
+				},
+				{
+					"buffer": 12,
+					"file": "src/gohome/sprite2D.go",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1763,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/GoSublime/syntax/GoSublime-Go.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 21,
+					"type": "text"
+				},
+				{
+					"buffer": 13,
+					"file": "src/gohome/keys.go",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3819,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/GoSublime/syntax/GoSublime-Go.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 30,
+					"type": "text"
+				},
+				{
+					"buffer": 14,
+					"file": "src/gohome/renderer.go",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5622,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2939,
+								2939
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/GoSublime/syntax/GoSublime-Go.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 1634.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				},
+				{
+					"buffer": 15,
+					"file": "src/gohome/projection.go",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2562,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/GoSublime/syntax/GoSublime-Go.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 28,
+					"type": "text"
+				},
+				{
+					"buffer": 16,
+					"file": "src/gohome/camera2d.go",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1547,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1254,
+								1254
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/GoSublime/syntax/GoSublime-Go.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 45.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 18,
+					"type": "text"
+				},
+				{
+					"buffer": 17,
+					"file": "src/gohome/texture.go",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5595,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								5592,
+								5592
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/GoSublime/syntax/GoSublime-Go.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 2996.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 18,
+					"file": "src/gohome/rendertexture.go",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5540,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								5534,
+								5534
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/GoSublime/syntax/GoSublime-Go.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 2703.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 13,
+					"type": "text"
+				},
+				{
+					"buffer": 19,
+					"file": "testscene.go",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5889,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								858,
+								858
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/GoSublime/syntax/GoSublime-Go.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 255.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 20,
+					"file": "src/gohome/rendermanager.go",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 12850,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2225,
+								2225
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/GoSublime/syntax/GoSublime-Go.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 765.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 14,
+					"type": "text"
+				},
+				{
+					"buffer": 21,
+					"file": "src/gohome/transformableobject2d.go",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2254,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/GoSublime/syntax/GoSublime-Go.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 45.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 16,
+					"type": "text"
+				},
+				{
+					"buffer": 22,
+					"file": "src/gohome/level.go",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1411,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								766,
+								766
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/GoSublime/syntax/GoSublime-Go.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 23,
+					"file": "src/gohome/transformableobject3d.go",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1834,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/GoSublime/syntax/GoSublime-Go.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 11,
+					"type": "text"
+				},
+				{
+					"buffer": 24,
+					"file": "src/gohome/resourcemanager.go",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 16631,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								7928,
+								7928
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/GoSublime/syntax/GoSublime-Go.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 5462.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 25,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 794,
+						"regions":
+						{
+							"match":
+							{
+								"flags": 112,
+								"regions":
+								[
+									[
+										236,
+										257
+									],
+									[
+										504,
+										525
+									],
+									[
+										608,
+										629
+									],
+									[
+										670,
+										691
+									]
+								],
+								"scope": ""
+							}
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"detect_indentation": false,
+							"line_numbers": false,
+							"output_tag": 1,
+							"result_base_dir": "",
+							"result_file_regex": "^([^ \t].*):$",
+							"result_line_regex": "^ +([0-9]+):",
+							"scroll_past_end": true,
+							"syntax": "Packages/Default/Find Results.hidden-tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
+					"type": "text"
+				},
+				{
+					"buffer": 26,
+					"file": "src/gohome/scenemanager.go",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 689,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/GoSublime/syntax/GoSublime-Go.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 31,
+					"type": "text"
+				},
+				{
+					"buffer": 27,
+					"file": "src/gohome/shader.go",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 14136,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								11096,
+								11096
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/GoSublime/syntax/GoSublime-Go.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 28,
+					"file": "src/gohome/material.go",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5745,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4733,
+								4733
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/GoSublime/syntax/GoSublime-Go.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 1806.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 9,
+					"type": "text"
+				},
+				{
+					"buffer": 29,
+					"file": "fragment.glsl",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 188,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/OpenGL Shading Language (GLSL)/GLSL.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 27,
+					"type": "text"
+				},
+				{
+					"buffer": 30,
+					"file": "vertex.glsl",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 517,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								129,
+								129
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/OpenGL Shading Language (GLSL)/GLSL.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 26,
+					"type": "text"
+				},
+				{
+					"buffer": 31,
+					"file": "vertex1.glsl",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 353,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/OpenGL Shading Language (GLSL)/GLSL.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 25,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 25.0
+	},
+	"input":
+	{
+		"height": 37.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.9o:///media/johnny/Daten/Meine_Projekte/go/src/github.com/PucklaMotzer09/pixeltest2":
+	{
+		"height": 114.0
+	},
+	"output.9o:///media/johnny/Daten/Meine_Projekte/go/src/github.com/faiface/pixel/examples/guide/02_drawing_a_sprite":
+	{
+		"height": 114.0
+	},
+	"output.9o:///media/johnny/Daten/Meine_Projekte/go/src/github.com/faiface/pixel/examples/guide/04_pressing_keys_and_clicking_mouse":
+	{
+		"height": 114.0
+	},
+	"output.9o:///media/johnny/Daten/Meine_Projekte/go/src/github.com/veandco/go-sdl2/examples/texture":
+	{
+		"height": 114.0
+	},
+	"output.GoSublime-main-output":
+	{
+		"height": 114.0
+	},
+	"output.GsDoc-output-output":
+	{
+		"height": 114.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"output.golang_build":
+	{
+		"height": 114.0
+	},
+	"pinned_build_system": "",
+	"project": "gohomeengine.sublime-project",
+	"replace":
+	{
+		"height": 72.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": false,
+	"side_bar_visible": true,
+	"side_bar_width": 150.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
