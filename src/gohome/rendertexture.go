@@ -3,11 +3,12 @@ package gohome
 import (
 	// "fmt"
 	"github.com/go-gl/gl/v4.1-core/gl"
+	"image/color"
 	"log"
 )
 
 type RenderTexture interface {
-	Load(data []byte, width, height int) error // Is not used. It there just make RenderTexture able to be a Texture
+	Load(data []byte, width, height int, shadowMap bool) error // Is not used. It there just make RenderTexture able to be a Texture
 	GetName() string
 	SetAsTarget()
 	UnsetAsTarget()
@@ -20,6 +21,8 @@ type RenderTexture interface {
 	Terminate()
 	SetFiltering(filtering uint32)
 	SetWrapping(wrapping uint32)
+	SetBorderColor(col color.Color)
+	SetBorderDepth(depth float32)
 }
 
 type OpenGLRenderTexture struct {
@@ -28,15 +31,16 @@ type OpenGLRenderTexture struct {
 	rbo          uint32
 	multiSampled bool
 	depthBuffer  bool
+	shadowMap    bool
 	textures     []*OpenGLTexture
 	prevViewport Viewport
 	viewport     Viewport
 }
 
-func CreateOpenGLRenderTexture(name string, width, height, textures uint32, depthBuffer, multiSampled bool) *OpenGLRenderTexture {
+func CreateOpenGLRenderTexture(name string, width, height, textures uint32, depthBuffer, multiSampled, shadowMap bool) *OpenGLRenderTexture {
 	rt := &OpenGLRenderTexture{}
 
-	rt.Create(name, width, height, textures, depthBuffer, multiSampled)
+	rt.Create(name, width, height, textures, depthBuffer, multiSampled, shadowMap)
 
 	return rt
 }
@@ -45,9 +49,14 @@ func (this *OpenGLRenderTexture) loadTextures(width, height, textures uint32) {
 	var i uint32
 	for i = 0; i < textures; i++ {
 		texture := CreateOpenGLTexture(this.Name, this.multiSampled)
-		texture.Load(nil, int(width), int(height))
+		texture.Load(nil, int(width), int(height), this.shadowMap)
 		texture.Bind(0)
-		gl.FramebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0+i, texture.bindingPoint(), texture.oglName, 0)
+		if this.shadowMap {
+			gl.FramebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, texture.bindingPoint(), texture.oglName, 0)
+		} else {
+			gl.FramebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0+i, texture.bindingPoint(), texture.oglName, 0)
+		}
+		texture.SetFiltering(FILTERING_LINEAR)
 		texture.Unbind(0)
 		this.textures = append(this.textures, texture)
 	}
@@ -67,14 +76,15 @@ func (this *OpenGLRenderTexture) loadRenderBuffer(width, height uint32) {
 	}
 }
 
-func (this *OpenGLRenderTexture) Create(name string, width, height, textures uint32, depthBuffer, multiSampled bool) {
+func (this *OpenGLRenderTexture) Create(name string, width, height, textures uint32, depthBuffer, multiSampled, shadowMap bool) {
 	if textures == 0 {
 		textures = 1
 	}
 
 	this.Name = name
+	this.shadowMap = shadowMap
 	this.multiSampled = multiSampled
-	this.depthBuffer = depthBuffer
+	this.depthBuffer = depthBuffer && !shadowMap
 
 	gl.GenFramebuffers(1, &this.fbo)
 
@@ -82,12 +92,10 @@ func (this *OpenGLRenderTexture) Create(name string, width, height, textures uin
 
 	this.loadRenderBuffer(width, height)
 	this.loadTextures(width, height, textures)
-
 	if gl.CheckFramebufferStatus(gl.FRAMEBUFFER) != gl.FRAMEBUFFER_COMPLETE {
 		log.Println("Error creating RenderTexture: Framebuffer is not complete")
 		return
 	}
-
 	gl.BindFramebuffer(gl.FRAMEBUFFER, 0)
 
 	this.viewport = Viewport{
@@ -97,7 +105,7 @@ func (this *OpenGLRenderTexture) Create(name string, width, height, textures uin
 	}
 }
 
-func (this *OpenGLRenderTexture) Load(data []byte, width, height int) error {
+func (this *OpenGLRenderTexture) Load(data []byte, width, height int, shadowMap bool) error {
 	return &OpenGLError{errorString: "The Load method of RenderTexture is not used!"}
 }
 
@@ -106,6 +114,7 @@ func (this *OpenGLRenderTexture) GetName() string {
 }
 
 func (this *OpenGLRenderTexture) SetAsTarget() {
+	gl.GetError()
 	gl.BindFramebuffer(gl.FRAMEBUFFER, this.fbo)
 	Render.ClearScreen(&Color{0, 0, 0, 0}, 0.0)
 	this.prevViewport = Render.GetViewport()
@@ -184,7 +193,7 @@ func (this *OpenGLRenderTexture) ChangeSize(width, height uint32) {
 	if uint32(this.GetWidth()) != width || uint32(this.GetHeight()) != height {
 		textures := uint32(len(this.textures))
 		this.Terminate()
-		this.Create(this.Name, width, height, textures, this.depthBuffer, this.multiSampled)
+		this.Create(this.Name, width, height, textures, this.depthBuffer, this.multiSampled, this.shadowMap)
 	}
 }
 
@@ -197,5 +206,17 @@ func (this *OpenGLRenderTexture) SetFiltering(filtering uint32) {
 func (this *OpenGLRenderTexture) SetWrapping(wrapping uint32) {
 	for i := 0; i < len(this.textures); i++ {
 		this.textures[i].SetWrapping(wrapping)
+	}
+}
+
+func (this *OpenGLRenderTexture) SetBorderColor(col color.Color) {
+	for i := 0; i < len(this.textures); i++ {
+		this.textures[i].SetBorderColor(col)
+	}
+}
+
+func (this *OpenGLRenderTexture) SetBorderDepth(depth float32) {
+	for i := 0; i < len(this.textures); i++ {
+		this.textures[i].SetBorderDepth(depth)
 	}
 }

@@ -51,7 +51,6 @@ func (MainLoop) init(fw Framework, r Renderer, ww, wh uint32, wt string, start_s
 	} else {
 		log.Println("Please specify a start scene!")
 	}
-
 	return true
 }
 
@@ -61,6 +60,7 @@ func (MainLoop) loop() bool {
 
 		Framew.PollEvents()
 		UpdateMgr.Update(FPSLimit.DeltaTime)
+		LightMgr.Update()
 		InputMgr.Update(FPSLimit.DeltaTime)
 		Render.ClearScreen(colornames.Black, 1.0)
 		RenderMgr.Update()

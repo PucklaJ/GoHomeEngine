@@ -19,7 +19,7 @@ type Renderer interface {
 	CreateTexture(name string, multiSampled bool) Texture
 	CreateMesh2D(name string) Mesh2D
 	CreateMesh3D(name string) Mesh3D
-	CreateRenderTexture(name string, width, height, textures uint32, depthBuffer, multiSampled bool) RenderTexture
+	CreateRenderTexture(name string, width, height, textures uint32, depthBuffer, multiSampled, shadowMap bool) RenderTexture
 	SetWireFrame(b bool)
 	SetViewport(viewport Viewport)
 	GetViewport() Viewport
@@ -109,8 +109,8 @@ func (*OpenGLRenderer) CreateMesh3D(name string) Mesh3D {
 	return CreateOpenGLMesh3D(name)
 }
 
-func (*OpenGLRenderer) CreateRenderTexture(name string, width, height, textures uint32, depthBuffer, multiSampled bool) RenderTexture {
-	return CreateOpenGLRenderTexture(name, width, height, textures, depthBuffer, multiSampled)
+func (*OpenGLRenderer) CreateRenderTexture(name string, width, height, textures uint32, depthBuffer, multiSampled, shadowMap bool) RenderTexture {
+	return CreateOpenGLRenderTexture(name, width, height, textures, depthBuffer, multiSampled, shadowMap)
 }
 
 func (*OpenGLRenderer) LoadShader(name, vertex_contents, fragment_contents, geometry_contents, tesselletion_control_contents, eveluation_contents, compute_contents string) (Shader, error) {

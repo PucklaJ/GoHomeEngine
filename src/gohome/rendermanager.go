@@ -66,10 +66,10 @@ type RenderManager struct {
 
 func (rmgr *RenderManager) Init() {
 	rmgr.currentShader = nil
-	rmgr.backBufferMS = Render.CreateRenderTexture("BackBufferMS", uint32(Framew.WindowGetSize()[0]), uint32(Framew.WindowGetSize()[1]), 1, true, true)
-	rmgr.backBuffer = Render.CreateRenderTexture("BackBuffer", uint32(Framew.WindowGetSize()[0]), uint32(Framew.WindowGetSize()[1]), 1, true, false)
-	rmgr.backBuffer2D = Render.CreateRenderTexture("BackBuffer2D", uint32(Framew.WindowGetSize()[0]), uint32(Framew.WindowGetSize()[1]), 1, true, true)
-	rmgr.backBuffer3D = Render.CreateRenderTexture("BackBuffer3D", uint32(Framew.WindowGetSize()[0]), uint32(Framew.WindowGetSize()[1]), 1, true, true)
+	rmgr.backBufferMS = Render.CreateRenderTexture("BackBufferMS", uint32(Framew.WindowGetSize()[0]), uint32(Framew.WindowGetSize()[1]), 1, true, true, false)
+	rmgr.backBuffer = Render.CreateRenderTexture("BackBuffer", uint32(Framew.WindowGetSize()[0]), uint32(Framew.WindowGetSize()[1]), 1, true, false, false)
+	rmgr.backBuffer2D = Render.CreateRenderTexture("BackBuffer2D", uint32(Framew.WindowGetSize()[0]), uint32(Framew.WindowGetSize()[1]), 1, true, true, false)
+	rmgr.backBuffer3D = Render.CreateRenderTexture("BackBuffer3D", uint32(Framew.WindowGetSize()[0]), uint32(Framew.WindowGetSize()[1]), 1, true, true, false)
 	ResourceMgr.LoadShader("BackBufferShader", "backBufferShaderVert.glsl", "backBufferShaderFrag.glsl", "", "", "", "")
 	ResourceMgr.LoadShader("PostProcessingShader", "postProcessingShaderVert.glsl", "postProcessingShaderFrag.glsl", "", "", "", "")
 	ResourceMgr.LoadShader("RenderScreenShader", "postProcessingShaderVert.glsl", "renderScreenFrag.glsl", "", "", "", "")
@@ -224,6 +224,10 @@ func (rmgr *RenderManager) render2D() {
 		rmgr.Render(TYPE_2D, rmgr.viewport2Ds[i].CameraIndex, int32(i), LightMgr.CurrentLightCollection)
 	}
 	rmgr.backBuffer2D.UnsetAsTarget()
+}
+
+func (rmgr *RenderManager) GetBackBuffer() RenderTexture {
+	return rmgr.backBuffer
 }
 
 func (rmgr *RenderManager) renderPostProcessing() {

@@ -1,7 +1,7 @@
 package gohome
 
 import (
-	// "fmt"
+	"fmt"
 	"github.com/blezek/tga"
 	"github.com/raedatoui/assimp"
 	"image"
@@ -110,9 +110,9 @@ func (rsmgr *ResourceManager) GetTexture(name string) Texture {
 }
 
 func (rsmgr *ResourceManager) LoadLevel(name, path string) {
-
+	fmt.Println("Loading level")
 	level := rsmgr.loadLevel(name, path, false)
-
+	fmt.Println("Loaded level")
 	if level != nil {
 		rsmgr.levels[name] = level
 		log.Println("Finished loading Level", name, "!")
@@ -306,7 +306,7 @@ func (rsmgr *ResourceManager) loadTexture(name, path string, preloaded bool) Tex
 	var tex Texture
 	tex = Render.CreateTexture(name, false)
 	if !preloaded {
-		tex.Load(img_data, width, height)
+		tex.Load(img_data, width, height, false)
 	} else {
 		rsmgr.preloader.preloadedTextureDataChan <- preloadedTextureData{
 			tex,

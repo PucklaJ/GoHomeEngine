@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
+	// "github.com/go-gl/gl/v4.1-core/gl"
 	"golang.org/x/image/colornames"
 	// "github.com/go-gl/mathgl/mgl32"
 	// "math"
@@ -14,24 +15,26 @@ const (
 )
 
 type TestScene struct {
-	lightEnts    [5]LightEntity
-	cam3d        gohome.Camera3D
-	cam3d1       gohome.Camera3D
-	tst          gohome.TestCameraMovement3D
-	planeEnt     gohome.Entity3D
-	planeEntTobj gohome.TransformableObject3D
-	direct       gohome.DirectionalLight
-	spot         gohome.SpotLight
-	m4           gohome.Entity3D
-	m4Tobj       gohome.TransformableObject3D
-	m41          gohome.Entity3D
-	m41Tobj      gohome.TransformableObject3D
-	kratos       gohome.Entity3D
-	kratosTobj   gohome.TransformableObject3D
+	lightEnts        [5]LightEntity
+	cam3d            gohome.Camera3D
+	cam3d1           gohome.Camera3D
+	tst              gohome.TestCameraMovement3D
+	planeEnt         gohome.Entity3D
+	planeEntTobj     gohome.TransformableObject3D
+	direct           gohome.DirectionalLight
+	spot             gohome.SpotLight
+	m4               gohome.Entity3D
+	m4Tobj           gohome.TransformableObject3D
+	m41              gohome.Entity3D
+	m41Tobj          gohome.TransformableObject3D
+	kratos           gohome.Entity3D
+	kratosTobj       gohome.TransformableObject3D
+	shadowMapSpr     gohome.Sprite2D
+	shadowMapSprTobj gohome.TransformableObject2D
 }
 
 func (this *TestScene) Init() {
-	gohome.InitDefaultValues()
+	gohome.Render.SetNativeResolution(1920, 1080)
 	start := time.Now()
 	gohome.ResourceMgr.PreloadLevel("M4", "Arma_M4.obj")
 	gohome.ResourceMgr.PreloadLevel("Kratos", "Kratos.obj")
@@ -39,6 +42,7 @@ func (this *TestScene) Init() {
 	gohome.ResourceMgr.PreloadLevel("Crate", "crate.obj")
 	gohome.ResourceMgr.PreloadTexture("Kratos_torso_n.tga", "Kratos_torso_n.tga")
 	gohome.ResourceMgr.PreloadShader("Normal", "vertex3d.glsl", "normalFrag.glsl", "", "", "", "")
+	gohome.ResourceMgr.PreloadShader("ShadowMapRender", "vertex1.glsl", "shadowMapRenderFrag.glsl", "", "", "", "")
 	gohome.ResourceMgr.PreloadTexture("Kratos_torso_d.tga", "Kratos_torso_d.tga")
 	gohome.ResourceMgr.PreloadTexture("Kratos_torso_s.tga", "Kratos_torso_s.tga")
 	gohome.ResourceMgr.PreloadTexture("Kratos_legs_n.tga", "Kratos_legs_n.tga")
@@ -50,6 +54,7 @@ func (this *TestScene) Init() {
 	gohome.ResourceMgr.LoadPreloadedResources()
 	end := time.Now()
 	fmt.Println("Needed Time:", end.Sub(start).Seconds()*1000.0, "ms")
+	gohome.InitDefaultValues()
 
 	gohome.LightMgr.SetAmbientLight(gohome.Color{80, 80, 80, 255}, 0)
 	this.lightEnts[0].Init([3]float32{0.0, 2.0, 0.0}, 0.0, 2.0)
@@ -64,6 +69,7 @@ func (this *TestScene) Init() {
 	gohome.ResourceMgr.GetTexture("PlaneTexture").SetWrapping(gohome.WRAPPING_MIRRORED_REPEAT)
 	gohome.ResourceMgr.GetTexture("PlaneNormalMap").SetWrapping(gohome.WRAPPING_MIRRORED_REPEAT)
 	this.planeEntTobj.Position = [3]float32{10.0*float32(NUM_PLANES)/2.0 - 10.0/2.0, 0.0, 10.0*float32(NUM_PLANES)/2.0 - 10.0/2.0}
+	this.shadowMapSpr.Init("", &this.shadowMapSprTobj)
 
 	this.m4.InitName("M4", &this.m4Tobj)
 	this.m41.InitName("M4", &this.m41Tobj)
@@ -75,7 +81,8 @@ func (this *TestScene) Init() {
 	this.direct = gohome.DirectionalLight{
 		DiffuseColor:  colornames.Blueviolet,
 		SpecularColor: colornames.Red,
-		Direction:     [3]float32{1.0, -0.2, 0.0},
+		Direction:     [3]float32{1.0, -1.0, 0.0},
+		CastsShadows:  1,
 	}
 	this.spot = gohome.SpotLight{
 		DiffuseColor:  colornames.Blue,
@@ -87,7 +94,16 @@ func (this *TestScene) Init() {
 		Attentuation: gohome.Attentuation{
 			Constant: 1.0,
 		},
+		CastsShadows: 1,
 	}
+	this.spot.InitShadowmap(1024, 1024)
+	this.direct.InitShadowmap(1024*2, 1024*2)
+	// this.planeEnt.Model3D.GetMeshIndex(0).GetMaterial().DiffuseTexture = this.direct.ShadowMap
+	this.shadowMapSpr.Texture = this.direct.ShadowMap
+	this.shadowMapSprTobj.Size = [2]float32{1024.0, 1024.0}
+	this.shadowMapSprTobj.Scale = [2]float32{0.5, 0.5}
+	this.shadowMapSprTobj.Origin = [2]float32{0.0, 0.0}
+	this.shadowMapSprTobj.Position = [2]float32{0, 0}
 
 	this.tst.Init(&this.cam3d)
 	this.cam3d.Position = [3]float32{0.0, 2.0, 2.0}
@@ -106,6 +122,7 @@ func (this *TestScene) Init() {
 	gohome.RenderMgr.AddObject(&this.m41, &this.m41Tobj)
 	gohome.RenderMgr.AddObject(&this.kratos, &this.kratosTobj)
 	gohome.RenderMgr.AddObject(&this.planeEnt, &this.planeEntTobj)
+	gohome.RenderMgr.AddObject(&this.shadowMapSpr, &this.shadowMapSprTobj)
 	gohome.LightMgr.AddDirectionalLight(&this.direct, 0)
 	gohome.LightMgr.AddSpotLight(&this.spot, 0)
 
@@ -121,11 +138,18 @@ func (this *TestScene) Init() {
 		int(nWidth) - int(nWidth)/4, int(nHeight) - int(nHeight)/4,
 		int(nWidth) / 4, int(nHeight) / 4,
 	}, 1)
+
+	gohome.RenderMgr.SetViewport2D(&gohome.Viewport{
+		0,
+		0, 0,
+		int(nWidth), int(nHeight),
+	}, 0)
+
+	gohome.RenderMgr.ForceShader2D = gohome.ResourceMgr.GetShader("ShadowMapRender")
 }
 
 func (this *TestScene) Update(delta_time float32) {
-	this.cam3d1.Position = this.cam3d.Position
-	this.cam3d1.LookDirection = this.cam3d.LookDirection.Mul(-1.0)
+	this.cam3d1.Position = this.spot.Position
 
 	if gohome.InputMgr.JustPressed(gohome.KeyB) {
 		if gohome.RenderMgr.ForceShader3D != nil {
@@ -143,6 +167,13 @@ func (this *TestScene) Update(delta_time float32) {
 		} else {
 			gohome.LightMgr.CurrentLightCollection = 0
 		}
+	}
+	if gohome.InputMgr.JustPressed(gohome.KeyC) {
+		this.cam3d1.LookDirection = this.spot.Direction.Add([3]float32{1e-19, 1e-19, 1e-19})
+	}
+	if gohome.InputMgr.IsPressed(gohome.KeyX) {
+		this.cam3d.Position = this.spot.Position
+		this.cam3d.LookDirection = this.spot.Direction.Add([3]float32{1e-19, 1e-19, 1e-19})
 	}
 }
 

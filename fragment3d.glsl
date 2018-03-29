@@ -46,6 +46,10 @@ struct DirectionalLight
 
 	vec3 diffuseColor;
 	vec3 specularColor;
+
+	mat4 lightSpaceMatrix;
+	sampler2D shadowmap;
+	bool castsShadows;
 };
 
 struct SpotLight
@@ -60,6 +64,10 @@ struct SpotLight
 	float outerCutOff;
 
 	Attentuation attentuation;
+
+	mat4 lightSpaceMatrix;
+	sampler2D shadowmap;
+	bool castsShadows;
 };
 
 in VertexOut {
@@ -82,7 +90,7 @@ uniform DirectionalLight[MAX_DIRECTIONAL_LIGHTS] directionalLights;
 uniform SpotLight[MAX_SPOT_LIGHTS] spotLights;
 
 void calculatePointLight(PointLight pl);
-void calculateDirectionalLight(DirectionalLight pl);
+void calculateDirectionalLight(DirectionalLight pl,uint index);
 void calculateSpotLight(SpotLight pl);
 
 void calculatePointLights();
@@ -90,7 +98,7 @@ void calculateDirectionalLights();
 void calculateSpotLights();
 
 void calculateAllLights();
-void calculateColors();
+void calculateLightColors();
 
 float calculateShinyness(float shinyness);
 void setVariables();
@@ -111,7 +119,7 @@ void main()
 	setVariables();
 
 	calculateAllLights();
-	calculateColors();
+	calculateLightColors();
 
 	// float brightness = (fragColor.r+fragColor.b+fragColor.g)/3.0;
 	// float level = floor(brightness * levels);
@@ -160,7 +168,7 @@ vec3 getSpecularTexture()
 	}
 }
 
-void calculateColors()
+void calculateLightColors()
 {
 	finalDiffuseColor *= material.diffuseColor * getDiffuseTexture();
 	finalSpecularColor *= material.specularColor * getSpecularTexture();
@@ -180,7 +188,7 @@ void calculateDirectionalLights()
 {
 	for(uint i = 0;i<numDirectionalLights&&i<MAX_DIRECTIONAL_LIGHTS;i++)
 	{
-		calculateDirectionalLight(directionalLights[i]);
+		calculateDirectionalLight(directionalLights[i],i);
 	}
 }
 void calculateSpotLights()
@@ -215,6 +223,26 @@ vec3 specularLighting(vec3 lightDir,vec3 specular)
 	return specular;
 }
 
+float calcShadow(sampler2D shadowMap,mat4 lightSpaceMatrix)
+{
+	vec4 fragPosLightSpace = lightSpaceMatrix*inverse(FragIn.viewMatrix3D)*vec4(FragIn.fragPos,1.0);
+	vec3 projCoords = (fragPosLightSpace.xyz / fragPosLightSpace.w)*0.5+0.5;
+	float bias = 0.005;
+	float currentDepth = projCoords.z-bias;
+	float shadowresult = 0.0;
+	vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
+	for(int x = -1; x <= 1; ++x)
+	{
+	    for(int y = -1; y <= 1; ++y)
+	    {
+	        float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r; 
+	        shadowresult += currentDepth > pcfDepth ? 0.0 : 1.0;        
+	    }    
+	}
+	shadowresult /= 9.0;
+	return shadowresult;
+}
+
 float calcAttentuation(vec3 lightPosition,Attentuation attentuation)
 {
 	float distance = distance(lightPosition,FragIn.fragPos);
@@ -244,17 +272,22 @@ void calculatePointLight(PointLight pl)
 	finalSpecularColor += specular;
 
 }
-void calculateDirectionalLight(DirectionalLight pl)
+void calculateDirectionalLight(DirectionalLight dl, uint index)
 {
-	vec3 lightDirection = (FragIn.viewMatrix3D*vec4(pl.direction*-1.0,0.0)).xyz;
+	vec3 lightDirection = (FragIn.viewMatrix3D*vec4(dl.direction*-1.0,0.0)).xyz;
 	vec3 lightDir = normalize(FragIn.fragToTangentSpace*lightDirection);
-
-
+	
 	// Diffuse
-	vec3 diffuse = diffuseLighting(lightDir,pl.diffuseColor);
-
+	vec3 diffuse = diffuseLighting(lightDir,dl.diffuseColor);
+	
 	// Specular
-	vec3 specular = specularLighting(lightDir,pl.specularColor);
+	vec3 specular = specularLighting(lightDir,dl.specularColor);
+	
+	// Shadow
+	float shadow = dl.castsShadows ? calcShadow(directionalLights[0].shadowmap,dl.lightSpaceMatrix) : 1.0;
+	
+	diffuse *= shadow;
+	specular *= shadow;
 
 	finalDiffuseColor += diffuse;
 	finalSpecularColor += specular;
@@ -295,8 +328,11 @@ void calculateSpotLight(SpotLight pl)
 	// Attentuation
 	float attent = calcAttentuation(lightPosition,pl.attentuation);
 
-	diffuse *= attent * spotAmount;
-	specular *= attent * spotAmount;
+	// Shadow
+	float shadow = pl.castsShadows ? calcShadow(pl.shadowmap,pl.lightSpaceMatrix) : 1.0;
+
+	diffuse *= attent * spotAmount * shadow;
+	specular *= attent * spotAmount * shadow;
 
 	finalDiffuseColor += diffuse;
 	finalSpecularColor += specular;

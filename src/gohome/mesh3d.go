@@ -1,7 +1,7 @@
 package gohome
 
 import (
-	"fmt"
+	// "fmt"
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/raedatoui/assimp"
@@ -256,7 +256,7 @@ func (oglm *OpenGLMesh3D) Render() {
 	}
 	if RenderMgr.currentShader != nil {
 		if err := RenderMgr.currentShader.SetUniformMaterial(*oglm.Material); err != nil {
-			fmt.Println("Error:", err)
+			// fmt.Println("Error:", err)
 		}
 	}
 	gl.BindVertexArray(oglm.vao)

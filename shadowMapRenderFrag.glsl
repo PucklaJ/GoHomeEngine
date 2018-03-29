@@ -7,9 +7,6 @@ uniform sampler2D texture0;
 
 void main()
 {
-	fragColor = texture(texture0,fragTexCoord);
-	if(fragColor.a < 0.1)
-	{
-		discard;
-	}
+	float depth = texture(texture0,fragTexCoord).r;
+	fragColor = vec4(depth,depth,depth,1.0);
 }

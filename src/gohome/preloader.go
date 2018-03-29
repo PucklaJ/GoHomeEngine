@@ -219,7 +219,7 @@ func (this *preloader) finishTextures() {
 	for i := 0; i < len(this.preloadedTexturesToFinish); i++ {
 		tex := this.preloadedTexturesToFinish[i]
 		tex.Tex = Render.CreateTexture(tex.Tex.GetName(), false)
-		tex.Tex.Load(tex.img_data, tex.width, tex.height)
+		tex.Tex.Load(tex.img_data, tex.width, tex.height, false)
 		ResourceMgr.textures[tex.Tex.GetName()] = tex.Tex
 		log.Println("Finished loading Texture", tex.Tex.GetName(), "! W:", tex.width, "H:", tex.height)
 	}

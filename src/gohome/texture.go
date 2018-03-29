@@ -3,6 +3,7 @@ package gohome
 import (
 	// "fmt"
 	"github.com/go-gl/gl/v4.1-core/gl"
+	"image/color"
 	"log"
 	"strconv"
 	"unsafe"
@@ -21,7 +22,7 @@ const (
 )
 
 type Texture interface {
-	Load(data []byte, width, height int) error
+	Load(data []byte, width, height int, shadowMap bool) error
 	Bind(unit uint32)
 	Unbind(unit uint32)
 	GetWidth() int
@@ -29,6 +30,8 @@ type Texture interface {
 	Terminate()
 	SetFiltering(filtering uint32)
 	SetWrapping(wrapping uint32)
+	SetBorderColor(col color.Color)
+	SetBorderDepth(depth float32)
 	GetName() string
 }
 
@@ -91,7 +94,7 @@ func printOGLTexture2DError(ogltex *OpenGLTexture, data []byte, width, height in
 	}
 }
 
-func (ogltex *OpenGLTexture) Load(data []byte, width, height int) error {
+func (ogltex *OpenGLTexture) Load(data []byte, width, height int, shadowMap bool) error {
 	ogltex.width = width
 	ogltex.height = height
 
@@ -123,7 +126,11 @@ func (ogltex *OpenGLTexture) Load(data []byte, width, height int) error {
 			ptr = gl.Ptr(&data[0])
 		}
 		gl.GetError()
-		gl.TexImage2D(ogltex.bindingPoint(), 0, gl.RGBA, int32(ogltex.width), int32(ogltex.height), 0, gl.RGBA, gl.UNSIGNED_BYTE, ptr)
+		if shadowMap {
+			gl.TexImage2D(ogltex.bindingPoint(), 0, gl.DEPTH_COMPONENT, int32(ogltex.width), int32(ogltex.height), 0, gl.DEPTH_COMPONENT, gl.FLOAT, ptr)
+		} else {
+			gl.TexImage2D(ogltex.bindingPoint(), 0, gl.RGBA, int32(ogltex.width), int32(ogltex.height), 0, gl.RGBA, gl.UNSIGNED_BYTE, ptr)
+		}
 		printOGLTexture2DError(ogltex, data, width, height)
 	}
 	gl.GenerateMipmap(ogltex.bindingPoint())
@@ -209,6 +216,26 @@ func (ogltex *OpenGLTexture) SetWrapping(wrapping uint32) {
 	gl.TexParameteri(ogltex.bindingPoint(), gl.TEXTURE_WRAP_S, wrap)
 	gl.TexParameteri(ogltex.bindingPoint(), gl.TEXTURE_WRAP_T, wrap)
 	gl.TexParameteri(ogltex.bindingPoint(), gl.TEXTURE_WRAP_R, wrap)
+
+	gl.BindTexture(ogltex.bindingPoint(), 0)
+}
+
+func (ogltex *OpenGLTexture) SetBorderColor(col color.Color) {
+	gl.BindTexture(ogltex.bindingPoint(), ogltex.oglName)
+
+	borderColor := colorToVec4(col)
+
+	gl.TexParameterfv(ogltex.bindingPoint(), gl.TEXTURE_BORDER_COLOR, &borderColor[0])
+
+	gl.BindTexture(ogltex.bindingPoint(), 0)
+}
+
+func (ogltex *OpenGLTexture) SetBorderDepth(depth float32) {
+	gl.BindTexture(ogltex.bindingPoint(), ogltex.oglName)
+
+	col := [4]float32{depth, depth, depth, depth}
+
+	gl.TexParameterfv(ogltex.bindingPoint(), gl.TEXTURE_BORDER_COLOR, &col[0])
 
 	gl.BindTexture(ogltex.bindingPoint(), 0)
 }

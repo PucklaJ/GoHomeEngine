@@ -416,52 +416,52 @@ func (s *OpenGLShader) SetUniformMaterial(mat Material) error {
 	rnd.CurrentTextureUnit -= boundTextures
 
 	if err = s.SetUniformV3(MATERIAL_UNIFORM_NAME+"."+MATERIAL_DIFFUSE_COLOR_UNIFORM_NAME, colorToVec3(mat.DiffuseColor)); err != nil {
-		return err
+		// return err
 	}
 	if err = s.SetUniformV3(MATERIAL_UNIFORM_NAME+"."+MATERIAL_SPECULAR_COLOR_UNIFORM_NAME, colorToVec3(mat.SpecularColor)); err != nil {
-		return err
+		// return err
 	}
 	if err = s.SetUniformI(MATERIAL_UNIFORM_NAME+"."+MATERIAL_DIFFUSE_TEXTURE_UNIFORM_NAME, diffBind); err != nil {
-		return err
+		// return err
 	}
 	if err = s.SetUniformI(MATERIAL_UNIFORM_NAME+"."+MATERIAL_SPECULAR_TEXTURE_UNIFORM_NAME, specBind); err != nil {
-		return err
+		// return err
 	}
 	if err = s.SetUniformI(MATERIAL_UNIFORM_NAME+"."+MATERIAL_NORMALMAP_UNIFORM_NAME, normBind); err != nil {
-		return err
+		// return err
 	}
 	if err = s.SetUniformF(MATERIAL_UNIFORM_NAME+"."+MATERIAL_SHINYNESS_UNIFORM_NAME, mat.Shinyness); err != nil {
-		return err
+		// return err
 	}
 
 	if err = s.SetUniformB(MATERIAL_UNIFORM_NAME+"."+MATERIAL_DIFFUSE_TEXTURE_LOADED_UNIFORM_NAME, mat.diffuseTextureLoaded); err != nil {
-		return err
+		// return err
 	}
 	if err = s.SetUniformB(MATERIAL_UNIFORM_NAME+"."+MATERIAL_SPECULAR_TEXTURE_LOADED_UNIFORM_NAME, mat.specularTextureLoaded); err != nil {
-		return err
+		// return err
 	}
 	if err = s.SetUniformB(MATERIAL_UNIFORM_NAME+"."+MATERIAL_NORMALMAP_LOADED_UNIFORM_NAME, mat.normalMapLoaded); err != nil {
-		return err
+		// return err
 	}
 
-	return nil
+	return err
 }
 
 func (s *OpenGLShader) SetUniformLights(lightCollectionIndex int32) error {
 	if lightCollectionIndex == -1 || lightCollectionIndex > int32(len(LightMgr.lightCollections)-1) {
 		var err error
 		if err = s.SetUniformUI(NUM_POINT_LIGHTS_UNIFORM_NAME, 0); err != nil {
-			return err
+			// return err
 		}
 		if err = s.SetUniformUI(NUM_DIRECTIONAL_LIGHTS_UNIFORM_NAME, 0); err != nil {
-			return err
+			// return err
 		}
 		if err = s.SetUniformUI(NUM_SPOT_LIGHTS_UNIFORM_NAME, 0); err != nil {
-			return err
+			// return err
 		}
 
 		if err = s.SetUniformV3(AMBIENT_LIGHT_UNIFORM_NAME, mgl32.Vec3{1.0, 1.0, 1.0}); err != nil {
-			return err
+			// return err
 		}
 		return nil
 	}
@@ -470,37 +470,37 @@ func (s *OpenGLShader) SetUniformLights(lightCollectionIndex int32) error {
 
 	var err error
 	if err = s.SetUniformUI(NUM_POINT_LIGHTS_UNIFORM_NAME, uint32(len(lightColl.PointLights))); err != nil {
-		return err
+		// return err
 	}
 	if err = s.SetUniformUI(NUM_DIRECTIONAL_LIGHTS_UNIFORM_NAME, uint32(len(lightColl.DirectionalLights))); err != nil {
-		return err
+		// return err
 	}
 	if err = s.SetUniformUI(NUM_SPOT_LIGHTS_UNIFORM_NAME, uint32(len(lightColl.SpotLights))); err != nil {
-		return err
+		// return err
 	}
 
 	if err = s.SetUniformV3(AMBIENT_LIGHT_UNIFORM_NAME, colorToVec3(lightColl.AmbientLight)); err != nil {
-		return err
+		// return err
 	}
 
 	var i uint32
 	for i = 0; i < uint32(len(lightColl.PointLights)); i++ {
 		if err = lightColl.PointLights[i].SetUniforms(s, i); err != nil {
-			return err
+			// return err
 		}
 	}
 	for i = 0; i < uint32(len(lightColl.DirectionalLights)); i++ {
 		if err = lightColl.DirectionalLights[i].SetUniforms(s, i); err != nil {
-			return err
+			// return err
 		}
 	}
 	for i = 0; i < uint32(len(lightColl.SpotLights)); i++ {
 		if err = lightColl.SpotLights[i].SetUniforms(s, i); err != nil {
-			return err
+			// return err
 		}
 	}
 
-	return nil
+	return err
 }
 
 func (s *OpenGLShader) GetName() string {
