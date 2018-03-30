@@ -316,7 +316,6 @@ float calcShadow(sampler2D shadowMap,mat4 lightSpaceMatrix,float shadowdistance,
 		shadowresult = 1.0 - (1.0-shadowresult)*distance;
 	}
 	return shadowresult;
-	// return 1.0;
 }
 
 float calcShadowPointLight(PointLight pl)
@@ -330,7 +329,7 @@ float calcShadowPointLight(PointLight pl)
 	// fragColor = vec4(vec3(closestDepth),1.0);
 	// fragColor = vec4(1.0,0.0,0.0,1.0);
 	return shadow;
-	return closestDepth;
+	// return closestDepth;
 	// return 1.0;
 
 }
