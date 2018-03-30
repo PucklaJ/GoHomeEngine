@@ -6,12 +6,12 @@ import (
 	// "github.com/go-gl/gl/v4.1-core/gl"
 	"golang.org/x/image/colornames"
 	// "github.com/go-gl/mathgl/mgl32"
-	// "math"
+	"math"
 	"time"
 )
 
 const (
-	NUM_PLANES uint32  = 20
+	NUM_PLANES uint32  = 4
 	PLANE_SIZE float32 = 10.0
 )
 
@@ -43,17 +43,13 @@ func (this *TestScene) Init() {
 	gohome.ResourceMgr.PreloadLevel("Barrel", "barrel.obj")
 	gohome.ResourceMgr.PreloadLevel("Crate", "crate.obj")
 	gohome.ResourceMgr.PreloadLevel("Pine", "pine.obj")
-	gohome.ResourceMgr.PreloadTexture("Kratos_torso_n.tga", "Kratos_torso_n.tga")
 	gohome.ResourceMgr.PreloadShader("Normal", "vertex3d.glsl", "normalFrag.glsl", "", "", "", "")
 	gohome.ResourceMgr.PreloadShader("ShadowMapRender", "vertex1.glsl", "shadowMapRenderFrag.glsl", "", "", "", "")
-	gohome.ResourceMgr.PreloadTexture("Kratos_torso_d.tga", "Kratos_torso_d.tga")
-	gohome.ResourceMgr.PreloadTexture("Kratos_torso_s.tga", "Kratos_torso_s.tga")
+	gohome.ResourceMgr.PreloadTexture("Kratos_torso_n.tga", "Kratos_torso_n.tga")
 	gohome.ResourceMgr.PreloadTexture("Kratos_legs_n.tga", "Kratos_legs_n.tga")
-	gohome.ResourceMgr.PreloadTexture("Kratos_legs_s.tga", "Kratos_legs_s.tga")
 	gohome.ResourceMgr.PreloadTexture("Kratos_head_n.tga", "Kratos_head_n.tga")
-	gohome.ResourceMgr.PreloadTexture("Kratos_head_s.tga", "Kratos_head_s.tga")
-	gohome.ResourceMgr.PreloadTexture("PlaneTexture", "156.JPG")
-	gohome.ResourceMgr.PreloadTexture("PlaneNormalMap", "156_norm.JPG")
+	gohome.ResourceMgr.PreloadTexture("PlaneTexture", "159.JPG")
+	gohome.ResourceMgr.PreloadTexture("PlaneNormalMap", "159_norm.JPG")
 	gohome.ResourceMgr.PreloadTexture("Pine", "pine.png")
 	gohome.ResourceMgr.LoadPreloadedResources()
 	end := time.Now()
@@ -69,7 +65,6 @@ func (this *TestScene) Init() {
 	this.planeEnt.InitMesh(gohome.Plane("Plane", [2]float32{PLANE_SIZE * float32(NUM_PLANES), PLANE_SIZE * float32(NUM_PLANES)}, NUM_PLANES*1), &this.planeEntTobj)
 	this.planeEnt.Model3D.GetMesh("Plane").GetMaterial().Shinyness = 0.5
 	this.planeEnt.Model3D.GetMesh("Plane").GetMaterial().SetTextures("PlaneTexture", "", "PlaneNormalMap")
-	this.planeEnt.Model3D.GetMesh("Plane").GetMaterial().Shinyness = 0.2
 	this.planeEnt.Model3D.GetMesh("Plane").GetMaterial().SetColors(gohome.Color{255, 255, 255, 255}, gohome.Color{255, 255, 255, 255})
 	gohome.ResourceMgr.GetTexture("PlaneTexture").SetWrapping(gohome.WRAPPING_MIRRORED_REPEAT)
 	gohome.ResourceMgr.GetTexture("PlaneNormalMap").SetWrapping(gohome.WRAPPING_MIRRORED_REPEAT)
@@ -78,9 +73,9 @@ func (this *TestScene) Init() {
 	this.m4.InitName("M4", &this.m4Tobj)
 	this.m41.InitName("M4", &this.m41Tobj)
 	this.kratos.InitName("Kratos", &this.kratosTobj)
-	this.kratos.Model3D.GetMeshIndex(0).GetMaterial().SetTextures("Kratos_legs_d.tga", "Kratos_legs_s.tga", "Kratos_legs_n.tga")
-	this.kratos.Model3D.GetMeshIndex(1).GetMaterial().SetTextures("Kratos_torso_d.tga", "Kratos_torso_s.tga", "Kratos_torso_n.tga")
-	this.kratos.Model3D.GetMeshIndex(2).GetMaterial().SetTextures("Kratos_head_d.tga", "Kratos_head_s.tga", "Kratos_head_n.tga")
+	this.kratos.Model3D.GetMeshIndex(0).GetMaterial().SetTextures("", "", "Kratos_legs_n.tga")
+	this.kratos.Model3D.GetMeshIndex(1).GetMaterial().SetTextures("", "", "Kratos_torso_n.tga")
+	this.kratos.Model3D.GetMeshIndex(2).GetMaterial().SetTextures("", "", "Kratos_head_n.tga")
 	for i := 0; i < int(NUM_PLANES*NUM_PLANES); i++ {
 		this.oakTrees[i].InitName("Pine", &this.oakTreeTobjs[i])
 		this.oakTrees[i].Model3D.GetMesh("Pine").GetMaterial().DiffuseTexture = gohome.ResourceMgr.GetTexture("Pine")
@@ -88,16 +83,18 @@ func (this *TestScene) Init() {
 	}
 
 	this.direct = gohome.DirectionalLight{
-		DiffuseColor:  colornames.Blueviolet,
-		SpecularColor: colornames.Red,
-		Direction:     [3]float32{1.0, -1.0, 0.0},
-		CastsShadows:  1,
+		DiffuseColor:   colornames.Khaki,
+		SpecularColor:  colornames.Yellow,
+		Direction:      [3]float32{1.0, -1.0, 0.0},
+		CastsShadows:   1,
+		ShadowDistance: 50.0,
 	}
 	this.direct1 = gohome.DirectionalLight{
-		DiffuseColor:  colornames.Lime,
-		SpecularColor: colornames.Azure,
-		Direction:     [3]float32{0.0, -1.0, 1.0},
-		CastsShadows:  1,
+		DiffuseColor:   colornames.Lime,
+		SpecularColor:  colornames.Azure,
+		Direction:      [3]float32{1.0, -100000000.0, 0.0},
+		CastsShadows:   1,
+		ShadowDistance: 50.0,
 	}
 	this.spot = gohome.SpotLight{
 		DiffuseColor:  colornames.Blue,
@@ -125,7 +122,7 @@ func (this *TestScene) Init() {
 	for x := 0; x < int(NUM_PLANES); x++ {
 		for y := 0; y < int(NUM_PLANES); y++ {
 			this.oakTreeTobjs[x+y*int(NUM_PLANES)].Position = [3]float32{PLANE_SIZE * (float32(x) + 0.5), -0.5, PLANE_SIZE * (float32(y) + 0.5)}
-			// gohome.RenderMgr.AddObject(&this.oakTrees[x+y*int(NUM_PLANES)], &this.oakTreeTobjs[x+y*int(NUM_PLANES)])
+			gohome.RenderMgr.AddObject(&this.oakTrees[x+y*int(NUM_PLANES)], &this.oakTreeTobjs[x+y*int(NUM_PLANES)])
 		}
 	}
 	gohome.UpdateMgr.AddObject(&this.tst)
@@ -161,6 +158,8 @@ func (this *TestScene) Init() {
 	gohome.RenderMgr.ForceShader2D = gohome.ResourceMgr.GetShader("ShadowMapRender")
 }
 
+var elapsed_time float32 = 0.0
+
 func (this *TestScene) Update(delta_time float32) {
 	this.cam3d1.Position = this.spot.Position
 
@@ -188,6 +187,14 @@ func (this *TestScene) Update(delta_time float32) {
 		this.cam3d.Position = this.spot.Position
 		this.cam3d.LookDirection = this.spot.Direction.Add([3]float32{1e-19, 1e-19, 1e-19})
 	}
+
+	elapsed_time += delta_time
+
+	var x, y float32
+	x = float32(math.Cos(float64(elapsed_time) * 0.25))
+	y = float32(math.Sin(float64(elapsed_time) * 0.25))
+
+	this.direct1.Direction = [3]float32{x, y, 0.0}
 }
 
 func (this *TestScene) Terminate() {

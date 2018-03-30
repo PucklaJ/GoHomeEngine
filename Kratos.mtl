@@ -9,6 +9,7 @@ Ni -1.000000
 d 1.000000
 illum 1
 map_Kd Kratos_torso_d.tga
+map_Ks Kratos_torso_s.tga
 
 
 newmtl Kratos_legs_Kratos_legs_d.tga
@@ -20,6 +21,7 @@ Ni -1.000000
 d 1.000000
 illum 1
 map_Kd Kratos_legs_d.tga
+map_Ks Kratos_legs_s.tga
 
 
 newmtl Kratos_head_Kratos_head_d.tga
@@ -31,5 +33,6 @@ Ni -1.000000
 d 1.000000
 illum 1
 map_Kd Kratos_head_d.tga
+map_Ks Kratos_head_s.tga
 
 

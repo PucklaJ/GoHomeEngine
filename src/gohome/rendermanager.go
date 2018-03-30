@@ -32,7 +32,7 @@ type RenderPair struct {
 }
 
 type Viewport struct {
-	CameraIndex         uint32
+	CameraIndex         int32
 	X, Y, Width, Height int
 }
 
@@ -66,10 +66,10 @@ type RenderManager struct {
 
 func (rmgr *RenderManager) Init() {
 	rmgr.currentShader = nil
-	rmgr.backBufferMS = Render.CreateRenderTexture("BackBufferMS", uint32(Framew.WindowGetSize()[0]), uint32(Framew.WindowGetSize()[1]), 1, true, true, false)
-	rmgr.backBuffer = Render.CreateRenderTexture("BackBuffer", uint32(Framew.WindowGetSize()[0]), uint32(Framew.WindowGetSize()[1]), 1, true, false, false)
-	rmgr.backBuffer2D = Render.CreateRenderTexture("BackBuffer2D", uint32(Framew.WindowGetSize()[0]), uint32(Framew.WindowGetSize()[1]), 1, true, true, false)
-	rmgr.backBuffer3D = Render.CreateRenderTexture("BackBuffer3D", uint32(Framew.WindowGetSize()[0]), uint32(Framew.WindowGetSize()[1]), 1, true, true, false)
+	rmgr.backBufferMS = Render.CreateRenderTexture("BackBufferMS", uint32(Framew.WindowGetSize()[0]), uint32(Framew.WindowGetSize()[1]), 1, true, true, false, false)
+	rmgr.backBuffer = Render.CreateRenderTexture("BackBuffer", uint32(Framew.WindowGetSize()[0]), uint32(Framew.WindowGetSize()[1]), 1, true, false, false, false)
+	rmgr.backBuffer2D = Render.CreateRenderTexture("BackBuffer2D", uint32(Framew.WindowGetSize()[0]), uint32(Framew.WindowGetSize()[1]), 1, true, true, false, false)
+	rmgr.backBuffer3D = Render.CreateRenderTexture("BackBuffer3D", uint32(Framew.WindowGetSize()[0]), uint32(Framew.WindowGetSize()[1]), 1, true, true, false, false)
 	ResourceMgr.LoadShader("BackBufferShader", "backBufferShaderVert.glsl", "backBufferShaderFrag.glsl", "", "", "", "")
 	ResourceMgr.LoadShader("PostProcessingShader", "postProcessingShaderVert.glsl", "postProcessingShaderFrag.glsl", "", "", "", "")
 	ResourceMgr.LoadShader("RenderScreenShader", "postProcessingShaderVert.glsl", "renderScreenFrag.glsl", "", "", "", "")
@@ -260,9 +260,9 @@ func (rmgr *RenderManager) Update() {
 	rmgr.renderToScreen()
 }
 
-func (rmgr *RenderManager) handleCurrentCameraAndViewport(rtype RenderType, cameraIndex uint32, viewportIndex int32) {
+func (rmgr *RenderManager) handleCurrentCameraAndViewport(rtype RenderType, cameraIndex int32, viewportIndex int32) {
 	if rtype == TYPE_2D {
-		if len(rmgr.camera2Ds) == 0 || uint32(len(rmgr.camera2Ds)-1) < cameraIndex {
+		if cameraIndex == -1 || len(rmgr.camera2Ds) == 0 || int32(len(rmgr.camera2Ds)-1) < cameraIndex {
 			rmgr.currentCamera2D = nil
 		} else {
 			rmgr.currentCamera2D = rmgr.camera2Ds[cameraIndex]
@@ -274,7 +274,7 @@ func (rmgr *RenderManager) handleCurrentCameraAndViewport(rtype RenderType, came
 		}
 
 	} else if rtype == TYPE_3D {
-		if len(rmgr.camera3Ds) == 0 || uint32(len(rmgr.camera3Ds)-1) < cameraIndex {
+		if cameraIndex == -1 || len(rmgr.camera3Ds) == 0 || int32(len(rmgr.camera3Ds)-1) < cameraIndex {
 			rmgr.currentCamera3D = nil
 		} else {
 			rmgr.currentCamera3D = rmgr.camera3Ds[cameraIndex]
@@ -314,7 +314,7 @@ func (rmgr *RenderManager) renderRenderObject(robj *RenderPair, lightCollectionI
 	robj.Render()
 }
 
-func (rmgr *RenderManager) Render(rtype RenderType, cameraIndex uint32, viewportIndex int32, lightCollectionIndex int32) {
+func (rmgr *RenderManager) Render(rtype RenderType, cameraIndex int32, viewportIndex int32, lightCollectionIndex int32) {
 	if len(rmgr.renderObjects) == 0 {
 		return
 	}

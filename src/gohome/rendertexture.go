@@ -32,32 +32,60 @@ type OpenGLRenderTexture struct {
 	multiSampled bool
 	depthBuffer  bool
 	shadowMap    bool
-	textures     []*OpenGLTexture
+	cubeMap      bool
+	textures     []Texture
 	prevViewport Viewport
 	viewport     Viewport
 }
 
-func CreateOpenGLRenderTexture(name string, width, height, textures uint32, depthBuffer, multiSampled, shadowMap bool) *OpenGLRenderTexture {
+func CreateOpenGLRenderTexture(name string, width, height, textures uint32, depthBuffer, multiSampled, shadowMap, cubeMap bool) *OpenGLRenderTexture {
 	rt := &OpenGLRenderTexture{}
 
-	rt.Create(name, width, height, textures, depthBuffer, multiSampled, shadowMap)
+	rt.Create(name, width, height, textures, depthBuffer, multiSampled, shadowMap, cubeMap)
 
 	return rt
 }
 
-func (this *OpenGLRenderTexture) loadTextures(width, height, textures uint32) {
+func (this *OpenGLRenderTexture) loadTextures(width, height, textures uint32, cubeMap bool) {
 	var i uint32
 	for i = 0; i < textures; i++ {
-		texture := CreateOpenGLTexture(this.Name, this.multiSampled)
-		texture.Load(nil, int(width), int(height), this.shadowMap)
-		texture.Bind(0)
-		if this.shadowMap {
-			gl.FramebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, texture.bindingPoint(), texture.oglName, 0)
+		var ogltex *OpenGLTexture
+		var oglcubemap *OpenGLCubeMap
+		var texture Texture
+		if cubeMap {
+			oglcubemap = CreateOpenGLCubeMap(this.Name)
+			texture = oglcubemap
 		} else {
-			gl.FramebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0+i, texture.bindingPoint(), texture.oglName, 0)
+			ogltex = CreateOpenGLTexture(this.Name, this.multiSampled)
+			texture = ogltex
 		}
-		texture.SetFiltering(FILTERING_LINEAR)
-		texture.Unbind(0)
+		texture.Load(nil, int(width), int(height), this.shadowMap)
+		if cubeMap {
+			gl.BindTexture(gl.TEXTURE_CUBE_MAP, oglcubemap.oglName)
+		} else {
+			gl.BindTexture(ogltex.bindingPoint(), ogltex.oglName)
+		}
+		if this.shadowMap {
+			if cubeMap {
+				gl.FramebufferTexture(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, oglcubemap.oglName, 0)
+			} else {
+				gl.FramebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, ogltex.bindingPoint(), ogltex.oglName, 0)
+			}
+		} else {
+			if cubeMap {
+				gl.FramebufferTexture(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0+i, oglcubemap.oglName, 0)
+			} else {
+				gl.FramebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0+i, ogltex.bindingPoint(), ogltex.oglName, 0)
+			}
+		}
+		if !cubeMap {
+			texture.SetFiltering(FILTERING_LINEAR)
+		}
+		if cubeMap {
+			gl.BindTexture(gl.TEXTURE_CUBE_MAP, 0)
+		} else {
+			gl.BindTexture(ogltex.bindingPoint(), 0)
+		}
 		this.textures = append(this.textures, texture)
 	}
 }
@@ -76,7 +104,7 @@ func (this *OpenGLRenderTexture) loadRenderBuffer(width, height uint32) {
 	}
 }
 
-func (this *OpenGLRenderTexture) Create(name string, width, height, textures uint32, depthBuffer, multiSampled, shadowMap bool) {
+func (this *OpenGLRenderTexture) Create(name string, width, height, textures uint32, depthBuffer, multiSampled, shadowMap, cubeMap bool) {
 	if textures == 0 {
 		textures = 1
 	}
@@ -85,13 +113,18 @@ func (this *OpenGLRenderTexture) Create(name string, width, height, textures uin
 	this.shadowMap = shadowMap
 	this.multiSampled = multiSampled
 	this.depthBuffer = depthBuffer && !shadowMap
+	this.cubeMap = cubeMap
 
 	gl.GenFramebuffers(1, &this.fbo)
 
 	gl.BindFramebuffer(gl.FRAMEBUFFER, this.fbo)
 
 	this.loadRenderBuffer(width, height)
-	this.loadTextures(width, height, textures)
+	this.loadTextures(width, height, textures, cubeMap)
+	if shadowMap {
+		gl.DrawBuffer(gl.NONE)
+		gl.ReadBuffer(gl.NONE)
+	}
 	if gl.CheckFramebufferStatus(gl.FRAMEBUFFER) != gl.FRAMEBUFFER_COMPLETE {
 		log.Println("Error creating RenderTexture: Framebuffer is not complete")
 		return
@@ -193,7 +226,7 @@ func (this *OpenGLRenderTexture) ChangeSize(width, height uint32) {
 	if uint32(this.GetWidth()) != width || uint32(this.GetHeight()) != height {
 		textures := uint32(len(this.textures))
 		this.Terminate()
-		this.Create(this.Name, width, height, textures, this.depthBuffer, this.multiSampled, this.shadowMap)
+		this.Create(this.Name, width, height, textures, this.depthBuffer, this.multiSampled, this.shadowMap, this.cubeMap)
 	}
 }
 

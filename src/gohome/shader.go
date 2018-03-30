@@ -5,6 +5,7 @@ import (
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
 	"runtime"
+	// "strconv"
 	"strings"
 )
 
@@ -173,23 +174,26 @@ func (*OpenGLShader) Unuse() {
 
 func (s *OpenGLShader) Setup() error {
 
-	var vao uint32
-	gl.CreateVertexArrays(1, &vao)
-	gl.BindVertexArray(vao)
-	defer gl.DeleteVertexArrays(1, &vao)
-	defer gl.BindVertexArray(0)
-	gl.ValidateProgram(s.program)
-	var status int32
-	gl.GetProgramiv(s.program, gl.VALIDATE_STATUS, &status)
-	if status == gl.FALSE {
-		var logLength int32
-		gl.GetProgramiv(s.program, gl.INFO_LOG_LENGTH, &logLength)
+	// var vao uint32
+	// gl.CreateVertexArrays(1, &vao)
+	// gl.BindVertexArray(vao)
+	// defer gl.DeleteVertexArrays(1, &vao)
+	// defer gl.BindVertexArray(0)
+	// for i := 0; i < 100; i++ {
+	// 	s.SetUniformI("pointLights["+strconv.Itoa(i)+"].shadowmap", 1)
+	// }
+	// gl.ValidateProgram(s.program)
+	// var status int32
+	// gl.GetProgramiv(s.program, gl.VALIDATE_STATUS, &status)
+	// if status == gl.FALSE {
+	// 	var logLength int32
+	// 	gl.GetProgramiv(s.program, gl.INFO_LOG_LENGTH, &logLength)
 
-		logtext := strings.Repeat("\x00", int(logLength+1))
-		gl.GetProgramInfoLog(s.program, logLength, nil, gl.Str(logtext))
+	// 	logtext := strings.Repeat("\x00", int(logLength+1))
+	// 	gl.GetProgramInfoLog(s.program, logLength, nil, gl.Str(logtext))
 
-		return &OpenGLError{errorString: "Couldn't validate shader " + s.name + ": " + logtext}
-	}
+	// 	return &OpenGLError{errorString: "Couldn't validate shader " + s.name + ": " + logtext}
+	// }
 
 	if runtime.GOOS != "windows" {
 		s.Use()

@@ -260,9 +260,7 @@ func (oglm *OpenGLMesh3D) Render() {
 		}
 	}
 	gl.BindVertexArray(oglm.vao)
-
 	gl.DrawElements(gl.TRIANGLES, int32(oglm.numIndices), gl.UNSIGNED_INT, gl.PtrOffset(int(oglm.numVertices)*int(MESH3DVERTEX_SIZE)))
-
 	gl.BindVertexArray(0)
 }
 

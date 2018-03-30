@@ -19,7 +19,8 @@ type Renderer interface {
 	CreateTexture(name string, multiSampled bool) Texture
 	CreateMesh2D(name string) Mesh2D
 	CreateMesh3D(name string) Mesh3D
-	CreateRenderTexture(name string, width, height, textures uint32, depthBuffer, multiSampled, shadowMap bool) RenderTexture
+	CreateRenderTexture(name string, width, height, textures uint32, depthBuffer, multiSampled, shadowMap, cubeMap bool) RenderTexture
+	CreateCubeMap(name string) CubeMap
 	SetWireFrame(b bool)
 	SetViewport(viewport Viewport)
 	GetViewport() Viewport
@@ -30,6 +31,8 @@ type Renderer interface {
 	AfterRender()
 
 	RenderBackBuffer()
+
+	SetBacckFaceCulling(b bool)
 }
 
 type OpenGLRenderer struct {
@@ -109,8 +112,12 @@ func (*OpenGLRenderer) CreateMesh3D(name string) Mesh3D {
 	return CreateOpenGLMesh3D(name)
 }
 
-func (*OpenGLRenderer) CreateRenderTexture(name string, width, height, textures uint32, depthBuffer, multiSampled, shadowMap bool) RenderTexture {
-	return CreateOpenGLRenderTexture(name, width, height, textures, depthBuffer, multiSampled, shadowMap)
+func (*OpenGLRenderer) CreateRenderTexture(name string, width, height, textures uint32, depthBuffer, multiSampled, shadowMap, cubeMap bool) RenderTexture {
+	return CreateOpenGLRenderTexture(name, width, height, textures, depthBuffer, multiSampled, shadowMap, cubeMap)
+}
+
+func (*OpenGLRenderer) CreateCubeMap(name string) CubeMap {
+	return CreateOpenGLCubeMap(name)
 }
 
 func (*OpenGLRenderer) LoadShader(name, vertex_contents, fragment_contents, geometry_contents, tesselletion_control_contents, eveluation_contents, compute_contents string) (Shader, error) {
@@ -215,6 +222,14 @@ func (this *OpenGLRenderer) PreRender() {
 }
 func (this *OpenGLRenderer) AfterRender() {
 	this.CurrentTextureUnit = 0
+}
+
+func (this *OpenGLRenderer) SetBacckFaceCulling(b bool) {
+	if b {
+		gl.Enable(gl.CULL_FACE)
+	} else {
+		gl.Disable(gl.CULL_FACE)
+	}
 }
 
 var Render Renderer

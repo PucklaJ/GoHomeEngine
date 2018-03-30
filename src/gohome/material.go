@@ -83,25 +83,20 @@ func (mat *Material) Init(material *assimp.Material, scene *assimp.Scene, direct
 	var matSpecColor assimp.Color4
 	var matShininess float32
 
-	// printProperties(material)
-
 	matDifColor, ret = material.GetMaterialColor(assimp.MatKey_ColorDiffuse, 0, 0)
 	if ret == assimp.Return_Failure {
-		// log.Println("Couldn't return diffuse color:", assimp.GetErrorString())
 		mat.DiffuseColor = &Color{255, 255, 255, 255}
 	} else {
 		mat.DiffuseColor = convertAssimpColor(matDifColor)
 	}
 	matSpecColor, ret = material.GetMaterialColor(assimp.MatKey_ColorSpecular, 0, 0)
 	if ret == assimp.Return_Failure {
-		// log.Println("Couldn't return specular color:", assimp.GetErrorString())
 		mat.SpecularColor = &Color{255, 255, 255, 255}
 	} else {
 		mat.SpecularColor = convertAssimpColor(matSpecColor)
 	}
 	matShininess, ret = material.GetMaterialFloat(assimp.MatKey_Shininess, 0, 0)
 	if ret == assimp.Return_Failure {
-		// log.Println("Couldn't return shininess:", assimp.GetErrorString())
 		mat.Shinyness = 0.0
 	} else {
 		mat.Shinyness = matShininess
@@ -109,6 +104,7 @@ func (mat *Material) Init(material *assimp.Material, scene *assimp.Scene, direct
 
 	diffuseTextures := material.GetMaterialTextureCount(1)
 	specularTextures := material.GetMaterialTextureCount(2)
+	normalMaps := material.GetMaterialTextureCount(6)
 	for i := 0; i < diffuseTextures; i++ {
 		texPath, _, _, _, _, _, _, ret := material.GetMaterialTexture(1, i)
 		if ret == assimp.Return_Failure {
@@ -138,12 +134,32 @@ func (mat *Material) Init(material *assimp.Material, scene *assimp.Scene, direct
 			break
 		}
 	}
+	for i := 0; i < normalMaps; i++ {
+		texPath, _, _, _, _, _, _, ret := material.GetMaterialTexture(6, i)
+		if ret == assimp.Return_Failure {
+			log.Println("Couldn't return normal map")
+		} else {
+			if !preloaded {
+				ResourceMgr.LoadTexture(texPath, directory+texPath)
+				mat.NormalMap = ResourceMgr.GetTexture(texPath)
+			} else {
+				mat.NormalMap = ResourceMgr.loadTexture(texPath, directory+texPath, true)
+			}
+			break
+		}
+	}
 }
 
 func (mat *Material) SetTextures(diffuse, specular, normalMap string) {
-	mat.DiffuseTexture = ResourceMgr.GetTexture(diffuse)
-	mat.SpecularTexture = ResourceMgr.GetTexture(specular)
-	mat.NormalMap = ResourceMgr.GetTexture(normalMap)
+	if diffuse != "" {
+		mat.DiffuseTexture = ResourceMgr.GetTexture(diffuse)
+	}
+	if specular != "" {
+		mat.SpecularTexture = ResourceMgr.GetTexture(specular)
+	}
+	if normalMap != "" {
+		mat.NormalMap = ResourceMgr.GetTexture(normalMap)
+	}
 }
 
 func (mat *Material) SetColors(diffuse, specular color.Color) {

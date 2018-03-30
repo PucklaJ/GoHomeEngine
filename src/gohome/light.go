@@ -1,7 +1,7 @@
 package gohome
 
 import (
-	// "fmt"
+	"fmt"
 	"github.com/go-gl/mathgl/mgl32"
 	"image/color"
 	"math"
@@ -29,11 +29,15 @@ const (
 	LIGHT_SPACE_MATRIX_UNIFORM_NAME     string = "lightSpaceMatrix"
 	SHADOWMAP_UNIFORM_NAME              string = "shadowmap"
 	CASTSSHADOWS_UNIFORM_NAME           string = "castsShadows"
+	SHADOW_DISTANCE_UNIFORM_NAME        string = "shadowDistance"
+	FAR_PLANE_UNIFORM_NAME              string = "farPlane"
 
-	SHADOWMAP_SHADER_NAME string = "ShadowMap"
+	SHADOWMAP_SHADER_NAME             string = "ShadowMap"
+	POINT_LIGHT_SHADOWMAP_SHADER_NAME string = "PointlightShadowMap"
 
 	DEFAULT_DIRECTIONAL_LIGHTS_SHADOWMAP_SIZE uint32 = 1024 * 4
 	DEFAULT_SPOT_LIGHTS_SHADOWMAP_SIZE        uint32 = 1024
+	DEFAULT_POINT_LIGHTS_SHADOWMAP_SIZE       uint32 = 1024
 )
 
 type Attentuation struct {
@@ -64,6 +68,11 @@ type PointLight struct {
 	SpecularColor color.Color
 
 	Attentuation
+
+	ShadowMap          RenderTexture
+	CastsShadows       uint8
+	LightSpaceMatrices [6]mgl32.Mat4
+	FarPlane           float32
 }
 
 func (pl PointLight) SetUniforms(s Shader, arrayIndex uint32) error {
@@ -80,7 +89,93 @@ func (pl PointLight) SetUniforms(s Shader, arrayIndex uint32) error {
 	if err = pl.Attentuation.SetUniforms(s, POINT_LIGHTS_UNIFORM_NAME, arrayIndex); err != nil {
 		return err
 	}
+	if err = s.SetUniformB(POINT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+CASTSSHADOWS_UNIFORM_NAME, pl.CastsShadows); err != nil {
+		return err
+	}
+	if pl.CastsShadows == 1 {
+		rnd, ok := Render.(*OpenGLRenderer)
+		if ok {
+			pl.ShadowMap.Bind(rnd.CurrentTextureUnit)
+			s.SetUniformI(POINT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+SHADOWMAP_UNIFORM_NAME, int32(rnd.CurrentTextureUnit))
+			rnd.CurrentTextureUnit++
+		}
+		s.SetUniformF(POINT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+FAR_PLANE_UNIFORM_NAME, pl.FarPlane)
+		for i := 0; i < 6; i++ {
+			s.SetUniformM4(POINT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+LIGHT_SPACE_MATRIX_UNIFORM_NAME+"["+strconv.Itoa(i)+"]", pl.LightSpaceMatrices[i])
+		}
+	}
+
 	return nil
+}
+
+func (this *PointLight) InitShadowmap(width, height uint32) {
+	if this.ShadowMap != nil {
+		this.ShadowMap.Terminate()
+	} else {
+		this.ShadowMap = Render.CreateRenderTexture("PointlightShadowmap", width, height, 1, false, false, true, true)
+	}
+}
+
+func (this *PointLight) RenderShadowMap() {
+	if this.CastsShadows == 0 {
+		return
+	}
+	if this.ShadowMap == nil {
+		this.InitShadowmap(DEFAULT_POINT_LIGHTS_SHADOWMAP_SIZE, DEFAULT_POINT_LIGHTS_SHADOWMAP_SIZE)
+	}
+
+	fmt.Println("Rendering shadow map")
+
+	prevProjection := RenderMgr.Projection3D
+	prevPerspective, ok := prevProjection.(*PerspectiveProjection)
+	projection := &PerspectiveProjection{
+		Width:     float32(this.ShadowMap.GetWidth()),
+		Height:    float32(this.ShadowMap.GetHeight()),
+		FOV:       70.0,
+		NearPlane: 0.1,
+		FarPlane:  this.FarPlane,
+	}
+
+	if ok {
+		projection.FOV = prevPerspective.FOV
+	}
+	RenderMgr.Projection3D = projection
+
+	var cameras [6]Camera3D
+	for i := 0; i < 6; i++ {
+		cameras[i].Position = this.Position
+	}
+
+	cameras[0].LookDirection = mgl32.Vec3{1.0, 0.0, 0.0}
+	cameras[1].LookDirection = mgl32.Vec3{-1.0, 0.0, 0.0}
+	cameras[2].LookDirection = mgl32.Vec3{0.0, 1.0, 0.0}
+	cameras[3].LookDirection = mgl32.Vec3{0.0, -1.0, 0.0}
+	cameras[4].LookDirection = mgl32.Vec3{0.0, 0.0, 1.0}
+	cameras[5].LookDirection = mgl32.Vec3{0.0, 0.0, -1.0}
+
+	shader := ResourceMgr.GetShader(POINT_LIGHT_SHADOWMAP_SHADER_NAME)
+	shader.Use()
+	for i := 0; i < 6; i++ {
+		cameras[i].CalculateViewMatrix()
+		viewMatrix := cameras[i].GetViewMatrix()
+		shader.SetUniformM4("lightSpaceMatrices["+strconv.Itoa(i)+"]", viewMatrix)
+	}
+	shader.SetUniformV3("lightPos", this.Position)
+	shader.SetUniformF(FAR_PLANE_UNIFORM_NAME, this.FarPlane)
+	shader.Unuse()
+
+	RenderMgr.ForceShader3D = shader
+
+	this.ShadowMap.SetAsTarget()
+	Render.ClearScreen(&Color{0, 0, 0, 0}, 1.0)
+	Render.SetBacckFaceCulling(false)
+	RenderMgr.Render(TYPE_3D, -1, -1, -1)
+	Render.SetBacckFaceCulling(true)
+	this.ShadowMap.UnsetAsTarget()
+
+	RenderMgr.ForceShader3D = nil
+
+	RenderMgr.Projection3D = prevProjection
 }
 
 type DirectionalLight struct {
@@ -92,6 +187,8 @@ type DirectionalLight struct {
 	ShadowMap        RenderTexture
 	CastsShadows     uint8
 	LightSpaceMatrix mgl32.Mat4
+
+	ShadowDistance float32
 
 	lightCam Camera3D
 }
@@ -116,10 +213,11 @@ func (pl DirectionalLight) SetUniforms(s Shader, arrayIndex uint32) error {
 	if pl.CastsShadows == 1 {
 		rnd, ok := Render.(*OpenGLRenderer)
 		if ok {
-			s.SetUniformI(DIRECTIONAL_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+SHADOWMAP_UNIFORM_NAME, int32(rnd.CurrentTextureUnit))
 			pl.ShadowMap.Bind(rnd.CurrentTextureUnit)
+			s.SetUniformI(DIRECTIONAL_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+SHADOWMAP_UNIFORM_NAME, int32(rnd.CurrentTextureUnit))
 			rnd.CurrentTextureUnit++
 		}
+		s.SetUniformF(DIRECTIONAL_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+SHADOW_DISTANCE_UNIFORM_NAME, pl.ShadowDistance)
 	}
 
 	return nil
@@ -129,7 +227,7 @@ func (this *DirectionalLight) InitShadowmap(width, height uint32) {
 	if this.ShadowMap != nil {
 		this.ShadowMap.Terminate()
 	} else {
-		this.ShadowMap = Render.CreateRenderTexture("DirectionallightShadowmap", width, height, 1, true, false, true)
+		this.ShadowMap = Render.CreateRenderTexture("DirectionallightShadowmap", width, height, 1, true, false, true, false)
 		this.ShadowMap.SetBorderDepth(1.0)
 		this.ShadowMap.SetWrapping(WRAPPING_CLAMP_TO_BORDER)
 	}
@@ -160,11 +258,10 @@ func calculateDirectionalLightShadowMapProjection(cam *Camera3D, lightCam *Camer
 	var shadowDistanceVector mgl32.Vec3
 	var persProj *PerspectiveProjection
 	var ok bool
-	const OFFSET float32 = 10.0
-	const SHADOW_DISTANCE float32 = 50.0
+	const OFFSET float32 = 15.0
 
 	if persProj, ok = proj.(*PerspectiveProjection); ok {
-		farPlaneHalfWidthShadowDistance = float32(math.Tan(float64(persProj.FOV)/180.0*math.Pi) * float64(SHADOW_DISTANCE))
+		farPlaneHalfWidthShadowDistance = float32(math.Tan(float64(persProj.FOV)/180.0*math.Pi) * float64(dl.ShadowDistance))
 		farPlaneHalfHeightShadowDistance = farPlaneHalfWidthShadowDistance / (persProj.Width / persProj.Height)
 	}
 	cam.CalculateViewMatrix()
@@ -178,19 +275,19 @@ func calculateDirectionalLightShadowMapProjection(cam *Camera3D, lightCam *Camer
 	for i = 0; i < 8; i++ {
 		if ok {
 			if i == FAR_LEFT_DOWN {
-				shadowDistanceVector = mgl32.Vec3{-farPlaneHalfWidthShadowDistance, -farPlaneHalfHeightShadowDistance, -SHADOW_DISTANCE}
+				shadowDistanceVector = mgl32.Vec3{-farPlaneHalfWidthShadowDistance, -farPlaneHalfHeightShadowDistance, -dl.ShadowDistance}
 				length := shadowDistanceVector.Len()
 				pointsViewSpace[i] = pointsViewSpace[i].Sub(pointsViewSpace[i].Normalize().Mul(pointsViewSpace[i].Len() - length))
 			} else if i == FAR_RIGHT_DOWN {
-				shadowDistanceVector = mgl32.Vec3{farPlaneHalfWidthShadowDistance, -farPlaneHalfHeightShadowDistance, -SHADOW_DISTANCE}
+				shadowDistanceVector = mgl32.Vec3{farPlaneHalfWidthShadowDistance, -farPlaneHalfHeightShadowDistance, -dl.ShadowDistance}
 				length := shadowDistanceVector.Len()
 				pointsViewSpace[i] = pointsViewSpace[i].Sub(pointsViewSpace[i].Normalize().Mul(pointsViewSpace[i].Len() - length))
 			} else if i == FAR_RIGHT_UP {
-				shadowDistanceVector = mgl32.Vec3{farPlaneHalfWidthShadowDistance, farPlaneHalfHeightShadowDistance, -SHADOW_DISTANCE}
+				shadowDistanceVector = mgl32.Vec3{farPlaneHalfWidthShadowDistance, farPlaneHalfHeightShadowDistance, -dl.ShadowDistance}
 				length := shadowDistanceVector.Len()
 				pointsViewSpace[i] = pointsViewSpace[i].Sub(pointsViewSpace[i].Normalize().Mul(pointsViewSpace[i].Len() - length))
 			} else if i == FAR_LEFT_UP {
-				shadowDistanceVector = mgl32.Vec3{-farPlaneHalfWidthShadowDistance, farPlaneHalfHeightShadowDistance, -SHADOW_DISTANCE}
+				shadowDistanceVector = mgl32.Vec3{-farPlaneHalfWidthShadowDistance, farPlaneHalfHeightShadowDistance, -dl.ShadowDistance}
 				length := shadowDistanceVector.Len()
 				pointsViewSpace[i] = pointsViewSpace[i].Sub(pointsViewSpace[i].Normalize().Mul(pointsViewSpace[i].Len() - length))
 			}
@@ -215,7 +312,7 @@ func calculateDirectionalLightShadowMapProjection(cam *Camera3D, lightCam *Camer
 			mgl32.SetMax(&maxZ, &pointsLightViewSpace[i][2])
 		}
 	}
-	// maxZ += OFFSET
+	maxZ += OFFSET
 
 	center[0] = (minX + maxX) / 2.0
 	center[1] = (minY + maxY) / 2.0
@@ -260,7 +357,9 @@ func (this *DirectionalLight) RenderShadowMap() {
 	RenderMgr.ForceShader3D = ResourceMgr.GetShader(SHADOWMAP_SHADER_NAME)
 	this.ShadowMap.SetAsTarget()
 	Render.ClearScreen(&Color{0, 0, 0, 0}, 1.0)
+	Render.SetBacckFaceCulling(false)
 	RenderMgr.Render(TYPE_3D, 6, -1, -1)
+	Render.SetBacckFaceCulling(true)
 	this.ShadowMap.UnsetAsTarget()
 
 	RenderMgr.ForceShader3D = nil
@@ -319,8 +418,8 @@ func (pl *SpotLight) SetUniforms(s Shader, arrayIndex uint32) error {
 	if pl.CastsShadows == 1 {
 		rnd, ok := Render.(*OpenGLRenderer)
 		if ok {
-			s.SetUniformI(SPOT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+SHADOWMAP_UNIFORM_NAME, int32(rnd.CurrentTextureUnit))
 			pl.ShadowMap.Bind(rnd.CurrentTextureUnit)
+			s.SetUniformI(SPOT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+SHADOWMAP_UNIFORM_NAME, int32(rnd.CurrentTextureUnit))
 			rnd.CurrentTextureUnit++
 		}
 	}
@@ -331,7 +430,7 @@ func (this *SpotLight) InitShadowmap(width, height uint32) {
 	if this.ShadowMap != nil {
 		this.ShadowMap.Terminate()
 	} else {
-		this.ShadowMap = Render.CreateRenderTexture("SpotlightShadowmap", width, height, 1, true, false, true)
+		this.ShadowMap = Render.CreateRenderTexture("SpotlightShadowmap", width, height, 1, true, false, true, false)
 		this.ShadowMap.SetBorderDepth(1.0)
 		this.ShadowMap.SetWrapping(WRAPPING_CLAMP_TO_BORDER)
 	}
@@ -370,7 +469,9 @@ func (this *SpotLight) RenderShadowMap() {
 	RenderMgr.ForceShader3D = ResourceMgr.GetShader(SHADOWMAP_SHADER_NAME)
 	this.ShadowMap.SetAsTarget()
 	Render.ClearScreen(&Color{0, 0, 0, 0}, 1.0)
+	Render.SetBacckFaceCulling(false)
 	RenderMgr.Render(TYPE_3D, 6, -1, -1)
+	Render.SetBacckFaceCulling(true)
 	this.ShadowMap.UnsetAsTarget()
 
 	RenderMgr.ForceShader3D = nil
@@ -407,6 +508,9 @@ func (this *LightCollection) RenderShadowMaps() {
 	for i := 0; i < len(this.SpotLights); i++ {
 		this.SpotLights[i].RenderShadowMap()
 	}
+	for i := 0; i < len(this.PointLights); i++ {
+		this.PointLights[i].RenderShadowMap()
+	}
 }
 
 type LightManager struct {
@@ -418,6 +522,7 @@ func (this *LightManager) Init() {
 	this.lightCollections = make([]LightCollection, 1)
 	this.CurrentLightCollection = 0
 	ResourceMgr.LoadShader(SHADOWMAP_SHADER_NAME, "shadowMapVert.glsl", "shadowMapFrag.glsl", "", "", "", "")
+	ResourceMgr.LoadShader(POINT_LIGHT_SHADOWMAP_SHADER_NAME, "pointLightShadowMapVert.glsl", "pointLightShadowMapFrag.glsl", "pointLightShadowMapGeo.glsl", "", "", "")
 }
 
 func (this *LightManager) Update() {
