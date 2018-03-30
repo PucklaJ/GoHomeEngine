@@ -6,6 +6,7 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 	"runtime"
 	// "strconv"
+	// "log"
 	"strings"
 )
 
@@ -46,6 +47,7 @@ type OpenGLShader struct {
 	shaders             [6]uint32
 	uniform_locations   map[string]int32
 	attribute_locations map[string]uint32
+	validated           bool
 }
 
 func CreateOpenGLShader(name string) (*OpenGLShader, error) {
@@ -55,6 +57,7 @@ func CreateOpenGLShader(name string) (*OpenGLShader, error) {
 		shaders:             [6]uint32{0, 0, 0, 0, 0, 0},
 		uniform_locations:   make(map[string]int32),
 		attribute_locations: make(map[string]uint32),
+		validated:           false,
 	}
 	program := gl.CreateProgram()
 	if program == 0 {
@@ -168,33 +171,11 @@ func (s *OpenGLShader) Use() {
 	gl.UseProgram(s.program)
 }
 
-func (*OpenGLShader) Unuse() {
+func (s *OpenGLShader) Unuse() {
 	gl.UseProgram(0)
 }
 
 func (s *OpenGLShader) Setup() error {
-
-	// var vao uint32
-	// gl.CreateVertexArrays(1, &vao)
-	// gl.BindVertexArray(vao)
-	// defer gl.DeleteVertexArrays(1, &vao)
-	// defer gl.BindVertexArray(0)
-	// for i := 0; i < 100; i++ {
-	// 	s.SetUniformI("pointLights["+strconv.Itoa(i)+"].shadowmap", 1)
-	// }
-	// gl.ValidateProgram(s.program)
-	// var status int32
-	// gl.GetProgramiv(s.program, gl.VALIDATE_STATUS, &status)
-	// if status == gl.FALSE {
-	// 	var logLength int32
-	// 	gl.GetProgramiv(s.program, gl.INFO_LOG_LENGTH, &logLength)
-
-	// 	logtext := strings.Repeat("\x00", int(logLength+1))
-	// 	gl.GetProgramInfoLog(s.program, logLength, nil, gl.Str(logtext))
-
-	// 	return &OpenGLError{errorString: "Couldn't validate shader " + s.name + ": " + logtext}
-	// }
-
 	if runtime.GOOS != "windows" {
 		s.Use()
 
@@ -391,6 +372,7 @@ func (s *OpenGLShader) SetUniformMaterial(mat Material) error {
 		diffBind = int32(rnd.CurrentTextureUnit)
 		rnd.CurrentTextureUnit++
 		mat.DiffuseTexture.Bind(uint32(diffBind))
+		// fmt.Println("Binding Diffuse Texture to ", diffBind)
 		mat.diffuseTextureLoaded = 1
 		boundTextures++
 	} else {
@@ -401,6 +383,7 @@ func (s *OpenGLShader) SetUniformMaterial(mat Material) error {
 		specBind = int32(rnd.CurrentTextureUnit)
 		rnd.CurrentTextureUnit++
 		mat.SpecularTexture.Bind(uint32(specBind))
+		// fmt.Println("Binding SpecularTexture to ", specBind)
 		mat.specularTextureLoaded = 1
 		boundTextures++
 	} else {
@@ -411,6 +394,7 @@ func (s *OpenGLShader) SetUniformMaterial(mat Material) error {
 		normBind = int32(rnd.CurrentTextureUnit)
 		rnd.CurrentTextureUnit++
 		mat.NormalMap.Bind(uint32(normBind))
+		// fmt.Println("Binding NormalMap to ", normBind)
 		mat.normalMapLoaded = 1
 		boundTextures++
 	} else {
@@ -509,4 +493,30 @@ func (s *OpenGLShader) SetUniformLights(lightCollectionIndex int32) error {
 
 func (s *OpenGLShader) GetName() string {
 	return s.name
+}
+
+func (s *OpenGLShader) validate() error {
+	if s.validated {
+		return nil
+	}
+	s.validated = true
+	var vao uint32
+	gl.CreateVertexArrays(1, &vao)
+	gl.BindVertexArray(vao)
+	defer gl.DeleteVertexArrays(1, &vao)
+	defer gl.BindVertexArray(0)
+	gl.ValidateProgram(s.program)
+	var status int32
+	gl.GetProgramiv(s.program, gl.VALIDATE_STATUS, &status)
+	if status == gl.FALSE {
+		var logLength int32
+		gl.GetProgramiv(s.program, gl.INFO_LOG_LENGTH, &logLength)
+
+		logtext := strings.Repeat("\x00", int(logLength+1))
+		gl.GetProgramInfoLog(s.program, logLength, nil, gl.Str(logtext))
+		s.validated = false
+		return &OpenGLError{errorString: "Couldn't validate shader " + s.name + ": " + logtext}
+	}
+
+	return nil
 }

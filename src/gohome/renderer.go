@@ -218,10 +218,18 @@ func (this *OpenGLRenderer) OnResize(newWidth, newHeight uint32) {
 }
 
 func (this *OpenGLRenderer) PreRender() {
-	this.CurrentTextureUnit = 0
+	this.CurrentTextureUnit = 1
 }
 func (this *OpenGLRenderer) AfterRender() {
-	this.CurrentTextureUnit = 0
+	this.CurrentTextureUnit = 1
+	if RenderMgr.currentShader != nil {
+		shader, ok := RenderMgr.currentShader.(*OpenGLShader)
+		if ok {
+			if err := shader.validate(); err != nil {
+				log.Println(err)
+			}
+		}
+	}
 }
 
 func (this *OpenGLRenderer) SetBacckFaceCulling(b bool) {

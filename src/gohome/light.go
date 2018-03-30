@@ -1,7 +1,7 @@
 package gohome
 
 import (
-	"fmt"
+	// "fmt"
 	"github.com/go-gl/mathgl/mgl32"
 	"image/color"
 	"math"
@@ -96,6 +96,7 @@ func (pl PointLight) SetUniforms(s Shader, arrayIndex uint32) error {
 		rnd, ok := Render.(*OpenGLRenderer)
 		if ok {
 			pl.ShadowMap.Bind(rnd.CurrentTextureUnit)
+			// fmt.Println("Binding PointLight to ", rnd.CurrentTextureUnit)
 			s.SetUniformI(POINT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+SHADOWMAP_UNIFORM_NAME, int32(rnd.CurrentTextureUnit))
 			rnd.CurrentTextureUnit++
 		}
@@ -124,15 +125,13 @@ func (this *PointLight) RenderShadowMap() {
 		this.InitShadowmap(DEFAULT_POINT_LIGHTS_SHADOWMAP_SIZE, DEFAULT_POINT_LIGHTS_SHADOWMAP_SIZE)
 	}
 
-	fmt.Println("Rendering shadow map")
-
 	prevProjection := RenderMgr.Projection3D
 	prevPerspective, ok := prevProjection.(*PerspectiveProjection)
 	projection := &PerspectiveProjection{
 		Width:     float32(this.ShadowMap.GetWidth()),
 		Height:    float32(this.ShadowMap.GetHeight()),
 		FOV:       70.0,
-		NearPlane: 0.1,
+		NearPlane: 1.0,
 		FarPlane:  this.FarPlane,
 	}
 
@@ -143,6 +142,7 @@ func (this *PointLight) RenderShadowMap() {
 
 	var cameras [6]Camera3D
 	for i := 0; i < 6; i++ {
+		cameras[i].Init()
 		cameras[i].Position = this.Position
 	}
 
@@ -152,6 +152,12 @@ func (this *PointLight) RenderShadowMap() {
 	cameras[3].LookDirection = mgl32.Vec3{0.0, -1.0, 0.0}
 	cameras[4].LookDirection = mgl32.Vec3{0.0, 0.0, 1.0}
 	cameras[5].LookDirection = mgl32.Vec3{0.0, 0.0, -1.0}
+	// cameras[0].Up = mgl32.Vec3{0.0, -1.0, 0.0}
+	// cameras[1].Up = mgl32.Vec3{0.0, -1.0, 0.0}
+	// cameras[2].Up = mgl32.Vec3{0.0, 0.0, 1.0}
+	// cameras[3].Up = mgl32.Vec3{0.0, 0.0, 1.0}
+	// cameras[4].Up = mgl32.Vec3{0.0, -1.0, 0.0}
+	// cameras[5].Up = mgl32.Vec3{0.0, -1.0, 0.0}
 
 	shader := ResourceMgr.GetShader(POINT_LIGHT_SHADOWMAP_SHADER_NAME)
 	shader.Use()
@@ -193,7 +199,7 @@ type DirectionalLight struct {
 	lightCam Camera3D
 }
 
-func (pl DirectionalLight) SetUniforms(s Shader, arrayIndex uint32) error {
+func (pl *DirectionalLight) SetUniforms(s Shader, arrayIndex uint32) error {
 	var err error
 	if err = s.SetUniformV3(DIRECTIONAL_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+DIRECTION_UNIFORM_NAME, pl.Direction); err != nil {
 		return err
@@ -214,6 +220,7 @@ func (pl DirectionalLight) SetUniforms(s Shader, arrayIndex uint32) error {
 		rnd, ok := Render.(*OpenGLRenderer)
 		if ok {
 			pl.ShadowMap.Bind(rnd.CurrentTextureUnit)
+			// fmt.Println("Binding Directional to ", rnd.CurrentTextureUnit)
 			s.SetUniformI(DIRECTIONAL_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+SHADOWMAP_UNIFORM_NAME, int32(rnd.CurrentTextureUnit))
 			rnd.CurrentTextureUnit++
 		}
@@ -419,6 +426,7 @@ func (pl *SpotLight) SetUniforms(s Shader, arrayIndex uint32) error {
 		rnd, ok := Render.(*OpenGLRenderer)
 		if ok {
 			pl.ShadowMap.Bind(rnd.CurrentTextureUnit)
+			// fmt.Println("Binding SpotLight to ", rnd.CurrentTextureUnit)
 			s.SetUniformI(SPOT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+SHADOWMAP_UNIFORM_NAME, int32(rnd.CurrentTextureUnit))
 			rnd.CurrentTextureUnit++
 		}

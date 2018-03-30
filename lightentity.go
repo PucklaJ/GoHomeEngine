@@ -27,11 +27,11 @@ func (this *LightEntity) Init(rotate mgl32.Vec3, offset, radius float32) {
 		Attentuation: gohome.Attentuation{
 			Linear: 3.0,
 		},
-		CastsShadows: 0,
+		CastsShadows: 1,
 		FarPlane:     25.0,
 	}
-	// this.light.InitShadowmap(1024, 1024)
-	gohome.RenderMgr.AddObject(&this.entity, &this.tobj)
+	this.light.InitShadowmap(1024, 1024)
+	// gohome.RenderMgr.AddObject(&this.entity, &this.tobj)
 	gohome.UpdateMgr.AddObject(this)
 	gohome.LightMgr.AddPointLight(&this.light, 0)
 	this.elapsed_time = offset
@@ -42,9 +42,9 @@ func (this *LightEntity) Update(delta_time float32) {
 	this.tobj.Position[0] = float32(math.Cos(float64(this.elapsed_time)))*this.radius + this.rotationPoint[0]
 	this.tobj.Position[2] = float32(math.Sin(float64(this.elapsed_time)))*this.radius + this.rotationPoint[2]
 	this.tobj.Position[1] = this.rotationPoint[1]
-	this.light.Position = this.tobj.Position
+	this.light.Position = this.tobj.Position.Add(mgl32.Vec3{0.0, -2.0 * this.tobj.Scale[1], 0.0})
 }
 
 func (this *LightEntity) Terminate() {
-	this.entity.Terminate()
+	// this.entity.Terminate()
 }

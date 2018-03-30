@@ -12,12 +12,14 @@ const (
 type Camera3D struct {
 	Position      mgl32.Vec3
 	LookDirection mgl32.Vec3
+	Up            mgl32.Vec3
 	Tilt          float32
 	rotation      mgl32.Vec2
 
 	oldPosition      mgl32.Vec3
 	oldLookDirection mgl32.Vec3
 	oldTilt          float32
+	oldUp            mgl32.Vec3
 	oldrotation      mgl32.Vec2
 
 	MaxRotation mgl32.Vec2
@@ -31,17 +33,18 @@ func (cam *Camera3D) Init() {
 	cam.LookDirection = [3]float32{0.0, 0.0, -1.0}
 	cam.MaxRotation = [2]float32{89.9, 370.0}
 	cam.MinRotation = [2]float32{-89.9, -370.0}
+	cam.Up = [3]float32{0.0, 1.0, 0.0}
 	cam.CalculateViewMatrix()
 }
 
 func (cam *Camera3D) valuesChanged() bool {
-	return cam.Position != cam.oldPosition || cam.LookDirection != cam.oldLookDirection || cam.Tilt != cam.oldTilt
+	return cam.Position != cam.oldPosition || cam.LookDirection != cam.oldLookDirection || cam.Tilt != cam.oldTilt || cam.Up != cam.oldUp
 }
 
 func (cam *Camera3D) CalculateViewMatrix() {
 	if cam.valuesChanged() {
 		center := cam.Position.Add(cam.LookDirection.Mul(LOOK_DIRECTION_MAGNIFIER))
-		cam.viewMatrix = mgl32.LookAtV(cam.Position, center, [3]float32{0.0, 1.0, 0.0})
+		cam.viewMatrix = mgl32.LookAtV(cam.Position, center, cam.Up)
 		cam.inverseViewMatrix = cam.viewMatrix.Inv()
 	} else {
 		return
@@ -50,6 +53,7 @@ func (cam *Camera3D) CalculateViewMatrix() {
 	cam.oldPosition = cam.Position
 	cam.oldLookDirection = cam.LookDirection
 	cam.oldTilt = cam.Tilt
+	cam.oldUp = cam.Up
 }
 
 func (cam *Camera3D) GetViewMatrix() mgl32.Mat4 {
