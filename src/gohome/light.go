@@ -4,6 +4,7 @@ import (
 	// "fmt"
 	"github.com/go-gl/mathgl/mgl32"
 	"image/color"
+	"math"
 	"strconv"
 )
 
@@ -30,6 +31,9 @@ const (
 	CASTSSHADOWS_UNIFORM_NAME           string = "castsShadows"
 
 	SHADOWMAP_SHADER_NAME string = "ShadowMap"
+
+	DEFAULT_DIRECTIONAL_LIGHTS_SHADOWMAP_SIZE uint32 = 1024 * 4
+	DEFAULT_SPOT_LIGHTS_SHADOWMAP_SIZE        uint32 = 1024
 )
 
 type Attentuation struct {
@@ -152,8 +156,17 @@ func calculateDirectionalLightShadowMapProjection(cam *Camera3D, lightCam *Camer
 	var minX, minY, minZ float32
 	var maxX, maxY, maxZ float32
 	var center mgl32.Vec3
+	var farPlaneHalfHeightShadowDistance, farPlaneHalfWidthShadowDistance float32
+	var shadowDistanceVector mgl32.Vec3
+	var persProj *PerspectiveProjection
+	var ok bool
 	const OFFSET float32 = 10.0
+	const SHADOW_DISTANCE float32 = 50.0
 
+	if persProj, ok = proj.(*PerspectiveProjection); ok {
+		farPlaneHalfWidthShadowDistance = float32(math.Tan(float64(persProj.FOV)/180.0*math.Pi) * float64(SHADOW_DISTANCE))
+		farPlaneHalfHeightShadowDistance = farPlaneHalfWidthShadowDistance / (persProj.Width / persProj.Height)
+	}
 	cam.CalculateViewMatrix()
 	lightCam.CalculateViewMatrix()
 	inverseViewMatrix = cam.GetInverseViewMatrix()
@@ -161,7 +174,28 @@ func calculateDirectionalLightShadowMapProjection(cam *Camera3D, lightCam *Camer
 
 	pointsViewSpace = proj.GetFrustum()
 
-	for i := 0; i < 8; i++ {
+	var i uint32
+	for i = 0; i < 8; i++ {
+		if ok {
+			if i == FAR_LEFT_DOWN {
+				shadowDistanceVector = mgl32.Vec3{-farPlaneHalfWidthShadowDistance, -farPlaneHalfHeightShadowDistance, -SHADOW_DISTANCE}
+				length := shadowDistanceVector.Len()
+				pointsViewSpace[i] = pointsViewSpace[i].Sub(pointsViewSpace[i].Normalize().Mul(pointsViewSpace[i].Len() - length))
+			} else if i == FAR_RIGHT_DOWN {
+				shadowDistanceVector = mgl32.Vec3{farPlaneHalfWidthShadowDistance, -farPlaneHalfHeightShadowDistance, -SHADOW_DISTANCE}
+				length := shadowDistanceVector.Len()
+				pointsViewSpace[i] = pointsViewSpace[i].Sub(pointsViewSpace[i].Normalize().Mul(pointsViewSpace[i].Len() - length))
+			} else if i == FAR_RIGHT_UP {
+				shadowDistanceVector = mgl32.Vec3{farPlaneHalfWidthShadowDistance, farPlaneHalfHeightShadowDistance, -SHADOW_DISTANCE}
+				length := shadowDistanceVector.Len()
+				pointsViewSpace[i] = pointsViewSpace[i].Sub(pointsViewSpace[i].Normalize().Mul(pointsViewSpace[i].Len() - length))
+			} else if i == FAR_LEFT_UP {
+				shadowDistanceVector = mgl32.Vec3{-farPlaneHalfWidthShadowDistance, farPlaneHalfHeightShadowDistance, -SHADOW_DISTANCE}
+				length := shadowDistanceVector.Len()
+				pointsViewSpace[i] = pointsViewSpace[i].Sub(pointsViewSpace[i].Normalize().Mul(pointsViewSpace[i].Len() - length))
+			}
+
+		}
 		pointsLightViewSpace[i] = Mat4MulVec3(lightViewMatrix, Mat4MulVec3(inverseViewMatrix, pointsViewSpace[i]))
 		if i == 0 {
 			minX = pointsLightViewSpace[i][0]
@@ -192,28 +226,6 @@ func calculateDirectionalLightShadowMapProjection(cam *Camera3D, lightCam *Camer
 	lightCam.CalculateViewMatrix()
 	lightViewMatrix = lightCam.GetViewMatrix()
 
-	// for i := 0; i < 8; i++ {
-	// 	pointsLightViewSpace[i] = Mat4MulVec3(lightViewMatrix, pointsWorldSpace[i])
-	// 	if i == 0 {
-	// 		minX = pointsLightViewSpace[i][0]
-	// 		minY = pointsLightViewSpace[i][1]
-	// 		minZ = pointsLightViewSpace[i][2]
-
-	// 		maxX = pointsLightViewSpace[i][0]
-	// 		maxY = pointsLightViewSpace[i][1]
-	// 		maxZ = pointsLightViewSpace[i][2]
-	// 	} else {
-	// 		mgl32.SetMin(&minX, &pointsLightViewSpace[i][0])
-	// 		mgl32.SetMin(&minY, &pointsLightViewSpace[i][1])
-	// 		mgl32.SetMin(&minZ, &pointsLightViewSpace[i][2])
-
-	// 		mgl32.SetMax(&maxX, &pointsLightViewSpace[i][0])
-	// 		mgl32.SetMax(&maxY, &pointsLightViewSpace[i][1])
-	// 		mgl32.SetMax(&maxZ, &pointsLightViewSpace[i][2])
-	// 	}
-	// }
-	// // maxZ += OFFSET
-
 	projection.Left = minX
 	projection.Right = maxX
 	projection.Bottom = minY
@@ -229,7 +241,7 @@ func (this *DirectionalLight) RenderShadowMap() {
 		return
 	}
 	if this.ShadowMap == nil {
-		this.InitShadowmap(1024, 1024)
+		this.InitShadowmap(DEFAULT_DIRECTIONAL_LIGHTS_SHADOWMAP_SIZE, DEFAULT_DIRECTIONAL_LIGHTS_SHADOWMAP_SIZE)
 	}
 
 	prevCamera := RenderMgr.camera3Ds[0]
@@ -330,7 +342,7 @@ func (this *SpotLight) RenderShadowMap() {
 		return
 	}
 	if this.ShadowMap == nil {
-		this.InitShadowmap(1024, 1024)
+		this.InitShadowmap(DEFAULT_SPOT_LIGHTS_SHADOWMAP_SIZE, DEFAULT_SPOT_LIGHTS_SHADOWMAP_SIZE)
 	}
 
 	prevProjection := RenderMgr.Projection3D

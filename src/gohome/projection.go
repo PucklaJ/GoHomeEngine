@@ -126,12 +126,12 @@ func (pp *PerspectiveProjection) GetFrustum() [8]mgl32.Vec3 {
 	right := mgl32.Vec3{1.0, 0.0, 0.0}
 	left := right.Mul(-1.0)
 
-	farPlaneHalfWidth = float32(math.Tan(float64(pp.FOV)/180.0*math.Pi) * float64(10.0))
+	farPlaneHalfWidth = float32(math.Tan(float64(pp.FOV)/180.0*math.Pi) * float64(pp.FarPlane))
 	nearPlaneHalfWidth = float32(math.Tan(float64(pp.FOV)/180.0*math.Pi) * float64(pp.NearPlane))
 	farPlaneHalfHeight = farPlaneHalfWidth / (pp.Width / pp.Height)
 	nearPlaneHalfHeight = nearPlaneHalfWidth / (pp.Width / pp.Height)
 
-	centerFarPlane = forward.Mul(10.0)
+	centerFarPlane = forward.Mul(pp.FarPlane)
 	centerNearPlane = forward.Mul(pp.NearPlane)
 
 	points[NEAR_LEFT_DOWN] = centerNearPlane.Add(left.Mul(nearPlaneHalfWidth)).Add(down.Mul(nearPlaneHalfHeight))

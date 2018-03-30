@@ -90,7 +90,7 @@ uniform DirectionalLight[MAX_DIRECTIONAL_LIGHTS] directionalLights;
 uniform SpotLight[MAX_SPOT_LIGHTS] spotLights;
 
 void calculatePointLight(PointLight pl);
-void calculateDirectionalLight(DirectionalLight pl,uint index);
+void calculateDirectionalLight(DirectionalLight pl);
 void calculateSpotLight(SpotLight pl);
 
 void calculatePointLights();
@@ -103,9 +103,9 @@ void calculateLightColors();
 float calculateShinyness(float shinyness);
 void setVariables();
 
-vec3 finalDiffuseColor;
-vec3 finalSpecularColor;
-vec3 finalAmbientColor;
+vec4 finalDiffuseColor;
+vec4 finalSpecularColor;
+vec4 finalAmbientColor;
 vec3 norm;
 vec3 viewDir;
 
@@ -113,9 +113,9 @@ const float levels = 4.0;
 
 void main()
 {	
-	finalDiffuseColor = vec3(0.0,0.0,0.0);
-	finalSpecularColor = vec3(0.0,0.0,0.0);
-	finalAmbientColor = ambientLight;
+	finalDiffuseColor = vec4(0.0,0.0,0.0,0.0);
+	finalSpecularColor = vec4(0.0,0.0,0.0,0.0);
+	finalAmbientColor = vec4(ambientLight,1.0);
 	setVariables();
 
 	calculateAllLights();
@@ -134,7 +134,7 @@ void calculateAllLights()
 	calculateSpotLights();
 }
 
-vec3 getDiffuseTexture()
+vec4 getDiffuseTexture()
 {
 	if(material.diffuseTextureLoaded)
 	{
@@ -143,15 +143,15 @@ vec3 getDiffuseTexture()
 		// float level = floor(brightness * levels);
 		// brightness = level / levels;
 		// return tex * brightness;
-		return vec3(texture(material.diffuseTexture,FragIn.fragTexCoord));
+		return texture(material.diffuseTexture,FragIn.fragTexCoord);
 	}
 	else
 	{
-		return vec3(1.0,1.0,1.0);
+		return vec4(1.0,1.0,1.0,1.0);
 	}
 }
 
-vec3 getSpecularTexture()
+vec4 getSpecularTexture()
 {
 	if(material.specularTextureLoaded)
 	{
@@ -160,21 +160,29 @@ vec3 getSpecularTexture()
 		// float level = floor(brightness * levels);
 		// brightness = level / levels;
 		// return tex * brightness;
-		return vec3(texture(material.specularTexture,FragIn.fragTexCoord));
+		return texture(material.specularTexture,FragIn.fragTexCoord);
 	}
 	else
 	{
-		return vec3(1.0,1.0,1.0);
+		return vec4(1.0,1.0,1.0,1.0);
 	}
 }
 
 void calculateLightColors()
-{
-	finalDiffuseColor *= material.diffuseColor * getDiffuseTexture();
-	finalSpecularColor *= material.specularColor * getSpecularTexture();
-	finalAmbientColor *= material.diffuseColor * getDiffuseTexture();
+{	
+	vec4 texDifCol = getDiffuseTexture();
+	vec4 texSpecCol = getSpecularTexture();
 
-	fragColor = vec4(finalDiffuseColor + finalSpecularColor + finalAmbientColor,1.0);
+	if(texDifCol.a < 0.1)
+	{
+		discard;
+	}
+
+	finalDiffuseColor *= vec4(material.diffuseColor,1.0) * texDifCol;
+	finalSpecularColor *= vec4(material.specularColor,1.0) * texSpecCol;
+	finalAmbientColor *= vec4(material.diffuseColor,1.0) * texDifCol;
+
+	fragColor = finalDiffuseColor + finalSpecularColor + finalAmbientColor;
 }
 
 void calculatePointLights()
@@ -185,11 +193,11 @@ void calculatePointLights()
 	}
 }
 void calculateDirectionalLights()
-{
-	for(uint i = 0;i<numDirectionalLights&&i<MAX_DIRECTIONAL_LIGHTS;i++)
-	{
-		calculateDirectionalLight(directionalLights[i],i);
-	}
+{	
+	if(numDirectionalLights > 0)
+		calculateDirectionalLight(directionalLights[0]);
+	if(numDirectionalLights > 1)
+		calculateDirectionalLight(directionalLights[1]);
 }
 void calculateSpotLights()
 {
@@ -226,7 +234,7 @@ vec3 specularLighting(vec3 lightDir,vec3 specular)
 float calcShadow(sampler2D shadowMap,mat4 lightSpaceMatrix)
 {
 	vec4 fragPosLightSpace = lightSpaceMatrix*inverse(FragIn.viewMatrix3D)*vec4(FragIn.fragPos,1.0);
-	vec3 projCoords = (fragPosLightSpace.xyz / fragPosLightSpace.w)*0.5+0.5;
+	vec3 projCoords = clamp((fragPosLightSpace.xyz / fragPosLightSpace.w)*0.5+0.5,-1.0,1.0);
 	float bias = 0.005;
 	float currentDepth = projCoords.z-bias;
 	float shadowresult = 0.0;
@@ -268,11 +276,11 @@ void calculatePointLight(PointLight pl)
 	diffuse *= attent;
 	specular *= attent;
 
-	finalDiffuseColor += diffuse;
-	finalSpecularColor += specular;
+	finalDiffuseColor += vec4(diffuse,0.0);
+	finalSpecularColor += vec4(specular,0.0);
 
 }
-void calculateDirectionalLight(DirectionalLight dl, uint index)
+void calculateDirectionalLight(DirectionalLight dl)
 {
 	vec3 lightDirection = (FragIn.viewMatrix3D*vec4(dl.direction*-1.0,0.0)).xyz;
 	vec3 lightDir = normalize(FragIn.fragToTangentSpace*lightDirection);
@@ -284,13 +292,13 @@ void calculateDirectionalLight(DirectionalLight dl, uint index)
 	vec3 specular = specularLighting(lightDir,dl.specularColor);
 	
 	// Shadow
-	float shadow = dl.castsShadows ? calcShadow(directionalLights[0].shadowmap,dl.lightSpaceMatrix) : 1.0;
+	float shadow = dl.castsShadows ? calcShadow(dl.shadowmap,dl.lightSpaceMatrix) : 1.0;
 	
 	diffuse *= shadow;
 	specular *= shadow;
 
-	finalDiffuseColor += diffuse;
-	finalSpecularColor += specular;
+	finalDiffuseColor += vec4(diffuse,0.0);
+	finalSpecularColor += vec4(specular,0.0);
 }
 
 float degToRad(float deg)
@@ -334,8 +342,8 @@ void calculateSpotLight(SpotLight pl)
 	diffuse *= attent * spotAmount * shadow;
 	specular *= attent * spotAmount * shadow;
 
-	finalDiffuseColor += diffuse;
-	finalSpecularColor += specular;
+	finalDiffuseColor += vec4(diffuse,0.0);
+	finalSpecularColor += vec4(specular,0.0);
 }
 
 float calculateShinyness(float shinyness)

@@ -56,3 +56,12 @@ func (this *Level) RemoveFromScene() {
 		}
 	}
 }
+
+func (this *Level) GetModel(name string) *Model3D {
+	for i := 0; i < len(this.LevelObjects); i++ {
+		if this.LevelObjects[i].Name == name {
+			return ResourceMgr.GetModel(name)
+		}
+	}
+	return nil
+}
