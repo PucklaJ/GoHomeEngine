@@ -324,10 +324,11 @@ float calcShadowPointLight(PointLight pl)
 	float closestDepth = texture(pl.shadowmap,fragToLight).r;
 	// float closestDepth = length(fragToLight)/pl.farPlane;
 	closestDepth *= pl.farPlane;
-	float currentDepth = length(fragToLight)-bias;
+	float currentDepth = length(fragToLight)-bias*10.0*pl.farPlane;
 	float shadow = currentDepth > closestDepth ? 0.0 : 1.0;
 	// fragColor = vec4(vec3(closestDepth),1.0);
 	// fragColor = vec4(1.0,0.0,0.0,1.0);
+	// fragColor = vec4(vec3(closestDepth)/pl.farPlane,1.0);
 	return shadow;
 	// return closestDepth;
 	// return 1.0;
