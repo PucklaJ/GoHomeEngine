@@ -2,7 +2,8 @@ package main
 
 import "github.com/PucklaMotzer09/gohomeengine/src/gohome"
 import "fmt"
-import "math"
+
+// import "math"
 import "math/rand"
 
 type TestScene1 struct {
@@ -74,12 +75,12 @@ func (this *TestScene1) Init() {
 
 }
 
-var elapsed_time float32 = 0.0
+// var elapsed_time float32 = 0.0
 
 func (this *TestScene1) Update(delta_time float32) {
-	elapsed_time += delta_time
+	// elapsed_time += delta_time
 
-	this.light.Position[1] = float32(math.Sin(float64(elapsed_time)))
+	// this.light.Position[1] = float32(math.Sin(float64(elapsed_time)))
 }
 
 func (this *TestScene1) Terminate() {

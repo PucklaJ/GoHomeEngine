@@ -6,7 +6,7 @@ import (
 	// "github.com/go-gl/gl/v4.1-core/gl"
 	"golang.org/x/image/colornames"
 	// "github.com/go-gl/mathgl/mgl32"
-	// "math"
+	"math"
 	"time"
 )
 
@@ -57,10 +57,10 @@ func (this *TestScene) Init() {
 	gohome.InitDefaultValues()
 
 	gohome.LightMgr.SetAmbientLight(gohome.Color{20, 20, 20, 255}, 0)
-	// this.lightEnts[0].Init([3]float32{0.0, 2.0, 0.0}, 0.0, 2.0)
-	// this.lightEnts[1].Init([3]float32{0.0, 5.0, 0.0}, 1.0, 2.0)
-	// this.lightEnts[2].Init([3]float32{3.0, 3.0, 0.0}, 2.0, 2.0)
-	// this.lightEnts[3].Init([3]float32{-3.0, 2.0, 0.0}, 3.0, 2.0)
+	this.lightEnts[0].Init([3]float32{0.0, 2.0, 0.0}, 0.0, 2.0)
+	this.lightEnts[1].Init([3]float32{0.0, 5.0, 0.0}, 1.0, 2.0)
+	this.lightEnts[2].Init([3]float32{3.0, 3.0, 0.0}, 2.0, 2.0)
+	this.lightEnts[3].Init([3]float32{-3.0, 2.0, 0.0}, 3.0, 2.0)
 	this.lightEnts[4].Init([3]float32{10.0, 4.0, 10.0}, 4.0, 2.0)
 	this.planeEnt.InitMesh(gohome.Plane("Plane", [2]float32{PLANE_SIZE * float32(NUM_PLANES), PLANE_SIZE * float32(NUM_PLANES)}, NUM_PLANES*1), &this.planeEntTobj)
 	this.planeEnt.Model3D.GetMesh("Plane").GetMaterial().Shinyness = 0.5
@@ -132,9 +132,9 @@ func (this *TestScene) Init() {
 	gohome.RenderMgr.AddObject(&this.m41, &this.m41Tobj)
 	gohome.RenderMgr.AddObject(&this.kratos, &this.kratosTobj)
 	gohome.RenderMgr.AddObject(&this.planeEnt, &this.planeEntTobj)
-	// gohome.LightMgr.AddDirectionalLight(&this.direct, 0)
-	// gohome.LightMgr.AddDirectionalLight(&this.direct1, 0)
-	// gohome.LightMgr.AddSpotLight(&this.spot, 0)
+	gohome.LightMgr.AddDirectionalLight(&this.direct, 0)
+	gohome.LightMgr.AddDirectionalLight(&this.direct1, 0)
+	gohome.LightMgr.AddSpotLight(&this.spot, 0)
 
 	nWidth, nHeight := gohome.Render.GetNativeResolution()
 
@@ -158,7 +158,7 @@ func (this *TestScene) Init() {
 	gohome.RenderMgr.ForceShader2D = gohome.ResourceMgr.GetShader("ShadowMapRender")
 }
 
-// var elapsed_time float32 = 0.0
+var elapsed_time float32 = 0.0
 
 func (this *TestScene) Update(delta_time float32) {
 	this.cam3d1.Position = this.spot.Position
@@ -188,15 +188,13 @@ func (this *TestScene) Update(delta_time float32) {
 		this.cam3d.LookDirection = this.spot.Direction.Add([3]float32{1e-19, 1e-19, 1e-19})
 	}
 
-	// elapsed_time += delta_time
+	elapsed_time += delta_time
 
-	// var x, y float32
-	// x = float32(math.Cos(float64(elapsed_time) * 0.25))
-	// y = float32(math.Sin(float64(elapsed_time) * 0.25))
+	var x, y float32
+	x = float32(math.Cos(float64(elapsed_time) * 0.25))
+	y = float32(math.Sin(float64(elapsed_time) * 0.25))
 
-	// this.direct1.Direction = [3]float32{x, y, 0.0}
-
-	this.cam3d.Position = this.lightEnts[4].light.Position
+	this.direct1.Direction = [3]float32{x, y, 0.0}
 }
 
 func (this *TestScene) Terminate() {

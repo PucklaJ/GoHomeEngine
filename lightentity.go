@@ -46,5 +46,5 @@ func (this *LightEntity) Update(delta_time float32) {
 }
 
 func (this *LightEntity) Terminate() {
-	// this.entity.Terminate()
+	this.entity.Terminate()
 }
