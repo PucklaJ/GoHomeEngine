@@ -223,12 +223,12 @@ func (this *OpenGLRenderer) PreRender() {
 func (this *OpenGLRenderer) AfterRender() {
 	this.CurrentTextureUnit = 1
 	if RenderMgr.currentShader != nil {
-		shader, ok := RenderMgr.currentShader.(*OpenGLShader)
-		if ok {
-			if err := shader.validate(); err != nil {
-				log.Println(err)
-			}
-		}
+		// shader, ok := RenderMgr.currentShader.(*OpenGLShader)
+		// if ok {
+		// 	if err := shader.validate(); err != nil {
+		// 		log.Println(err)
+		// 	}
+		// }
 	}
 }
 

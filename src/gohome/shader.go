@@ -5,7 +5,7 @@ import (
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
 	"runtime"
-	// "strconv"
+	"strconv"
 	// "log"
 	"strings"
 )
@@ -176,6 +176,7 @@ func (s *OpenGLShader) Unuse() {
 }
 
 func (s *OpenGLShader) Setup() error {
+	s.validate()
 	if runtime.GOOS != "windows" {
 		s.Use()
 
@@ -499,6 +500,11 @@ func (s *OpenGLShader) validate() error {
 	if s.validated {
 		return nil
 	}
+	s.Use()
+	for i := 0; i < 31; i++ {
+		s.SetUniformI("pointLights["+strconv.Itoa(i)+"].shadowmap", 1)
+	}
+	s.Unuse()
 	s.validated = true
 	var vao uint32
 	gl.CreateVertexArrays(1, &vao)

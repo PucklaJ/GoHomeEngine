@@ -1,6 +1,6 @@
 #version 410
 
-#define MAX_POINT_LIGHTS 1
+#define MAX_POINT_LIGHTS 20
 #define MAX_DIRECTIONAL_LIGHTS 2
 #define MAX_SPOT_LIGHTS 1
 
@@ -205,44 +205,44 @@ void calculatePointLights()
 
 	if(numPointLights > 0)
 		calculatePointLight(pointLights[0]);
-	// if(numPointLights > 1)
-	// 	calculatePointLight(pointLights[1]);
-	// if(numPointLights > 2)
-	// 	calculatePointLight(pointLights[2]);
-	// if(numPointLights > 3)
-	// 	calculatePointLight(pointLights[3]);
-	// if(numPointLights > 4)
-		// calculatePointLight(pointLights[4]);
-	// if(numPointLights > 5)
-	// 	calculatePointLight(pointLights[5]);
-	// if(numPointLights > 6)
-	// 	calculatePointLight(pointLights[6]);
-	// if(numPointLights > 7)
-	// 	calculatePointLight(pointLights[7]);
-	// if(numPointLights > 8)
-	// 	calculatePointLight(pointLights[8]);
-	// if(numPointLights > 9)
-	// 	calculatePointLight(pointLights[9]);
-	// if(numPointLights > 10)
-	// 	calculatePointLight(pointLights[10]);
-	// if(numPointLights > 11)
-	// 	calculatePointLight(pointLights[11]);
-	// if(numPointLights > 12)
-	// 	calculatePointLight(pointLights[12]);
-	// if(numPointLights > 13)
-	// 	calculatePointLight(pointLights[13]);
-	// if(numPointLights > 14)
-	// 	calculatePointLight(pointLights[14]);
-	// if(numPointLights > 15)
-	// 	calculatePointLight(pointLights[15]);
-	// if(numPointLights > 16)
-	// 	calculatePointLight(pointLights[16]);
-	// if(numPointLights > 17)
-	// 	calculatePointLight(pointLights[17]);
-	// if(numPointLights > 18)
-	// 	calculatePointLight(pointLights[18]);
-	// if(numPointLights > 19)
-	// 	calculatePointLight(pointLights[19]);
+	if(numPointLights > 1)
+		calculatePointLight(pointLights[1]);
+	if(numPointLights > 2)
+		calculatePointLight(pointLights[2]);
+	if(numPointLights > 3)
+		calculatePointLight(pointLights[3]);
+	if(numPointLights > 4)
+		calculatePointLight(pointLights[4]);
+	if(numPointLights > 5)
+		calculatePointLight(pointLights[5]);
+	if(numPointLights > 6)
+		calculatePointLight(pointLights[6]);
+	if(numPointLights > 7)
+		calculatePointLight(pointLights[7]);
+	if(numPointLights > 8)
+		calculatePointLight(pointLights[8]);
+	if(numPointLights > 9)
+		calculatePointLight(pointLights[9]);
+	if(numPointLights > 10)
+		calculatePointLight(pointLights[10]);
+	if(numPointLights > 11)
+		calculatePointLight(pointLights[11]);
+	if(numPointLights > 12)
+		calculatePointLight(pointLights[12]);
+	if(numPointLights > 13)
+		calculatePointLight(pointLights[13]);
+	if(numPointLights > 14)
+		calculatePointLight(pointLights[14]);
+	if(numPointLights > 15)
+		calculatePointLight(pointLights[15]);
+	if(numPointLights > 16)
+		calculatePointLight(pointLights[16]);
+	if(numPointLights > 17)
+		calculatePointLight(pointLights[17]);
+	if(numPointLights > 18)
+		calculatePointLight(pointLights[18]);
+	if(numPointLights > 19)
+		calculatePointLight(pointLights[19]);
 	// if(numPointLights > 20)
 	// 	calculatePointLight(pointLights[20]);
 }
