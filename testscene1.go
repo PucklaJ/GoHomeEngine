@@ -3,6 +3,7 @@ package main
 import "github.com/PucklaMotzer09/gohomeengine/src/gohome"
 import "fmt"
 import "math"
+import "math/rand"
 
 type TestScene1 struct {
 	boxEnts     [5]gohome.Entity3D
@@ -20,6 +21,7 @@ func (this *TestScene1) Init() {
 
 	for i := 0; i < 5; i++ {
 		this.boxEnts[i].InitMesh(gohome.Box("Box", [3]float32{1.0, 1.0, 1.0}), &this.boxEntTobjs[i])
+		this.boxEntTobjs[i].Rotation = [3]float32{rand.Float32() * 180.0, rand.Float32() * 180.0, rand.Float32() * 180.0}
 		// if i == 0 {
 		gohome.RenderMgr.AddObject(&this.boxEnts[i], &this.boxEntTobjs[i])
 		// }

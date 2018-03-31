@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	gohome.MainLoop{}.Run(&gohome.GLFWFramework{}, &gohome.OpenGLRenderer{}, 1280, 720, "GoHomeEngine", &TestScene1{})
+	gohome.MainLoop{}.Run(&gohome.GLFWFramework{}, &gohome.OpenGLRenderer{}, 1280, 720, "GoHomeEngine", &TestScene{})
 }

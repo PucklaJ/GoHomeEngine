@@ -131,7 +131,7 @@ func (this *PointLight) RenderShadowMap() {
 		Width:     float32(this.ShadowMap.GetWidth()),
 		Height:    float32(this.ShadowMap.GetHeight()),
 		FOV:       70.0,
-		NearPlane: 1.0,
+		NearPlane: 0.01,
 		FarPlane:  this.FarPlane,
 	}
 
@@ -152,12 +152,12 @@ func (this *PointLight) RenderShadowMap() {
 	cameras[3].LookDirection = mgl32.Vec3{0.0, -1.0, 0.0}
 	cameras[4].LookDirection = mgl32.Vec3{0.0, 0.0, 1.0}
 	cameras[5].LookDirection = mgl32.Vec3{0.0, 0.0, -1.0}
-	cameras[0].Up = mgl32.Vec3{0.0, -1.0, 0.0}
-	cameras[1].Up = mgl32.Vec3{0.0, -1.0, 0.0}
+	cameras[0].Up = mgl32.Vec3{0.0, 1.0, 0.0}
+	cameras[1].Up = mgl32.Vec3{0.0, 1.0, 0.0}
 	cameras[2].Up = mgl32.Vec3{0.0, 0.0, 1.0}
-	cameras[3].Up = mgl32.Vec3{0.0, 0.0, 1.0}
-	cameras[4].Up = mgl32.Vec3{0.0, -1.0, 0.0}
-	cameras[5].Up = mgl32.Vec3{0.0, -1.0, 0.0}
+	cameras[3].Up = mgl32.Vec3{0.0, 0.0, -1.0}
+	cameras[4].Up = mgl32.Vec3{0.0, 1.0, 0.0}
+	cameras[5].Up = mgl32.Vec3{0.0, 1.0, 0.0}
 
 	shader := ResourceMgr.GetShader(POINT_LIGHT_SHADOWMAP_SHADER_NAME)
 	shader.Use()

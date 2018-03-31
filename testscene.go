@@ -57,7 +57,7 @@ func (this *TestScene) Init() {
 	gohome.InitDefaultValues()
 
 	gohome.LightMgr.SetAmbientLight(gohome.Color{20, 20, 20, 255}, 0)
-	this.lightEnts[0].Init([3]float32{0.0, 2.0, 0.0}, 0.0, 2.0)
+	// this.lightEnts[0].Init([3]float32{0.0, 2.0, 0.0}, 0.0, 2.0)
 	// this.lightEnts[1].Init([3]float32{0.0, 5.0, 0.0}, 1.0, 2.0)
 	// this.lightEnts[2].Init([3]float32{3.0, 3.0, 0.0}, 2.0, 2.0)
 	// this.lightEnts[3].Init([3]float32{-3.0, 2.0, 0.0}, 3.0, 2.0)
@@ -195,6 +195,8 @@ func (this *TestScene) Update(delta_time float32) {
 	// y = float32(math.Sin(float64(elapsed_time) * 0.25))
 
 	// this.direct1.Direction = [3]float32{x, y, 0.0}
+
+	this.cam3d.Position = this.lightEnts[4].light.Position
 }
 
 func (this *TestScene) Terminate() {
