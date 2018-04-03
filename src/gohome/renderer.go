@@ -53,6 +53,7 @@ func (this *OpenGLRenderer) Init() error {
 	gl.Enable(gl.DEPTH_TEST)
 	gl.DepthFunc(gl.LESS)
 	gl.Enable(gl.DEPTH_CLAMP)
+	gl.ClearDepth(1.0)
 
 	gl.FrontFace(gl.CCW)
 	gl.Enable(gl.CULL_FACE)

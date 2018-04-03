@@ -510,6 +510,7 @@ func (this *SpotLight) RenderShadowMap() {
 	}
 	RenderMgr.SetProjection3D(projection)
 	var camera Camera3D
+	camera.Init()
 	camera.Position = this.Position
 	camera.LookDirection = this.Direction.Add(mgl32.Vec3{1e-19, 1e-19, 1e-19})
 	RenderMgr.SetCamera3D(&camera, 6)

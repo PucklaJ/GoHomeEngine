@@ -33,7 +33,7 @@ func (this *LightEntity) Init(rotate mgl32.Vec3, offset, radius float32) {
 	this.light.InitShadowmap(1024, 1024)
 	// gohome.RenderMgr.AddObject(&this.entity, &this.tobj)
 	gohome.UpdateMgr.AddObject(this)
-	gohome.LightMgr.AddPointLight(&this.light, 0)
+	// gohome.LightMgr.AddPointLight(&this.light, 0)
 	this.elapsed_time = offset
 }
 

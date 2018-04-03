@@ -26,29 +26,7 @@ vec4 getDiffuseTexture()
 {
 	if(material.diffuseTextureLoaded)
 	{
-		// vec3 tex = vec3(texture(material.diffuseTexture,FragIn.fragTexCoord));
-		// float brightness = (tex.r+tex.b+tex.g)/3.0;
-		// float level = floor(brightness * levels);
-		// brightness = level / levels;
-		// return tex * brightness;
 		return texture(material.diffuseTexture,FragIn.fragTexCoord);
-	}
-	else
-	{
-		return vec4(1.0,1.0,1.0,1.0);
-	}
-}
-
-vec4 getSpecularTexture()
-{
-	if(material.specularTextureLoaded)
-	{
-		// vec3 tex = vec3(texture(material.specularTexture,FragIn.fragTexCoord));
-		// float brightness = (tex.r+tex.b+tex.g)/3.0;
-		// float level = floor(brightness * levels);
-		// brightness = level / levels;
-		// return tex * brightness;
-		return texture(material.specularTexture,FragIn.fragTexCoord);
 	}
 	else
 	{
@@ -64,6 +42,4 @@ void main()
 	{
 		discard;
 	}
-
-	gl_FragDepth = gl_FragCoord.z;
 }

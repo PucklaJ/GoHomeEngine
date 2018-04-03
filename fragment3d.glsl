@@ -412,6 +412,7 @@ void calculateSpotLight(SpotLight pl)
 
 	// Shadow
 	float shadow = pl.castsShadows ? calcShadow(pl.shadowmap,pl.lightSpaceMatrix,50.0,false) : 1.0;
+	// float shadow = 1.0;
 
 	diffuse *= attent * spotAmount * shadow;
 	specular *= attent * spotAmount * shadow;

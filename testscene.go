@@ -120,6 +120,7 @@ func (this *TestScene) Init() {
 	}
 	this.spot.InitShadowmap(1024, 1024)
 	this.direct.InitShadowmap(gohome.DEFAULT_DIRECTIONAL_LIGHTS_SHADOWMAP_SIZE, gohome.DEFAULT_DIRECTIONAL_LIGHTS_SHADOWMAP_SIZE)
+	this.direct1.InitShadowmap(gohome.DEFAULT_DIRECTIONAL_LIGHTS_SHADOWMAP_SIZE, gohome.DEFAULT_DIRECTIONAL_LIGHTS_SHADOWMAP_SIZE)
 
 	this.tst.Init(&this.cam3d)
 	this.cam3d.Position = [3]float32{0.0, 2.0, 2.0}

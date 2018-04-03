@@ -12,6 +12,7 @@ type TestScene1 struct {
 	cam3d       gohome.Camera3D
 	tst         gohome.TestCameraMovement3D
 	light       gohome.PointLight
+	light1      gohome.SpotLight
 	planes      [6]gohome.Entity3D
 	planeTobjs  [6]gohome.TransformableObject3D
 }
@@ -33,7 +34,7 @@ func (this *TestScene1) Init() {
 	this.boxEntTobjs[3].Position = [3]float32{0.0, -2.0, 0.0}
 	this.boxEntTobjs[4].Position = [3]float32{0.0, 0.0, -2.0}
 
-	// gohome.LightMgr.SetAmbientLight(&gohome.Color{80, 80, 80, 255}, 0)
+	gohome.LightMgr.SetAmbientLight(&gohome.Color{80, 80, 80, 255}, 0)
 	gohome.LightMgr.CurrentLightCollection = 0
 
 	this.tst.Init(&this.cam3d)
@@ -41,18 +42,33 @@ func (this *TestScene1) Init() {
 	gohome.RenderMgr.SetCamera3D(&this.cam3d, 0)
 
 	this.light = gohome.PointLight{
-		Position:      [3]float32{0.0, 0.0, 0.0},
-		DiffuseColor:  &gohome.Color{255, 255, 255, 255},
-		SpecularColor: &gohome.Color{255, 255, 255, 255},
+		Position: [3]float32{0.0, 0.0, 0.0},
+		// Direction:     [3]float32{0.0, -1.0, 0.0},
+		DiffuseColor:  &gohome.Color{20, 20, 20, 255},
+		SpecularColor: &gohome.Color{20, 20, 20, 255},
 		Attentuation: gohome.Attentuation{
 			Constant: 1.0,
 		},
 		FarPlane:     25.0,
 		CastsShadows: 1,
 	}
+	this.light1 = gohome.SpotLight{
+		Position:      [3]float32{0.0, 1.0, 0.0},
+		Direction:     [3]float32{0.0, -1.0, 0.0},
+		DiffuseColor:  &gohome.Color{128, 128, 128, 128},
+		SpecularColor: &gohome.Color{128, 128, 128, 128},
+		Attentuation: gohome.Attentuation{
+			Constant: 1.0,
+		},
+		CastsShadows: 1,
+		OuterCutOff:  10.0,
+		InnerCutOff:  5.0,
+	}
 	this.light.InitShadowmap(1024, 1024)
+	this.light1.InitShadowmap(1024, 1024)
 
 	gohome.LightMgr.AddPointLight(&this.light, 0)
+	gohome.LightMgr.AddSpotLight(&this.light1, 0)
 
 	const PLANE_SIZE float32 = 7.0
 
@@ -72,6 +88,14 @@ func (this *TestScene1) Init() {
 	this.planeTobjs[4].Rotation = [3]float32{0.0, 0.0, -90.0}
 	this.planeTobjs[5].Position = [3]float32{PLANE_SIZE / 2.0, 0.0, 0.0}
 	this.planeTobjs[5].Rotation = [3]float32{0.0, 0.0, 90.0}
+
+	var spr gohome.Sprite2D
+	var sprTobj gohome.TransformableObject2D
+	spr.Init("", &sprTobj)
+	spr.Texture = this.light1.ShadowMap
+	sprTobj.Size = [2]float32{512.0, 512.0}
+	sprTobj.Scale = [2]float32{1.0, 1.0}
+	gohome.RenderMgr.AddObject(&spr, &sprTobj)
 
 }
 
