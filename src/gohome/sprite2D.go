@@ -13,6 +13,7 @@ type Sprite2D struct {
 	NotRelativeToCamera int
 
 	Shader
+	RenderType
 }
 
 func createSprite2DMesh() {
@@ -59,6 +60,7 @@ func (spr *Sprite2D) Init(texName string, transform *TransformableObject2D) {
 
 	spr.Visible = true
 	spr.NotRelativeToCamera = -1
+	spr.RenderType = TYPE_2D_NORMAL
 }
 
 func (spr *Sprite2D) SetShader(s Shader) {
@@ -72,8 +74,12 @@ func (spr *Sprite2D) GetShader() Shader {
 	return spr.Shader
 }
 
-func (Sprite2D) GetType() RenderType {
-	return TYPE_2D
+func (spr *Sprite2D) SetType(rtype RenderType) {
+	spr.RenderType = rtype
+}
+
+func (spr *Sprite2D) GetType() RenderType {
+	return spr.RenderType
 }
 
 func (spr *Sprite2D) Render() {

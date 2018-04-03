@@ -23,12 +23,15 @@ func (tobj *TransformableObject3D) valuesChanged() bool {
 
 func (tobj *TransformableObject3D) CalculateTransformMatrix(rmgr *RenderManager, notRelativeToCamera int) {
 	var cam3d *Camera3D = nil
-	if notRelativeToCamera != -1 && len(rmgr.camera3Ds) > notRelativeToCamera {
-		cam3d = rmgr.camera3Ds[notRelativeToCamera]
+	if rmgr != nil {
+		if notRelativeToCamera != -1 && len(rmgr.camera3Ds) > notRelativeToCamera {
+			cam3d = rmgr.camera3Ds[notRelativeToCamera]
+		}
+		if cam3d != nil {
+			cam3d.CalculateViewMatrix()
+		}
 	}
-	if cam3d != nil {
-		cam3d.CalculateViewMatrix()
-	}
+
 	if tobj.valuesChanged() {
 		// T RX RY RZ S
 		T := mgl32.Translate3D(tobj.Position[0], tobj.Position[1], tobj.Position[2])

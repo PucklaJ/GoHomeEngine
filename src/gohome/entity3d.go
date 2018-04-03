@@ -11,6 +11,7 @@ type Entity3D struct {
 	NotRelativeToCamera int
 
 	Shader
+	RenderType
 }
 
 func (this *Entity3D) commonInit(tobj *TransformableObject3D) {
@@ -19,6 +20,7 @@ func (this *Entity3D) commonInit(tobj *TransformableObject3D) {
 	}
 	this.Visible = true
 	this.NotRelativeToCamera = -1
+	this.RenderType = TYPE_3D_NORMAL
 }
 
 func (this *Entity3D) InitName(name string, tobj *TransformableObject3D) {
@@ -53,8 +55,12 @@ func (this *Entity3D) SetShader(s Shader) {
 	this.Shader = s
 }
 
+func (this *Entity3D) SetType(rtype RenderType) {
+	this.RenderType = rtype
+}
+
 func (this *Entity3D) GetType() RenderType {
-	return TYPE_3D
+	return this.RenderType
 }
 
 func (this *Entity3D) Render() {

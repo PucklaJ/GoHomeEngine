@@ -8,14 +8,70 @@ import (
 type RenderType uint8
 
 const (
-	TYPE_2D RenderType = iota
-	TYPE_3D RenderType = iota
+	TYPE_2D           RenderType = iota
+	TYPE_3D           RenderType = iota
+	TYPE_3D_NORMAL    RenderType = iota
+	TYPE_2D_NORMAL    RenderType = iota
+	TYPE_3D_INSTANCED RenderType = iota
+	TYPE_2D_INSTANCED RenderType = iota
 )
+
+func (this RenderType) Compatible(rtype RenderType) bool {
+	switch this {
+	case TYPE_2D:
+		switch rtype {
+		case TYPE_2D:
+			return true
+		case TYPE_2D_NORMAL:
+			return true
+		case TYPE_2D_INSTANCED:
+			return true
+		}
+		break
+	case TYPE_3D:
+		switch rtype {
+		case TYPE_3D:
+			return true
+		case TYPE_3D_NORMAL:
+			return true
+		case TYPE_3D_INSTANCED:
+			return true
+		}
+		break
+	case TYPE_3D_NORMAL:
+		switch rtype {
+		case TYPE_3D_NORMAL:
+			return true
+		}
+		break
+	case TYPE_2D_NORMAL:
+		switch rtype {
+		case TYPE_2D_NORMAL:
+			return true
+		}
+		break
+	case TYPE_3D_INSTANCED:
+		switch rtype {
+		case TYPE_3D_INSTANCED:
+			return true
+		}
+		break
+	case TYPE_2D_INSTANCED:
+		switch rtype {
+		case TYPE_2D_INSTANCED:
+			return true
+		}
+		break
+	}
+
+	return false
+}
 
 type RenderObject interface {
 	Render()
 	SetShader(s Shader)
 	GetShader() Shader
+	SetType(rtype RenderType)
 	GetType() RenderType
 	IsVisible() bool
 	NotRelativeCamera() int
@@ -105,14 +161,14 @@ func (rmgr *RenderManager) RemoveObject(robj RenderObject, tobj TransformableObj
 
 func (rmgr *RenderManager) handleShader(robj RenderObject) {
 	shader := robj.GetShader()
-	if rmgr.ForceShader2D != nil && robj.GetType() == TYPE_2D {
+	if rmgr.ForceShader2D != nil && TYPE_2D.Compatible(robj.GetType()) {
 		if rmgr.currentShader != rmgr.ForceShader2D {
 			rmgr.currentShader = rmgr.ForceShader2D
 			if rmgr.currentShader != nil {
 				rmgr.currentShader.Use()
 			}
 		}
-	} else if rmgr.ForceShader3D != nil && robj.GetType() == TYPE_3D {
+	} else if rmgr.ForceShader3D != nil && TYPE_3D.Compatible(robj.GetType()) {
 		if rmgr.currentShader != rmgr.ForceShader3D {
 			rmgr.currentShader = rmgr.ForceShader3D
 			if rmgr.currentShader != nil {
@@ -136,7 +192,7 @@ func (rmgr *RenderManager) handleShader(robj RenderObject) {
 }
 
 func (rmgr *RenderManager) updateCamera(robj RenderObject) {
-	if robj.GetType() == TYPE_2D {
+	if TYPE_2D.Compatible(robj.GetType()) {
 		if rmgr.currentCamera2D != nil && rmgr.currentShader != nil {
 			rmgr.currentCamera2D.CalculateViewMatrix()
 			rmgr.currentShader.SetUniformM3("viewMatrix2D", rmgr.currentCamera2D.GetViewMatrix())
@@ -154,7 +210,7 @@ func (rmgr *RenderManager) updateCamera(robj RenderObject) {
 }
 
 func (rmgr *RenderManager) updateProjection(t RenderType) {
-	if t == TYPE_2D {
+	if TYPE_2D.Compatible(t) {
 		if rmgr.Projection2D != nil && rmgr.currentShader != nil {
 			rmgr.Projection2D.CalculateProjectionMatrix()
 			rmgr.currentShader.SetUniformM4("projectionMatrix2D", rmgr.Projection2D.GetProjectionMatrix())
@@ -261,7 +317,7 @@ func (rmgr *RenderManager) Update() {
 }
 
 func (rmgr *RenderManager) handleCurrentCameraAndViewport(rtype RenderType, cameraIndex int32, viewportIndex int32) {
-	if rtype == TYPE_2D {
+	if TYPE_2D.Compatible(rtype) {
 		if cameraIndex == -1 || len(rmgr.camera2Ds) == 0 || int32(len(rmgr.camera2Ds)-1) < cameraIndex {
 			rmgr.currentCamera2D = nil
 		} else {
@@ -273,7 +329,7 @@ func (rmgr *RenderManager) handleCurrentCameraAndViewport(rtype RenderType, came
 			rmgr.currentViewport = rmgr.viewport2Ds[viewportIndex]
 		}
 
-	} else if rtype == TYPE_3D {
+	} else if TYPE_3D.Compatible(rtype) {
 		if cameraIndex == -1 || len(rmgr.camera3Ds) == 0 || int32(len(rmgr.camera3Ds)-1) < cameraIndex {
 			rmgr.currentCamera3D = nil
 		} else {
@@ -288,12 +344,12 @@ func (rmgr *RenderManager) handleCurrentCameraAndViewport(rtype RenderType, came
 
 	if rmgr.currentViewport != nil {
 		Render.SetViewport(*rmgr.currentViewport)
-		if rtype == TYPE_2D {
+		if TYPE_2D.Compatible(rtype) {
 			if rmgr.Projection2D != nil {
 				rmgr.Projection2D.Update(*rmgr.currentViewport)
 			}
 		}
-		if rtype == TYPE_3D {
+		if TYPE_3D.Compatible(rtype) {
 			if rmgr.Projection3D != nil {
 				rmgr.Projection3D.Update(*rmgr.currentViewport)
 			}
@@ -328,7 +384,7 @@ func (rmgr *RenderManager) Render(rtype RenderType, cameraIndex int32, viewportI
 	}
 
 	for i := 0; i < len(rmgr.renderObjects); i++ {
-		if rtype != rmgr.renderObjects[i].GetType() || !rmgr.renderObjects[i].IsVisible() {
+		if !rtype.Compatible(rmgr.renderObjects[i].GetType()) || !rmgr.renderObjects[i].IsVisible() {
 			continue
 		}
 		Render.PreRender()

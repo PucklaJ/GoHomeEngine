@@ -29,6 +29,8 @@ type Mesh3D interface {
 	GetName() string
 	GetNumVertices() uint32
 	GetNumIndices() uint32
+	GetVertices() []Mesh3DVertex
+	GetIndices() []uint32
 	calculateTangents()
 }
 
@@ -260,7 +262,7 @@ func (oglm *OpenGLMesh3D) Render() {
 		}
 	}
 	gl.BindVertexArray(oglm.vao)
-	gl.DrawElements(gl.TRIANGLES, int32(oglm.numIndices), gl.UNSIGNED_INT, gl.PtrOffset(int(oglm.numVertices)*int(MESH3DVERTEX_SIZE)))
+	gl.DrawElements(gl.TRIANGLES, int32(oglm.numIndices), gl.UNSIGNED_INT, gl.PtrOffset(int(oglm.numVertices*MESH3DVERTEX_SIZE)))
 	gl.BindVertexArray(0)
 }
 
@@ -297,6 +299,13 @@ func (oglm *OpenGLMesh3D) GetNumVertices() uint32 {
 }
 func (oglm *OpenGLMesh3D) GetNumIndices() uint32 {
 	return oglm.numIndices
+}
+
+func (oglm *OpenGLMesh3D) GetVertices() []Mesh3DVertex {
+	return oglm.vertices
+}
+func (oglm *OpenGLMesh3D) GetIndices() []uint32 {
+	return oglm.indices
 }
 
 func Box(name string, size mgl32.Vec3) Mesh3D {

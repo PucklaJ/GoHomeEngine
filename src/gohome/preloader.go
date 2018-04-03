@@ -21,8 +21,9 @@ type preloadedShader struct {
 }
 
 type preloadedLevel struct {
-	Name string
-	Path string
+	Name      string
+	Path      string
+	LoadToGPU bool
 }
 
 type preloadedTextureData struct {
@@ -42,6 +43,11 @@ type preloadedLevelObject struct {
 	Lvlobj LevelObject
 }
 
+type preloadedMesh struct {
+	Mesh      Mesh3D
+	LoadToGPU bool
+}
+
 type preloader struct {
 	preloadedTextures []preloadedTexture
 	preloadedShaders  []preloadedShader
@@ -50,7 +56,7 @@ type preloader struct {
 	preloadedShaderDataChan  chan preloadedShaderData
 	preloadedLevelsChan      chan *Level
 	preloadedModelsChan      chan *Model3D
-	preloadedMeshesChan      chan Mesh3D
+	preloadedMeshesChan      chan preloadedMesh
 	preloadedTextureDataChan chan preloadedTextureData
 	exitChan                 chan bool
 	exitLevelsChan           chan bool
@@ -59,14 +65,14 @@ type preloader struct {
 
 	preloadedTexturesToFinish []preloadedTextureData
 	preloadedShadersToFinish  []preloadedShaderData
-	preloadedMeshesToFinish   []Mesh3D
+	preloadedMeshesToFinish   []preloadedMesh
 }
 
 func (this *preloader) Init() {
 	this.preloadedShaderDataChan = make(chan preloadedShaderData)
 	this.preloadedLevelsChan = make(chan *Level)
 	this.preloadedModelsChan = make(chan *Model3D)
-	this.preloadedMeshesChan = make(chan Mesh3D)
+	this.preloadedMeshesChan = make(chan preloadedMesh)
 	this.preloadedTextureDataChan = make(chan preloadedTextureData)
 	this.exitChan = make(chan bool)
 	this.exitLevelsChan = make(chan bool)
@@ -80,7 +86,7 @@ func (this *preloader) loadPreloadedLevel(lvl *preloadedLevel, wg *sync.WaitGrou
 	name := lvl.Name
 	path := lvl.Path
 
-	level := ResourceMgr.loadLevel(name, path, true)
+	level := ResourceMgr.loadLevel(name, path, true, lvl.LoadToGPU)
 	if level != nil {
 		this.preloadedLevelsChan <- level
 	}
@@ -240,8 +246,10 @@ func (this *preloader) finishShaders() {
 func (this *preloader) finishMeshes() {
 	for i := 0; i < len(this.preloadedMeshesToFinish); i++ {
 		mesh := this.preloadedMeshesToFinish[i]
-		mesh.Load()
-		log.Println("Finished loading mesh", mesh.GetName(), "! V:", mesh.GetNumVertices(), "I:", mesh.GetNumIndices())
+		if mesh.LoadToGPU {
+			mesh.Mesh.Load()
+		}
+		log.Println("Finished loading mesh", mesh.Mesh.GetName(), "! V:", mesh.Mesh.GetNumVertices(), "I:", mesh.Mesh.GetNumIndices())
 	}
 }
 

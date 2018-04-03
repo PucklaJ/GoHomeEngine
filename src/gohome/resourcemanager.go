@@ -109,9 +109,9 @@ func (rsmgr *ResourceManager) GetTexture(name string) Texture {
 	return t
 }
 
-func (rsmgr *ResourceManager) LoadLevel(name, path string) {
+func (rsmgr *ResourceManager) LoadLevel(name, path string, loadToGPU bool) {
 	fmt.Println("Loading level")
-	level := rsmgr.loadLevel(name, path, false)
+	level := rsmgr.loadLevel(name, path, false, loadToGPU)
 	fmt.Println("Loaded level")
 	if level != nil {
 		rsmgr.levels[name] = level
@@ -119,10 +119,10 @@ func (rsmgr *ResourceManager) LoadLevel(name, path string) {
 	}
 }
 
-func (rsmgr *ResourceManager) processNode(node *assimp.Node, scene *assimp.Scene, level *Level, directory string, preloaded bool) {
+func (rsmgr *ResourceManager) processNode(node *assimp.Node, scene *assimp.Scene, level *Level, directory string, preloaded, loadToGPU bool) {
 	if node != scene.RootNode() {
 		model := &Model3D{}
-		model.Init(node, scene, level, directory, preloaded)
+		model.Init(node, scene, level, directory, preloaded, loadToGPU)
 		if !preloaded {
 			if _, ok := rsmgr.models[model.Name]; ok {
 				log.Println("Model", model.Name, "has already been loaded! Overwritting ...")
@@ -135,7 +135,7 @@ func (rsmgr *ResourceManager) processNode(node *assimp.Node, scene *assimp.Scene
 
 	}
 	for i := 0; i < node.NumChildren(); i++ {
-		rsmgr.processNode(node.Children()[i], scene, level, directory, preloaded)
+		rsmgr.processNode(node.Children()[i], scene, level, directory, preloaded, loadToGPU)
 	}
 }
 
@@ -183,14 +183,15 @@ func (rsmgr *ResourceManager) PreloadTexture(name, path string) {
 	rsmgr.preloader.preloadedTextures = append(rsmgr.preloader.preloadedTextures, tex)
 }
 
-func (rsmgr *ResourceManager) PreloadLevel(name, path string) {
+func (rsmgr *ResourceManager) PreloadLevel(name, path string, loadToGPU bool) {
 	rsmgr.preloader.preloadedLevels = append(rsmgr.preloader.preloadedLevels, preloadedLevel{
 		name,
 		path,
+		loadToGPU,
 	})
 }
 
-func (rsmgr *ResourceManager) loadLevel(name, path string, preloaded bool) *Level {
+func (rsmgr *ResourceManager) loadLevel(name, path string, preloaded, loadToGPU bool) *Level {
 	if _, ok := rsmgr.levels[name]; ok {
 		log.Println("The level with the name", name, "has already been loaded!")
 		return nil
@@ -209,7 +210,7 @@ func (rsmgr *ResourceManager) loadLevel(name, path string, preloaded bool) *Leve
 		directory = ""
 	}
 
-	rsmgr.processNode(scene.RootNode(), scene, level, directory, preloaded)
+	rsmgr.processNode(scene.RootNode(), scene, level, directory, preloaded, loadToGPU)
 
 	return level
 }

@@ -32,8 +32,10 @@ const (
 	SHADOW_DISTANCE_UNIFORM_NAME        string = "shadowDistance"
 	FAR_PLANE_UNIFORM_NAME              string = "farPlane"
 
-	SHADOWMAP_SHADER_NAME             string = "ShadowMap"
-	POINT_LIGHT_SHADOWMAP_SHADER_NAME string = "PointlightShadowMap"
+	SHADOWMAP_SHADER_NAME                       string = "ShadowMap"
+	SHADOWMAP_INSTANCED_SHADER_NAME             string = "ShadowMapInstanced"
+	POINT_LIGHT_SHADOWMAP_SHADER_NAME           string = "PointlightShadowMap"
+	POINT_LIGHT_SHADOWMAP_INSTANCED_SHADER_NAME string = "PointlightShadowMapInstanced"
 
 	DEFAULT_DIRECTIONAL_LIGHTS_SHADOWMAP_SIZE uint32 = 1024 * 4
 	DEFAULT_SPOT_LIGHTS_SHADOWMAP_SIZE        uint32 = 1024
@@ -95,15 +97,25 @@ func (pl PointLight) SetUniforms(s Shader, arrayIndex uint32) error {
 	if pl.CastsShadows == 1 {
 		rnd, ok := Render.(*OpenGLRenderer)
 		if ok {
-			pl.ShadowMap.Bind(rnd.CurrentTextureUnit)
-			// fmt.Println("Binding PointLight to ", rnd.CurrentTextureUnit)
-			s.SetUniformI(POINT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+SHADOWMAP_UNIFORM_NAME, int32(rnd.CurrentTextureUnit))
-			rnd.CurrentTextureUnit++
+			maxtextures := Render.GetMaxTextures()
+			if rnd.CurrentTextureUnit > uint32(maxtextures)-1 {
+				s.SetUniformI(POINT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+SHADOWMAP_UNIFORM_NAME, maxtextures-1)
+				s.SetUniformB(POINT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+CASTSSHADOWS_UNIFORM_NAME, 0)
+			} else {
+				pl.ShadowMap.Bind(rnd.CurrentTextureUnit)
+				// fmt.Println("Binding PointLight to ", rnd.CurrentTextureUnit)
+				s.SetUniformI(POINT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+SHADOWMAP_UNIFORM_NAME, int32(rnd.CurrentTextureUnit))
+				rnd.CurrentTextureUnit++
+			}
+
 		}
 		s.SetUniformF(POINT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+FAR_PLANE_UNIFORM_NAME, pl.FarPlane)
 		for i := 0; i < 6; i++ {
 			s.SetUniformM4(POINT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+LIGHT_SPACE_MATRIX_UNIFORM_NAME+"["+strconv.Itoa(i)+"]", pl.LightSpaceMatrices[i])
 		}
+	} else {
+		maxtextures := Render.GetMaxTextures()
+		s.SetUniformI(POINT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+SHADOWMAP_UNIFORM_NAME, maxtextures-1)
 	}
 
 	return nil
@@ -155,6 +167,10 @@ func (this *PointLight) RenderShadowMap() {
 	cameras[4].Up = mgl32.Vec3{0.0, -1.0, 0.0}
 	cameras[5].Up = mgl32.Vec3{0.0, -1.0, 0.0}
 
+	this.ShadowMap.SetAsTarget()
+	Render.ClearScreen(&Color{0, 0, 0, 0}, 1.0)
+	Render.SetBacckFaceCulling(false)
+
 	shader := ResourceMgr.GetShader(POINT_LIGHT_SHADOWMAP_SHADER_NAME)
 	shader.Use()
 	for i := 0; i < 6; i++ {
@@ -164,14 +180,23 @@ func (this *PointLight) RenderShadowMap() {
 	}
 	shader.SetUniformV3("lightPos", this.Position)
 	shader.SetUniformF(FAR_PLANE_UNIFORM_NAME, this.FarPlane)
+	RenderMgr.ForceShader3D = shader
+	RenderMgr.Render(TYPE_3D_NORMAL, -1, -1, -1)
+
+	shader = ResourceMgr.GetShader(POINT_LIGHT_SHADOWMAP_INSTANCED_SHADER_NAME)
+	shader.Use()
+	for i := 0; i < 6; i++ {
+		cameras[i].CalculateViewMatrix()
+		viewMatrix := cameras[i].GetViewMatrix()
+		shader.SetUniformM4("lightSpaceMatrices["+strconv.Itoa(i)+"]", viewMatrix)
+	}
+	shader.SetUniformV3("lightPos", this.Position)
+	shader.SetUniformF(FAR_PLANE_UNIFORM_NAME, this.FarPlane)
+	RenderMgr.ForceShader3D = shader
+	RenderMgr.Render(TYPE_3D_INSTANCED, -1, -1, -1)
+
 	shader.Unuse()
 
-	RenderMgr.ForceShader3D = shader
-
-	this.ShadowMap.SetAsTarget()
-	Render.ClearScreen(&Color{0, 0, 0, 0}, 1.0)
-	Render.SetBacckFaceCulling(false)
-	RenderMgr.Render(TYPE_3D, -1, -1, -1)
 	Render.SetBacckFaceCulling(true)
 	this.ShadowMap.UnsetAsTarget()
 
@@ -215,10 +240,17 @@ func (pl *DirectionalLight) SetUniforms(s Shader, arrayIndex uint32) error {
 	if pl.CastsShadows == 1 {
 		rnd, ok := Render.(*OpenGLRenderer)
 		if ok {
-			pl.ShadowMap.Bind(rnd.CurrentTextureUnit)
-			// fmt.Println("Binding Directional to ", rnd.CurrentTextureUnit)
-			s.SetUniformI(DIRECTIONAL_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+SHADOWMAP_UNIFORM_NAME, int32(rnd.CurrentTextureUnit))
-			rnd.CurrentTextureUnit++
+			maxtextures := Render.GetMaxTextures()
+			if rnd.CurrentTextureUnit >= uint32(maxtextures)-1 {
+				s.SetUniformI(DIRECTIONAL_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+SHADOWMAP_UNIFORM_NAME, 0)
+				s.SetUniformB(DIRECTIONAL_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+CASTSSHADOWS_UNIFORM_NAME, 0)
+			} else {
+				pl.ShadowMap.Bind(rnd.CurrentTextureUnit)
+				// fmt.Println("Binding Directional to ", rnd.CurrentTextureUnit)
+				s.SetUniformI(DIRECTIONAL_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+SHADOWMAP_UNIFORM_NAME, int32(rnd.CurrentTextureUnit))
+				rnd.CurrentTextureUnit++
+			}
+
 		}
 		s.SetUniformF(DIRECTIONAL_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+SHADOW_DISTANCE_UNIFORM_NAME, pl.ShadowDistance)
 	}
@@ -357,11 +389,16 @@ func (this *DirectionalLight) RenderShadowMap() {
 
 	RenderMgr.SetProjection3D(&projection)
 
-	RenderMgr.ForceShader3D = ResourceMgr.GetShader(SHADOWMAP_SHADER_NAME)
 	this.ShadowMap.SetAsTarget()
 	Render.ClearScreen(&Color{0, 0, 0, 0}, 1.0)
 	Render.SetBacckFaceCulling(false)
-	RenderMgr.Render(TYPE_3D, 6, -1, -1)
+
+	RenderMgr.ForceShader3D = ResourceMgr.GetShader(SHADOWMAP_SHADER_NAME)
+	RenderMgr.Render(TYPE_3D_NORMAL, 6, -1, -1)
+
+	RenderMgr.ForceShader3D = ResourceMgr.GetShader(SHADOWMAP_INSTANCED_SHADER_NAME)
+	RenderMgr.Render(TYPE_3D_INSTANCED, 6, -1, -1)
+
 	Render.SetBacckFaceCulling(true)
 	this.ShadowMap.UnsetAsTarget()
 
@@ -421,10 +458,17 @@ func (pl *SpotLight) SetUniforms(s Shader, arrayIndex uint32) error {
 	if pl.CastsShadows == 1 {
 		rnd, ok := Render.(*OpenGLRenderer)
 		if ok {
-			pl.ShadowMap.Bind(rnd.CurrentTextureUnit)
-			// fmt.Println("Binding SpotLight to ", rnd.CurrentTextureUnit)
-			s.SetUniformI(SPOT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+SHADOWMAP_UNIFORM_NAME, int32(rnd.CurrentTextureUnit))
-			rnd.CurrentTextureUnit++
+			maxtextures := Render.GetMaxTextures()
+			if rnd.CurrentTextureUnit >= uint32(maxtextures)-1 {
+				s.SetUniformI(SPOT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+SHADOWMAP_UNIFORM_NAME, 0)
+				s.SetUniformB(SPOT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+CASTSSHADOWS_UNIFORM_NAME, 0)
+			} else {
+				pl.ShadowMap.Bind(rnd.CurrentTextureUnit)
+				// fmt.Println("Binding SpotLight to ", rnd.CurrentTextureUnit)
+				s.SetUniformI(SPOT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+SHADOWMAP_UNIFORM_NAME, int32(rnd.CurrentTextureUnit))
+				rnd.CurrentTextureUnit++
+			}
+
 		}
 	}
 	return nil
@@ -470,11 +514,16 @@ func (this *SpotLight) RenderShadowMap() {
 	camera.LookDirection = this.Direction.Add(mgl32.Vec3{1e-19, 1e-19, 1e-19})
 	RenderMgr.SetCamera3D(&camera, 6)
 
-	RenderMgr.ForceShader3D = ResourceMgr.GetShader(SHADOWMAP_SHADER_NAME)
 	this.ShadowMap.SetAsTarget()
 	Render.ClearScreen(&Color{0, 0, 0, 0}, 1.0)
 	Render.SetBacckFaceCulling(false)
-	RenderMgr.Render(TYPE_3D, 6, -1, -1)
+
+	RenderMgr.ForceShader3D = ResourceMgr.GetShader(SHADOWMAP_SHADER_NAME)
+	RenderMgr.Render(TYPE_3D_NORMAL, 6, -1, -1)
+
+	RenderMgr.ForceShader3D = ResourceMgr.GetShader(SHADOWMAP_INSTANCED_SHADER_NAME)
+	RenderMgr.Render(TYPE_3D_INSTANCED, 6, -1, -1)
+
 	Render.SetBacckFaceCulling(true)
 	this.ShadowMap.UnsetAsTarget()
 
@@ -526,7 +575,9 @@ func (this *LightManager) Init() {
 	this.lightCollections = make([]LightCollection, 1)
 	this.CurrentLightCollection = 0
 	ResourceMgr.LoadShader(SHADOWMAP_SHADER_NAME, "shadowMapVert.glsl", "shadowMapFrag.glsl", "", "", "", "")
+	ResourceMgr.LoadShader(SHADOWMAP_INSTANCED_SHADER_NAME, "shadowMapInstancedVert.glsl", "shadowMapFrag.glsl", "", "", "", "")
 	ResourceMgr.LoadShader(POINT_LIGHT_SHADOWMAP_SHADER_NAME, "pointLightShadowMapVert.glsl", "pointLightShadowMapFrag.glsl", "pointLightShadowMapGeo.glsl", "", "", "")
+	ResourceMgr.LoadShader(POINT_LIGHT_SHADOWMAP_INSTANCED_SHADER_NAME, "pointLightShadowMapInstancedVert.glsl", "pointLightShadowMapFrag.glsl", "pointLightShadowMapGeo.glsl", "", "", "")
 }
 
 func (this *LightManager) Update() {

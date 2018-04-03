@@ -21,6 +21,7 @@ type Renderer interface {
 	CreateMesh3D(name string) Mesh3D
 	CreateRenderTexture(name string, width, height, textures uint32, depthBuffer, multiSampled, shadowMap, cubeMap bool) RenderTexture
 	CreateCubeMap(name string) CubeMap
+	CreateInstancedMesh3D(name string) InstancedMesh3D
 	SetWireFrame(b bool)
 	SetViewport(viewport Viewport)
 	GetViewport() Viewport
@@ -33,6 +34,7 @@ type Renderer interface {
 	RenderBackBuffer()
 
 	SetBacckFaceCulling(b bool)
+	GetMaxTextures() int32
 }
 
 type OpenGLRenderer struct {
@@ -118,6 +120,10 @@ func (*OpenGLRenderer) CreateRenderTexture(name string, width, height, textures 
 
 func (*OpenGLRenderer) CreateCubeMap(name string) CubeMap {
 	return CreateOpenGLCubeMap(name)
+}
+
+func (*OpenGLRenderer) CreateInstancedMesh3D(name string) InstancedMesh3D {
+	return CreateOpenGLInstancedMesh3D(name)
 }
 
 func (*OpenGLRenderer) LoadShader(name, vertex_contents, fragment_contents, geometry_contents, tesselletion_control_contents, eveluation_contents, compute_contents string) (Shader, error) {
@@ -238,6 +244,12 @@ func (this *OpenGLRenderer) SetBacckFaceCulling(b bool) {
 	} else {
 		gl.Disable(gl.CULL_FACE)
 	}
+}
+
+func (this *OpenGLRenderer) GetMaxTextures() int32 {
+	var data int32
+	gl.GetIntegerv(gl.MAX_TEXTURE_IMAGE_UNITS, &data)
+	return data
 }
 
 var Render Renderer

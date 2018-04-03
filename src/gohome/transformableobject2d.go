@@ -36,11 +36,13 @@ func (tobj *TransformableObject2D) valuesChanged() bool {
 
 func (tobj *TransformableObject2D) CalculateTransformMatrix(rmgr *RenderManager, notRelativeToCamera int) {
 	var cam2d *Camera2D = nil
-	if notRelativeToCamera != -1 && len(rmgr.camera2Ds) > notRelativeToCamera {
-		cam2d = rmgr.camera2Ds[notRelativeToCamera]
-	}
-	if cam2d != nil {
-		cam2d.CalculateViewMatrix()
+	if rmgr != nil {
+		if notRelativeToCamera != -1 && len(rmgr.camera2Ds) > notRelativeToCamera {
+			cam2d = rmgr.camera2Ds[notRelativeToCamera]
+		}
+		if cam2d != nil {
+			cam2d.CalculateViewMatrix()
+		}
 	}
 	// OT T -RPT R RPT S
 	if tobj.valuesChanged() {

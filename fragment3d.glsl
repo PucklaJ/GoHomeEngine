@@ -98,6 +98,7 @@ uniform DirectionalLight[MAX_DIRECTIONAL_LIGHTS] directionalLights;
 uniform SpotLight[MAX_SPOT_LIGHTS] spotLights;
 uniform float shadowDistance = 50.0;
 uniform float transitionDistance = 5.0;
+uniform float bias = 0.005;
 
 void calculatePointLight(PointLight pl);
 void calculateDirectionalLight(DirectionalLight pl);
@@ -113,14 +114,14 @@ void calculateLightColors();
 float calculateShinyness(float shinyness);
 void setVariables();
 
+vec4 getDiffuseTexture();
+vec4 getSpecularTexture();
+
 vec4 finalDiffuseColor;
 vec4 finalSpecularColor;
 vec4 finalAmbientColor;
 vec3 norm;
 vec3 viewDir;
-const float bias = 0.005;
-
-// const float levels = 4.0;
 
 void main()
 {	
@@ -131,11 +132,6 @@ void main()
 
 	calculateAllLights();
 	calculateLightColors();
-
-	// float brightness = (fragColor.r+fragColor.b+fragColor.g)/3.0;
-	// float level = floor(brightness * levels);
-	// brightness = level / levels;
-	// fragColor = vec4(fragColor.rgb*brightness,fragColor.a);
 }
 
 void calculateAllLights()
@@ -149,11 +145,6 @@ vec4 getDiffuseTexture()
 {
 	if(material.diffuseTextureLoaded)
 	{
-		// vec3 tex = vec3(texture(material.diffuseTexture,FragIn.fragTexCoord));
-		// float brightness = (tex.r+tex.b+tex.g)/3.0;
-		// float level = floor(brightness * levels);
-		// brightness = level / levels;
-		// return tex * brightness;
 		return texture(material.diffuseTexture,FragIn.fragTexCoord);
 	}
 	else
@@ -166,11 +157,6 @@ vec4 getSpecularTexture()
 {
 	if(material.specularTextureLoaded)
 	{
-		// vec3 tex = vec3(texture(material.specularTexture,FragIn.fragTexCoord));
-		// float brightness = (tex.r+tex.b+tex.g)/3.0;
-		// float level = floor(brightness * levels);
-		// brightness = level / levels;
-		// return tex * brightness;
 		return texture(material.specularTexture,FragIn.fragTexCoord);
 	}
 	else
@@ -193,7 +179,7 @@ void calculateLightColors()
 	finalSpecularColor *= vec4(material.specularColor,1.0) * texSpecCol;
 	finalAmbientColor *= vec4(material.diffuseColor,1.0) * texDifCol;
 
-	fragColor = finalDiffuseColor + finalSpecularColor + finalAmbientColor;
+	fragColor = finalDiffuseColor + finalSpecularColor  + finalAmbientColor;
 }
 
 void calculatePointLights()
@@ -264,10 +250,6 @@ void calculateSpotLights()
 vec3 diffuseLighting(vec3 lightDir,vec3 diffuse)
 {
 	float diff = max(dot(norm,lightDir),0.0);
-	// float brightness = diff;
-	// float level = floor(brightness * levels);
-	// brightness = level / levels;
-	// diffuse *= diff * brightness;
 	diffuse *= diff;
 	return diffuse;
 }
@@ -277,10 +259,6 @@ vec3 specularLighting(vec3 lightDir,vec3 specular)
 	vec3 reflectDir = reflect(-lightDir, norm);
 	vec3 halfwayDir = normalize(lightDir + viewDir);
 	float spec = max(pow(max(dot(norm,halfwayDir),0.0),calculateShinyness(material.shinyness)),0.0);
-	// float brightness = spec;
-	// float level = floor(brightness * levels);
-	// brightness = level / levels;
-	// specular *= spec*brightness;
 	specular *= spec;
 	return specular;
 }
@@ -300,7 +278,6 @@ float calcShadow(sampler2D shadowMap,mat4 lightSpaceMatrix,float shadowdistance,
 	float currentDepth = projCoords.z-bias;
 	float shadowresult = 0.0;
 	float closestDepth = texture(shadowMap, projCoords.xy).r;
-	// shadowresult = currentDepth > closestDepth ? 0.0 : 1.0;
 	vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
 	for(int x = -1; x <= 1; ++x)
 	{
@@ -330,17 +307,13 @@ vec3 sampleOffsetDirections[20] = vec3[]
 float calcShadowPointLight(PointLight pl)
 {
 	vec3 fragToLight = (inverse(FragIn.viewMatrix3D)*vec4(FragIn.fragPos,1.0)).xyz - pl.position;
-	float closestDepth = texture(pl.shadowmap,fragToLight).r;
-	closestDepth *= pl.farPlane;
 	float currentDepth = length(fragToLight)-bias*10.0*pl.farPlane;
-	// float shadow = currentDepth > closestDepth ? 0.0 : 1.0;
 	float shadow  = 0.0;
-	// float bias    = 0.05; 
 	int samples = 20;
 	float viewDistance = length(-FragIn.fragPos);
 	float diskRadius = (1.0 + (viewDistance / pl.farPlane)) / 70.0;
 	for(int i = 0;i<samples;i++) {
-		 float closestDepth = texture(pl.shadowmap, fragToLight + sampleOffsetDirections[i]*diskRadius).r; 
+		 float closestDepth = texture(pl.shadowmap, fragToLight + sampleOffsetDirections[i]*diskRadius).r;
 	            closestDepth *= pl.farPlane;   // Undo mapping [0;1]
 	            if(currentDepth <= closestDepth)
 	                shadow += 1.0;

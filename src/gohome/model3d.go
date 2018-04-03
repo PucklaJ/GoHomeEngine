@@ -10,7 +10,7 @@ type Model3D struct {
 	meshes []Mesh3D
 }
 
-func (this *Model3D) Init(node *assimp.Node, scene *assimp.Scene, level *Level, directory string, preloaded bool) {
+func (this *Model3D) Init(node *assimp.Node, scene *assimp.Scene, level *Level, directory string, preloaded, loadToGPU bool) {
 	level.LevelObjects = append(level.LevelObjects, LevelObject{
 		Name: node.Name(),
 	})
@@ -23,11 +23,16 @@ func (this *Model3D) Init(node *assimp.Node, scene *assimp.Scene, level *Level, 
 		mesh.AddVerticesAssimp(aiMesh, node, scene, level, directory, preloaded)
 		this.AddMesh3D(mesh)
 		if !preloaded {
-			mesh.Load()
+			if loadToGPU {
+				mesh.Load()
+			}
 			log.Println("Finished loading mesh", mesh.GetName(), "V:", mesh.GetNumVertices(), "I:", mesh.GetNumIndices(), "!")
 		} else {
 			mesh.calculateTangents()
-			ResourceMgr.preloader.preloadedMeshesChan <- mesh
+			ResourceMgr.preloader.preloadedMeshesChan <- preloadedMesh{
+				mesh,
+				loadToGPU,
+			}
 		}
 	}
 }

@@ -27,7 +27,7 @@ func (this *LightEntity) Init(rotate mgl32.Vec3, offset, radius float32) {
 		Attentuation: gohome.Attentuation{
 			Linear: 3.0,
 		},
-		CastsShadows: 1,
+		CastsShadows: 0,
 		FarPlane:     25.0,
 	}
 	this.light.InitShadowmap(1024, 1024)

@@ -4,14 +4,14 @@ import (
 	"fmt"
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
 	// "github.com/go-gl/gl/v4.1-core/gl"
+	"github.com/go-gl/mathgl/mgl32"
 	"golang.org/x/image/colornames"
-	// "github.com/go-gl/mathgl/mgl32"
 	"math"
 	"time"
 )
 
 const (
-	NUM_PLANES uint32  = 4
+	NUM_PLANES uint32  = 20
 	PLANE_SIZE float32 = 10.0
 )
 
@@ -31,20 +31,22 @@ type TestScene struct {
 	m41Tobj      gohome.TransformableObject3D
 	kratos       gohome.Entity3D
 	kratosTobj   gohome.TransformableObject3D
-	oakTrees     [NUM_PLANES * NUM_PLANES]gohome.Entity3D
+	oakTreeMesh  gohome.InstancedMesh3D
+	oakTrees     gohome.Entity3D
 	oakTreeTobjs [NUM_PLANES * NUM_PLANES]gohome.TransformableObject3D
 }
 
 func (this *TestScene) Init() {
 	gohome.Render.SetNativeResolution(1920, 1080)
 	start := time.Now()
-	gohome.ResourceMgr.PreloadLevel("M4", "Arma_M4.obj")
-	gohome.ResourceMgr.PreloadLevel("Kratos", "Kratos.obj")
-	gohome.ResourceMgr.PreloadLevel("Barrel", "barrel.obj")
-	gohome.ResourceMgr.PreloadLevel("Crate", "crate.obj")
-	gohome.ResourceMgr.PreloadLevel("Pine", "pine.obj")
+	gohome.ResourceMgr.PreloadLevel("M4", "Arma_M4.obj", true)
+	gohome.ResourceMgr.PreloadLevel("Kratos", "Kratos.obj", true)
+	// gohome.ResourceMgr.PreloadLevel("Barrel", "barrel.obj", true)
+	// gohome.ResourceMgr.PreloadLevel("Crate", "crate.obj", true)
+	gohome.ResourceMgr.PreloadLevel("Pine", "pine.obj", false)
 	gohome.ResourceMgr.PreloadShader("Normal", "vertex3d.glsl", "normalFrag.glsl", "", "", "", "")
 	gohome.ResourceMgr.PreloadShader("ShadowMapRender", "vertex1.glsl", "shadowMapRenderFrag.glsl", "", "", "", "")
+	gohome.ResourceMgr.PreloadShader("Instanced3D", "instanced3dVert.glsl", "fragment3d.glsl", "", "", "", "")
 	gohome.ResourceMgr.PreloadTexture("Kratos_torso_n.tga", "Kratos_torso_n.tga")
 	gohome.ResourceMgr.PreloadTexture("Kratos_legs_n.tga", "Kratos_legs_n.tga")
 	gohome.ResourceMgr.PreloadTexture("Kratos_head_n.tga", "Kratos_head_n.tga")
@@ -76,9 +78,17 @@ func (this *TestScene) Init() {
 	this.kratos.Model3D.GetMeshIndex(0).GetMaterial().SetTextures("", "", "Kratos_legs_n.tga")
 	this.kratos.Model3D.GetMeshIndex(1).GetMaterial().SetTextures("", "", "Kratos_torso_n.tga")
 	this.kratos.Model3D.GetMeshIndex(2).GetMaterial().SetTextures("", "", "Kratos_head_n.tga")
+	this.oakTreeMesh = gohome.Render.CreateInstancedMesh3D("Pine")
+	this.oakTrees.InitMesh(this.oakTreeMesh, nil)
+	normalOakTreeMesh := gohome.ResourceMgr.GetModel("Pine").GetMeshIndex(0)
+	this.oakTreeMesh.AddVertices(normalOakTreeMesh.GetVertices(), normalOakTreeMesh.GetIndices())
+	this.oakTreeMesh.AddValue(gohome.VALUE_MAT4)
+	this.oakTreeMesh.SetNumInstances(NUM_PLANES * NUM_PLANES)
+	this.oakTreeMesh.Load()
+	this.oakTrees.Model3D.GetMesh("Pine").GetMaterial().DiffuseTexture = gohome.ResourceMgr.GetTexture("Pine")
+	this.oakTrees.SetShader(gohome.ResourceMgr.GetShader("Instanced3D"))
+	this.oakTrees.SetType(gohome.TYPE_3D_INSTANCED)
 	for i := 0; i < int(NUM_PLANES*NUM_PLANES); i++ {
-		this.oakTrees[i].InitName("Pine", &this.oakTreeTobjs[i])
-		this.oakTrees[i].Model3D.GetMesh("Pine").GetMaterial().DiffuseTexture = gohome.ResourceMgr.GetTexture("Pine")
 		this.oakTreeTobjs[i].Scale = [3]float32{0.5, 0.5, 0.5}
 	}
 
@@ -108,6 +118,8 @@ func (this *TestScene) Init() {
 		},
 		CastsShadows: 1,
 	}
+	this.spot.InitShadowmap(1024, 1024)
+	this.direct.InitShadowmap(gohome.DEFAULT_DIRECTIONAL_LIGHTS_SHADOWMAP_SIZE, gohome.DEFAULT_DIRECTIONAL_LIGHTS_SHADOWMAP_SIZE)
 
 	this.tst.Init(&this.cam3d)
 	this.cam3d.Position = [3]float32{0.0, 2.0, 2.0}
@@ -119,12 +131,16 @@ func (this *TestScene) Init() {
 	this.m4Tobj.Rotation[1] = 180.0
 	this.m41Tobj.Position = [3]float32{-0.2, -0.2, -0.2}
 	this.m41Tobj.Rotation[1] = 180.0
+	oakTreeTransformMatrices := make([]mgl32.Mat4, NUM_PLANES*NUM_PLANES)
 	for x := 0; x < int(NUM_PLANES); x++ {
 		for y := 0; y < int(NUM_PLANES); y++ {
 			this.oakTreeTobjs[x+y*int(NUM_PLANES)].Position = [3]float32{PLANE_SIZE * (float32(x) + 0.5), -0.5, PLANE_SIZE * (float32(y) + 0.5)}
-			gohome.RenderMgr.AddObject(&this.oakTrees[x+y*int(NUM_PLANES)], &this.oakTreeTobjs[x+y*int(NUM_PLANES)])
+			this.oakTreeTobjs[x+y*int(NUM_PLANES)].CalculateTransformMatrix(nil, -1)
+			oakTreeTransformMatrices[x+y*int(NUM_PLANES)] = this.oakTreeTobjs[x+y*int(NUM_PLANES)].GetTransformMatrix()
 		}
 	}
+	this.oakTreeMesh.SetM4(0, oakTreeTransformMatrices)
+	gohome.RenderMgr.AddObject(&this.oakTrees, nil)
 	gohome.UpdateMgr.AddObject(&this.tst)
 	gohome.RenderMgr.SetCamera3D(&this.cam3d, 0)
 	gohome.RenderMgr.SetCamera3D(&this.cam3d1, 1)
@@ -141,7 +157,7 @@ func (this *TestScene) Init() {
 	gohome.RenderMgr.SetViewport3D(&gohome.Viewport{
 		0,
 		0, 0,
-		int(nWidth) / 2, int(nHeight),
+		int(nWidth), int(nHeight),
 	}, 0)
 	gohome.RenderMgr.SetViewport3D(&gohome.Viewport{
 		1,
@@ -155,7 +171,22 @@ func (this *TestScene) Init() {
 		int(nWidth), int(nHeight),
 	}, 0)
 
+	gohome.RenderMgr.SetProjection3D(&gohome.PerspectiveProjection{
+		Width:     float32(nWidth),
+		Height:    float32(nHeight),
+		FOV:       70.0,
+		NearPlane: 0.1,
+		FarPlane:  1000.0,
+	})
+
 	gohome.RenderMgr.ForceShader2D = gohome.ResourceMgr.GetShader("ShadowMapRender")
+
+	var spr gohome.Sprite2D
+	var sprTobj gohome.TransformableObject2D
+	spr.Init("Pine", &sprTobj)
+	spr.Texture = this.spot.ShadowMap
+	sprTobj.Size = [2]float32{512.0, 512.0}
+	gohome.RenderMgr.AddObject(&spr, &sprTobj)
 }
 
 var elapsed_time float32 = 0.0

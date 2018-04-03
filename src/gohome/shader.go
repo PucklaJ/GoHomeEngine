@@ -369,35 +369,52 @@ func (s *OpenGLShader) SetUniformMaterial(mat Material) error {
 	var normBind int32 = 0
 	var boundTextures uint32
 
+	maxtextures := Render.GetMaxTextures()
+
 	if mat.DiffuseTexture != nil {
 		diffBind = int32(rnd.CurrentTextureUnit)
-		rnd.CurrentTextureUnit++
-		mat.DiffuseTexture.Bind(uint32(diffBind))
-		// fmt.Println("Binding Diffuse Texture to ", diffBind)
-		mat.diffuseTextureLoaded = 1
-		boundTextures++
+		if diffBind >= maxtextures-1 {
+			diffBind = 0
+			mat.diffuseTextureLoaded = 0
+		} else {
+			rnd.CurrentTextureUnit++
+			mat.DiffuseTexture.Bind(uint32(diffBind))
+			// fmt.Println("Binding Diffuse Texture to ", diffBind)
+			mat.diffuseTextureLoaded = 1
+			boundTextures++
+		}
 	} else {
 		mat.diffuseTextureLoaded = 0
 	}
 
 	if mat.SpecularTexture != nil {
 		specBind = int32(rnd.CurrentTextureUnit)
-		rnd.CurrentTextureUnit++
-		mat.SpecularTexture.Bind(uint32(specBind))
-		// fmt.Println("Binding SpecularTexture to ", specBind)
-		mat.specularTextureLoaded = 1
-		boundTextures++
+		if specBind >= maxtextures {
+			specBind = 0
+			mat.specularTextureLoaded = 0
+		} else {
+			rnd.CurrentTextureUnit++
+			mat.SpecularTexture.Bind(uint32(specBind))
+			// fmt.Println("Binding SpecularTexture to ", specBind)
+			mat.specularTextureLoaded = 1
+			boundTextures++
+		}
 	} else {
 		mat.specularTextureLoaded = 0
 	}
 
 	if mat.NormalMap != nil {
 		normBind = int32(rnd.CurrentTextureUnit)
-		rnd.CurrentTextureUnit++
-		mat.NormalMap.Bind(uint32(normBind))
-		// fmt.Println("Binding NormalMap to ", normBind)
-		mat.normalMapLoaded = 1
-		boundTextures++
+		if normBind >= maxtextures-1 {
+			normBind = 0
+			mat.normalMapLoaded = 0
+		} else {
+			rnd.CurrentTextureUnit++
+			mat.NormalMap.Bind(uint32(normBind))
+			// fmt.Println("Binding NormalMap to ", normBind)
+			mat.normalMapLoaded = 1
+			boundTextures++
+		}
 	} else {
 		mat.normalMapLoaded = 0
 	}
@@ -501,8 +518,9 @@ func (s *OpenGLShader) validate() error {
 		return nil
 	}
 	s.Use()
+	maxtextures := Render.GetMaxTextures()
 	for i := 0; i < 31; i++ {
-		s.SetUniformI("pointLights["+strconv.Itoa(i)+"].shadowmap", 1)
+		s.SetUniformI("pointLights["+strconv.Itoa(i)+"].shadowmap", maxtextures-1)
 	}
 	s.Unuse()
 	s.validated = true
