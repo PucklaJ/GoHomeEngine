@@ -2,6 +2,7 @@ package gohome
 
 import (
 	"github.com/go-gl/mathgl/mgl32"
+	"io"
 )
 
 type Framework interface {
@@ -24,6 +25,7 @@ type Framework interface {
 	CursorHidden() bool
 	CursorDisabled() bool
 
+	OpenFile(file string) (io.ReadCloser, error)
 	LoadLevel(rsmgr *ResourceManager, name, path string, preloaded, loadToGPU bool) *Level
 }
 

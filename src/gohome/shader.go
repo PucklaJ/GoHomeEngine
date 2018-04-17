@@ -33,4 +33,5 @@ type Shader interface {
 	SetUniformMaterial(mat Material) error
 	SetUniformLights(lightCollectionIndex int32) error
 	GetName() string
+	AddAttribute(name string, location uint32)
 }

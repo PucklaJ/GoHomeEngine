@@ -7,6 +7,7 @@ import (
 	"github.com/go-gl/glfw/v3.2/glfw"
 	"github.com/go-gl/mathgl/mgl32"
 	"math"
+	"os"
 )
 
 type GLFWFramework struct {
@@ -454,6 +455,10 @@ func getFocusedMonitor(window *glfw.Window) *glfw.Monitor {
 
 func (gfw *GLFWFramework) WindowIsFullscreen() bool {
 	return gfw.window.GetMonitor() != nil
+}
+
+func (gfw *GLFWFramework) OpenFile(file string) (io.ReadCloser, error) {
+	return os.Open(file)
 }
 
 func (gfw *GLFWFramework) LoadLevel(rsmgr *gohome.ResourceManager, name, path string, preloaded, loadToGPU bool) *gohome.Level {

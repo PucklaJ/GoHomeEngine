@@ -58,15 +58,22 @@ func (this *MainLoop) SetupStartScene() {
 
 func (this *MainLoop) InitWindowAndRenderer() {
 	var err error
-	if err = Framew.CreateWindow(this.windowWidth, this.windowHeight, this.windowTitle); err != nil {
-		log.Println("Error creating window:", err)
-		return
+	if Framew != nil {
+		if err = Framew.CreateWindow(this.windowWidth, this.windowHeight, this.windowTitle); err != nil {
+			log.Println("Error creating window:", err)
+			return
+		}
+	} else {
+		log.Fatalln("Framework is nil!")
 	}
 
-	if err = Render.Init(); err != nil {
-		log.Println("Error initializing Renderer:", err)
-		return
+	if Render != nil {
+		if err = Render.Init(); err != nil {
+			log.Println("Error initializing Renderer:", err)
+			return
+		}
 	}
+
 }
 
 func (MainLoop) InitManagers() {
@@ -95,7 +102,7 @@ func (MainLoop) InnerLoop() {
 	UpdateMgr.Update(FPSLimit.DeltaTime)
 	LightMgr.Update()
 	InputMgr.Update(FPSLimit.DeltaTime)
-	Render.ClearScreen(colornames.Black, 1.0)
+	Render.ClearScreen(colornames.Blue, 1.0)
 	RenderMgr.Update()
 	Framew.WindowSwap()
 	Framew.Update()
@@ -116,6 +123,19 @@ func (MainLoop) Quit() {
 func InitDefaultValues() {
 	ResourceMgr.LoadShader(ENTITY3D_SHADER_NAME, "vertex3d.glsl", "fragment3d.glsl", "", "", "", "")
 	ResourceMgr.LoadShader(SPRITE2D_SHADER_NAME, "vertex1.glsl", "fragment.glsl", "", "", "", "")
+	var temp Shader
+	temp = ResourceMgr.GetShader(ENTITY3D_SHADER_NAME)
+	if temp != nil {
+		temp.AddAttribute("vertex", 0)
+		temp.AddAttribute("normal", 1)
+		temp.AddAttribute("texCoord", 2)
+		temp.AddAttribute("tangent", 3)
+	}
+	temp = ResourceMgr.GetShader(SPRITE2D_SHADER_NAME)
+	if temp != nil {
+		temp.AddAttribute("vertex", 0)
+		temp.AddAttribute("texCoord", 1)
+	}
 	RenderMgr.SetProjection2D(&Ortho2DProjection{
 		Left:   0.0,
 		Right:  Framew.WindowGetSize()[0],

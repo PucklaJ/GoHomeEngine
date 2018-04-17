@@ -569,6 +569,39 @@ func (this *LightManager) Init() {
 	ResourceMgr.LoadShader(SHADOWMAP_INSTANCED_SHADER_NAME, "shadowMapInstancedVert.glsl", "shadowMapFrag.glsl", "", "", "", "")
 	ResourceMgr.LoadShader(POINT_LIGHT_SHADOWMAP_SHADER_NAME, "pointLightShadowMapVert.glsl", "pointLightShadowMapFrag.glsl", "pointLightShadowMapGeo.glsl", "", "", "")
 	ResourceMgr.LoadShader(POINT_LIGHT_SHADOWMAP_INSTANCED_SHADER_NAME, "pointLightShadowMapInstancedVert.glsl", "pointLightShadowMapFrag.glsl", "pointLightShadowMapGeo.glsl", "", "", "")
+	var temp Shader
+	temp = ResourceMgr.GetShader(SHADOWMAP_SHADER_NAME)
+	if temp != nil {
+		temp.AddAttribute("vertex", 0)
+		temp.AddAttribute("normal", 1)
+		temp.AddAttribute("texCoord", 2)
+		temp.AddAttribute("tangent", 3)
+	}
+
+	temp = ResourceMgr.GetShader(SHADOWMAP_INSTANCED_SHADER_NAME)
+	if temp != nil {
+		temp.AddAttribute("vertex", 0)
+		temp.AddAttribute("normal", 1)
+		temp.AddAttribute("texCoord", 2)
+		temp.AddAttribute("tangent", 3)
+		temp.AddAttribute("transformMatrix3D", 4)
+	}
+
+	temp = ResourceMgr.GetShader(POINT_LIGHT_SHADOWMAP_SHADER_NAME)
+	if temp != nil {
+		temp.AddAttribute("vertex", 0)
+		temp.AddAttribute("normal", 1)
+		temp.AddAttribute("texCoord", 2)
+		temp.AddAttribute("tangent", 3)
+	}
+	temp = ResourceMgr.GetShader(POINT_LIGHT_SHADOWMAP_INSTANCED_SHADER_NAME)
+	if temp != nil {
+		temp.AddAttribute("vertex", 0)
+		temp.AddAttribute("normal", 1)
+		temp.AddAttribute("texCoord", 2)
+		temp.AddAttribute("tangent", 3)
+		temp.AddAttribute("transformMatrix3D", 4)
+	}
 }
 
 func (this *LightManager) Update() {

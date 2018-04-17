@@ -14,8 +14,9 @@ type FPSLimiter struct {
 	FPS       uint32
 	DeltaTime float32
 
-	timeMeasure   time.Time
-	deltaDuration time.Duration
+	timeMeasure    time.Time
+	deltaDuration  time.Duration
+	additionalTime float32
 
 	realDeltaTimes             [NUM_MEASUREMENTS]float64
 	currentRealDeltaTimesIndex uint32
@@ -36,6 +37,7 @@ func (fps *FPSLimiter) Init() {
 	fps.DeltaTime = 0.0
 	fps.currentRealDeltaTimesIndex = 0
 	fps.numMeasuredRealDeltaTimes = 0
+	fps.additionalTime = 0.0
 }
 
 func (fps *FPSLimiter) StartMeasurement() {
@@ -46,6 +48,10 @@ func (fps *FPSLimiter) EndMeasurement() {
 	fps.deltaDuration = time.Now().Sub(fps.timeMeasure)
 	fps.timeMeasure = time.Now()
 	fps.saveCurrentDeltaTime()
+}
+
+func (fps *FPSLimiter) AddTime(amount float32) {
+	fps.additionalTime += amount
 }
 
 func (fps *FPSLimiter) currentFrameIndex() uint32 {
@@ -73,7 +79,8 @@ func (fps *FPSLimiter) LimitFPS() {
 }
 
 func (fps *FPSLimiter) saveCurrentDeltaTime() {
-	fps.realDeltaTimes[fps.currentRealDeltaTimesIndex] = fps.deltaDuration.Seconds()
+	fps.realDeltaTimes[fps.currentRealDeltaTimesIndex] = fps.deltaDuration.Seconds() + float64(fps.additionalTime)
+	fps.additionalTime = 0.0
 	if fps.numMeasuredRealDeltaTimes < NUM_MEASUREMENTS {
 		fps.numMeasuredRealDeltaTimes++
 	}

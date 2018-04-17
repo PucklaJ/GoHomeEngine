@@ -76,7 +76,7 @@ func compileOpenGLShader(shader_type uint32, src **uint8, program uint32) (uint3
 	}
 	gl.AttachShader(program, shader)
 
-	return 0, nil
+	return shader, nil
 }
 
 func (s *OpenGLShader) AddShader(shader_type uint8, src string) error {
@@ -512,4 +512,8 @@ func (s *OpenGLShader) validate() error {
 	}
 
 	return nil
+}
+
+func (s *OpenGLShader) AddAttribute(name string, location uint32) {
+	gl.BindAttribLocation(s.program, location, gl.Str(name))
 }

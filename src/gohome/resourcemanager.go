@@ -9,7 +9,6 @@ import (
 	_ "image/png"
 	"io/ioutil"
 	"log"
-	"os"
 	"sync"
 )
 
@@ -41,7 +40,11 @@ func loadShaderFile(path string) (string, error) {
 	if path == "" {
 		return "", nil
 	} else {
-		contents, err := ioutil.ReadFile(path)
+		reader, err1 := Framew.OpenFile(path)
+		if err1 != nil {
+			return "", err1
+		}
+		contents, err := ioutil.ReadAll(reader)
 		if err != nil {
 			return "", err
 		} else {
@@ -238,7 +241,7 @@ func (rsmgr *ResourceManager) LoadTextureFunction(name, path string, preloaded b
 		return nil
 	}
 
-	reader, err := os.Open(path)
+	reader, err := Framew.OpenFile(path)
 	if err != nil {
 		log.Println("Couldn't load texture file", name, ":", err)
 		return nil
@@ -248,7 +251,6 @@ func (rsmgr *ResourceManager) LoadTextureFunction(name, path string, preloaded b
 		log.Println("Couldn't decode texture file", name, ":", err)
 		return nil
 	}
-	reader.Close()
 	width := img.Bounds().Size().X
 	height := img.Bounds().Size().Y
 
@@ -264,6 +266,9 @@ func (rsmgr *ResourceManager) LoadTextureFunction(name, path string, preloaded b
 	wg1.Wait()
 	var tex Texture
 	tex = Render.CreateTexture(name, false)
+	if tex == nil {
+		return nil
+	}
 	if !preloaded {
 		tex.Load(img_data, width, height, false)
 	} else {
