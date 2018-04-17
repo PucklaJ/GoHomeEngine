@@ -16,9 +16,9 @@ struct Material
 	sampler2D specularTexture;
 	sampler2D normalMap;
 
-	bool diffuseTextureLoaded;
-	bool specularTextureLoaded;
-	bool normalMapLoaded;
+	bool DiffuseTextureLoaded;
+	bool SpecularTextureLoaded;
+	bool NormalMapLoaded;
 
 	float shinyness;
 };
@@ -143,7 +143,7 @@ void calculateAllLights()
 
 vec4 getDiffuseTexture()
 {
-	if(material.diffuseTextureLoaded)
+	if(material.DiffuseTextureLoaded)
 	{
 		return texture(material.diffuseTexture,FragIn.fragTexCoord);
 	}
@@ -155,7 +155,7 @@ vec4 getDiffuseTexture()
 
 vec4 getSpecularTexture()
 {
-	if(material.specularTextureLoaded)
+	if(material.SpecularTextureLoaded)
 	{
 		return texture(material.specularTexture,FragIn.fragTexCoord);
 	}
@@ -428,7 +428,7 @@ float calculateShinyness(float shinyness)
 
 void setVariables()
 {
-	if(material.normalMapLoaded)
+	if(material.NormalMapLoaded)
 	{
 		norm = normalize(2.0*(texture(material.normalMap,FragIn.fragTexCoord)).xyz-1.0);
 	}

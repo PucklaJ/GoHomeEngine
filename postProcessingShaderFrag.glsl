@@ -4,7 +4,7 @@ in vec2 fragTexCoords;
 
 out vec4 fragColor;
 
-uniform sampler2DMS backBuffer;
+uniform sampler2DMS BackBuffer;
 
 const float offset = 1.0 / 300.0;
 vec2 offsets[9] = vec2[](
@@ -34,11 +34,11 @@ float normalKernel[9] = float[](
 vec4 fetchColor(vec2 texCoord)
 {
 	vec4 color = vec4(0.0);
-	ivec2 texCoords = ivec2(texCoord * textureSize(backBuffer));
+	ivec2 texCoords = ivec2(texCoord * textureSize(BackBuffer));
 
 	for(int i = 0;i<8;i++)
 	{
-		color += texelFetch(backBuffer,texCoords,i);
+		color += texelFetch(BackBuffer,texCoords,i);
 	}
 	color /= 8.0;
 

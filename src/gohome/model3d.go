@@ -1,40 +1,8 @@
 package gohome
 
-import (
-	"github.com/raedatoui/assimp"
-	"log"
-)
-
 type Model3D struct {
 	Name   string
 	meshes []Mesh3D
-}
-
-func (this *Model3D) Init(node *assimp.Node, scene *assimp.Scene, level *Level, directory string, preloaded, loadToGPU bool) {
-	level.LevelObjects = append(level.LevelObjects, LevelObject{
-		Name: node.Name(),
-	})
-	level.LevelObjects[len(level.LevelObjects)-1].SetTransform(node.Transformation())
-
-	this.Name = node.Name()
-	for i := 0; i < node.NumMeshes(); i++ {
-		aiMesh := scene.Meshes()[node.Meshes()[i]]
-		mesh := Render.CreateMesh3D(aiMesh.Name())
-		mesh.AddVerticesAssimp(aiMesh, node, scene, level, directory, preloaded)
-		this.AddMesh3D(mesh)
-		if !preloaded {
-			if loadToGPU {
-				mesh.Load()
-			}
-			log.Println("Finished loading mesh", mesh.GetName(), "V:", mesh.GetNumVertices(), "I:", mesh.GetNumIndices(), "!")
-		} else {
-			mesh.calculateTangents()
-			ResourceMgr.preloader.preloadedMeshesChan <- preloadedMesh{
-				mesh,
-				loadToGPU,
-			}
-		}
-	}
 }
 
 func (this *Model3D) AddMesh3D(m Mesh3D) {

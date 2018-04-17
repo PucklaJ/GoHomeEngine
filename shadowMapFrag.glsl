@@ -9,9 +9,9 @@ struct Material
 	sampler2D specularTexture;
 	sampler2D normalMap;
 
-	bool diffuseTextureLoaded;
-	bool specularTextureLoaded;
-	bool normalMapLoaded;
+	bool DiffuseTextureLoaded;
+	bool SpecularTextureLoaded;
+	bool NormalMapLoaded;
 
 	float shinyness;
 };
@@ -24,7 +24,7 @@ uniform Material material;
 
 vec4 getDiffuseTexture()
 {
-	if(material.diffuseTextureLoaded)
+	if(material.DiffuseTextureLoaded)
 	{
 		return texture(material.diffuseTexture,FragIn.fragTexCoord);
 	}

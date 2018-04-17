@@ -15,12 +15,12 @@ type MainLoop struct {
 
 func (ml MainLoop) Run(fw Framework, r Renderer, ww, wh uint32, wt string, start_scene Scene) {
 	runtime.LockOSThread()
-	if !ml.init(fw, r, ww, wh, wt, start_scene) {
-		ml.quit()
+	if !ml.Init(fw, r, ww, wh, wt, start_scene) {
+		ml.Quit()
 	}
 }
 
-func (this *MainLoop) init(fw Framework, r Renderer, ww, wh uint32, wt string, start_scene Scene) bool {
+func (this *MainLoop) Init(fw Framework, r Renderer, ww, wh uint32, wt string, start_scene Scene) bool {
 	var err error
 
 	Framew = fw
@@ -39,16 +39,16 @@ func (this *MainLoop) init(fw Framework, r Renderer, ww, wh uint32, wt string, s
 
 }
 
-func (this *MainLoop) doStuff() {
-	this.initWindowAndRenderer()
-	this.initManagers()
-	this.setupStartScene()
+func (this *MainLoop) DoStuff() {
+	this.InitWindowAndRenderer()
+	this.InitManagers()
+	this.SetupStartScene()
 
-	this.loop()
-	this.quit()
+	this.Loop()
+	this.Quit()
 }
 
-func (this *MainLoop) setupStartScene() {
+func (this *MainLoop) SetupStartScene() {
 	if this.startScene != nil {
 		SceneMgr.SwitchScene(this.startScene)
 	} else {
@@ -56,7 +56,7 @@ func (this *MainLoop) setupStartScene() {
 	}
 }
 
-func (this *MainLoop) initWindowAndRenderer() {
+func (this *MainLoop) InitWindowAndRenderer() {
 	var err error
 	if err = Framew.CreateWindow(this.windowWidth, this.windowHeight, this.windowTitle); err != nil {
 		log.Println("Error creating window:", err)
@@ -69,7 +69,7 @@ func (this *MainLoop) initWindowAndRenderer() {
 	}
 }
 
-func (MainLoop) initManagers() {
+func (MainLoop) InitManagers() {
 	ResourceMgr.Init()
 	UpdateMgr.Init()
 	RenderMgr.Init()
@@ -79,18 +79,18 @@ func (MainLoop) initManagers() {
 	FPSLimit.Init()
 }
 
-func (this *MainLoop) loop() {
+func (this *MainLoop) Loop() {
 	for !Framew.WindowClosed() {
 		FPSLimit.StartMeasurement()
 
-		this.innerLoop()
+		this.InnerLoop()
 
 		FPSLimit.EndMeasurement()
 		FPSLimit.LimitFPS()
 	}
 }
 
-func (MainLoop) innerLoop() {
+func (MainLoop) InnerLoop() {
 	Framew.PollEvents()
 	UpdateMgr.Update(FPSLimit.DeltaTime)
 	LightMgr.Update()
@@ -101,7 +101,7 @@ func (MainLoop) innerLoop() {
 	Framew.Update()
 }
 
-func (MainLoop) quit() {
+func (MainLoop) Quit() {
 	defer Framew.Terminate()
 	defer Render.Terminate()
 	defer ResourceMgr.Terminate()

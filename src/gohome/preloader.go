@@ -43,7 +43,7 @@ type preloadedLevelObject struct {
 	Lvlobj LevelObject
 }
 
-type preloadedMesh struct {
+type PreloadedMesh struct {
 	Mesh      Mesh3D
 	LoadToGPU bool
 }
@@ -55,8 +55,8 @@ type preloader struct {
 
 	preloadedShaderDataChan  chan preloadedShaderData
 	preloadedLevelsChan      chan *Level
-	preloadedModelsChan      chan *Model3D
-	preloadedMeshesChan      chan preloadedMesh
+	PreloadedModelsChan      chan *Model3D
+	PreloadedMeshesChan      chan PreloadedMesh
 	preloadedTextureDataChan chan preloadedTextureData
 	exitChan                 chan bool
 	exitLevelsChan           chan bool
@@ -65,14 +65,14 @@ type preloader struct {
 
 	preloadedTexturesToFinish []preloadedTextureData
 	preloadedShadersToFinish  []preloadedShaderData
-	preloadedMeshesToFinish   []preloadedMesh
+	PreloadedMeshesToFinish   []PreloadedMesh
 }
 
 func (this *preloader) Init() {
 	this.preloadedShaderDataChan = make(chan preloadedShaderData)
 	this.preloadedLevelsChan = make(chan *Level)
-	this.preloadedModelsChan = make(chan *Model3D)
-	this.preloadedMeshesChan = make(chan preloadedMesh)
+	this.PreloadedModelsChan = make(chan *Model3D)
+	this.PreloadedMeshesChan = make(chan PreloadedMesh)
 	this.preloadedTextureDataChan = make(chan preloadedTextureData)
 	this.exitChan = make(chan bool)
 	this.exitLevelsChan = make(chan bool)
@@ -145,7 +145,7 @@ func (this *preloader) loadPreloadedTexture(tex *preloadedTexture, wg *sync.Wait
 	name := tex.Name
 	path := tex.Path
 
-	ResourceMgr.loadTexture(name, path, true)
+	ResourceMgr.LoadTextureFunction(name, path, true)
 }
 
 func (this *preloader) loadPreloadedTextures() {
@@ -173,16 +173,16 @@ func (this *preloader) finish(wg *sync.WaitGroup) {
 	for true {
 		select {
 		case lvl := <-this.preloadedLevelsChan:
-			ResourceMgr.levels[lvl.Name] = lvl
+			ResourceMgr.Levels[lvl.Name] = lvl
 			log.Println("Finished loading level", lvl.Name, "!")
 		case tex := <-this.preloadedTextureDataChan:
 			this.preloadedTexturesToFinish = append(this.preloadedTexturesToFinish, tex)
 		case shader := <-this.preloadedShaderDataChan:
 			this.preloadedShadersToFinish = append(this.preloadedShadersToFinish, shader)
-		case mesh := <-this.preloadedMeshesChan:
-			this.preloadedMeshesToFinish = append(this.preloadedMeshesToFinish, mesh)
-		case model := <-this.preloadedModelsChan:
-			ResourceMgr.models[model.Name] = model
+		case mesh := <-this.PreloadedMeshesChan:
+			this.PreloadedMeshesToFinish = append(this.PreloadedMeshesToFinish, mesh)
+		case model := <-this.PreloadedModelsChan:
+			ResourceMgr.Models[model.Name] = model
 			log.Println("Finished loading model", model.Name, "!")
 		case <-this.exitChan:
 			done = true
@@ -197,19 +197,19 @@ func (this *preloader) finish(wg *sync.WaitGroup) {
 func (this *preloader) checkExit(wg *sync.WaitGroup) {
 	defer wg.Done()
 
-	var levelsExit, texturesExit, shadersExit bool = false, false, false
+	var LevelsExit, texturesExit, shadersExit bool = false, false, false
 	var done bool = false
 
 	for true {
 		select {
 		case <-this.exitLevelsChan:
-			levelsExit = true
+			LevelsExit = true
 		case <-this.exitTexturesChan:
 			texturesExit = true
 		case <-this.exitShadersChan:
 			shadersExit = true
 		default:
-			if levelsExit && texturesExit && shadersExit {
+			if LevelsExit && texturesExit && shadersExit {
 				this.exitChan <- true
 				done = true
 			}
@@ -244,8 +244,8 @@ func (this *preloader) finishShaders() {
 }
 
 func (this *preloader) finishMeshes() {
-	for i := 0; i < len(this.preloadedMeshesToFinish); i++ {
-		mesh := this.preloadedMeshesToFinish[i]
+	for i := 0; i < len(this.PreloadedMeshesToFinish); i++ {
+		mesh := this.PreloadedMeshesToFinish[i]
 		if mesh.LoadToGPU {
 			mesh.Mesh.Load()
 		}

@@ -3,7 +3,6 @@ package gohome
 import (
 	"fmt"
 	"github.com/blezek/tga"
-	"github.com/raedatoui/assimp"
 	"image"
 	"image/color"
 	_ "image/jpeg"
@@ -11,7 +10,6 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"strings"
 	"sync"
 )
 
@@ -22,8 +20,8 @@ const (
 type ResourceManager struct {
 	textures map[string]Texture
 	shaders  map[string]Shader
-	models   map[string]*Model3D
-	levels   map[string]*Level
+	Models   map[string]*Model3D
+	Levels   map[string]*Level
 
 	preloader
 }
@@ -31,8 +29,8 @@ type ResourceManager struct {
 func (rsmgr *ResourceManager) Init() {
 	rsmgr.textures = make(map[string]Texture)
 	rsmgr.shaders = make(map[string]Shader)
-	rsmgr.models = make(map[string]*Model3D)
-	rsmgr.levels = make(map[string]*Level)
+	rsmgr.Models = make(map[string]*Model3D)
+	rsmgr.Levels = make(map[string]*Level)
 
 	rsmgr.preloader.Init()
 
@@ -97,7 +95,7 @@ func loadImageData(img_data *[]byte, img image.Image, start_width, end_width, ma
 
 func (rsmgr *ResourceManager) LoadTexture(name, path string) {
 
-	tex := rsmgr.loadTexture(name, path, false)
+	tex := rsmgr.LoadTextureFunction(name, path, false)
 	if tex != nil {
 		rsmgr.textures[name] = tex
 		log.Println("Finished loading texture", name, "W:", tex.GetWidth(), "H:", tex.GetHeight(), "!")
@@ -114,38 +112,18 @@ func (rsmgr *ResourceManager) LoadLevel(name, path string, loadToGPU bool) {
 	level := rsmgr.loadLevel(name, path, false, loadToGPU)
 	fmt.Println("Loaded level")
 	if level != nil {
-		rsmgr.levels[name] = level
+		rsmgr.Levels[name] = level
 		log.Println("Finished loading Level", name, "!")
 	}
 }
 
-func (rsmgr *ResourceManager) processNode(node *assimp.Node, scene *assimp.Scene, level *Level, directory string, preloaded, loadToGPU bool) {
-	if node != scene.RootNode() {
-		model := &Model3D{}
-		model.Init(node, scene, level, directory, preloaded, loadToGPU)
-		if !preloaded {
-			if _, ok := rsmgr.models[model.Name]; ok {
-				log.Println("Model", model.Name, "has already been loaded! Overwritting ...")
-			}
-			rsmgr.models[model.Name] = model
-			log.Println("Finished loading Model", model.Name, "!")
-		} else {
-			rsmgr.preloadedModelsChan <- model
-		}
-
-	}
-	for i := 0; i < node.NumChildren(); i++ {
-		rsmgr.processNode(node.Children()[i], scene, level, directory, preloaded, loadToGPU)
-	}
-}
-
 func (rsmgr *ResourceManager) GetLevel(name string) *Level {
-	l := rsmgr.levels[name]
+	l := rsmgr.Levels[name]
 	return l
 }
 
 func (rsmgr *ResourceManager) GetModel(name string) *Model3D {
-	m := rsmgr.models[name]
+	m := rsmgr.Models[name]
 	return m
 }
 
@@ -158,7 +136,7 @@ func (rsmgr *ResourceManager) Terminate() {
 		v.Terminate()
 	}
 
-	for _, v := range rsmgr.models {
+	for _, v := range rsmgr.Models {
 		v.Terminate()
 	}
 }
@@ -192,27 +170,7 @@ func (rsmgr *ResourceManager) PreloadLevel(name, path string, loadToGPU bool) {
 }
 
 func (rsmgr *ResourceManager) loadLevel(name, path string, preloaded, loadToGPU bool) *Level {
-	if _, ok := rsmgr.levels[name]; ok {
-		log.Println("The level with the name", name, "has already been loaded!")
-		return nil
-	}
-	level := &Level{Name: name}
-	var scene *assimp.Scene
-	if scene = assimp.ImportFile(path, uint(assimp.Process_Triangulate|assimp.Process_FlipUVs|assimp.Process_GenNormals|assimp.Process_OptimizeMeshes)); scene == nil || (scene.Flags()&assimp.SceneFlags_Incomplete) != 0 || scene.RootNode() == nil {
-		log.Println("Couldn't load level", name, "with path", path, ":", assimp.GetErrorString())
-		return nil
-	}
-
-	directory := path
-	if index := strings.LastIndex(directory, "/"); index != -1 {
-		directory = directory[index:]
-	} else {
-		directory = ""
-	}
-
-	rsmgr.processNode(scene.RootNode(), scene, level, directory, preloaded, loadToGPU)
-
-	return level
+	return Framew.LoadLevel(rsmgr, name, path, preloaded, loadToGPU)
 }
 
 func (rsmgr *ResourceManager) loadShader(name, vertex_path, fragment_path, geometry_path, tesselletion_control_path, eveluation_path, compute_path string, preloaded bool) Shader {
@@ -274,7 +232,7 @@ func (rsmgr *ResourceManager) loadShader(name, vertex_path, fragment_path, geome
 	return shader
 }
 
-func (rsmgr *ResourceManager) loadTexture(name, path string, preloaded bool) Texture {
+func (rsmgr *ResourceManager) LoadTextureFunction(name, path string, preloaded bool) Texture {
 	if _, ok := rsmgr.textures[name]; ok {
 		log.Println("The texture", name, "has already been loaded")
 		return nil

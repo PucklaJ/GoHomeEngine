@@ -82,10 +82,10 @@ func (pl PointLight) SetUniforms(s Shader, arrayIndex uint32) error {
 	if err = s.SetUniformV3(POINT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+POSITION_UNIFORM_NAME, pl.Position); err != nil {
 		return err
 	}
-	if err = s.SetUniformV3(POINT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+DIFFUSE_COLOR_UNIFORM_NAME, colorToVec3(pl.DiffuseColor)); err != nil {
+	if err = s.SetUniformV3(POINT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+DIFFUSE_COLOR_UNIFORM_NAME, ColorToVec3(pl.DiffuseColor)); err != nil {
 		return err
 	}
-	if err = s.SetUniformV3(POINT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+SPECULAR_COLOR_UNIFORM_NAME, colorToVec3(pl.SpecularColor)); err != nil {
+	if err = s.SetUniformV3(POINT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+SPECULAR_COLOR_UNIFORM_NAME, ColorToVec3(pl.SpecularColor)); err != nil {
 		return err
 	}
 	if err = pl.Attentuation.SetUniforms(s, POINT_LIGHTS_UNIFORM_NAME, arrayIndex); err != nil {
@@ -95,19 +95,15 @@ func (pl PointLight) SetUniforms(s Shader, arrayIndex uint32) error {
 		return err
 	}
 	if pl.CastsShadows == 1 {
-		rnd, ok := Render.(*OpenGLRenderer)
-		if ok {
-			maxtextures := Render.GetMaxTextures()
-			if rnd.CurrentTextureUnit > uint32(maxtextures)-1 {
-				s.SetUniformI(POINT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+SHADOWMAP_UNIFORM_NAME, maxtextures-1)
-				s.SetUniformB(POINT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+CASTSSHADOWS_UNIFORM_NAME, 0)
-			} else {
-				pl.ShadowMap.Bind(rnd.CurrentTextureUnit)
-				// fmt.Println("Binding PointLight to ", rnd.CurrentTextureUnit)
-				s.SetUniformI(POINT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+SHADOWMAP_UNIFORM_NAME, int32(rnd.CurrentTextureUnit))
-				rnd.CurrentTextureUnit++
-			}
-
+		maxtextures := Render.GetMaxTextures()
+		currentTextureUnit := Render.NextTextureUnit()
+		if currentTextureUnit > uint32(maxtextures)-1 {
+			s.SetUniformI(POINT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+SHADOWMAP_UNIFORM_NAME, maxtextures-1)
+			s.SetUniformB(POINT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+CASTSSHADOWS_UNIFORM_NAME, 0)
+		} else {
+			pl.ShadowMap.Bind(currentTextureUnit)
+			// fmt.Println("Binding PointLight to ", rnd.CurrentTextureUnit)
+			s.SetUniformI(POINT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+SHADOWMAP_UNIFORM_NAME, int32(currentTextureUnit))
 		}
 		s.SetUniformF(POINT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+FAR_PLANE_UNIFORM_NAME, pl.FarPlane)
 		for i := 0; i < 6; i++ {
@@ -225,10 +221,10 @@ func (pl *DirectionalLight) SetUniforms(s Shader, arrayIndex uint32) error {
 	if err = s.SetUniformV3(DIRECTIONAL_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+DIRECTION_UNIFORM_NAME, pl.Direction); err != nil {
 		return err
 	}
-	if err = s.SetUniformV3(DIRECTIONAL_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+DIFFUSE_COLOR_UNIFORM_NAME, colorToVec3(pl.DiffuseColor)); err != nil {
+	if err = s.SetUniformV3(DIRECTIONAL_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+DIFFUSE_COLOR_UNIFORM_NAME, ColorToVec3(pl.DiffuseColor)); err != nil {
 		return err
 	}
-	if err = s.SetUniformV3(DIRECTIONAL_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+SPECULAR_COLOR_UNIFORM_NAME, colorToVec3(pl.SpecularColor)); err != nil {
+	if err = s.SetUniformV3(DIRECTIONAL_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+SPECULAR_COLOR_UNIFORM_NAME, ColorToVec3(pl.SpecularColor)); err != nil {
 		return err
 	}
 	if err = s.SetUniformM4(DIRECTIONAL_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+LIGHT_SPACE_MATRIX_UNIFORM_NAME, pl.LightSpaceMatrix); err != nil {
@@ -238,20 +234,17 @@ func (pl *DirectionalLight) SetUniforms(s Shader, arrayIndex uint32) error {
 		return err
 	}
 	if pl.CastsShadows == 1 {
-		rnd, ok := Render.(*OpenGLRenderer)
-		if ok {
-			maxtextures := Render.GetMaxTextures()
-			if rnd.CurrentTextureUnit >= uint32(maxtextures)-1 {
-				s.SetUniformI(DIRECTIONAL_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+SHADOWMAP_UNIFORM_NAME, 0)
-				s.SetUniformB(DIRECTIONAL_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+CASTSSHADOWS_UNIFORM_NAME, 0)
-			} else {
-				pl.ShadowMap.Bind(rnd.CurrentTextureUnit)
-				// fmt.Println("Binding Directional to ", rnd.CurrentTextureUnit)
-				s.SetUniformI(DIRECTIONAL_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+SHADOWMAP_UNIFORM_NAME, int32(rnd.CurrentTextureUnit))
-				rnd.CurrentTextureUnit++
-			}
-
+		maxtextures := Render.GetMaxTextures()
+		currentTextureUnit := Render.NextTextureUnit()
+		if currentTextureUnit >= uint32(maxtextures)-1 {
+			s.SetUniformI(DIRECTIONAL_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+SHADOWMAP_UNIFORM_NAME, 0)
+			s.SetUniformB(DIRECTIONAL_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+CASTSSHADOWS_UNIFORM_NAME, 0)
+		} else {
+			pl.ShadowMap.Bind(currentTextureUnit)
+			// fmt.Println("Binding Directional to ", rnd.CurrentTextureUnit)
+			s.SetUniformI(DIRECTIONAL_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+SHADOWMAP_UNIFORM_NAME, int32(currentTextureUnit))
 		}
+
 		s.SetUniformF(DIRECTIONAL_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+SHADOW_DISTANCE_UNIFORM_NAME, pl.ShadowDistance)
 	}
 
@@ -434,10 +427,10 @@ func (pl *SpotLight) SetUniforms(s Shader, arrayIndex uint32) error {
 	if err = s.SetUniformV3(SPOT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+DIRECTION_UNIFORM_NAME, pl.Direction); err != nil {
 		return err
 	}
-	if err = s.SetUniformV3(SPOT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+DIFFUSE_COLOR_UNIFORM_NAME, colorToVec3(pl.DiffuseColor)); err != nil {
+	if err = s.SetUniformV3(SPOT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+DIFFUSE_COLOR_UNIFORM_NAME, ColorToVec3(pl.DiffuseColor)); err != nil {
 		return err
 	}
-	if err = s.SetUniformV3(SPOT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+SPECULAR_COLOR_UNIFORM_NAME, colorToVec3(pl.SpecularColor)); err != nil {
+	if err = s.SetUniformV3(SPOT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+SPECULAR_COLOR_UNIFORM_NAME, ColorToVec3(pl.SpecularColor)); err != nil {
 		return err
 	}
 	if err = s.SetUniformF(SPOT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+INNERCUTOFF_UNIFORM_NAME, pl.InnerCutOff); err != nil {
@@ -456,20 +449,17 @@ func (pl *SpotLight) SetUniforms(s Shader, arrayIndex uint32) error {
 		return err
 	}
 	if pl.CastsShadows == 1 {
-		rnd, ok := Render.(*OpenGLRenderer)
-		if ok {
-			maxtextures := Render.GetMaxTextures()
-			if rnd.CurrentTextureUnit >= uint32(maxtextures)-1 {
-				s.SetUniformI(SPOT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+SHADOWMAP_UNIFORM_NAME, 0)
-				s.SetUniformB(SPOT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+CASTSSHADOWS_UNIFORM_NAME, 0)
-			} else {
-				pl.ShadowMap.Bind(rnd.CurrentTextureUnit)
-				// fmt.Println("Binding SpotLight to ", rnd.CurrentTextureUnit)
-				s.SetUniformI(SPOT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+SHADOWMAP_UNIFORM_NAME, int32(rnd.CurrentTextureUnit))
-				rnd.CurrentTextureUnit++
-			}
-
+		maxtextures := Render.GetMaxTextures()
+		currentTextureUnit := Render.NextTextureUnit()
+		if currentTextureUnit >= uint32(maxtextures)-1 {
+			s.SetUniformI(SPOT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+SHADOWMAP_UNIFORM_NAME, 0)
+			s.SetUniformB(SPOT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+CASTSSHADOWS_UNIFORM_NAME, 0)
+		} else {
+			pl.ShadowMap.Bind(currentTextureUnit)
+			// fmt.Println("Binding SpotLight to ", rnd.CurrentTextureUnit)
+			s.SetUniformI(SPOT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+SHADOWMAP_UNIFORM_NAME, int32(currentTextureUnit))
 		}
+
 	}
 	return nil
 }
@@ -568,12 +558,12 @@ func (this *LightCollection) RenderShadowMaps() {
 }
 
 type LightManager struct {
-	lightCollections       []LightCollection
+	LightCollections       []LightCollection
 	CurrentLightCollection int32
 }
 
 func (this *LightManager) Init() {
-	this.lightCollections = make([]LightCollection, 1)
+	this.LightCollections = make([]LightCollection, 1)
 	this.CurrentLightCollection = 0
 	ResourceMgr.LoadShader(SHADOWMAP_SHADER_NAME, "shadowMapVert.glsl", "shadowMapFrag.glsl", "", "", "", "")
 	ResourceMgr.LoadShader(SHADOWMAP_INSTANCED_SHADER_NAME, "shadowMapInstancedVert.glsl", "shadowMapFrag.glsl", "", "", "", "")
@@ -582,45 +572,45 @@ func (this *LightManager) Init() {
 }
 
 func (this *LightManager) Update() {
-	for i := 0; i < len(this.lightCollections); i++ {
-		this.lightCollections[i].RenderShadowMaps()
+	for i := 0; i < len(this.LightCollections); i++ {
+		this.LightCollections[i].RenderShadowMaps()
 	}
 }
 
 func (this *LightManager) SetAmbientLight(color color.Color, lightCollectionIndex uint32) {
-	if len(this.lightCollections) == 0 {
-		this.lightCollections = make([]LightCollection, 1)
-	} else if uint32(len(this.lightCollections)-1) < lightCollectionIndex {
-		this.lightCollections = append(this.lightCollections, make([]LightCollection, lightCollectionIndex-uint32(len(this.lightCollections)-1))...)
+	if len(this.LightCollections) == 0 {
+		this.LightCollections = make([]LightCollection, 1)
+	} else if uint32(len(this.LightCollections)-1) < lightCollectionIndex {
+		this.LightCollections = append(this.LightCollections, make([]LightCollection, lightCollectionIndex-uint32(len(this.LightCollections)-1))...)
 	}
-	this.lightCollections[lightCollectionIndex].AmbientLight = color
+	this.LightCollections[lightCollectionIndex].AmbientLight = color
 }
 
 func (this *LightManager) AddPointLight(pl *PointLight, lightCollectionIndex uint32) {
-	if len(this.lightCollections) == 0 {
-		this.lightCollections = make([]LightCollection, 1)
-	} else if uint32(len(this.lightCollections)-1) < lightCollectionIndex {
-		this.lightCollections = append(this.lightCollections, make([]LightCollection, lightCollectionIndex-uint32(len(this.lightCollections)-1))...)
+	if len(this.LightCollections) == 0 {
+		this.LightCollections = make([]LightCollection, 1)
+	} else if uint32(len(this.LightCollections)-1) < lightCollectionIndex {
+		this.LightCollections = append(this.LightCollections, make([]LightCollection, lightCollectionIndex-uint32(len(this.LightCollections)-1))...)
 	}
-	this.lightCollections[lightCollectionIndex].AddPointLight(pl)
+	this.LightCollections[lightCollectionIndex].AddPointLight(pl)
 }
 
 func (this *LightManager) AddDirectionalLight(pl *DirectionalLight, lightCollectionIndex uint32) {
-	if len(this.lightCollections) == 0 {
-		this.lightCollections = make([]LightCollection, 1)
-	} else if uint32(len(this.lightCollections)-1) < lightCollectionIndex {
-		this.lightCollections = append(this.lightCollections, make([]LightCollection, lightCollectionIndex-uint32(len(this.lightCollections)-1))...)
+	if len(this.LightCollections) == 0 {
+		this.LightCollections = make([]LightCollection, 1)
+	} else if uint32(len(this.LightCollections)-1) < lightCollectionIndex {
+		this.LightCollections = append(this.LightCollections, make([]LightCollection, lightCollectionIndex-uint32(len(this.LightCollections)-1))...)
 	}
-	this.lightCollections[lightCollectionIndex].AddDirectionalLight(pl)
+	this.LightCollections[lightCollectionIndex].AddDirectionalLight(pl)
 }
 
 func (this *LightManager) AddSpotLight(pl *SpotLight, lightCollectionIndex uint32) {
-	if len(this.lightCollections) == 0 {
-		this.lightCollections = make([]LightCollection, 1)
-	} else if uint32(len(this.lightCollections)-1) < lightCollectionIndex {
-		this.lightCollections = append(this.lightCollections, make([]LightCollection, lightCollectionIndex-uint32(len(this.lightCollections)-1))...)
+	if len(this.LightCollections) == 0 {
+		this.LightCollections = make([]LightCollection, 1)
+	} else if uint32(len(this.LightCollections)-1) < lightCollectionIndex {
+		this.LightCollections = append(this.LightCollections, make([]LightCollection, lightCollectionIndex-uint32(len(this.LightCollections)-1))...)
 	}
-	this.lightCollections[lightCollectionIndex].AddSpotLight(pl)
+	this.LightCollections[lightCollectionIndex].AddSpotLight(pl)
 }
 
 var LightMgr LightManager

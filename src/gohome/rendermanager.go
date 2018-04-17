@@ -94,7 +94,7 @@ type Viewport struct {
 
 type RenderManager struct {
 	renderObjects []RenderPair
-	currentShader Shader
+	CurrentShader Shader
 	camera2Ds     []*Camera2D
 	camera3Ds     []*Camera3D
 	viewport2Ds   []*Viewport
@@ -104,11 +104,11 @@ type RenderManager struct {
 	ForceShader3D Shader
 	ForceShader2D Shader
 
-	backBufferMS     RenderTexture
-	backBuffer       RenderTexture
-	backBuffer2D     RenderTexture
-	backBuffer3D     RenderTexture
-	backBufferShader Shader
+	BackBufferMS     RenderTexture
+	BackBuffer       RenderTexture
+	BackBuffer2D     RenderTexture
+	BackBuffer3D     RenderTexture
+	BackBufferShader Shader
 
 	PostProcessingShader Shader
 	renderScreenShader   Shader
@@ -121,15 +121,15 @@ type RenderManager struct {
 }
 
 func (rmgr *RenderManager) Init() {
-	rmgr.currentShader = nil
-	rmgr.backBufferMS = Render.CreateRenderTexture("BackBufferMS", uint32(Framew.WindowGetSize()[0]), uint32(Framew.WindowGetSize()[1]), 1, true, true, false, false)
-	rmgr.backBuffer = Render.CreateRenderTexture("BackBuffer", uint32(Framew.WindowGetSize()[0]), uint32(Framew.WindowGetSize()[1]), 1, true, false, false, false)
-	rmgr.backBuffer2D = Render.CreateRenderTexture("BackBuffer2D", uint32(Framew.WindowGetSize()[0]), uint32(Framew.WindowGetSize()[1]), 1, true, true, false, false)
-	rmgr.backBuffer3D = Render.CreateRenderTexture("BackBuffer3D", uint32(Framew.WindowGetSize()[0]), uint32(Framew.WindowGetSize()[1]), 1, true, true, false, false)
+	rmgr.CurrentShader = nil
+	rmgr.BackBufferMS = Render.CreateRenderTexture("BackBufferMS", uint32(Framew.WindowGetSize()[0]), uint32(Framew.WindowGetSize()[1]), 1, true, true, false, false)
+	rmgr.BackBuffer = Render.CreateRenderTexture("BackBuffer", uint32(Framew.WindowGetSize()[0]), uint32(Framew.WindowGetSize()[1]), 1, true, false, false, false)
+	rmgr.BackBuffer2D = Render.CreateRenderTexture("BackBuffer2D", uint32(Framew.WindowGetSize()[0]), uint32(Framew.WindowGetSize()[1]), 1, true, true, false, false)
+	rmgr.BackBuffer3D = Render.CreateRenderTexture("BackBuffer3D", uint32(Framew.WindowGetSize()[0]), uint32(Framew.WindowGetSize()[1]), 1, true, true, false, false)
 	ResourceMgr.LoadShader("BackBufferShader", "backBufferShaderVert.glsl", "backBufferShaderFrag.glsl", "", "", "", "")
 	ResourceMgr.LoadShader("PostProcessingShader", "postProcessingShaderVert.glsl", "postProcessingShaderFrag.glsl", "", "", "", "")
 	ResourceMgr.LoadShader("RenderScreenShader", "postProcessingShaderVert.glsl", "renderScreenFrag.glsl", "", "", "", "")
-	rmgr.backBufferShader = ResourceMgr.GetShader("BackBufferShader")
+	rmgr.BackBufferShader = ResourceMgr.GetShader("BackBufferShader")
 	rmgr.PostProcessingShader = ResourceMgr.GetShader("PostProcessingShader")
 	rmgr.renderScreenShader = ResourceMgr.GetShader("RenderScreenShader")
 	rmgr.AddViewport2D(&Viewport{
@@ -162,30 +162,30 @@ func (rmgr *RenderManager) RemoveObject(robj RenderObject, tobj TransformableObj
 func (rmgr *RenderManager) handleShader(robj RenderObject) {
 	shader := robj.GetShader()
 	if rmgr.ForceShader2D != nil && TYPE_2D.Compatible(robj.GetType()) {
-		if rmgr.currentShader != rmgr.ForceShader2D {
-			rmgr.currentShader = rmgr.ForceShader2D
-			if rmgr.currentShader != nil {
-				rmgr.currentShader.Use()
+		if rmgr.CurrentShader != rmgr.ForceShader2D {
+			rmgr.CurrentShader = rmgr.ForceShader2D
+			if rmgr.CurrentShader != nil {
+				rmgr.CurrentShader.Use()
 			}
 		}
 	} else if rmgr.ForceShader3D != nil && TYPE_3D.Compatible(robj.GetType()) {
-		if rmgr.currentShader != rmgr.ForceShader3D {
-			rmgr.currentShader = rmgr.ForceShader3D
-			if rmgr.currentShader != nil {
-				rmgr.currentShader.Use()
+		if rmgr.CurrentShader != rmgr.ForceShader3D {
+			rmgr.CurrentShader = rmgr.ForceShader3D
+			if rmgr.CurrentShader != nil {
+				rmgr.CurrentShader.Use()
 			}
 		}
 	} else {
-		if rmgr.currentShader == nil {
-			rmgr.currentShader = shader
-			if rmgr.currentShader != nil {
-				rmgr.currentShader.Use()
+		if rmgr.CurrentShader == nil {
+			rmgr.CurrentShader = shader
+			if rmgr.CurrentShader != nil {
+				rmgr.CurrentShader.Use()
 			}
-		} else if rmgr.currentShader != shader {
-			rmgr.currentShader.Unuse()
-			rmgr.currentShader = shader
-			if rmgr.currentShader != nil {
-				rmgr.currentShader.Use()
+		} else if rmgr.CurrentShader != shader {
+			rmgr.CurrentShader.Unuse()
+			rmgr.CurrentShader = shader
+			if rmgr.CurrentShader != nil {
+				rmgr.CurrentShader.Use()
 			}
 		}
 	}
@@ -193,36 +193,36 @@ func (rmgr *RenderManager) handleShader(robj RenderObject) {
 
 func (rmgr *RenderManager) updateCamera(robj RenderObject) {
 	if TYPE_2D.Compatible(robj.GetType()) {
-		if rmgr.currentCamera2D != nil && rmgr.currentShader != nil {
+		if rmgr.currentCamera2D != nil && rmgr.CurrentShader != nil {
 			rmgr.currentCamera2D.CalculateViewMatrix()
-			rmgr.currentShader.SetUniformM3("viewMatrix2D", rmgr.currentCamera2D.GetViewMatrix())
-		} else if rmgr.currentShader != nil {
-			rmgr.currentShader.SetUniformM3("viewMatrix2D", mgl32.Ident3())
+			rmgr.CurrentShader.SetUniformM3("viewMatrix2D", rmgr.currentCamera2D.GetViewMatrix())
+		} else if rmgr.CurrentShader != nil {
+			rmgr.CurrentShader.SetUniformM3("viewMatrix2D", mgl32.Ident3())
 		}
 	} else {
-		if rmgr.currentCamera3D != nil && rmgr.currentShader != nil {
+		if rmgr.currentCamera3D != nil && rmgr.CurrentShader != nil {
 			rmgr.currentCamera3D.CalculateViewMatrix()
-			rmgr.currentShader.SetUniformM4("viewMatrix3D", rmgr.currentCamera3D.GetViewMatrix())
-		} else if rmgr.currentShader != nil {
-			rmgr.currentShader.SetUniformM4("viewMatrix3D", mgl32.Ident4())
+			rmgr.CurrentShader.SetUniformM4("viewMatrix3D", rmgr.currentCamera3D.GetViewMatrix())
+		} else if rmgr.CurrentShader != nil {
+			rmgr.CurrentShader.SetUniformM4("viewMatrix3D", mgl32.Ident4())
 		}
 	}
 }
 
 func (rmgr *RenderManager) updateProjection(t RenderType) {
 	if TYPE_2D.Compatible(t) {
-		if rmgr.Projection2D != nil && rmgr.currentShader != nil {
+		if rmgr.Projection2D != nil && rmgr.CurrentShader != nil {
 			rmgr.Projection2D.CalculateProjectionMatrix()
-			rmgr.currentShader.SetUniformM4("projectionMatrix2D", rmgr.Projection2D.GetProjectionMatrix())
-		} else if rmgr.Projection2D == nil && rmgr.currentShader != nil {
-			rmgr.currentShader.SetUniformM4("projectionMatrix2D", mgl32.Ident4())
+			rmgr.CurrentShader.SetUniformM4("projectionMatrix2D", rmgr.Projection2D.GetProjectionMatrix())
+		} else if rmgr.Projection2D == nil && rmgr.CurrentShader != nil {
+			rmgr.CurrentShader.SetUniformM4("projectionMatrix2D", mgl32.Ident4())
 		}
 	} else {
-		if rmgr.Projection3D != nil && rmgr.currentShader != nil {
+		if rmgr.Projection3D != nil && rmgr.CurrentShader != nil {
 			rmgr.Projection3D.CalculateProjectionMatrix()
-			rmgr.currentShader.SetUniformM4("projectionMatrix3D", rmgr.Projection3D.GetProjectionMatrix())
-		} else if rmgr.Projection3D == nil && rmgr.currentShader != nil {
-			rmgr.currentShader.SetUniformM4("projectionMatrix3D", mgl32.Ident4())
+			rmgr.CurrentShader.SetUniformM4("projectionMatrix3D", rmgr.Projection3D.GetProjectionMatrix())
+		} else if rmgr.Projection3D == nil && rmgr.CurrentShader != nil {
+			rmgr.CurrentShader.SetUniformM4("projectionMatrix3D", mgl32.Ident4())
 		}
 	}
 }
@@ -241,70 +241,70 @@ func (rmgr *RenderManager) updateTransformMatrix(robj *RenderPair, t RenderType)
 }
 
 func (rmgr *RenderManager) updateLights(lightCollectionIndex int32) {
-	if rmgr.currentShader != nil {
-		if err := rmgr.currentShader.SetUniformLights(lightCollectionIndex); err != nil {
+	if rmgr.CurrentShader != nil {
+		if err := rmgr.CurrentShader.SetUniformLights(lightCollectionIndex); err != nil {
 			// fmt.Println("Error:", err)
 		}
 	}
 }
 
 func (rmgr *RenderManager) renderBackBuffers() {
-	rmgr.backBufferMS.SetAsTarget()
+	rmgr.BackBufferMS.SetAsTarget()
 
-	rmgr.backBufferShader.Use()
-	rmgr.backBufferShader.SetUniformI("backBuffer", 0)
-	rmgr.backBufferShader.SetUniformF("depth", 0.5)
-	rmgr.backBuffer3D.Bind(0)
+	rmgr.BackBufferShader.Use()
+	rmgr.BackBufferShader.SetUniformI("BackBuffer", 0)
+	rmgr.BackBufferShader.SetUniformF("depth", 0.5)
+	rmgr.BackBuffer3D.Bind(0)
 	Render.RenderBackBuffer()
 
-	rmgr.backBufferShader.SetUniformF("depth", 0.0)
-	rmgr.backBuffer2D.Bind(0)
+	rmgr.BackBufferShader.SetUniformF("depth", 0.0)
+	rmgr.BackBuffer2D.Bind(0)
 	Render.RenderBackBuffer()
-	rmgr.backBuffer2D.Unbind(0)
-	rmgr.backBufferShader.Unuse()
+	rmgr.BackBuffer2D.Unbind(0)
+	rmgr.BackBufferShader.Unuse()
 
-	rmgr.backBufferMS.UnsetAsTarget()
+	rmgr.BackBufferMS.UnsetAsTarget()
 }
 
 func (rmgr *RenderManager) render3D() {
-	rmgr.backBuffer3D.SetAsTarget()
+	rmgr.BackBuffer3D.SetAsTarget()
 	for i := 0; i < len(rmgr.viewport3Ds); i++ {
 		rmgr.Render(TYPE_3D, rmgr.viewport3Ds[i].CameraIndex, int32(i), LightMgr.CurrentLightCollection)
 	}
-	rmgr.backBuffer3D.UnsetAsTarget()
+	rmgr.BackBuffer3D.UnsetAsTarget()
 }
 
 func (rmgr *RenderManager) render2D() {
-	rmgr.backBuffer2D.SetAsTarget()
+	rmgr.BackBuffer2D.SetAsTarget()
 	for i := 0; i < len(rmgr.viewport2Ds); i++ {
 		rmgr.Render(TYPE_2D, rmgr.viewport2Ds[i].CameraIndex, int32(i), LightMgr.CurrentLightCollection)
 	}
-	rmgr.backBuffer2D.UnsetAsTarget()
+	rmgr.BackBuffer2D.UnsetAsTarget()
 }
 
 func (rmgr *RenderManager) GetBackBuffer() RenderTexture {
-	return rmgr.backBuffer
+	return rmgr.BackBuffer
 }
 
 func (rmgr *RenderManager) renderPostProcessing() {
-	rmgr.backBuffer.SetAsTarget()
+	rmgr.BackBuffer.SetAsTarget()
 
 	rmgr.PostProcessingShader.Use()
-	rmgr.PostProcessingShader.SetUniformI("backBuffer", 0)
-	rmgr.backBufferMS.Bind(0)
+	rmgr.PostProcessingShader.SetUniformI("BackBuffer", 0)
+	rmgr.BackBufferMS.Bind(0)
 	Render.RenderBackBuffer()
-	rmgr.backBufferMS.Unbind(0)
+	rmgr.BackBufferMS.Unbind(0)
 	rmgr.PostProcessingShader.Unuse()
 
-	rmgr.backBuffer.UnsetAsTarget()
+	rmgr.BackBuffer.UnsetAsTarget()
 }
 
 func (rmgr *RenderManager) renderToScreen() {
 	rmgr.renderScreenShader.Use()
-	rmgr.renderScreenShader.SetUniformI("backBuffer", 0)
-	rmgr.backBuffer.Bind(0)
+	rmgr.renderScreenShader.SetUniformI("BackBuffer", 0)
+	rmgr.BackBuffer.Bind(0)
 	Render.RenderBackBuffer()
-	rmgr.backBuffer.Unbind(0)
+	rmgr.BackBuffer.Unbind(0)
 	rmgr.renderScreenShader.Unuse()
 }
 
@@ -379,8 +379,8 @@ func (rmgr *RenderManager) Render(rtype RenderType, cameraIndex int32, viewportI
 
 	Render.SetWireFrame(rmgr.WireFrameMode)
 
-	if rmgr.currentShader != nil {
-		rmgr.currentShader.Use()
+	if rmgr.CurrentShader != nil {
+		rmgr.CurrentShader.Use()
 	}
 
 	for i := 0; i < len(rmgr.renderObjects); i++ {
@@ -392,8 +392,8 @@ func (rmgr *RenderManager) Render(rtype RenderType, cameraIndex int32, viewportI
 		Render.AfterRender()
 	}
 
-	if rmgr.currentShader != nil {
-		rmgr.currentShader.Unuse()
+	if rmgr.CurrentShader != nil {
+		rmgr.CurrentShader.Unuse()
 	}
 
 	Render.SetWireFrame(false)
@@ -448,14 +448,14 @@ func (rmgr *RenderManager) SetViewport3D(viewport *Viewport, index uint32) {
 }
 
 func (rmgr *RenderManager) setTransformMatrix2D(mat mgl32.Mat3) {
-	if rmgr.currentShader != nil {
-		rmgr.currentShader.SetUniformM3("transformMatrix2D", mat)
+	if rmgr.CurrentShader != nil {
+		rmgr.CurrentShader.SetUniformM3("transformMatrix2D", mat)
 	}
 }
 
 func (rmgr *RenderManager) setTransformMatrix3D(mat mgl32.Mat4) {
-	if rmgr.currentShader != nil {
-		rmgr.currentShader.SetUniformM4("transformMatrix3D", mat)
+	if rmgr.CurrentShader != nil {
+		rmgr.CurrentShader.SetUniformM4("transformMatrix3D", mat)
 	}
 }
 
@@ -468,10 +468,10 @@ func (rmgr *RenderManager) SetProjection3D(proj Projection) {
 }
 
 func (rmgr *RenderManager) Terminate() {
-	rmgr.backBufferMS.Terminate()
-	rmgr.backBuffer.Terminate()
-	rmgr.backBuffer2D.Terminate()
-	rmgr.backBuffer3D.Terminate()
+	rmgr.BackBufferMS.Terminate()
+	rmgr.BackBuffer.Terminate()
+	rmgr.BackBuffer2D.Terminate()
+	rmgr.BackBuffer3D.Terminate()
 	if len(rmgr.renderObjects) == 0 {
 		return
 	}

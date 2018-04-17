@@ -1,11 +1,9 @@
 package gohome
 
 import (
-	"fmt"
+	// "fmt"
 	"github.com/go-gl/mathgl/mgl32"
-	"github.com/raedatoui/assimp"
 	"image/color"
-	"log"
 	// "math"
 )
 
@@ -16,9 +14,9 @@ const (
 	MATERIAL_SPECULAR_TEXTURE_UNIFORM_NAME        string = "specularTexture"
 	MATERIAL_DIFFUSE_TEXTURE_UNIFORM_NAME         string = "diffuseTexture"
 	MATERIAL_SHINYNESS_UNIFORM_NAME               string = "shinyness"
-	MATERIAL_DIFFUSE_TEXTURE_LOADED_UNIFORM_NAME  string = "diffuseTextureLoaded"
-	MATERIAL_SPECULAR_TEXTURE_LOADED_UNIFORM_NAME string = "specularTextureLoaded"
-	MATERIAL_NORMALMAP_LOADED_UNIFORM_NAME        string = "normalMapLoaded"
+	MATERIAL_DIFFUSE_TEXTURE_LOADED_UNIFORM_NAME  string = "DiffuseTextureLoaded"
+	MATERIAL_SPECULAR_TEXTURE_LOADED_UNIFORM_NAME string = "SpecularTextureLoaded"
+	MATERIAL_NORMALMAP_LOADED_UNIFORM_NAME        string = "NormalMapLoaded"
 	MATERIAL_NORMALMAP_UNIFORM_NAME               string = "normalMap"
 )
 
@@ -27,6 +25,23 @@ type Color struct {
 	G uint8
 	B uint8
 	A uint8
+}
+
+func (this *Color) ToVec3() mgl32.Vec3 {
+	return mgl32.Vec3{
+		float32(this.R) / 255.0,
+		float32(this.G) / 255.0,
+		float32(this.B) / 255.0,
+	}
+}
+
+func (this *Color) ToVec4() mgl32.Vec4 {
+	return mgl32.Vec4{
+		float32(this.R) / 255.0,
+		float32(this.G) / 255.0,
+		float32(this.B) / 255.0,
+		float32(this.A) / 255.0,
+	}
 }
 
 func (this Color) RGBA() (uint32, uint32, uint32, uint32) {
@@ -43,13 +58,9 @@ type Material struct {
 
 	Shinyness float32
 
-	diffuseTextureLoaded  uint8
-	specularTextureLoaded uint8
-	normalMapLoaded       uint8
-}
-
-func convertAssimpColor(color assimp.Color4) *Color {
-	return &Color{uint8(color.R() * 255.0), uint8(color.G() * 255.0), uint8(color.B() * 255.0), uint8(color.A() * 255.0)}
+	DiffuseTextureLoaded  uint8
+	SpecularTextureLoaded uint8
+	NormalMapLoaded       uint8
 }
 
 func (mat *Material) InitDefault() {
@@ -57,97 +68,6 @@ func (mat *Material) InitDefault() {
 	mat.SpecularColor = &Color{255, 255, 255, 255}
 
 	mat.Shinyness = 0.5
-}
-
-func printProperties(material *assimp.Material) {
-	for i := 0; i < material.NumProperties(); i++ {
-		prop := material.Properties()[i]
-		fmt.Println("Prop", i)
-		fmt.Println("Index:", prop.Index())
-		// fmt.Println("Key:", prop.Key()+"\x00")
-		fmt.Println("Semantic:", prop.Semantic())
-		fmt.Println("Type:", prop.Type())
-		fmt.Println("DataLength: ", prop.DataLength())
-		// fmt.Print("Data:")
-		// for j := 0; j < prop.DataLength(); j++ {
-		// 	fmt.Println("j:", j)
-		// 	fmt.Print(prop.Data()[j])
-		// }
-		// fmt.Print("\n")
-	}
-}
-
-func (mat *Material) Init(material *assimp.Material, scene *assimp.Scene, directory string, preloaded bool) {
-	var ret assimp.Return
-	var matDifColor assimp.Color4
-	var matSpecColor assimp.Color4
-	var matShininess float32
-
-	matDifColor, ret = material.GetMaterialColor(assimp.MatKey_ColorDiffuse, 0, 0)
-	if ret == assimp.Return_Failure {
-		mat.DiffuseColor = &Color{255, 255, 255, 255}
-	} else {
-		mat.DiffuseColor = convertAssimpColor(matDifColor)
-	}
-	matSpecColor, ret = material.GetMaterialColor(assimp.MatKey_ColorSpecular, 0, 0)
-	if ret == assimp.Return_Failure {
-		mat.SpecularColor = &Color{255, 255, 255, 255}
-	} else {
-		mat.SpecularColor = convertAssimpColor(matSpecColor)
-	}
-	matShininess, ret = material.GetMaterialFloat(assimp.MatKey_Shininess, 0, 0)
-	if ret == assimp.Return_Failure {
-		mat.Shinyness = 0.0
-	} else {
-		mat.Shinyness = matShininess
-	}
-
-	diffuseTextures := material.GetMaterialTextureCount(1)
-	specularTextures := material.GetMaterialTextureCount(2)
-	normalMaps := material.GetMaterialTextureCount(6)
-	for i := 0; i < diffuseTextures; i++ {
-		texPath, _, _, _, _, _, _, ret := material.GetMaterialTexture(1, i)
-		if ret == assimp.Return_Failure {
-			log.Println("Couldn't return diffuse Texture")
-		} else {
-			if !preloaded {
-				ResourceMgr.LoadTexture(texPath, directory+texPath)
-				mat.DiffuseTexture = ResourceMgr.GetTexture(texPath)
-			} else {
-				mat.DiffuseTexture = ResourceMgr.loadTexture(texPath, directory+texPath, true)
-			}
-
-			break
-		}
-	}
-	for i := 0; i < specularTextures; i++ {
-		texPath, _, _, _, _, _, _, ret := material.GetMaterialTexture(2, i)
-		if ret == assimp.Return_Failure {
-			log.Println("Couldn't return specular Texture")
-		} else {
-			if !preloaded {
-				ResourceMgr.LoadTexture(texPath, directory+texPath)
-				mat.SpecularTexture = ResourceMgr.GetTexture(texPath)
-			} else {
-				mat.SpecularTexture = ResourceMgr.loadTexture(texPath, directory+texPath, true)
-			}
-			break
-		}
-	}
-	for i := 0; i < normalMaps; i++ {
-		texPath, _, _, _, _, _, _, ret := material.GetMaterialTexture(6, i)
-		if ret == assimp.Return_Failure {
-			log.Println("Couldn't return normal map")
-		} else {
-			if !preloaded {
-				ResourceMgr.LoadTexture(texPath, directory+texPath)
-				mat.NormalMap = ResourceMgr.GetTexture(texPath)
-			} else {
-				mat.NormalMap = ResourceMgr.loadTexture(texPath, directory+texPath, true)
-			}
-			break
-		}
-	}
 }
 
 func (mat *Material) SetTextures(diffuse, specular, normalMap string) {
@@ -167,7 +87,7 @@ func (mat *Material) SetColors(diffuse, specular color.Color) {
 	mat.SpecularColor = specular
 }
 
-func colorToVec3(c color.Color) mgl32.Vec3 {
+func ColorToVec3(c color.Color) mgl32.Vec3 {
 	if c == nil {
 		return [3]float32{0.0, 0.0, 0.0}
 	}
@@ -182,7 +102,7 @@ func colorToVec3(c color.Color) mgl32.Vec3 {
 	return vec
 }
 
-func colorToVec4(c color.Color) mgl32.Vec4 {
+func ColorToVec4(c color.Color) mgl32.Vec4 {
 	if c == nil {
 		return [4]float32{0.0, 0.0, 0.0, 0.0}
 	}

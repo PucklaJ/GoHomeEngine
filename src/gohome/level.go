@@ -2,7 +2,6 @@ package gohome
 
 import (
 	"github.com/go-gl/mathgl/mgl32"
-	"github.com/raedatoui/assimp"
 )
 
 type LevelTransformableObject struct {
@@ -21,14 +20,6 @@ type LevelObject struct {
 	Name      string
 	Transform LevelTransformableObject
 	Entity3D
-}
-
-func (this *LevelObject) SetTransform(mat assimp.Matrix4x4) {
-	for c := 0; c < 4; c++ {
-		for r := 0; r < 4; r++ {
-			this.Transform.TransformMatrix[this.Transform.TransformMatrix.Index(r, c)] = mat.Values()[c][r]
-		}
-	}
 }
 
 type Level struct {
