@@ -4,9 +4,9 @@ import (
 	// "encoding/binary"
 	"fmt"
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
-	"github.com/PucklaMotzer09/gohomeengine/src/renderers/OpenGLES"
+	// "github.com/PucklaMotzer09/gohomeengine/src/renderers/OpenGLES"
 	// "golang.org/x/mobile/exp/f32"
-	"golang.org/x/mobile/gl"
+	// "golang.org/x/mobile/gl"
 )
 
 type TestRenderObject struct {
@@ -61,9 +61,6 @@ func (this *TestScene2) Init() {
 
 	gohome.RenderMgr.EnableBackBuffer = true
 
-	render, _ := gohome.Render.(*renderer.OpenGLESRenderer)
-	gles = render.GetContext()
-
 	createMesh()
 	triangleShader = gohome.ResourceMgr.GetShader("Triangle")
 }
@@ -78,7 +75,6 @@ func (this *TestScene2) Terminate() {
 
 var triangle gohome.Mesh2D
 var triangleShader gohome.Shader
-var gles gl.Context
 
 func createMesh() {
 	var vertices []gohome.Mesh2DVertex = []gohome.Mesh2DVertex{
