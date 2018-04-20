@@ -60,6 +60,7 @@ struct DirectionalLight
 	mat4 lightSpaceMatrix;
 	sampler2D shadowmap;
 	bool castsShadows;
+	ivec2 shadowMapSize;
 
 	float shadowDistance;
 };
@@ -80,6 +81,7 @@ struct SpotLight
 	mat4 lightSpaceMatrix;
 	sampler2D shadowmap;
 	bool castsShadows;
+	ivec2 shadowMapSize;
 };
 
 
@@ -125,6 +127,7 @@ varying vec3 fragPos;
 varying vec3 fragNormal;
 varying mat3 fragToTangentSpace;
 varying mat4 fragViewMatrix3D;
+varying mat4 fragInverseViewMatrix3D;
 
 void main()
 {	
@@ -244,11 +247,32 @@ void calculateDirectionalLights()
 }
 void calculateSpotLights()
 {
-	uint i;
-	for(i=uint(0);i<numSpotLights&&i<uint(MAX_SPOT_LIGHTS);i++)
-	{
-		calculateSpotLight(spotLights[i]);
-	}	
+	// for(int i=0; i<numSpotLights && i<MAX_SPOT_LIGHTS ; i++)
+	// {
+	// 	calculateSpotLight(spotLights[i]);
+	// }
+	if(int(numSpotLights) > 0)
+		calculateSpotLight(spotLights[0]);
+	// if(int(numSpotLights) > 1)
+	// 	calculateSpotLight(spotLights[1]);
+	// if(int(numSpotLights) > 2)
+	// 	calculateSpotLight(spotLights[2]);
+	// if(int(numSpotLights) > 3)
+	// 	calculateSpotLight(spotLights[3]);
+	// if(int(numSpotLights) > 4)
+	// 	calculateSpotLight(spotLights[4]);
+	// if(int(numSpotLights) > 5)
+	// 	calculateSpotLight(spotLights[5]);
+	// if(int(numSpotLights) > 6)
+	// 	calculateSpotLight(spotLights[6]);
+	// if(int(numSpotLights) > 7)
+	// 	calculateSpotLight(spotLights[7]);
+	// if(int(numSpotLights) > 8)
+	// 	calculateSpotLight(spotLights[8]);
+	// if(int(numSpotLights) > 9)
+	// 	calculateSpotLight(spotLights[9]);
+	// if(int(numSpotLights) > 10)
+	// 	calculateSpotLight(spotLights[10]);
 }
 
 vec3 diffuseLighting(vec3 lightDir,vec3 diffuse)
@@ -267,7 +291,7 @@ vec3 specularLighting(vec3 lightDir,vec3 specular)
 	return specular;
 }
 
-float calcShadow(sampler2D shadowMap,mat4 lightSpaceMatrix,float shadowdistance,bool distanceTransition)
+float calcShadow(sampler2D shadowMap,mat4 lightSpaceMatrix,float shadowdistance,bool distanceTransition,ivec2 shadowMapSize)
 {	
 	float distance = 0.0;
 	if(distanceTransition)
@@ -277,17 +301,17 @@ float calcShadow(sampler2D shadowMap,mat4 lightSpaceMatrix,float shadowdistance,
 		distance = distance / transitionDistance;
 		distance = clamp(1.0-distance,0.0,1.0);
 	}
-	vec4 fragPosLightSpace = lightSpaceMatrix*inverse(fragViewMatrix3D)*vec4(fragPos,1.0);
+	vec4 fragPosLightSpace = lightSpaceMatrix*fragInverseViewMatrix3D*vec4(fragPos,1.0);
 	vec3 projCoords = clamp((fragPosLightSpace.xyz / fragPosLightSpace.w)*0.5+0.5,-1.0,1.0);
 	float currentDepth = projCoords.z-bias;
 	float shadowresult = 0.0;
 	float closestDepth = texture2D(shadowMap, projCoords.xy).r;
-	vec2 texelSize = 1.0 / vec2(textureSize(shadowMap, 0));
+	vec2 texelSize = 1.0 / vec2(shadowMapSize);
 	for(int x = -1; x <= 1; ++x)
 	{
 	    for(int y = -1; y <= 1; ++y)
 	    {
-	        float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r; 
+	        float pcfDepth = texture2D(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r; 
 	        shadowresult += currentDepth > pcfDepth ? 0.0 : 1.0;        
 	    }    
 	}
@@ -299,18 +323,22 @@ float calcShadow(sampler2D shadowMap,mat4 lightSpaceMatrix,float shadowdistance,
 	return shadowresult;
 }
 
-vec3 sampleOffsetDirections[20] = vec3[]
-(
-   vec3( 1,  1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1,  1,  1), 
-   vec3( 1,  1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1,  1, -1),
-   vec3( 1,  1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1,  1,  0),
-   vec3( 1,  0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1,  0, -1),
-   vec3( 0,  1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0,  1, -1)
-);   
+vec3 sampleOffsetDirections[20];
+
+void setOffsetDirections()
+{
+   sampleOffsetDirections[1] = vec3( 1,  1,  1); sampleOffsetDirections[2] = vec3( 1, -1,  1); sampleOffsetDirections[3] = vec3(-1, -1,  1); sampleOffsetDirections[4] = vec3(-1,  1,  1); 
+   sampleOffsetDirections[5] = vec3( 1,  1, -1); sampleOffsetDirections[6] = vec3( 1, -1, -1); sampleOffsetDirections[7] = vec3(-1, -1, -1); sampleOffsetDirections[8] = vec3(-1,  1, -1);
+   sampleOffsetDirections[9] = vec3( 1,  1,  0); sampleOffsetDirections[10] = vec3( 1, -1,  0); sampleOffsetDirections[11] = vec3(-1, -1,  0); sampleOffsetDirections[12] = vec3(-1,  1,  0);
+   sampleOffsetDirections[13] = vec3( 1,  0,  1); sampleOffsetDirections[14] = vec3(-1,  0,  1); sampleOffsetDirections[15] = vec3( 1,  0, -1); sampleOffsetDirections[15] = vec3(-1,  0, -1);
+   sampleOffsetDirections[17] = vec3( 0,  1,  1); sampleOffsetDirections[18] = vec3( 0, -1,  1); sampleOffsetDirections[19] = vec3( 0, -1, -1); sampleOffsetDirections[19] = vec3( 0,  1, -1);
+}
 
 float calcShadowPointLight(PointLight pl)
 {
-	vec3 fragToLight = (inverse(fragViewMatrix3D)*vec4(fragPos,1.0)).xyz - pl.position;
+	setOffsetDirections();
+
+	vec3 fragToLight = (fragInverseViewMatrix3D*vec4(fragPos,1.0)).xyz - pl.position;
 	float currentDepth = length(fragToLight)-bias*10.0*pl.farPlane;
 	float shadow  = 0.0;
 	int samples = 20;
@@ -370,7 +398,7 @@ void calculateDirectionalLight(DirectionalLight dl)
 	vec3 specular = specularLighting(lightDir,dl.specularColor);
 	
 	// Shadow
-	float shadow = dl.castsShadows ? calcShadow(dl.shadowmap,dl.lightSpaceMatrix,dl.shadowDistance,true) : 1.0;
+	float shadow = dl.castsShadows ? calcShadow(dl.shadowmap,dl.lightSpaceMatrix,dl.shadowDistance,true,dl.shadowMapSize) : 1.0;
 	
 	diffuse *= shadow;
 	specular *= shadow;
@@ -415,7 +443,7 @@ void calculateSpotLight(SpotLight pl)
 	float attent = calcAttentuation(lightPosition,pl.attentuation);
 
 	// Shadow
-	float shadow = pl.castsShadows ? calcShadow(pl.shadowmap,pl.lightSpaceMatrix,50.0,false) : 1.0;
+	float shadow = pl.castsShadows ? calcShadow(pl.shadowmap,pl.lightSpaceMatrix,50.0,false,pl.shadowMapSize) : 1.0;
 	// float shadow = 1.0;
 
 	diffuse *= attent * spotAmount * shadow;

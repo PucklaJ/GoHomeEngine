@@ -225,6 +225,51 @@ func (s *OpenGLShader) SetUniformV4(name string, value mgl32.Vec4) error {
 
 	return nil
 }
+func (s *OpenGLShader) SetUniformIV2(name string, value []int32) error {
+	var loc int32
+	var ok bool
+	if loc, ok = s.uniform_locations[name]; !ok {
+		loc = gl.GetUniformLocation(s.program, gl.Str(name+"\x00"))
+		s.uniform_locations[name] = loc
+	}
+	if loc == -1 {
+		return &OpenGLError{errorString: "Couldn't find uniform " + name + " in shader " + s.name}
+	}
+
+	gl.Uniform2i(loc, value[0], value[1])
+
+	return nil
+}
+func (s *OpenGLShader) SetUniformIV3(name string, value []int32) error {
+	var loc int32
+	var ok bool
+	if loc, ok = s.uniform_locations[name]; !ok {
+		loc = gl.GetUniformLocation(s.program, gl.Str(name+"\x00"))
+		s.uniform_locations[name] = loc
+	}
+	if loc == -1 {
+		return &OpenGLError{errorString: "Couldn't find uniform " + name + " in shader " + s.name}
+	}
+
+	gl.Uniform3i(loc, value[0], value[1], value[2])
+
+	return nil
+}
+func (s *OpenGLShader) SetUniformIV4(name string, value []int32) error {
+	var loc int32
+	var ok bool
+	if loc, ok = s.uniform_locations[name]; !ok {
+		loc = gl.GetUniformLocation(s.program, gl.Str(name+"\x00"))
+		s.uniform_locations[name] = loc
+	}
+	if loc == -1 {
+		return &OpenGLError{errorString: "Couldn't find uniform " + name + " in shader " + s.name}
+	}
+
+	gl.Uniform4i(loc, value[0], value[1], value[2], value[3])
+
+	return nil
+}
 func (s *OpenGLShader) SetUniformF(name string, value float32) error {
 	var loc int32
 	var ok bool

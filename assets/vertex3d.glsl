@@ -10,9 +10,11 @@ varying vec3 fragPos;
 varying vec3 fragNormal;
 varying mat3 fragToTangentSpace;
 varying mat4 fragViewMatrix3D;
+varying mat4 fragInverseViewMatrix3D;
 
 uniform mat4 transformMatrix3D;
 uniform mat4 viewMatrix3D;
+uniform mat4 inverseViewMatrix3D;
 uniform mat4 projectionMatrix3D;
 
 void main()
@@ -34,4 +36,5 @@ void main()
 	);
 
 	fragViewMatrix3D = viewMatrix3D;
+	fragInverseViewMatrix3D = inverseViewMatrix3D;
 }

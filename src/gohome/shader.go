@@ -23,6 +23,9 @@ type Shader interface {
 	SetUniformV2(name string, value mgl32.Vec2) error
 	SetUniformV3(name string, value mgl32.Vec3) error
 	SetUniformV4(name string, value mgl32.Vec4) error
+	SetUniformIV2(name string, value []int32) error
+	SetUniformIV3(name string, value []int32) error
+	SetUniformIV4(name string, value []int32) error
 	SetUniformF(name string, value float32) error
 	SetUniformI(name string, value int32) error
 	SetUniformUI(name string, value uint32) error

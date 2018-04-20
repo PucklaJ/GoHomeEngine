@@ -1,31 +1,20 @@
-#version 320 es
+#version 100
 
 precision mediump float;
-in vec2 fragTexCoords;
+varying vec2 fragTexCoords;
 
-out vec4 fragColor;
-
-precision mediump sampler2DMS;
-uniform sampler2DMS backBuffer;
+precision mediump sampler2D;
+uniform sampler2D backBuffer;
 
 vec4 fetchColor()
 {
-	vec4 color = vec4(0.0);
-	ivec2 texCoords = ivec2(ivec2(fragTexCoords) * textureSize(backBuffer));
-
-	for(int i = 0;i<8;i++)
-	{
-		color += texelFetch(backBuffer,texCoords,i);
-	}
-	color /= 8.0;
-
-	return color;
+	return texture2D(backBuffer,fragTexCoords);
 }
 
 void main()
 {
-	fragColor = fetchColor();
-	if(fragColor.a < 0.1)
+	gl_FragColor = fetchColor();
+	if(gl_FragColor.a < 0.1)
 	{
 		discard;
 	}

@@ -31,6 +31,7 @@ const (
 	CASTSSHADOWS_UNIFORM_NAME           string = "castsShadows"
 	SHADOW_DISTANCE_UNIFORM_NAME        string = "shadowDistance"
 	FAR_PLANE_UNIFORM_NAME              string = "farPlane"
+	SHADOWMAP_SIZE_UNIFORM_NAME         string = "shadowMapSize"
 
 	SHADOWMAP_SHADER_NAME                       string = "ShadowMap"
 	SHADOWMAP_INSTANCED_SHADER_NAME             string = "ShadowMapInstanced"
@@ -228,6 +229,12 @@ func (pl *DirectionalLight) SetUniforms(s Shader, arrayIndex uint32) error {
 		return err
 	}
 	if err = s.SetUniformM4(DIRECTIONAL_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+LIGHT_SPACE_MATRIX_UNIFORM_NAME, pl.LightSpaceMatrix); err != nil {
+		return err
+	}
+	size := make([]int32, 2)
+	size[0] = int32(pl.ShadowMap.GetWidth())
+	size[1] = int32(pl.ShadowMap.GetHeight())
+	if err = s.SetUniformIV2(DIRECTIONAL_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+SHADOWMAP_SIZE_UNIFORM_NAME, size); err != nil {
 		return err
 	}
 	if err = s.SetUniformB(DIRECTIONAL_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+CASTSSHADOWS_UNIFORM_NAME, pl.CastsShadows); err != nil {
@@ -445,6 +452,12 @@ func (pl *SpotLight) SetUniforms(s Shader, arrayIndex uint32) error {
 	if err = s.SetUniformM4(SPOT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+LIGHT_SPACE_MATRIX_UNIFORM_NAME, pl.LightSpaceMatrix); err != nil {
 		return err
 	}
+	size := make([]int32, 2)
+	size[0] = int32(pl.ShadowMap.GetWidth())
+	size[1] = int32(pl.ShadowMap.GetHeight())
+	if err = s.SetUniformIV2(SPOT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+SHADOWMAP_SIZE_UNIFORM_NAME, size); err != nil {
+		return err
+	}
 	if err = s.SetUniformB(SPOT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+CASTSSHADOWS_UNIFORM_NAME, pl.CastsShadows); err != nil {
 		return err
 	}
@@ -569,39 +582,6 @@ func (this *LightManager) Init() {
 	ResourceMgr.LoadShader(SHADOWMAP_INSTANCED_SHADER_NAME, "shadowMapInstancedVert.glsl", "shadowMapFrag.glsl", "", "", "", "")
 	ResourceMgr.LoadShader(POINT_LIGHT_SHADOWMAP_SHADER_NAME, "pointLightShadowMapVert.glsl", "pointLightShadowMapFrag.glsl", "pointLightShadowMapGeo.glsl", "", "", "")
 	ResourceMgr.LoadShader(POINT_LIGHT_SHADOWMAP_INSTANCED_SHADER_NAME, "pointLightShadowMapInstancedVert.glsl", "pointLightShadowMapFrag.glsl", "pointLightShadowMapGeo.glsl", "", "", "")
-	var temp Shader
-	temp = ResourceMgr.GetShader(SHADOWMAP_SHADER_NAME)
-	if temp != nil {
-		temp.AddAttribute("vertex", 0)
-		temp.AddAttribute("normal", 1)
-		temp.AddAttribute("texCoord", 2)
-		temp.AddAttribute("tangent", 3)
-	}
-
-	temp = ResourceMgr.GetShader(SHADOWMAP_INSTANCED_SHADER_NAME)
-	if temp != nil {
-		temp.AddAttribute("vertex", 0)
-		temp.AddAttribute("normal", 1)
-		temp.AddAttribute("texCoord", 2)
-		temp.AddAttribute("tangent", 3)
-		temp.AddAttribute("transformMatrix3D", 4)
-	}
-
-	temp = ResourceMgr.GetShader(POINT_LIGHT_SHADOWMAP_SHADER_NAME)
-	if temp != nil {
-		temp.AddAttribute("vertex", 0)
-		temp.AddAttribute("normal", 1)
-		temp.AddAttribute("texCoord", 2)
-		temp.AddAttribute("tangent", 3)
-	}
-	temp = ResourceMgr.GetShader(POINT_LIGHT_SHADOWMAP_INSTANCED_SHADER_NAME)
-	if temp != nil {
-		temp.AddAttribute("vertex", 0)
-		temp.AddAttribute("normal", 1)
-		temp.AddAttribute("texCoord", 2)
-		temp.AddAttribute("tangent", 3)
-		temp.AddAttribute("transformMatrix3D", 4)
-	}
 }
 
 func (this *LightManager) Update() {

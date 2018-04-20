@@ -1,9 +1,7 @@
-#version 320 es
+#version 100
 
 precision mediump float;
-in vec2 fragTexCoords;
-
-out vec4 fragColor;
+varying vec2 fragTexCoords;
 
 precision mediump sampler2D;
 uniform sampler2D backBuffer;
@@ -12,12 +10,12 @@ vec4 fetchColor()
 {
 	vec4 color = vec4(0.0);
 
-	color = texture(backBuffer,fragTexCoords);
+	color = texture2D(backBuffer,fragTexCoords);
 
 	return color;
 }
 
 void main()
 {
-	fragColor = fetchColor();
+	gl_FragColor = fetchColor();
 }

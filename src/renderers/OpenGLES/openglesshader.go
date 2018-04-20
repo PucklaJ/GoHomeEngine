@@ -6,6 +6,7 @@ import (
 	"golang.org/x/mobile/gl"
 	"strconv"
 	// "log"
+	"bytes"
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
 )
 
@@ -57,6 +58,73 @@ func getShaderTypeName(shader_type uint8) string {
 	return shader_type_name
 }
 
+func bindAttributesFromFile(program gl.Program, src string, gles gl.Context) {
+
+	var line bytes.Buffer
+	var lineString string
+	var attributeNames []string
+	var curChar byte = ' '
+	var curIndex uint32 = 0
+	var curWordIndex uint32 = 0
+	var curWord uint32 = 0
+	var wordBuffer bytes.Buffer
+	var wordsString []string
+	var readWord bool = false
+
+	for curIndex < uint32(len(src)) {
+		for curChar = ' '; curChar != '\n'; curChar = src[curIndex] {
+			line.WriteByte(curChar)
+			curIndex++
+			if curIndex == uint32(len(src)) {
+				break
+			}
+		}
+
+		lineString = line.String()
+		readWord = false
+		curWord = 0
+		for curWordIndex = 0; curWordIndex < uint32(len(lineString)); curWordIndex++ {
+			curChar = lineString[curWordIndex]
+			if curChar == ' ' {
+				if readWord {
+					wordsString[curWord] = wordBuffer.String()
+					wordBuffer.Reset()
+					curWord++
+					readWord = false
+				}
+			} else {
+				if !readWord {
+					readWord = true
+					wordsString = append(wordsString, string(' '))
+				}
+				wordBuffer.WriteByte(curChar)
+			}
+		}
+		if readWord {
+			wordsString[curWord] = wordBuffer.String()
+		}
+		wordBuffer.Reset()
+		line.Reset()
+		if len(wordsString) >= 2 {
+			if wordsString[0] == "void" && wordsString[1] == "main()" {
+				break
+			}
+		} else if len(wordsString) >= 3 {
+			if wordsString[0] == "attribute" {
+				if wordsString[2][len(wordsString[2])-1] == ';' {
+					wordsString[2] = wordsString[2][0 : len(wordsString[2])-1]
+				}
+				attributeNames = append(attributeNames, wordsString[2])
+			}
+		}
+		wordsString = append(wordsString[len(wordsString):], wordsString[:0]...)
+	}
+
+	for i := 0; i < len(attributeNames); i++ {
+		gles.BindAttribLocation(program, gl.Attrib{Value: uint(i)}, attributeNames[i])
+	}
+}
+
 func compileOpenGLESShader(shader_type gl.Enum, src string, program gl.Program, gles gl.Context) (gl.Shader, error) {
 	shader := gles.CreateShader(shader_type)
 	gles.ShaderSource(shader, src)
@@ -69,7 +137,9 @@ func compileOpenGLESShader(shader_type gl.Enum, src string, program gl.Program, 
 		return gl.Shader{0}, &OpenGLESError{errorString: logText}
 	}
 	gles.AttachShader(program, shader)
-
+	if shader_type == gl.VERTEX_SHADER {
+		bindAttributesFromFile(program, src, gles)
+	}
 	return shader, nil
 }
 
@@ -184,6 +254,51 @@ func (s *OpenGLESShader) SetUniformV4(name string, value mgl32.Vec4) error {
 		return &OpenGLESError{errorString: "Couldn't find uniform " + name + " in shader " + s.name}
 	}
 	s.gles.Uniform4f(loc, value[0], value[1], value[2], value[3])
+
+	return nil
+}
+func (s *OpenGLESShader) SetUniformIV2(name string, value []int32) error {
+	var loc gl.Uniform
+	var ok bool
+	if loc, ok = s.uniform_locations[name]; !ok {
+		loc = s.gles.GetUniformLocation(s.program, name)
+		s.uniform_locations[name] = loc
+	}
+	if loc.Value == -1 {
+		return &OpenGLESError{errorString: "Couldn't find uniform " + name + " in shader " + s.name}
+	}
+
+	s.gles.Uniform2i(loc, int(value[0]), int(value[1]))
+
+	return nil
+}
+func (s *OpenGLESShader) SetUniformIV3(name string, value []int32) error {
+	var loc gl.Uniform
+	var ok bool
+	if loc, ok = s.uniform_locations[name]; !ok {
+		loc = s.gles.GetUniformLocation(s.program, name)
+		s.uniform_locations[name] = loc
+	}
+	if loc.Value == -1 {
+		return &OpenGLESError{errorString: "Couldn't find uniform " + name + " in shader " + s.name}
+	}
+
+	s.gles.Uniform3i(loc, value[0], value[1], value[2])
+
+	return nil
+}
+func (s *OpenGLESShader) SetUniformIV4(name string, value []int32) error {
+	var loc gl.Uniform
+	var ok bool
+	if loc, ok = s.uniform_locations[name]; !ok {
+		loc = s.gles.GetUniformLocation(s.program, name)
+		s.uniform_locations[name] = loc
+	}
+	if loc.Value == -1 {
+		return &OpenGLESError{errorString: "Couldn't find uniform " + name + " in shader " + s.name}
+	}
+
+	s.gles.Uniform4i(loc, value[0], value[1], value[2], value[3])
 
 	return nil
 }

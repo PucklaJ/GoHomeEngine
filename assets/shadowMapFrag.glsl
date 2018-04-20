@@ -1,4 +1,4 @@
-#version 320 es
+#version 100
 
 precision mediump float;
 precision mediump sampler2D;
@@ -19,9 +19,8 @@ struct Material
 	float shinyness;
 };
 
-in VertexOut{
-	vec2 fragTexCoord;
-} FragIn;
+
+varying vec2 fragTexCoord;
 
 uniform Material material;
 
@@ -29,7 +28,7 @@ vec4 getDiffuseTexture()
 {
 	if(material.DiffuseTextureLoaded)
 	{
-		return texture(material.diffuseTexture,FragIn.fragTexCoord);
+		return texture2D(material.diffuseTexture,fragTexCoord);
 	}
 	else
 	{
