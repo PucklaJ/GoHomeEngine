@@ -7,7 +7,7 @@ import (
 type Renderer interface {
 	Init() error
 	Terminate()
-	ClearScreen(c color.Color, alpha float32)
+	ClearScreen(c color.Color)
 	LoadShader(name, vertex_contents, fragment_contents, geometry_contents, tesselletion_control_contents, eveluation_contents, compute_contents string) (Shader, error)
 	CreateTexture(name string, multiSampled bool) Texture
 	CreateMesh2D(name string) Mesh2D

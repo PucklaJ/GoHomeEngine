@@ -103,7 +103,7 @@ func (MainLoop) InnerLoop() {
 	UpdateMgr.Update(FPSLimit.DeltaTime)
 	LightMgr.Update()
 	InputMgr.Update(FPSLimit.DeltaTime)
-	Render.ClearScreen(colornames.Blue, 1.0)
+	Render.ClearScreen(colornames.Black)
 	RenderMgr.Update()
 	Framew.WindowSwap()
 	Framew.Update()

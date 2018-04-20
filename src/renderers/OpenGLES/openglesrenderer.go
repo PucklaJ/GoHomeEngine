@@ -18,22 +18,50 @@ func (this *OpenGLESError) Error() string {
 type OpenGLESRenderer struct {
 	gles               gl.Context
 	CurrentTextureUnit uint32
-	backBufferVao      gl.VertexArray
+	backBufferMesh     *OpenGLESMesh2D
+}
+
+func (this *OpenGLESRenderer) createBackBufferMesh() {
+	this.backBufferMesh = CreateOpenGLESMesh2D("BackBufferMesh")
+
+	var vertices []gohome.Mesh2DVertex = make([]gohome.Mesh2DVertex, 4)
+	var indices []uint32 = make([]uint32, 6)
+
+	vertices[0].Vertex(-1.0, -1.0)
+	vertices[1].Vertex(1.0, -1.0)
+	vertices[2].Vertex(1.0, 1.0)
+	vertices[3].Vertex(-1.0, 1.0)
+
+	vertices[0].TexCoord(0.0, 0.0)
+	vertices[1].TexCoord(1.0, 0.0)
+	vertices[2].TexCoord(1.0, 1.0)
+	vertices[3].TexCoord(0.0, 1.0)
+
+	indices[0] = 0
+	indices[1] = 1
+	indices[2] = 2
+	indices[3] = 2
+	indices[4] = 3
+	indices[5] = 0
+
+	this.backBufferMesh.AddVertices(vertices, indices)
+	this.backBufferMesh.Load()
 }
 
 func (this *OpenGLESRenderer) Init() error {
 	this.CurrentTextureUnit = 0
 
-	fmt.Println("Version:", gl.Version())
+	version := this.gles.GetString(gl.VERSION)
+	fmt.Println("Version:", version)
 
-	this.backBufferVao = this.gles.CreateVertexArray()
+	this.createBackBufferMesh()
 
 	return nil
 }
 func (this *OpenGLESRenderer) Terminate() {
-
+	this.backBufferMesh.Terminate()
 }
-func (this *OpenGLESRenderer) ClearScreen(c color.Color, alpha float32) {
+func (this *OpenGLESRenderer) ClearScreen(c color.Color) {
 	col := gohome.ColorToVec4(c)
 	this.gles.ClearColor(col.X(), col.Y(), col.Z(), col.W())
 	this.gles.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT)
@@ -96,19 +124,19 @@ func (this *OpenGLESRenderer) LoadShader(name, vertex_contents, fragment_content
 	return shader, nil
 }
 func (this *OpenGLESRenderer) CreateTexture(name string, multiSampled bool) gohome.Texture {
-	return nil
+	return CreateOpenGLESTexture(name)
 }
 func (this *OpenGLESRenderer) CreateMesh2D(name string) gohome.Mesh2D {
-	return nil
+	return CreateOpenGLESMesh2D(name)
 }
 func (this *OpenGLESRenderer) CreateMesh3D(name string) gohome.Mesh3D {
 	return nil
 }
 func (this *OpenGLESRenderer) CreateRenderTexture(name string, width, height, textures uint32, depthBuffer, multiSampled, shadowMap, cubeMap bool) gohome.RenderTexture {
-	return nil
+	return CreateOpenGLESRenderTexture(name, width, height, textures, depthBuffer, shadowMap, cubeMap)
 }
 func (this *OpenGLESRenderer) CreateCubeMap(name string) gohome.CubeMap {
-	return nil
+	return CreateOpenGLESCubeMap(name)
 }
 func (this *OpenGLESRenderer) CreateInstancedMesh3D(name string) gohome.InstancedMesh3D {
 	return nil
@@ -117,7 +145,7 @@ func (this *OpenGLESRenderer) SetWireFrame(b bool) {
 
 }
 func (this *OpenGLESRenderer) SetViewport(viewport gohome.Viewport) {
-
+	this.gles.Viewport(viewport.X, viewport.Y, viewport.Width, viewport.Height)
 }
 func (this *OpenGLESRenderer) GetViewport() gohome.Viewport {
 	var data [4]int32
@@ -132,10 +160,18 @@ func (this *OpenGLESRenderer) GetViewport() gohome.Viewport {
 	}
 }
 func (this *OpenGLESRenderer) SetNativeResolution(width, height uint32) {
-
+	gohome.RenderMgr.BackBuffer2D.ChangeSize(width, height)
+	gohome.RenderMgr.BackBuffer3D.ChangeSize(width, height)
+	gohome.RenderMgr.BackBufferMS.ChangeSize(width, height)
+	gohome.RenderMgr.BackBuffer.ChangeSize(width, height)
 }
 func (this *OpenGLESRenderer) GetNativeResolution() (uint32, uint32) {
-	return 0, 0
+	var width, height uint32
+
+	width = uint32(gohome.RenderMgr.GetBackBuffer().GetWidth())
+	height = uint32(gohome.RenderMgr.GetBackBuffer().GetHeight())
+
+	return width, height
 }
 func (this *OpenGLESRenderer) OnResize(newWidth, newHeight uint32) {
 
@@ -147,9 +183,7 @@ func (this *OpenGLESRenderer) AfterRender() {
 	this.CurrentTextureUnit = 1
 }
 func (this *OpenGLESRenderer) RenderBackBuffer() {
-	// this.gles.BindVertexArray(this.backBufferVao)
-	// this.gles.DrawArrays(gl.TRIANGLES, 0, 6)
-	// this.gles.BindVertexArray(gl.VertexArray{0})
+	this.backBufferMesh.Render()
 }
 func (this *OpenGLESRenderer) SetBacckFaceCulling(b bool) {
 	if b {
@@ -174,4 +208,8 @@ func (this *OpenGLESRenderer) DecrementTextureUnit(amount uint32) {
 
 func (this *OpenGLESRenderer) SetOpenGLESContex(context gl.Context) {
 	this.gles = context
+}
+
+func (this *OpenGLESRenderer) GetContext() gl.Context {
+	return this.gles
 }

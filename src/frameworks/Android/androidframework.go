@@ -32,6 +32,8 @@ func (this *AndroidFramework) Init(ml *gohome.MainLoop) error {
 	return nil
 }
 func androidFrameworkmain(a app.App) {
+	fmt.Println("Starting App ...")
+
 	var androidFramework *AndroidFramework
 	androidFramework = gohome.Framew.(*AndroidFramework)
 	androidFramework.appl = a

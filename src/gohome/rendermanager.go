@@ -118,6 +118,8 @@ type RenderManager struct {
 	currentCamera2D *Camera2D
 	currentCamera3D *Camera3D
 	currentViewport *Viewport
+
+	EnableBackBuffer bool
 }
 
 func (rmgr *RenderManager) Init() {
@@ -145,6 +147,8 @@ func (rmgr *RenderManager) Init() {
 		int(Framew.WindowGetSize()[0]),
 		int(Framew.WindowGetSize()[1]),
 	})
+
+	rmgr.EnableBackBuffer = true
 }
 
 func (rmgr *RenderManager) AddObject(robj RenderObject, tobj TransformableObject) {
@@ -250,6 +254,10 @@ func (rmgr *RenderManager) updateLights(lightCollectionIndex int32) {
 }
 
 func (rmgr *RenderManager) renderBackBuffers() {
+	if !rmgr.EnableBackBuffer {
+		return
+	}
+
 	if rmgr.BackBufferMS != nil {
 		rmgr.BackBufferMS.SetAsTarget()
 	}
@@ -284,25 +292,25 @@ func (rmgr *RenderManager) renderBackBuffers() {
 }
 
 func (rmgr *RenderManager) render3D() {
-	if rmgr.BackBuffer3D != nil {
+	if rmgr.BackBuffer3D != nil && rmgr.EnableBackBuffer {
 		rmgr.BackBuffer3D.SetAsTarget()
 	}
 	for i := 0; i < len(rmgr.viewport3Ds); i++ {
 		rmgr.Render(TYPE_3D, rmgr.viewport3Ds[i].CameraIndex, int32(i), LightMgr.CurrentLightCollection)
 	}
-	if rmgr.BackBuffer3D != nil {
+	if rmgr.BackBuffer3D != nil && rmgr.EnableBackBuffer {
 		rmgr.BackBuffer3D.UnsetAsTarget()
 	}
 }
 
 func (rmgr *RenderManager) render2D() {
-	if rmgr.BackBuffer2D != nil {
+	if rmgr.BackBuffer2D != nil && rmgr.EnableBackBuffer {
 		rmgr.BackBuffer2D.SetAsTarget()
 	}
 	for i := 0; i < len(rmgr.viewport2Ds); i++ {
 		rmgr.Render(TYPE_2D, rmgr.viewport2Ds[i].CameraIndex, int32(i), LightMgr.CurrentLightCollection)
 	}
-	if rmgr.BackBuffer2D != nil {
+	if rmgr.BackBuffer2D != nil && rmgr.EnableBackBuffer {
 		rmgr.BackBuffer2D.UnsetAsTarget()
 	}
 }
@@ -312,6 +320,10 @@ func (rmgr *RenderManager) GetBackBuffer() RenderTexture {
 }
 
 func (rmgr *RenderManager) renderPostProcessing() {
+	if !rmgr.EnableBackBuffer {
+		return
+	}
+
 	if rmgr.BackBuffer != nil {
 		rmgr.BackBuffer.SetAsTarget()
 	}
@@ -337,6 +349,10 @@ func (rmgr *RenderManager) renderPostProcessing() {
 }
 
 func (rmgr *RenderManager) renderToScreen() {
+	if !rmgr.EnableBackBuffer {
+		return
+	}
+
 	if rmgr.renderScreenShader != nil {
 		rmgr.renderScreenShader.Use()
 		rmgr.renderScreenShader.SetUniformI("BackBuffer", 0)

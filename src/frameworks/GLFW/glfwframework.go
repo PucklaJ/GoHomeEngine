@@ -6,6 +6,7 @@ import (
 	"github.com/PucklaMotzer09/gohomeengine/src/loaders/assimp"
 	"github.com/go-gl/glfw/v3.2/glfw"
 	"github.com/go-gl/mathgl/mgl32"
+	"io"
 	"math"
 	"os"
 )

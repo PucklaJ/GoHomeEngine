@@ -165,7 +165,7 @@ func (this *PointLight) RenderShadowMap() {
 	cameras[5].Up = mgl32.Vec3{0.0, -1.0, 0.0}
 
 	this.ShadowMap.SetAsTarget()
-	Render.ClearScreen(&Color{0, 0, 0, 0}, 1.0)
+	Render.ClearScreen(&Color{0, 0, 0, 255})
 	Render.SetBacckFaceCulling(false)
 
 	shader := ResourceMgr.GetShader(POINT_LIGHT_SHADOWMAP_SHADER_NAME)
@@ -390,7 +390,7 @@ func (this *DirectionalLight) RenderShadowMap() {
 	RenderMgr.SetProjection3D(&projection)
 
 	this.ShadowMap.SetAsTarget()
-	Render.ClearScreen(&Color{0, 0, 0, 0}, 1.0)
+	Render.ClearScreen(&Color{0, 0, 0, 255})
 	Render.SetBacckFaceCulling(false)
 
 	RenderMgr.ForceShader3D = ResourceMgr.GetShader(SHADOWMAP_SHADER_NAME)
@@ -519,7 +519,7 @@ func (this *SpotLight) RenderShadowMap() {
 	RenderMgr.SetCamera3D(&camera, 6)
 
 	this.ShadowMap.SetAsTarget()
-	Render.ClearScreen(&Color{0, 0, 0, 0}, 1.0)
+	Render.ClearScreen(&Color{0, 0, 0, 255})
 	Render.SetBacckFaceCulling(false)
 
 	RenderMgr.ForceShader3D = ResourceMgr.GetShader(SHADOWMAP_SHADER_NAME)

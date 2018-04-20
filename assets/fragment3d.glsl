@@ -4,28 +4,12 @@ precision mediump float;
 precision mediump sampler2D;
 precision mediump samplerCube;
 
-#define MAX_POINT_LIGHTS 20
+#define MAX_POINT_LIGHTS 5
 #define MAX_DIRECTIONAL_LIGHTS 2
 #define MAX_SPOT_LIGHTS 1
 
 #define MAX_SPECULAR_EXPONENT 50.0
 #define MIN_SPECULAR_EXPONENT 5.0
-
-struct Material
-{
-	vec3 diffuseColor;
-	vec3 specularColor;
-
-	sampler2D diffuseTexture;
-	sampler2D specularTexture;
-	sampler2D normalMap;
-
-	bool DiffuseTextureLoaded;
-	bool SpecularTextureLoaded;
-	bool NormalMapLoaded;
-
-	float shinyness;
-};
 
 struct Attentuation
 {
@@ -34,7 +18,17 @@ struct Attentuation
 	float quadratic;
 };
 
-struct PointLight
+
+
+const float shadowDistance = 50.0;
+const float transitionDistance = 5.0;
+const float bias = 0.005;
+
+uniform int numPointLights;
+uniform int numDirectionalLights;
+uniform int numSpotLights;
+uniform vec3 ambientLight;
+uniform struct PointLight
 {
 	vec3 position;
 
@@ -48,9 +42,8 @@ struct PointLight
 	bool castsShadows;
 
 	float farPlane;
-};
-
-struct DirectionalLight
+} pointLights[MAX_POINT_LIGHTS];
+uniform struct DirectionalLight
 {
 	vec3 direction;
 
@@ -63,9 +56,8 @@ struct DirectionalLight
 	ivec2 shadowMapSize;
 
 	float shadowDistance;
-};
-
-struct SpotLight
+} directionalLights[MAX_DIRECTIONAL_LIGHTS];
+uniform struct SpotLight
 {
 	vec3 position;
 	vec3 direction;
@@ -82,22 +74,22 @@ struct SpotLight
 	sampler2D shadowmap;
 	bool castsShadows;
 	ivec2 shadowMapSize;
-};
+} spotLights[MAX_SPOT_LIGHTS];
+uniform struct Material
+{
+	vec3 diffuseColor;
+	vec3 specularColor;
 
+	sampler2D diffuseTexture;
+	sampler2D specularTexture;
+	sampler2D normalMap;
 
+	bool DiffuseTextureLoaded;
+	bool SpecularTextureLoaded;
+	bool NormalMapLoaded;
 
-const float shadowDistance = 50.0;
-const float transitionDistance = 5.0;
-const float bias = 0.005;
-
-uniform int numPointLights;
-uniform int numDirectionalLights;
-uniform int numSpotLights;
-uniform vec3 ambientLight;
-uniform PointLight[MAX_POINT_LIGHTS] pointLights;
-uniform DirectionalLight[MAX_DIRECTIONAL_LIGHTS] directionalLights;
-uniform SpotLight[MAX_SPOT_LIGHTS] spotLights;
-uniform Material material;
+	float shinyness;
+} material;
 
 void calculatePointLight(PointLight pl);
 void calculateDirectionalLight(DirectionalLight pl);
@@ -195,55 +187,129 @@ void calculatePointLights()
 	// 	calculatePointLight(pointLights[i]);
 	// }
 
+	#if MAX_POINT_LIGHTS > 0
 	if(int(numPointLights) > 0)
 		calculatePointLight(pointLights[0]);
+	#endif
+	#if MAX_POINT_LIGHTS > 1
 	if(int(numPointLights) > 1)
 		calculatePointLight(pointLights[1]);
+	#endif
+	#if MAX_POINT_LIGHTS > 2
 	if(int(numPointLights) > 2)
 		calculatePointLight(pointLights[2]);
+	#endif
+	#if MAX_POINT_LIGHTS > 3
 	if(int(numPointLights) > 3)
 		calculatePointLight(pointLights[3]);
+	#endif
+	#if MAX_POINT_LIGHTS > 4
 	if(int(numPointLights) > 4)
 		calculatePointLight(pointLights[4]);
+	#endif
+	#if MAX_POINT_LIGHTS > 5
 	if(int(numPointLights) > 5)
 		calculatePointLight(pointLights[5]);
+	#endif
+	#if MAX_POINT_LIGHTS > 6
 	if(int(numPointLights) > 6)
 		calculatePointLight(pointLights[6]);
+	#endif
+	#if MAX_POINT_LIGHTS > 7
 	if(int(numPointLights) > 7)
 		calculatePointLight(pointLights[7]);
+	#endif
+	#if MAX_POINT_LIGHTS > 8
 	if(int(numPointLights) > 8)
 		calculatePointLight(pointLights[8]);
+	#endif
+	#if MAX_POINT_LIGHTS > 9
 	if(int(numPointLights) > 9)
 		calculatePointLight(pointLights[9]);
+	#endif
+	#if MAX_POINT_LIGHTS > 10
 	if(int(numPointLights) > 10)
 		calculatePointLight(pointLights[10]);
+	#endif
+	#if MAX_POINT_LIGHTS > 11
 	if(int(numPointLights) > 11)
 		calculatePointLight(pointLights[11]);
+	#endif
+	#if MAX_POINT_LIGHTS > 12
 	if(int(numPointLights) > 12)
 		calculatePointLight(pointLights[12]);
+	#endif
+	#if MAX_POINT_LIGHTS > 13
 	if(int(numPointLights) > 13)
 		calculatePointLight(pointLights[13]);
+	#endif
+	#if MAX_POINT_LIGHTS > 14
 	if(int(numPointLights) > 14)
 		calculatePointLight(pointLights[14]);
+	#endif
+	#if MAX_POINT_LIGHTS > 15
 	if(int(numPointLights) > 15)
 		calculatePointLight(pointLights[15]);
+	#endif
+	#if MAX_POINT_LIGHTS > 16
 	if(int(numPointLights) > 16)
 		calculatePointLight(pointLights[16]);
+	#endif
+	#if MAX_POINT_LIGHTS > 17
 	if(int(numPointLights) > 17)
 		calculatePointLight(pointLights[17]);
+	#endif
+	#if MAX_POINT_LIGHTS > 18
 	if(int(numPointLights) > 18)
 		calculatePointLight(pointLights[18]);
+	#endif
+	#if MAX_POINT_LIGHTS > 19
 	if(int(numPointLights) > 19)
 		calculatePointLight(pointLights[19]);
-	// if(int(numPointLights) > 20)
-	// 	calculatePointLight(pointLights[20]);
+	#endif
+	#if MAX_POINT_LIGHTS > 20
+	if(int(numPointLights) > 20)
+		calculatePointLight(pointLights[20]);
+	#endif
 }
 void calculateDirectionalLights()
 {	
+	#if MAX_DIRECTIONAL_LIGHTS > 0
 	if(int(numDirectionalLights) > 0)
 		calculateDirectionalLight(directionalLights[0]);
+	#endif
+	#if MAX_DIRECTIONAL_LIGHTS > 1
 	if(int(numDirectionalLights) > 1)
 		calculateDirectionalLight(directionalLights[1]);
+	#endif
+	#if MAX_DIRECTIONAL_LIGHTS > 2
+	if(int(numDirectionalLights) > 2)
+		calculateDirectionalLight(directionalLights[2]);
+	#endif
+	#if MAX_DIRECTIONAL_LIGHTS > 3
+	if(int(numDirectionalLights) > 3)
+		calculateDirectionalLight(directionalLights[3]);
+	#endif
+	#if MAX_DIRECTIONAL_LIGHTS > 4
+	if(int(numDirectionalLights) > 4)
+		calculateDirectionalLight(directionalLights[4]);
+	#endif
+	#if MAX_DIRECTIONAL_LIGHTS > 5
+	if(int(numDirectionalLights) > 5)
+		calculateDirectionalLight(directionalLights[5]);
+	#endif
+	#if MAX_DIRECTIONAL_LIGHTS > 6
+	if(int(numDirectionalLights) > 6)
+		calculateDirectionalLight(directionalLights[6]);
+	#endif
+	#if MAX_DIRECTIONAL_LIGHTS > 7
+	if(int(numDirectionalLights) > 7)
+		calculateDirectionalLight(directionalLights[7]);
+	#endif
+	#if MAX_DIRECTIONAL_LIGHTS > 8
+	if(int(numDirectionalLights) > 8)
+		calculateDirectionalLight(directionalLights[8]);
+	#endif
 }
 void calculateSpotLights()
 {
@@ -251,28 +317,74 @@ void calculateSpotLights()
 	// {
 	// 	calculateSpotLight(spotLights[i]);
 	// }
+	#if MAX_SPOT_LIGHTS > 0
 	if(int(numSpotLights) > 0)
 		calculateSpotLight(spotLights[0]);
-	// if(int(numSpotLights) > 1)
-	// 	calculateSpotLight(spotLights[1]);
-	// if(int(numSpotLights) > 2)
-	// 	calculateSpotLight(spotLights[2]);
-	// if(int(numSpotLights) > 3)
-	// 	calculateSpotLight(spotLights[3]);
-	// if(int(numSpotLights) > 4)
-	// 	calculateSpotLight(spotLights[4]);
-	// if(int(numSpotLights) > 5)
-	// 	calculateSpotLight(spotLights[5]);
-	// if(int(numSpotLights) > 6)
-	// 	calculateSpotLight(spotLights[6]);
-	// if(int(numSpotLights) > 7)
-	// 	calculateSpotLight(spotLights[7]);
-	// if(int(numSpotLights) > 8)
-	// 	calculateSpotLight(spotLights[8]);
-	// if(int(numSpotLights) > 9)
-	// 	calculateSpotLight(spotLights[9]);
-	// if(int(numSpotLights) > 10)
-	// 	calculateSpotLight(spotLights[10]);
+	#endif
+	#if MAX_SPOT_LIGHTS > 1
+	if(int(numSpotLights) > 1)
+		calculateSpotLight(spotLights[1]);
+	#endif
+	#if MAX_SPOT_LIGHTS > 2
+	if(int(numSpotLights) > 2)
+		calculateSpotLight(spotLights[2]);
+	#endif
+	#if MAX_SPOT_LIGHTS > 3
+	if(int(numSpotLights) > 3)
+		calculateSpotLight(spotLights[3]);
+	#endif
+	#if MAX_SPOT_LIGHTS > 4
+	if(int(numSpotLights) > 4)
+		calculateSpotLight(spotLights[4]);
+	#endif
+	#if MAX_SPOT_LIGHTS > 5
+	if(int(numSpotLights) > 5)
+		calculateSpotLight(spotLights[5]);
+	#endif
+	#if MAX_SPOT_LIGHTS > 6
+	if(int(numSpotLights) > 6)
+		calculateSpotLight(spotLights[6]);
+	#endif
+	#if MAX_SPOT_LIGHTS > 7
+	if(int(numSpotLights) > 7)
+		calculateSpotLight(spotLights[7]);
+	#endif
+	#if MAX_SPOT_LIGHTS > 8
+	if(int(numSpotLights) > 8)
+		calculateSpotLight(spotLights[8]);
+	#endif
+	#if MAX_SPOT_LIGHTS > 9
+	if(int(numSpotLights) > 9)
+		calculateSpotLight(spotLights[9]);
+	#endif
+	#if MAX_SPOT_LIGHTS > 10
+	if(int(numSpotLights) > 10)
+		calculateSpotLight(spotLights[10]);
+	#endif
+	#if MAX_SPOT_LIGHTS > 11
+	if(int(numSpotLights) > 11)
+		calculateSpotLight(spotLights[11]);
+	#endif
+	#if MAX_SPOT_LIGHTS > 12
+	if(int(numSpotLights) > 12)
+		calculateSpotLight(spotLights[12]);
+	#endif
+	#if MAX_SPOT_LIGHTS > 13
+	if(int(numSpotLights) > 13)
+		calculateSpotLight(spotLights[13]);
+	#endif
+	#if MAX_SPOT_LIGHTS > 14
+	if(int(numSpotLights) > 14)
+		calculateSpotLight(spotLights[14]);
+	#endif
+	#if MAX_SPOT_LIGHTS > 15
+	if(int(numSpotLights) > 15)
+		calculateSpotLight(spotLights[15]);
+	#endif
+	#if MAX_SPOT_LIGHTS > 16
+	if(int(numSpotLights) > 16)
+		calculateSpotLight(spotLights[16]);
+	#endif
 }
 
 vec3 diffuseLighting(vec3 lightDir,vec3 diffuse)

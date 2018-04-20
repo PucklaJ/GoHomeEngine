@@ -1,4 +1,4 @@
-#version 320 es
+#version 100
 
 precision mediump float;
 precision mediump sampler2D;
@@ -19,10 +19,9 @@ struct Material
 	float shinyness;
 };
 
-in VertexOut{
-	vec2 fragTexCoord;
-	vec4 fragPos;
-} FragIn;
+
+varying	vec2 fragTexCoord;
+varying	vec4 fragPos;
 
 uniform vec3 lightPos;
 uniform float farPlane;
@@ -32,7 +31,7 @@ vec4 fetchColor()
 {
 	if(material.DiffuseTextureLoaded)
 	{
-		return texture(material.diffuseTexture,FragIn.fragTexCoord);
+		return texture2D(material.diffuseTexture,fragTexCoord);
 	}
 	else
 	{
@@ -45,7 +44,7 @@ void main()
 	vec4 color = fetchColor();
 	if(color.a < 0.1)
 		discard;
-	float lightDistance = length(FragIn.fragPos.xyz - lightPos);
-	lightDistance = lightDistance / farPlane;
-	gl_FragDepth = lightDistance;
+	// float lightDistance = length(fragPos.xyz - lightPos);
+	// lightDistance = lightDistance / farPlane;
+	// gl_FragDepth = lightDistance;
 }

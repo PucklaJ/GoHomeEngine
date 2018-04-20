@@ -64,9 +64,9 @@ func (this *OpenGLRenderer) Terminate() {
 	gl.DeleteVertexArrays(1, &this.BackBufferVao)
 }
 
-func (*OpenGLRenderer) ClearScreen(c color.Color, alpha float32) {
-	clearColor := gohome.ColorToVec3(c)
-	gl.ClearColor(clearColor[0], clearColor[1], clearColor[2], alpha)
+func (*OpenGLRenderer) ClearScreen(c color.Color) {
+	clearColor := gohome.ColorToVec4(c)
+	gl.ClearColor(clearColor[0], clearColor[1], clearColor[2], clearColor[3])
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT)
 }
 

@@ -170,7 +170,6 @@ func (s *OpenGLESShader) AddShader(shader_type uint8, src string) error {
 	}
 
 	s.shaders[shader_type] = shaderName
-
 	return nil
 }
 
@@ -194,7 +193,6 @@ func (s *OpenGLESShader) Link() error {
 
 		return &OpenGLESError{errorString: "Couldn't link shader " + s.name + ": " + logText}
 	}
-
 	return nil
 }
 
@@ -563,10 +561,6 @@ func (s *OpenGLESShader) validate() error {
 	}
 	s.Unuse()
 	s.validated = true
-	vao := s.gles.CreateVertexArray()
-	s.gles.BindVertexArray(vao)
-	defer s.gles.DeleteVertexArray(vao)
-	defer s.gles.BindVertexArray(gl.VertexArray{0})
 	s.gles.ValidateProgram(s.program)
 	status := s.gles.GetProgrami(s.program, gl.VALIDATE_STATUS)
 	if status == gl.FALSE {
