@@ -13,7 +13,7 @@ type OpenGLESCubeMap struct {
 	width     uint32
 	height    uint32
 	shadowMap bool
-	gles      gl.Context
+	gles      *gl.Context
 }
 
 func (this *OpenGLESCubeMap) GetName() string {
@@ -25,7 +25,7 @@ func CreateOpenGLESCubeMap(name string) *OpenGLESCubeMap {
 		name: name,
 	}
 	render, _ := gohome.Render.(*OpenGLESRenderer)
-	cubeMap.gles = render.gles
+	cubeMap.gles = &render.gles
 	return cubeMap
 }
 
@@ -34,34 +34,34 @@ func (this *OpenGLESCubeMap) Load(data []byte, width, height int, shadowMap bool
 	this.height = uint32(height)
 	this.shadowMap = shadowMap
 
-	this.oglName = this.gles.CreateTexture()
-	this.gles.BindTexture(gl.TEXTURE_CUBE_MAP, this.oglName)
+	this.oglName = (*this.gles).CreateTexture()
+	(*this.gles).BindTexture(gl.TEXTURE_CUBE_MAP, this.oglName)
 
 	var i uint32
 	for i = 0; i < 6; i++ {
 		if shadowMap {
-			this.gles.TexImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X+gl.Enum(i), 0, width, height, gl.DEPTH_COMPONENT, gl.FLOAT, nil)
+			(*this.gles).TexImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X+gl.Enum(i), 0, width, height, gl.DEPTH_COMPONENT, gl.FLOAT, nil)
 		} else {
-			this.gles.TexImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X+gl.Enum(i), 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, nil)
+			(*this.gles).TexImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X+gl.Enum(i), 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, nil)
 		}
 	}
 
-	this.gles.TexParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
-	this.gles.TexParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
-	this.gles.TexParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
-	this.gles.TexParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
-	this.gles.TexParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_R, gl.CLAMP_TO_EDGE)
+	(*this.gles).TexParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
+	(*this.gles).TexParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
+	(*this.gles).TexParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+	(*this.gles).TexParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+	(*this.gles).TexParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_R, gl.CLAMP_TO_EDGE)
 
 	return nil
 }
 
 func (this *OpenGLESCubeMap) Bind(unit uint32) {
-	this.gles.ActiveTexture(gl.Enum(gl.TEXTURE0 + unit))
-	this.gles.BindTexture(gl.TEXTURE_CUBE_MAP, this.oglName)
+	(*this.gles).ActiveTexture(gl.Enum(gl.TEXTURE0 + unit))
+	(*this.gles).BindTexture(gl.TEXTURE_CUBE_MAP, this.oglName)
 }
 func (this *OpenGLESCubeMap) Unbind(unit uint32) {
-	this.gles.ActiveTexture(gl.Enum(gl.TEXTURE0 + unit))
-	this.gles.BindTexture(gl.TEXTURE_CUBE_MAP, gl.Texture{0})
+	(*this.gles).ActiveTexture(gl.Enum(gl.TEXTURE0 + unit))
+	(*this.gles).BindTexture(gl.TEXTURE_CUBE_MAP, gl.Texture{0})
 
 }
 func (this *OpenGLESCubeMap) GetWidth() int {
@@ -71,10 +71,10 @@ func (this *OpenGLESCubeMap) GetHeight() int {
 	return int(this.height)
 }
 func (this *OpenGLESCubeMap) Terminate() {
-	this.gles.DeleteTexture(this.oglName)
+	(*this.gles).DeleteTexture(this.oglName)
 }
 func (this *OpenGLESCubeMap) SetFiltering(filtering uint32) {
-	this.gles.BindTexture(gl.TEXTURE_CUBE_MAP, this.oglName)
+	(*this.gles).BindTexture(gl.TEXTURE_CUBE_MAP, this.oglName)
 	var filter int
 	if filtering == gohome.FILTERING_NEAREST {
 		filter = gl.NEAREST
@@ -83,14 +83,14 @@ func (this *OpenGLESCubeMap) SetFiltering(filtering uint32) {
 	} else {
 		filter = gl.NEAREST
 	}
-	this.gles.TexParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, filter)
-	this.gles.TexParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, filter)
+	(*this.gles).TexParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, filter)
+	(*this.gles).TexParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, filter)
 
-	this.gles.BindTexture(gl.TEXTURE_CUBE_MAP, gl.Texture{0})
+	(*this.gles).BindTexture(gl.TEXTURE_CUBE_MAP, gl.Texture{0})
 }
 func (this *OpenGLESCubeMap) SetWrapping(wrapping uint32) {
-	this.gles.BindTexture(gl.TEXTURE_CUBE_MAP, this.oglName)
-	defer this.gles.BindTexture(gl.TEXTURE_CUBE_MAP, gl.Texture{0})
+	(*this.gles).BindTexture(gl.TEXTURE_CUBE_MAP, this.oglName)
+	defer (*this.gles).BindTexture(gl.TEXTURE_CUBE_MAP, gl.Texture{0})
 	var wrap int
 	if wrapping == gohome.WRAPPING_REPEAT {
 		wrap = gl.REPEAT
@@ -104,9 +104,9 @@ func (this *OpenGLESCubeMap) SetWrapping(wrapping uint32) {
 	} else {
 		wrap = gl.CLAMP_TO_EDGE
 	}
-	this.gles.TexParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, wrap)
-	this.gles.TexParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, wrap)
-	this.gles.TexParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_R, wrap)
+	(*this.gles).TexParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, wrap)
+	(*this.gles).TexParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, wrap)
+	(*this.gles).TexParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_R, wrap)
 }
 func (this *OpenGLESCubeMap) SetBorderColor(col color.Color) {
 	// gl.BindTexture(gl.TEXTURE_CUBE_MAP, this.oglName)

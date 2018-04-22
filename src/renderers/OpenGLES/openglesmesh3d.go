@@ -30,7 +30,7 @@ type OpenGLESMesh3D struct {
 	Material *gohome.Material
 
 	tangentsCalculated bool
-	gles               gl.Context
+	gles               *gl.Context
 	isgles3            bool
 }
 
@@ -130,8 +130,8 @@ func CreateOpenGLESMesh3D(name string) *OpenGLESMesh3D {
 	}
 
 	render, _ := gohome.Render.(*OpenGLESRenderer)
-	mesh.gles = render.gles
-	_, mesh.isgles3 = mesh.gles.(gl.Context3)
+	mesh.gles = &render.gles
+	_, mesh.isgles3 = (*mesh.gles).(gl.Context3)
 
 	return &mesh
 }
@@ -165,18 +165,18 @@ func (oglm *OpenGLESMesh3D) toByteArrays() ([]byte, []byte) {
 }
 
 func (oglm *OpenGLESMesh3D) attributePointer() {
-	oglm.gles.BindBuffer(gl.ARRAY_BUFFER, oglm.vbo)
-	oglm.gles.VertexAttribPointer(gl.Attrib{0}, 3, gl.FLOAT, false, int(MESH3DVERTEX_SIZE), 0)
-	oglm.gles.VertexAttribPointer(gl.Attrib{1}, 3, gl.FLOAT, false, int(MESH3DVERTEX_SIZE), 3*4)
-	oglm.gles.VertexAttribPointer(gl.Attrib{2}, 2, gl.FLOAT, false, int(MESH3DVERTEX_SIZE), 3*4+3*4)
-	oglm.gles.VertexAttribPointer(gl.Attrib{3}, 3, gl.FLOAT, false, int(MESH3DVERTEX_SIZE), 3*4+3*4+2*4)
+	(*oglm.gles).BindBuffer(gl.ARRAY_BUFFER, oglm.vbo)
+	(*oglm.gles).VertexAttribPointer(gl.Attrib{0}, 3, gl.FLOAT, false, int(MESH3DVERTEX_SIZE), 0)
+	(*oglm.gles).VertexAttribPointer(gl.Attrib{1}, 3, gl.FLOAT, false, int(MESH3DVERTEX_SIZE), 3*4)
+	(*oglm.gles).VertexAttribPointer(gl.Attrib{2}, 2, gl.FLOAT, false, int(MESH3DVERTEX_SIZE), 3*4+3*4)
+	(*oglm.gles).VertexAttribPointer(gl.Attrib{3}, 3, gl.FLOAT, false, int(MESH3DVERTEX_SIZE), 3*4+3*4+2*4)
 
-	oglm.gles.EnableVertexAttribArray(gl.Attrib{0})
-	oglm.gles.EnableVertexAttribArray(gl.Attrib{1})
-	oglm.gles.EnableVertexAttribArray(gl.Attrib{2})
-	oglm.gles.EnableVertexAttribArray(gl.Attrib{3})
+	(*oglm.gles).EnableVertexAttribArray(gl.Attrib{0})
+	(*oglm.gles).EnableVertexAttribArray(gl.Attrib{1})
+	(*oglm.gles).EnableVertexAttribArray(gl.Attrib{2})
+	(*oglm.gles).EnableVertexAttribArray(gl.Attrib{3})
 
-	oglm.gles.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, oglm.ibo)
+	(*oglm.gles).BindBuffer(gl.ELEMENT_ARRAY_BUFFER, oglm.ibo)
 }
 
 func (oglm *OpenGLESMesh3D) Load() {
@@ -193,23 +193,23 @@ func (oglm *OpenGLESMesh3D) Load() {
 	verticesBytes, indicesBytes := oglm.toByteArrays()
 
 	if oglm.isgles3 {
-		oglm.vao = oglm.gles.CreateVertexArray()
+		oglm.vao = (*oglm.gles).CreateVertexArray()
 	}
-	oglm.vbo = oglm.gles.CreateBuffer()
-	oglm.ibo = oglm.gles.CreateBuffer()
+	oglm.vbo = (*oglm.gles).CreateBuffer()
+	oglm.ibo = (*oglm.gles).CreateBuffer()
 
-	oglm.gles.BindBuffer(gl.ARRAY_BUFFER, oglm.vbo)
-	oglm.gles.BufferData(gl.ARRAY_BUFFER, verticesBytes, gl.STATIC_DRAW)
-	oglm.gles.BindBuffer(gl.ARRAY_BUFFER, gl.Buffer{0})
+	(*oglm.gles).BindBuffer(gl.ARRAY_BUFFER, oglm.vbo)
+	(*oglm.gles).BufferData(gl.ARRAY_BUFFER, verticesBytes, gl.STATIC_DRAW)
+	(*oglm.gles).BindBuffer(gl.ARRAY_BUFFER, gl.Buffer{0})
 
-	oglm.gles.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, oglm.ibo)
-	oglm.gles.BufferData(gl.ELEMENT_ARRAY_BUFFER, indicesBytes, gl.STATIC_DRAW)
-	oglm.gles.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.Buffer{0})
+	(*oglm.gles).BindBuffer(gl.ELEMENT_ARRAY_BUFFER, oglm.ibo)
+	(*oglm.gles).BufferData(gl.ELEMENT_ARRAY_BUFFER, indicesBytes, gl.STATIC_DRAW)
+	(*oglm.gles).BindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.Buffer{0})
 
 	if oglm.isgles3 {
-		oglm.gles.BindVertexArray(oglm.vao)
+		(*oglm.gles).BindVertexArray(oglm.vao)
 		oglm.attributePointer()
-		oglm.gles.BindVertexArray(gl.VertexArray{0})
+		(*oglm.gles).BindVertexArray(gl.VertexArray{0})
 	}
 
 	oglm.deleteElements()
@@ -225,25 +225,25 @@ func (oglm *OpenGLESMesh3D) Render() {
 		}
 	}
 	if oglm.isgles3 {
-		oglm.gles.BindVertexArray(oglm.vao)
+		(*oglm.gles).BindVertexArray(oglm.vao)
 	} else {
 		oglm.attributePointer()
 	}
-	oglm.gles.DrawElements(gl.TRIANGLES, int(oglm.numIndices), gl.UNSIGNED_INT, 0)
+	(*oglm.gles).DrawElements(gl.TRIANGLES, int(oglm.numIndices), gl.UNSIGNED_INT, 0)
 	if oglm.isgles3 {
-		oglm.gles.BindVertexArray(gl.VertexArray{0})
+		(*oglm.gles).BindVertexArray(gl.VertexArray{0})
 	} else {
-		oglm.gles.BindBuffer(gl.ARRAY_BUFFER, gl.Buffer{0})
-		oglm.gles.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.Buffer{0})
+		(*oglm.gles).BindBuffer(gl.ARRAY_BUFFER, gl.Buffer{0})
+		(*oglm.gles).BindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.Buffer{0})
 	}
 }
 
 func (oglm *OpenGLESMesh3D) Terminate() {
 	if oglm.isgles3 {
-		defer oglm.gles.DeleteVertexArray(oglm.vao)
+		defer (*oglm.gles).DeleteVertexArray(oglm.vao)
 	}
-	defer oglm.gles.DeleteBuffer(oglm.vbo)
-	defer oglm.gles.DeleteBuffer(oglm.ibo)
+	defer (*oglm.gles).DeleteBuffer(oglm.vbo)
+	defer (*oglm.gles).DeleteBuffer(oglm.ibo)
 }
 
 func (oglm *OpenGLESMesh3D) SetMaterial(mat *gohome.Material) {

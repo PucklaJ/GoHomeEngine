@@ -59,6 +59,8 @@ func (this *AndroidFramework) onLifecycle(e lifecycle.Event) {
 	fmt.Println("Lifecycle: From:", e.From, "To:", e.To, "CrossVisible:", e.Crosses(lifecycle.StageVisible).String(), "CrossFocused:", e.Crosses(lifecycle.StageFocused).String())
 	if e.From == lifecycle.StageDead {
 		this.initStuff(e)
+	} else if e.Crosses(lifecycle.StageFocused) == lifecycle.CrossOn {
+		this.renderer.SetOpenGLESContex(e.DrawContext.(gl.Context))
 	}
 	if e.To == lifecycle.StageDead {
 		this.mainLoop.Quit()

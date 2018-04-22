@@ -18,13 +18,13 @@ type OpenGLESRenderTexture struct {
 	textures     []gohome.Texture
 	prevViewport gohome.Viewport
 	viewport     gohome.Viewport
-	gles         gl.Context
+	gles         *gl.Context
 }
 
 func CreateOpenGLESRenderTexture(name string, width, height, textures uint32, depthBuffer, shadowMap, cubeMap bool) *OpenGLESRenderTexture {
 	rt := &OpenGLESRenderTexture{}
 	render, _ := gohome.Render.(*OpenGLESRenderer)
-	rt.gles = render.gles
+	rt.gles = &render.gles
 	rt.Create(name, width, height, textures, depthBuffer, shadowMap, cubeMap)
 
 	return rt
@@ -45,30 +45,30 @@ func (this *OpenGLESRenderTexture) loadTextures(width, height, textures uint32, 
 		}
 		texture.Load(nil, int(width), int(height), this.shadowMap)
 		if cubeMap {
-			this.gles.BindTexture(gl.TEXTURE_CUBE_MAP, oglcubemap.oglName)
+			(*this.gles).BindTexture(gl.TEXTURE_CUBE_MAP, oglcubemap.oglName)
 		} else {
-			this.gles.BindTexture(ogltex.bindingPoint(), ogltex.oglName)
+			(*this.gles).BindTexture(ogltex.bindingPoint(), ogltex.oglName)
 		}
 		if this.shadowMap {
 			if cubeMap {
-				this.gles.FramebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.TEXTURE_CUBE_MAP_POSITIVE_X, oglcubemap.oglName, 0)
+				(*this.gles).FramebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.TEXTURE_CUBE_MAP_POSITIVE_X, oglcubemap.oglName, 0)
 			} else {
-				this.gles.FramebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, ogltex.bindingPoint(), ogltex.oglName, 0)
+				(*this.gles).FramebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, ogltex.bindingPoint(), ogltex.oglName, 0)
 			}
 		} else {
 			if cubeMap {
-				this.gles.FramebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0+gl.Enum(i), gl.TEXTURE_CUBE_MAP_POSITIVE_X, oglcubemap.oglName, 0)
+				(*this.gles).FramebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0+gl.Enum(i), gl.TEXTURE_CUBE_MAP_POSITIVE_X, oglcubemap.oglName, 0)
 			} else {
-				this.gles.FramebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0+gl.Enum(i), ogltex.bindingPoint(), ogltex.oglName, 0)
+				(*this.gles).FramebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0+gl.Enum(i), ogltex.bindingPoint(), ogltex.oglName, 0)
 			}
 		}
 		if !cubeMap {
 			texture.SetFiltering(gohome.FILTERING_LINEAR)
 		}
 		if cubeMap {
-			this.gles.BindTexture(gl.TEXTURE_CUBE_MAP, gl.Texture{0})
+			(*this.gles).BindTexture(gl.TEXTURE_CUBE_MAP, gl.Texture{0})
 		} else {
-			this.gles.BindTexture(ogltex.bindingPoint(), gl.Texture{0})
+			(*this.gles).BindTexture(ogltex.bindingPoint(), gl.Texture{0})
 		}
 		this.textures = append(this.textures, texture)
 	}
@@ -76,11 +76,11 @@ func (this *OpenGLESRenderTexture) loadTextures(width, height, textures uint32, 
 
 func (this *OpenGLESRenderTexture) loadRenderBuffer(width, height uint32) {
 	if this.depthBuffer {
-		this.rbo = this.gles.CreateRenderbuffer()
-		this.gles.BindRenderbuffer(gl.RENDERBUFFER, this.rbo)
-		this.gles.RenderbufferStorage(gl.RENDERBUFFER, gl.DEPTH24_STENCIL8, int(width), int(height))
-		this.gles.FramebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, this.rbo)
-		this.gles.BindRenderbuffer(gl.RENDERBUFFER, gl.Renderbuffer{0})
+		this.rbo = (*this.gles).CreateRenderbuffer()
+		(*this.gles).BindRenderbuffer(gl.RENDERBUFFER, this.rbo)
+		(*this.gles).RenderbufferStorage(gl.RENDERBUFFER, gl.DEPTH24_STENCIL8, int(width), int(height))
+		(*this.gles).FramebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, this.rbo)
+		(*this.gles).BindRenderbuffer(gl.RENDERBUFFER, gl.Renderbuffer{0})
 	}
 }
 
@@ -94,17 +94,17 @@ func (this *OpenGLESRenderTexture) Create(name string, width, height, textures u
 	this.depthBuffer = depthBuffer && !shadowMap
 	this.cubeMap = cubeMap
 
-	this.fbo = this.gles.CreateFramebuffer()
+	this.fbo = (*this.gles).CreateFramebuffer()
 
-	this.gles.BindFramebuffer(gl.FRAMEBUFFER, this.fbo)
+	(*this.gles).BindFramebuffer(gl.FRAMEBUFFER, this.fbo)
 
 	this.loadRenderBuffer(width, height)
 	this.loadTextures(width, height, textures, cubeMap)
-	if this.gles.CheckFramebufferStatus(gl.FRAMEBUFFER) != gl.FRAMEBUFFER_COMPLETE {
+	if (*this.gles).CheckFramebufferStatus(gl.FRAMEBUFFER) != gl.FRAMEBUFFER_COMPLETE {
 		log.Println("Error creating gohome.RenderTexture: Framebuffer is not complete")
 		return
 	}
-	this.gles.BindFramebuffer(gl.FRAMEBUFFER, gl.Framebuffer{0})
+	(*this.gles).BindFramebuffer(gl.FRAMEBUFFER, gl.Framebuffer{0})
 
 	this.viewport = gohome.Viewport{
 		0,
@@ -122,14 +122,14 @@ func (this *OpenGLESRenderTexture) GetName() string {
 }
 
 func (this *OpenGLESRenderTexture) SetAsTarget() {
-	this.gles.BindFramebuffer(gl.FRAMEBUFFER, this.fbo)
+	(*this.gles).BindFramebuffer(gl.FRAMEBUFFER, this.fbo)
 	gohome.Render.ClearScreen(&gohome.Color{0, 0, 0, 0})
 	this.prevViewport = gohome.Render.GetViewport()
 	gohome.Render.SetViewport(this.viewport)
 }
 
 func (this *OpenGLESRenderTexture) UnsetAsTarget() {
-	this.gles.BindFramebuffer(gl.FRAMEBUFFER, gl.Framebuffer{0})
+	(*this.gles).BindFramebuffer(gl.FRAMEBUFFER, gl.Framebuffer{0})
 	gohome.Render.SetViewport(this.prevViewport)
 }
 
@@ -188,9 +188,9 @@ func (this *OpenGLESRenderTexture) GetHeight() int {
 }
 
 func (this *OpenGLESRenderTexture) Terminate() {
-	defer this.gles.DeleteFramebuffer(this.fbo)
+	defer (*this.gles).DeleteFramebuffer(this.fbo)
 	if this.depthBuffer {
-		defer this.gles.DeleteRenderbuffer(this.rbo)
+		defer (*this.gles).DeleteRenderbuffer(this.rbo)
 	}
 	for i := 0; i < len(this.textures); i++ {
 		defer this.textures[i].Terminate()

@@ -17,7 +17,7 @@ type OpenGLESMesh2D struct {
 	vbo         gl.Buffer
 	ibo         gl.Buffer
 	vao         gl.VertexArray // OpenGLES 3.0 only
-	gles        gl.Context
+	gles        *gl.Context
 	isgles3     bool
 }
 
@@ -28,8 +28,8 @@ func CreateOpenGLESMesh2D(name string) *OpenGLESMesh2D {
 	}
 
 	render, _ := gohome.Render.(*OpenGLESRenderer)
-	mesh.gles = render.gles
-	_, mesh.isgles3 = mesh.gles.(gl.Context3)
+	mesh.gles = &render.gles
+	_, mesh.isgles3 = (*mesh.gles).(gl.Context3)
 
 	return &mesh
 }
@@ -45,13 +45,13 @@ func (oglm *OpenGLESMesh2D) AddVertices(vertices []gohome.Mesh2DVertex, indices 
 }
 
 func (oglm *OpenGLESMesh2D) attributePointer() {
-	oglm.gles.BindBuffer(gl.ARRAY_BUFFER, oglm.vbo)
-	oglm.gles.VertexAttribPointer(gl.Attrib{0}, 2, gl.FLOAT, false, int(gohome.MESH2DVERTEX_SIZE), 0)
-	oglm.gles.VertexAttribPointer(gl.Attrib{1}, 2, gl.FLOAT, false, int(gohome.MESH2DVERTEX_SIZE), 2*4)
-	oglm.gles.EnableVertexAttribArray(gl.Attrib{0})
-	oglm.gles.EnableVertexAttribArray(gl.Attrib{1})
+	(*oglm.gles).BindBuffer(gl.ARRAY_BUFFER, oglm.vbo)
+	(*oglm.gles).VertexAttribPointer(gl.Attrib{0}, 2, gl.FLOAT, false, int(gohome.MESH2DVERTEX_SIZE), 0)
+	(*oglm.gles).VertexAttribPointer(gl.Attrib{1}, 2, gl.FLOAT, false, int(gohome.MESH2DVERTEX_SIZE), 2*4)
+	(*oglm.gles).EnableVertexAttribArray(gl.Attrib{0})
+	(*oglm.gles).EnableVertexAttribArray(gl.Attrib{1})
 
-	oglm.gles.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, oglm.ibo)
+	(*oglm.gles).BindBuffer(gl.ELEMENT_ARRAY_BUFFER, oglm.ibo)
 }
 
 func (oglm *OpenGLESMesh2D) Load() {
@@ -75,23 +75,23 @@ func (oglm *OpenGLESMesh2D) Load() {
 	}
 
 	if oglm.isgles3 {
-		oglm.vao = oglm.gles.CreateVertexArray()
+		oglm.vao = (*oglm.gles).CreateVertexArray()
 	}
-	oglm.vbo = oglm.gles.CreateBuffer()
-	oglm.ibo = oglm.gles.CreateBuffer()
+	oglm.vbo = (*oglm.gles).CreateBuffer()
+	oglm.ibo = (*oglm.gles).CreateBuffer()
 
-	oglm.gles.BindBuffer(gl.ARRAY_BUFFER, oglm.vbo)
-	oglm.gles.BufferData(gl.ARRAY_BUFFER, f32.Bytes(binary.LittleEndian, verticesFloats...), gl.STATIC_DRAW)
-	oglm.gles.BindBuffer(gl.ARRAY_BUFFER, gl.Buffer{0})
+	(*oglm.gles).BindBuffer(gl.ARRAY_BUFFER, oglm.vbo)
+	(*oglm.gles).BufferData(gl.ARRAY_BUFFER, f32.Bytes(binary.LittleEndian, verticesFloats...), gl.STATIC_DRAW)
+	(*oglm.gles).BindBuffer(gl.ARRAY_BUFFER, gl.Buffer{0})
 
-	oglm.gles.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, oglm.ibo)
-	oglm.gles.BufferData(gl.ELEMENT_ARRAY_BUFFER, indicesBytes, gl.STATIC_DRAW)
-	oglm.gles.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.Buffer{0})
+	(*oglm.gles).BindBuffer(gl.ELEMENT_ARRAY_BUFFER, oglm.ibo)
+	(*oglm.gles).BufferData(gl.ELEMENT_ARRAY_BUFFER, indicesBytes, gl.STATIC_DRAW)
+	(*oglm.gles).BindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.Buffer{0})
 
 	if oglm.isgles3 {
-		oglm.gles.BindVertexArray(oglm.vao)
+		(*oglm.gles).BindVertexArray(oglm.vao)
 		oglm.attributePointer()
-		oglm.gles.BindVertexArray(gl.VertexArray{0})
+		(*oglm.gles).BindVertexArray(gl.VertexArray{0})
 	}
 
 	oglm.deleteElements()
@@ -100,25 +100,25 @@ func (oglm *OpenGLESMesh2D) Load() {
 
 func (oglm *OpenGLESMesh2D) Render() {
 	if oglm.isgles3 {
-		oglm.gles.BindVertexArray(oglm.vao)
+		(*oglm.gles).BindVertexArray(oglm.vao)
 	} else {
 		oglm.attributePointer()
 	}
 
-	oglm.gles.DrawElements(gl.TRIANGLES, int(oglm.numIndices), gl.UNSIGNED_INT, 0)
+	(*oglm.gles).DrawElements(gl.TRIANGLES, int(oglm.numIndices), gl.UNSIGNED_INT, 0)
 
 	if oglm.isgles3 {
-		oglm.gles.BindVertexArray(gl.VertexArray{0})
+		(*oglm.gles).BindVertexArray(gl.VertexArray{0})
 	} else {
-		oglm.gles.BindBuffer(gl.ARRAY_BUFFER, gl.Buffer{0})
-		oglm.gles.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.Buffer{0})
+		(*oglm.gles).BindBuffer(gl.ARRAY_BUFFER, gl.Buffer{0})
+		(*oglm.gles).BindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.Buffer{0})
 	}
 }
 
 func (oglm *OpenGLESMesh2D) Terminate() {
 	if oglm.isgles3 {
-		defer oglm.gles.DeleteVertexArray(oglm.vao)
+		defer (*oglm.gles).DeleteVertexArray(oglm.vao)
 	}
-	defer oglm.gles.DeleteBuffer(oglm.vbo)
-	defer oglm.gles.DeleteBuffer(oglm.ibo)
+	defer (*oglm.gles).DeleteBuffer(oglm.vbo)
+	defer (*oglm.gles).DeleteBuffer(oglm.ibo)
 }
