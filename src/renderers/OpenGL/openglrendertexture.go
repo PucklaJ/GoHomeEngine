@@ -178,11 +178,15 @@ func (this *OpenGLRenderTexture) Unbind(unit uint32) {
 }
 
 func (this *OpenGLRenderTexture) BindIndex(index, unit uint32) {
-	this.textures[index].Bind(unit)
+	if index < uint32(len(this.textures)) {
+		this.textures[index].Bind(unit)
+	}
 }
 
 func (this *OpenGLRenderTexture) UnbindIndex(index, unit uint32) {
-	this.textures[index].Unbind(unit)
+	if index < uint32(len(this.textures)) {
+		this.textures[index].Unbind(unit)
+	}
 }
 
 func (this *OpenGLRenderTexture) GetWidth() int {

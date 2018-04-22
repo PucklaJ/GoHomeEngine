@@ -2,7 +2,7 @@ package main
 
 import (
 	// "encoding/binary"
-	"fmt"
+	// "fmt"
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
 	// "github.com/PucklaMotzer09/gohomeengine/src/renderers/OpenGLES"
 	// "golang.org/x/mobile/exp/f32"
@@ -18,11 +18,8 @@ func (this *TestScene2) Init() {
 	gohome.InitDefaultValues()
 	gohome.FPSLimit.MaxFPS = 1000
 
-	gohome.ResourceMgr.LoadTexture("Icon", "icon.png")
 	gohome.ResourceMgr.LoadTexture("Image", "image.tga")
-	width, height := gohome.Render.GetNativeResolution()
-
-	fmt.Println("NativeRes:", width, height)
+	// width, height := gohome.Render.GetNativeResolution()
 
 	// var spr gohome.Sprite2D
 	// var sprTobj gohome.TransformableObject2D

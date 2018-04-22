@@ -23,8 +23,7 @@
     <activity android:name="org.golang.app.GoNativeActivity"
         android:label="GoHomeEngine"
         android:configChanges="orientation|keyboardHidden"
-        android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
-        android:screenOrientation="portrait">
+        android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
         <meta-data android:name="android.app.lib_name" android:value="Mobiletest" />
         <intent-filter>
             <action android:name="android.intent.action.MAIN" />

@@ -529,14 +529,52 @@ func (rmgr *RenderManager) SetProjection3D(proj Projection) {
 }
 
 func (rmgr *RenderManager) Terminate() {
-	rmgr.BackBufferMS.Terminate()
-	rmgr.BackBuffer.Terminate()
-	rmgr.BackBuffer2D.Terminate()
-	rmgr.BackBuffer3D.Terminate()
+	if rmgr.BackBufferMS != nil {
+		rmgr.BackBufferMS.Terminate()
+	}
+	if rmgr.BackBuffer != nil {
+		rmgr.BackBuffer.Terminate()
+	}
+	if rmgr.BackBuffer2D != nil {
+		rmgr.BackBuffer2D.Terminate()
+	}
+	if rmgr.BackBuffer3D != nil {
+		rmgr.BackBuffer3D.Terminate()
+	}
 	if len(rmgr.renderObjects) == 0 {
 		return
 	}
 	rmgr.renderObjects = append(rmgr.renderObjects[:0], rmgr.renderObjects[len(rmgr.renderObjects):]...)
+	rmgr.viewport2Ds = append(rmgr.viewport2Ds[:0], rmgr.viewport2Ds[len(rmgr.viewport2Ds):]...)
+	rmgr.viewport3Ds = append(rmgr.viewport3Ds[:0], rmgr.viewport3Ds[len(rmgr.viewport3Ds):]...)
+}
+
+func (rmgr *RenderManager) UpdateViewports(current Viewport, previous Viewport) {
+	var xRel, yRel, widthRel, heightRel float32
+
+	for i := 0; i < len(rmgr.viewport2Ds); i++ {
+		xRel = float32(rmgr.viewport2Ds[i].X) / float32(previous.X)
+		yRel = float32(rmgr.viewport2Ds[i].Y) / float32(previous.Y)
+		widthRel = float32(rmgr.viewport2Ds[i].Width) / float32(previous.Width)
+		heightRel = float32(rmgr.viewport2Ds[i].Height) / float32(previous.Height)
+
+		rmgr.viewport2Ds[i].X = int(xRel * float32(current.X))
+		rmgr.viewport2Ds[i].Y = int(yRel * float32(current.Y))
+		rmgr.viewport2Ds[i].Width = int(widthRel * float32(current.Width))
+		rmgr.viewport2Ds[i].Height = int(heightRel * float32(current.Height))
+	}
+
+	for i := 0; i < len(rmgr.viewport3Ds); i++ {
+		xRel = float32(rmgr.viewport3Ds[i].X) / float32(previous.X)
+		yRel = float32(rmgr.viewport3Ds[i].Y) / float32(previous.Y)
+		widthRel = float32(rmgr.viewport3Ds[i].Width) / float32(previous.Width)
+		heightRel = float32(rmgr.viewport3Ds[i].Height) / float32(previous.Height)
+
+		rmgr.viewport3Ds[i].X = int(xRel * float32(current.X))
+		rmgr.viewport3Ds[i].Y = int(yRel * float32(current.Y))
+		rmgr.viewport3Ds[i].Width = int(widthRel * float32(current.Width))
+		rmgr.viewport3Ds[i].Height = int(heightRel * float32(current.Height))
+	}
 }
 
 var RenderMgr RenderManager

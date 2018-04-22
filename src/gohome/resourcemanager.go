@@ -137,16 +137,19 @@ func (rsmgr *ResourceManager) GetModel(name string) *Model3D {
 }
 
 func (rsmgr *ResourceManager) Terminate() {
-	for _, v := range rsmgr.shaders {
+	for k, v := range rsmgr.shaders {
 		v.Terminate()
+		delete(rsmgr.shaders, k)
 	}
 
-	for _, v := range rsmgr.textures {
+	for k, v := range rsmgr.textures {
 		v.Terminate()
+		delete(rsmgr.textures, k)
 	}
 
-	for _, v := range rsmgr.Models {
+	for k, v := range rsmgr.Models {
 		v.Terminate()
+		delete(rsmgr.Models, k)
 	}
 }
 

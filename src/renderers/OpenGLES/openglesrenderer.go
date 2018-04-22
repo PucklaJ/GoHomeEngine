@@ -62,7 +62,9 @@ func (this *OpenGLESRenderer) Init() error {
 	return nil
 }
 func (this *OpenGLESRenderer) Terminate() {
-	this.backBufferMesh.Terminate()
+	if this.backBufferMesh != nil {
+		this.backBufferMesh.Terminate()
+	}
 }
 func (this *OpenGLESRenderer) ClearScreen(c color.Color) {
 	col := gohome.ColorToVec4(c)
@@ -163,10 +165,30 @@ func (this *OpenGLESRenderer) GetViewport() gohome.Viewport {
 	}
 }
 func (this *OpenGLESRenderer) SetNativeResolution(width, height uint32) {
+	if gohome.RenderMgr.BackBuffer2D == nil || gohome.RenderMgr.BackBuffer3D == nil || gohome.RenderMgr.BackBufferMS == nil || gohome.RenderMgr.BackBuffer == nil {
+		return
+	}
+
+	previous := gohome.Viewport{
+		X:      0,
+		Y:      0,
+		Width:  gohome.RenderMgr.BackBuffer.GetWidth(),
+		Height: gohome.RenderMgr.BackBuffer.GetHeight(),
+	}
+
 	gohome.RenderMgr.BackBuffer2D.ChangeSize(width, height)
 	gohome.RenderMgr.BackBuffer3D.ChangeSize(width, height)
 	gohome.RenderMgr.BackBufferMS.ChangeSize(width, height)
 	gohome.RenderMgr.BackBuffer.ChangeSize(width, height)
+
+	current := gohome.Viewport{
+		X:      0,
+		Y:      0,
+		Width:  gohome.RenderMgr.BackBuffer.GetWidth(),
+		Height: gohome.RenderMgr.BackBuffer.GetHeight(),
+	}
+
+	gohome.RenderMgr.UpdateViewports(current, previous)
 }
 func (this *OpenGLESRenderer) GetNativeResolution() (uint32, uint32) {
 	var width, height uint32
@@ -177,7 +199,10 @@ func (this *OpenGLESRenderer) GetNativeResolution() (uint32, uint32) {
 	return width, height
 }
 func (this *OpenGLESRenderer) OnResize(newWidth, newHeight uint32) {
-
+	if this.gles != nil {
+		this.gles.Viewport(0, 0, int(newWidth), int(newHeight))
+		this.SetNativeResolution(newWidth, newHeight)
+	}
 }
 func (this *OpenGLESRenderer) PreRender() {
 	this.CurrentTextureUnit = 1

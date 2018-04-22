@@ -48,10 +48,11 @@ func createSprite2DMesh() {
 func (spr *Sprite2D) Init(texName string, transform *TransformableObject2D) {
 	spr.Texture = ResourceMgr.GetTexture(texName)
 
-	if spr.Texture != nil {
+	if spr.Texture != nil && transform != nil {
 		transform.Scale = [2]float32{1.0, 1.0}
 		transform.Size = [2]float32{float32(spr.Texture.GetWidth()), float32(spr.Texture.GetHeight())}
 		transform.RotationPoint = [2]float32{0.5, 0.5}
+		transform.Origin = [2]float32{0.0, 0.0}
 	}
 
 	if sprite2DMesh == nil {

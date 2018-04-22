@@ -182,6 +182,13 @@ func (this *OpenGLRenderer) GetViewport() gohome.Viewport {
 }
 
 func (this *OpenGLRenderer) SetNativeResolution(width, height uint32) {
+	previous := gohome.Viewport{
+		X:      0,
+		Y:      0,
+		Width:  gohome.RenderMgr.BackBuffer.GetWidth(),
+		Height: gohome.RenderMgr.BackBuffer.GetHeight(),
+	}
+
 	gohome.RenderMgr.BackBufferMS.ChangeSize(width, height)
 	gohome.RenderMgr.BackBuffer.ChangeSize(width, height)
 	gohome.RenderMgr.BackBuffer2D.ChangeSize(width, height)
@@ -191,6 +198,15 @@ func (this *OpenGLRenderer) SetNativeResolution(width, height uint32) {
 	gohome.RenderMgr.BackBuffer.SetFiltering(gohome.FILTERING_LINEAR)
 	gohome.RenderMgr.BackBuffer2D.SetFiltering(gohome.FILTERING_LINEAR)
 	gohome.RenderMgr.BackBuffer3D.SetFiltering(gohome.FILTERING_LINEAR)
+
+	current := gohome.Viewport{
+		X:      0,
+		Y:      0,
+		Width:  gohome.RenderMgr.BackBuffer.GetWidth(),
+		Height: gohome.RenderMgr.BackBuffer.GetHeight(),
+	}
+
+	gohome.RenderMgr.UpdateViewports(current, previous)
 }
 func (this *OpenGLRenderer) GetNativeResolution() (uint32, uint32) {
 	return uint32(gohome.RenderMgr.BackBuffer.GetWidth()), uint32(gohome.RenderMgr.BackBuffer.GetHeight())

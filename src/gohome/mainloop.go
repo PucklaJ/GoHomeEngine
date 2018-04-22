@@ -109,7 +109,12 @@ func (MainLoop) InnerLoop() {
 	Framew.Update()
 }
 
-func (MainLoop) Quit() {
+func (MainLoop) terminateSprite2DMesh() {
+	sprite2DMesh.Terminate()
+	sprite2DMesh = nil
+}
+
+func (this *MainLoop) Quit() {
 	defer Framew.Terminate()
 	defer Render.Terminate()
 	defer ResourceMgr.Terminate()
@@ -117,7 +122,7 @@ func (MainLoop) Quit() {
 	defer RenderMgr.Terminate()
 	defer SceneMgr.Terminate()
 	if sprite2DMesh != nil {
-		defer sprite2DMesh.Terminate()
+		defer this.terminateSprite2DMesh()
 	}
 }
 
