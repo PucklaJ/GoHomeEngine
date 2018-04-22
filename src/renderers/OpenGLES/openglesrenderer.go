@@ -54,6 +54,9 @@ func (this *OpenGLESRenderer) Init() error {
 	version := this.gles.GetString(gl.VERSION)
 	fmt.Println("Version:", version)
 
+	this.gles.Enable(gl.DEPTH_TEST)
+	this.gles.Enable(gl.CULL_FACE)
+
 	this.createBackBufferMesh()
 
 	return nil
@@ -130,7 +133,7 @@ func (this *OpenGLESRenderer) CreateMesh2D(name string) gohome.Mesh2D {
 	return CreateOpenGLESMesh2D(name)
 }
 func (this *OpenGLESRenderer) CreateMesh3D(name string) gohome.Mesh3D {
-	return nil
+	return CreateOpenGLESMesh3D(name)
 }
 func (this *OpenGLESRenderer) CreateRenderTexture(name string, width, height, textures uint32, depthBuffer, multiSampled, shadowMap, cubeMap bool) gohome.RenderTexture {
 	return CreateOpenGLESRenderTexture(name, width, height, textures, depthBuffer, shadowMap, cubeMap)

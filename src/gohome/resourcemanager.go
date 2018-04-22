@@ -7,6 +7,7 @@ import (
 	"image/color"
 	_ "image/jpeg"
 	_ "image/png"
+	"io"
 	"io/ioutil"
 	"log"
 	"sync"
@@ -40,7 +41,12 @@ func loadShaderFile(path string) (string, error) {
 	if path == "" {
 		return "", nil
 	} else {
-		reader, err1 := Framew.OpenFile(path)
+		var reader io.Reader
+		var err1 error
+		reader, err1 = Framew.OpenFile(path)
+		if err1 != nil {
+			reader, err1 = Framew.OpenFile("assets/" + path)
+		}
 		if err1 != nil {
 			return "", err1
 		}
@@ -241,7 +247,12 @@ func (rsmgr *ResourceManager) LoadTextureFunction(name, path string, preloaded b
 		return nil
 	}
 
-	reader, err := Framew.OpenFile(path)
+	var reader io.Reader
+	var err error
+	reader, err = Framew.OpenFile(path)
+	if err != nil {
+		reader, err = Framew.OpenFile("assets/" + path)
+	}
 	if err != nil {
 		log.Println("Couldn't load texture file", name, ":", err)
 		return nil

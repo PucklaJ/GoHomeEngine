@@ -56,5 +56,5 @@ vec4 caclulateKernel(float _kernel[9])
 void main()
 {
     setValues();
-	gl_FragColor = caclulateKernel(blurKernel);
+	gl_FragColor = caclulateKernel(normalKernel);
 }

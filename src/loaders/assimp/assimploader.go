@@ -21,7 +21,9 @@ func LoadLevelAssimp(rsmgr *gohome.ResourceManager, name, path string, preloaded
 	level := &gohome.Level{Name: name}
 	var scene *assimp.Scene
 	if scene = assimp.ImportFile(path, uint(assimp.Process_Triangulate|assimp.Process_FlipUVs|assimp.Process_GenNormals|assimp.Process_OptimizeMeshes)); scene == nil || (scene.Flags()&assimp.SceneFlags_Incomplete) != 0 || scene.RootNode() == nil {
-		log.Println("Couldn't load level", name, "with path", path, ":", assimp.GetErrorString())
+		if scene = assimp.ImportFile("assets/"+path, uint(assimp.Process_Triangulate|assimp.Process_FlipUVs|assimp.Process_GenNormals|assimp.Process_OptimizeMeshes)); scene == nil || (scene.Flags()&assimp.SceneFlags_Incomplete) != 0 || scene.RootNode() == nil {
+			log.Println("Couldn't load level", name, "with path", path, ":", assimp.GetErrorString())
+		}
 		return nil
 	}
 

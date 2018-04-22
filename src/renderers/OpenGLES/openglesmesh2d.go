@@ -69,9 +69,9 @@ func (oglm *OpenGLESMesh2D) Load() {
 		verticesFloats[index+3] = oglm.vertices[i][3]
 		index += 4
 	}
-	indicesBytes := make([]byte, 4*oglm.numIndices)
+	indicesBytes := make([]byte, oglm.numIndices*gohome.INDEX_SIZE)
 	for i := 0; i < int(oglm.numIndices); i++ {
-		binary.LittleEndian.PutUint32(indicesBytes[i*4:i*4+3+1], oglm.indices[i])
+		binary.LittleEndian.PutUint32(indicesBytes[uint32(i)*gohome.INDEX_SIZE:uint32(i)*gohome.INDEX_SIZE+3+1], oglm.indices[i])
 	}
 
 	if oglm.isgles3 {

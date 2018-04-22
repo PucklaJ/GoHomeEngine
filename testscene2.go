@@ -9,41 +9,9 @@ import (
 	// "golang.org/x/mobile/gl"
 )
 
-type TestRenderObject struct {
-}
-
-func (this *TestRenderObject) Render() {
-	if gohome.InputMgr.IsPressed(gohome.MouseButtonLeft) {
-		gohome.Render.ClearScreen(gohome.Color{255, 0, 0, 255})
-	} else {
-		gohome.Render.ClearScreen(gohome.Color{0, 255, 0, 255})
-	}
-
-	triangleShader.Use()
-	renderMesh()
-	triangleShader.Unuse()
-}
-
-func (this *TestRenderObject) SetShader(s gohome.Shader) {
-
-}
-func (this *TestRenderObject) GetShader() gohome.Shader {
-	return nil
-}
-func (this *TestRenderObject) SetType(rtype gohome.RenderType) {
-
-}
-func (this *TestRenderObject) GetType() gohome.RenderType {
-	return gohome.TYPE_2D_NORMAL
-}
-func (this *TestRenderObject) IsVisible() bool {
-	return true
-}
-func (this *TestRenderObject) NotRelativeCamera() int {
-	return -1
-}
-
 type TestScene2 struct {
+	box     gohome.Entity3D
+	boxTobj gohome.TransformableObject3D
 }
 
 func (this *TestScene2) Init() {
@@ -51,54 +19,32 @@ func (this *TestScene2) Init() {
 	gohome.FPSLimit.MaxFPS = 1000
 
 	gohome.ResourceMgr.LoadTexture("Icon", "icon.png")
-	gohome.ResourceMgr.LoadShader("Triangle", "triangleVert.glsl", "triangleFrag.glsl", "", "", "", "")
-
-	gohome.RenderMgr.AddObject(&TestRenderObject{}, nil)
-
+	gohome.ResourceMgr.LoadTexture("Image", "image.tga")
 	width, height := gohome.Render.GetNativeResolution()
 
 	fmt.Println("NativeRes:", width, height)
 
-	gohome.RenderMgr.EnableBackBuffer = true
+	// var spr gohome.Sprite2D
+	// var sprTobj gohome.TransformableObject2D
+	// spr.Init("Image", &sprTobj)
+	// gohome.RenderMgr.AddObject(&spr, &sprTobj)
 
-	createMesh()
-	triangleShader = gohome.ResourceMgr.GetShader("Triangle")
+	// sprTobj.Size[0] = float32(width)
+	// sprTobj.Size[1] = float32(height)
+
+	this.box.InitMesh(gohome.Box("Box", [3]float32{1.0, 1.0, 1.0}), &this.boxTobj)
+	this.boxTobj.Position = [3]float32{0.0, 0.0, -3.0}
+	this.box.Model3D.GetMeshIndex(0).GetMaterial().DiffuseTexture = gohome.ResourceMgr.GetTexture("Image")
+	gohome.RenderMgr.AddObject(&this.box, &this.boxTobj)
+
+	gohome.LightMgr.CurrentLightCollection = -1
 }
 
 func (this *TestScene2) Update(delta_time float32) {
-
+	this.boxTobj.Rotation[1] += 30.0 * delta_time
+	this.boxTobj.Rotation[0] += 30.0 * delta_time
 }
 
 func (this *TestScene2) Terminate() {
 
-}
-
-var triangle gohome.Mesh2D
-var triangleShader gohome.Shader
-
-func createMesh() {
-	var vertices []gohome.Mesh2DVertex = []gohome.Mesh2DVertex{
-		gohome.Mesh2DVertex{
-			-0.5, -0.5,
-			0.0, 0.0,
-		},
-		gohome.Mesh2DVertex{
-			0.5, -0.5,
-			1.0, 0.0,
-		},
-		gohome.Mesh2DVertex{
-			0.0, 0.5,
-			0.5, 1.0,
-		},
-	}
-	var indices []uint32 = []uint32{
-		0, 1, 2,
-	}
-	triangle = gohome.Render.CreateMesh2D("Triangle")
-	triangle.AddVertices(vertices[:], indices[:])
-	triangle.Load()
-}
-
-func renderMesh() {
-	triangle.Render()
 }
