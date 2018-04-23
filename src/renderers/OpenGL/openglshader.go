@@ -537,7 +537,7 @@ func (s *OpenGLShader) validate() error {
 		s.SetUniformI("pointLights["+strconv.Itoa(i)+"].shadowmap", maxtextures-1)
 	}
 	s.Unuse()
-	s.validated = true
+	s.validated = true || true
 	var vao uint32
 	gl.CreateVertexArrays(1, &vao)
 	gl.BindVertexArray(vao)
