@@ -2,7 +2,7 @@ package renderer
 
 import (
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
-	"github.com/go-gl/gl/v4.1-core/gl"
+	"github.com/go-gl/gl/all-core/gl"
 	"image/color"
 )
 

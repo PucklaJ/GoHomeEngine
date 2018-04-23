@@ -2,7 +2,7 @@ package renderer
 
 import (
 	// "fmt"
-	"github.com/go-gl/gl/v4.1-core/gl"
+	"github.com/go-gl/gl/all-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
 	"runtime"
 	"strconv"
@@ -537,7 +537,7 @@ func (s *OpenGLShader) validate() error {
 		s.SetUniformI("pointLights["+strconv.Itoa(i)+"].shadowmap", maxtextures-1)
 	}
 	s.Unuse()
-	s.validated = true
+	s.validated = true || true
 	var vao uint32
 	gl.CreateVertexArrays(1, &vao)
 	gl.BindVertexArray(vao)

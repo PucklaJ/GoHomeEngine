@@ -38,13 +38,13 @@ func printOGLESTexture2DError(ogltex *OpenGLESTexture, data []byte, width, heigh
 		if err == gl.INVALID_VALUE {
 			if width < 0 {
 				errString = "width is less than 0 "
-			} else if width > gl.MAX_TEXTURE_SIZE {
-				errString = "width is too large: " + strconv.Itoa(gl.MAX_TEXTURE_SIZE) + " "
+			} else if width > (*ogltex.gles).GetInteger(gl.MAX_TEXTURE_SIZE) {
+				errString = "width is too large: " + strconv.Itoa((*ogltex.gles).GetInteger(gl.MAX_TEXTURE_SIZE)) + " "
 			}
 			if height < 0 {
 				errString = "height is less than 0"
-			} else if height > gl.MAX_TEXTURE_SIZE {
-				errString = "height is too large: " + strconv.Itoa(gl.MAX_TEXTURE_SIZE)
+			} else if height > (*ogltex.gles).GetInteger(gl.MAX_TEXTURE_SIZE) {
+				errString = "height is too large: " + strconv.Itoa((*ogltex.gles).GetInteger(gl.MAX_TEXTURE_SIZE))
 			}
 			if errString == "" {
 				errString = "Invalid Value"

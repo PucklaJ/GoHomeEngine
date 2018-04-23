@@ -559,7 +559,7 @@
 			"file": "src/renderers/OpenGL/openglcubemap.go",
 			"settings":
 			{
-				"buffer_size": 3675,
+				"buffer_size": 3674,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -712,7 +712,7 @@
 			"file": "src/renderers/OpenGL/openglmesh3d.go",
 			"settings":
 			{
-				"buffer_size": 6567,
+				"buffer_size": 6566,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -730,7 +730,7 @@
 			"file": "src/renderers/OpenGL/openglinstancedmesh3d.go",
 			"settings":
 			{
-				"buffer_size": 16563,
+				"buffer_size": 16562,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -757,9 +757,13 @@
 			"file": "src/renderers/OpenGL/openglrenderer.go",
 			"settings":
 			{
+<<<<<<< HEAD
 				"buffer_size": 6275,
+=======
+				"buffer_size": 6273,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 				"encoding": "UTF-8",
-				"line_ending": "Unix"
+				"line_ending": "Windows"
 			}
 		},
 		{
@@ -777,7 +781,7 @@
 			{
 				"buffer_size": 6506,
 				"encoding": "UTF-8",
-				"line_ending": "Unix"
+				"line_ending": "Windows"
 			}
 		},
 		{
@@ -820,7 +824,8 @@
 			"file": "assets/pointLightShadowMapInstancedVert.glsl",
 			"settings":
 			{
-				"buffer_size": 350,
+				"buffer_size": 264,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
@@ -969,7 +974,7 @@
 			"file": "src/renderers/OpenGL/openglmesh2d.go",
 			"settings":
 			{
-				"buffer_size": 2352,
+				"buffer_size": 2351,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -978,7 +983,7 @@
 			"file": "src/frameworks/GLFW/glfwframework.go",
 			"settings":
 			{
-				"buffer_size": 11158,
+				"buffer_size": 11170,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -1007,7 +1012,7 @@
 			{
 				"buffer_size": 4952,
 				"encoding": "UTF-8",
-				"line_ending": "Unix"
+				"line_ending": "Windows"
 			}
 		},
 		{
@@ -1042,7 +1047,7 @@
 			{
 				"buffer_size": 3000,
 				"encoding": "UTF-8",
-				"line_ending": "Unix"
+				"line_ending": "Windows"
 			}
 		},
 		{
@@ -1051,7 +1056,7 @@
 			{
 				"buffer_size": 1406,
 				"encoding": "UTF-8",
-				"line_ending": "Unix"
+				"line_ending": "Windows"
 			}
 		},
 		{
@@ -1060,7 +1065,7 @@
 			{
 				"buffer_size": 1952,
 				"encoding": "UTF-8",
-				"line_ending": "Unix"
+				"line_ending": "Windows"
 			}
 		},
 		{
@@ -1103,7 +1108,7 @@
 			"file": "src/renderers/OpenGLES/openglestexture.go",
 			"settings":
 			{
-				"buffer_size": 5823,
+				"buffer_size": 5931,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -1112,7 +1117,7 @@
 			"file": "src/renderers/OpenGL/opengltexture.go",
 			"settings":
 			{
-				"buffer_size": 6087,
+				"buffer_size": 6085,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -1132,7 +1137,7 @@
 			{
 				"buffer_size": 7178,
 				"encoding": "UTF-8",
-				"line_ending": "Unix"
+				"line_ending": "Windows"
 			}
 		},
 		{
@@ -1141,7 +1146,7 @@
 			{
 				"buffer_size": 6872,
 				"encoding": "UTF-8",
-				"line_ending": "Unix"
+				"line_ending": "Windows"
 			}
 		},
 		{
@@ -1191,7 +1196,7 @@
 			"file": "testscene.go",
 			"settings":
 			{
-				"buffer_size": 9421,
+				"buffer_size": 9420,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -1211,7 +1216,7 @@
 			{
 				"buffer_size": 1297,
 				"encoding": "UTF-8",
-				"line_ending": "Unix"
+				"line_ending": "Windows"
 			}
 		},
 		{
@@ -1233,28 +1238,16 @@
 			}
 		},
 		{
-			"file": "/media/johnny/Daten/Meine_Projekte/go/src/golang.org/x/mobile/example/flappy/main.go",
-			"settings":
-			{
-				"buffer_size": 2242,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/media/johnny/Daten/Meine_Projekte/go/src/golang.org/x/mobile/example/flappy/game.go",
-			"settings":
-			{
-				"buffer_size": 8926,
-				"line_ending": "Unix"
-			}
-		},
-		{
 			"file": "test1.go",
 			"settings":
 			{
+<<<<<<< HEAD
 				"buffer_size": 476,
+=======
+				"buffer_size": 588,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 				"encoding": "UTF-8",
-				"line_ending": "Unix"
+				"line_ending": "Windows"
 			}
 		},
 		{
@@ -1263,7 +1256,7 @@
 			{
 				"buffer_size": 16852,
 				"encoding": "UTF-8",
-				"line_ending": "Unix"
+				"line_ending": "Windows"
 			}
 		},
 		{
@@ -1308,7 +1301,7 @@
 			{
 				"buffer_size": 7639,
 				"encoding": "UTF-8",
-				"line_ending": "Unix"
+				"line_ending": "Windows"
 			}
 		},
 		{
@@ -1341,7 +1334,7 @@
 			"file": "src/renderers/OpenGL/openglshader.go",
 			"settings":
 			{
-				"buffer_size": 16030,
+				"buffer_size": 16037,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -1479,6 +1472,15 @@
 	},
 	"file_history":
 	[
+		"/C/Meine_Projekte/go/src/github.com/go-gl/glfw/v3.2/glfw/c_glfw_windows.go",
+		"/C/Meine_Projekte/go/src/github.com/go-gl/glfw/v3.2/glfw/glfw/src/win32_window.c",
+		"/C/Meine_Projekte/go/src/github.com/go-gl/glfw/v3.2/glfw/glfw/src/win32_init.c",
+		"/C/Meine_Projekte/go/src/github.com/go-gl/glfw/v3.2/glfw/glfw.go",
+		"/C/MinGW/include/basetyps.h",
+		"/C/MinGW/include/initguid.h",
+		"/C/Meine_Projekte/go/src/github.com/go-gl/example/gl21-cube/cube.go",
+		"/media/johnny/Daten/Meine_Projekte/go/src/golang.org/x/mobile/example/flappy/game.go",
+		"/media/johnny/Daten/Meine_Projekte/go/src/golang.org/x/mobile/example/flappy/main.go",
 		"/media/johnny/Daten/Meine_Projekte/go/src/github.com/PucklaMotzer09/gohomeengine/testscene2.go",
 		"/media/johnny/Daten/Meine_Projekte/go/src/golang.org/x/mobile/example/basic/main.go",
 		"/media/johnny/Daten/Meine_Projekte/go/src/github.com/PucklaMotzer09/gohomeengine/src/renderers/OpenGLES/opengltest.go",
@@ -1503,7 +1505,6 @@
 		"/media/johnny/Daten/Meine_Projekte/go/src/github.com/PucklaMotzer09/gohomeengine/assets/backBufferShaderVert.glsl",
 		"/media/johnny/Daten/Meine_Projekte/go/src/github.com/PucklaMotzer09/gohomeengine/assets/backBufferShaderFrag.glsl",
 		"/media/johnny/Daten/Meine_Projekte/go/src/golang.org/x/mobile/example/flappy/main_x.go",
-		"/media/johnny/Daten/Meine_Projekte/go/src/golang.org/x/mobile/example/flappy/main.go",
 		"/media/johnny/Daten/Meine_Projekte/go/src/github.com/PucklaMotzer09/gohomeengine/src/gohome/glfwcallbacks.go",
 		"/media/johnny/Daten/Meine_Projekte/go/src/github.com/PucklaMotzer09/gohomeengine/src/frameworks/framework.go",
 		"/media/johnny/Daten/Meine_Projekte/go/src/github.com/PucklaMotzer09/gohomeengine/src/renderers/renderer.go",
@@ -1598,23 +1599,15 @@
 		"/media/johnny/Daten/Meine_Projekte/CodeLiteProjects/Linux/JohnnyEngine/Shikoba-Test/res/shaders/fragmentShaderTexture2D.glsl",
 		"/usr/include/freetype2/ft2build.h",
 		"/usr/include/freetype2/freetype/config/ftheader.h",
-		"/home/johnny/love_test/main.lua",
-		"/media/johnny/Daten/git_repositories/JohnnyEngine/shaders/fragmentShader.glsl",
-		"/home/johnny/gotest/src/hello/hello.go",
-		"/home/johnny/gotest/src/hello/myWallet.dat",
-		"/home/johnny/Downloads/dogecoin-1.10.0/include/bitcoinconsensus.h",
-		"/media/johnny/Daten/git_repositories/libdb/docs/legal/ASM.txt",
-		"/media/johnny/Daten/git_repositories/libdb/docs/legal/BSD.txt",
-		"/media/johnny/Daten/git_repositories/libdb/LEGAL",
-		"/media/johnny/Daten/git_repositories/dogecoin/src/tinyformat.h"
+		"/home/johnny/love_test/main.lua"
 	],
 	"find":
 	{
-		"height": 39.0
+		"height": 40.0
 	},
 	"find_in_files":
 	{
-		"height": 101.0,
+		"height": 104.0,
 		"where_history":
 		[
 			""
@@ -1625,6 +1618,10 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"v4.1-core",
+			"hasEx",
+			"hasExtenstion",
+			"GUID",
 			"s.gles",
 			"this.gles",
 			"ogltex.gles",
@@ -1748,11 +1745,7 @@
 			"RenderSh",
 			"GetMat",
 			"PtrOffset(*offset)",
-			"vertexIndexBuffer",
-			"oglm",
-			"2.5",
-			"validate",
-			"AfterR"
+			"vertexIndexBuffer"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -1760,6 +1753,8 @@
 		"regex": false,
 		"replace_history":
 		[
+			"all-core",
+			"HasExtension",
 			"(*s.gles)",
 			"(*this.gles)",
 			"(*ogltex.gles)",
@@ -1885,20 +1880,22 @@
 			"uint8",
 			"",
 			"OpenGLShader",
-			"compileOpenGLShader",
-			"OpenGLShader",
-			"contents"
+			"compileOpenGLShader"
 		],
 		"reverse": false,
 		"show_context": true,
 		"use_buffer2": true,
-		"whole_word": false,
+		"whole_word": true,
 		"wrap": true
 	},
 	"groups":
 	[
 		{
+<<<<<<< HEAD
 			"selected": 26,
+=======
+			"selected": 89,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 			"sheets":
 			[
 				{
@@ -1927,7 +1924,11 @@
 						"translation.y": 8688.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 41,
+=======
+					"stack_index": 42,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -1956,7 +1957,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 80,
+=======
+					"stack_index": 75,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -1985,7 +1990,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 35,
+=======
+					"stack_index": 39,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -2014,7 +2023,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 12,
+=======
+					"stack_index": 25,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -2023,15 +2036,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3675,
+						"buffer_size": 3674,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								3675
+								105,
+								105
 							]
 						],
 						"settings":
@@ -2040,10 +2053,14 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 1146.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 34,
+=======
+					"stack_index": 7,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -2072,7 +2089,11 @@
 						"translation.y": 45.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 84,
+=======
+					"stack_index": 79,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -2130,7 +2151,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 66,
+=======
+					"stack_index": 65,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -2186,7 +2211,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 59,
+=======
+					"stack_index": 58,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -2202,8 +2231,8 @@
 						"selection":
 						[
 							[
-								201,
-								201
+								13,
+								12
 							]
 						],
 						"settings":
@@ -2214,7 +2243,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 43,
+=======
+					"stack_index": 17,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -2242,7 +2275,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 58,
+=======
+					"stack_index": 57,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -2271,7 +2308,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 65,
+=======
+					"stack_index": 64,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -2300,7 +2341,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 64,
+=======
+					"stack_index": 63,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -2329,7 +2374,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 63,
+=======
+					"stack_index": 62,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -2358,7 +2407,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 67,
+=======
+					"stack_index": 66,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -2387,7 +2440,11 @@
 						"translation.y": 459.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 96,
+=======
+					"stack_index": 93,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -2416,7 +2473,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 85,
+=======
+					"stack_index": 80,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -2445,7 +2506,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 76,
+=======
+					"stack_index": 72,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -2474,7 +2539,11 @@
 						"translation.y": 4233.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 23,
+=======
+					"stack_index": 30,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -2503,7 +2572,11 @@
 						"translation.y": 1020.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 13,
+=======
+					"stack_index": 24,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -2512,7 +2585,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 6567,
+						"buffer_size": 6566,
 						"regions":
 						{
 						},
@@ -2520,7 +2593,7 @@
 						[
 							[
 								0,
-								6567
+								6566
 							]
 						],
 						"settings":
@@ -2532,7 +2605,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 24,
+=======
+					"stack_index": 5,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -2561,7 +2638,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 75,
+=======
+					"stack_index": 71,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -2570,15 +2651,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 16563,
+						"buffer_size": 16562,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								805,
-								805
+								804,
+								804
 							]
 						],
 						"settings":
@@ -2590,7 +2671,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 73,
+=======
+					"stack_index": 4,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -2619,7 +2704,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 68,
+=======
+					"stack_index": 67,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -2648,7 +2737,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 42,
+=======
+					"stack_index": 43,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -2657,15 +2750,24 @@
 					"semi_transient": false,
 					"settings":
 					{
+<<<<<<< HEAD
 						"buffer_size": 6275,
+=======
+						"buffer_size": 6273,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
+<<<<<<< HEAD
 								5620,
 								5620
+=======
+								110,
+								110
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 							]
 						],
 						"settings":
@@ -2674,10 +2776,17 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
+<<<<<<< HEAD
 						"translation.y": 3232.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
+=======
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -2706,7 +2815,11 @@
 						"translation.y": 3125.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 14,
+=======
+					"stack_index": 20,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -2722,8 +2835,13 @@
 						"selection":
 						[
 							[
+<<<<<<< HEAD
 								5561,
 								5561
+=======
+								0,
+								0
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 							]
 						],
 						"settings":
@@ -2735,7 +2853,11 @@
 						"translation.y": 2790.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 3,
+=======
+					"stack_index": 29,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -2763,7 +2885,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 38,
+=======
+					"stack_index": 41,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -2792,7 +2918,11 @@
 						"translation.y": 4390.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 37,
+=======
+					"stack_index": 40,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -2808,8 +2938,8 @@
 						"selection":
 						[
 							[
-								643,
-								643
+								309,
+								309
 							]
 						],
 						"settings":
@@ -2818,10 +2948,14 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 153.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 39,
+=======
+					"stack_index": 13,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -2837,8 +2971,8 @@
 						"selection":
 						[
 							[
-								15,
-								15
+								552,
+								552
 							]
 						],
 						"settings":
@@ -2850,7 +2984,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 40,
+=======
+					"stack_index": 15,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -2859,15 +2997,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 350,
+						"buffer_size": 264,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								13,
+								13
 							]
 						],
 						"settings":
@@ -2878,7 +3016,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 57,
+=======
+					"stack_index": 14,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -2894,20 +3036,8 @@
 						"selection":
 						[
 							[
-								23,
-								23
-							],
-							[
-								46,
-								46
-							],
-							[
-								69,
-								69
-							],
-							[
-								94,
-								94
+								59,
+								59
 							]
 						],
 						"settings":
@@ -2918,7 +3048,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 26,
+=======
+					"stack_index": 16,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -2948,7 +3082,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 25,
+=======
+					"stack_index": 31,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -3090,7 +3228,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 61,
+=======
+					"stack_index": 60,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -3233,7 +3375,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 60,
+=======
+					"stack_index": 59,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -3291,7 +3437,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 32,
+=======
+					"stack_index": 38,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -3320,7 +3470,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 27,
+=======
+					"stack_index": 32,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -3349,7 +3503,11 @@
 						"translation.y": 1326.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 15,
+=======
+					"stack_index": 23,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -3358,7 +3516,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2352,
+						"buffer_size": 2351,
 						"regions":
 						{
 						},
@@ -3366,7 +3524,7 @@
 						[
 							[
 								0,
-								2352
+								2351
 							]
 						],
 						"settings":
@@ -3378,7 +3536,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 33,
+=======
+					"stack_index": 3,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -3387,15 +3549,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 11158,
+						"buffer_size": 11170,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								11155,
-								11155
+								1247,
+								1247
 							]
 						],
 						"settings":
@@ -3405,10 +3567,14 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 7426.0,
+						"translation.y": 520.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 22,
+=======
+					"stack_index": 9,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -3437,7 +3603,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 21,
+=======
+					"stack_index": 27,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -3482,8 +3652,13 @@
 						"selection":
 						[
 							[
+<<<<<<< HEAD
 								3478,
 								3478
+=======
+								0,
+								0
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 							]
 						],
 						"settings":
@@ -3495,7 +3670,11 @@
 						"translation.y": 1275.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 9,
+=======
+					"stack_index": 18,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -3582,7 +3761,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 87,
+=======
+					"stack_index": 83,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -3598,8 +3781,13 @@
 						"selection":
 						[
 							[
+<<<<<<< HEAD
 								2360,
 								2360
+=======
+								1302,
+								1302
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 							]
 						],
 						"settings":
@@ -3608,10 +3796,17 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
+<<<<<<< HEAD
 						"translation.y": 1734.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 4,
+=======
+						"translation.y": 642.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 10,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -3627,8 +3822,13 @@
 						"selection":
 						[
 							[
+<<<<<<< HEAD
 								1085,
 								1085
+=======
+								0,
+								0
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 							]
 						],
 						"settings":
@@ -3657,8 +3857,13 @@
 						"selection":
 						[
 							[
+<<<<<<< HEAD
 								1141,
 								1141
+=======
+								0,
+								0
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 							]
 						],
 						"settings":
@@ -3670,7 +3875,11 @@
 						"translation.y": 408.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 5,
+=======
+					"stack_index": 82,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -3699,7 +3908,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 82,
+=======
+					"stack_index": 77,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -3728,7 +3941,11 @@
 						"translation.y": 1122.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 90,
+=======
+					"stack_index": 87,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -3757,7 +3974,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 83,
+=======
+					"stack_index": 78,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -3786,7 +4007,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 20,
+=======
+					"stack_index": 22,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -3795,15 +4020,20 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 5823,
+						"buffer_size": 5931,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
+<<<<<<< HEAD
 								3583,
 								3583
+=======
+								1110,
+								1110
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 							]
 						],
 						"settings":
@@ -3812,10 +4042,17 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
+<<<<<<< HEAD
 						"translation.y": 1493.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 16,
+=======
+						"translation.y": 1306.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 12,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -3824,15 +4061,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 6087,
+						"buffer_size": 6085,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								6087
+								2504,
+								2504
 							]
 						],
 						"settings":
@@ -3841,10 +4078,14 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 2761.0,
+						"translation.y": 1023.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 36,
+=======
+					"stack_index": 2,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -3873,7 +4114,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 30,
+=======
+					"stack_index": 35,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -3889,8 +4134,13 @@
 						"selection":
 						[
 							[
+<<<<<<< HEAD
 								6152,
 								6152
+=======
+								0,
+								0
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 							]
 						],
 						"settings":
@@ -3902,7 +4152,11 @@
 						"translation.y": 2486.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 11,
+=======
+					"stack_index": 21,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -3911,15 +4165,24 @@
 					"semi_transient": false,
 					"settings":
 					{
+<<<<<<< HEAD
 						"buffer_size": 6872,
+=======
+						"buffer_size": 6871,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
+<<<<<<< HEAD
 								5407,
 								5407
+=======
+								0,
+								0
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 							]
 						],
 						"settings":
@@ -3931,7 +4194,11 @@
 						"translation.y": 1908.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 10,
+=======
+					"stack_index": 1,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -3959,7 +4226,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 91,
+=======
+					"stack_index": 88,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -3987,7 +4258,11 @@
 						"translation.y": 22168.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 92,
+=======
+					"stack_index": 89,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -4015,7 +4290,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 94,
+=======
+					"stack_index": 91,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -4043,7 +4322,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 95,
+=======
+					"stack_index": 92,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -4071,7 +4354,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 93,
+=======
+					"stack_index": 90,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -4080,15 +4367,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 9421,
+						"buffer_size": 9420,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								7067,
-								7067
+								7219,
+								7219
 							]
 						],
 						"settings":
@@ -4100,7 +4387,11 @@
 						"translation.y": 2153.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 79,
+=======
+					"stack_index": 6,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -4129,7 +4420,11 @@
 						"translation.y": 510.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 31,
+=======
+					"stack_index": 36,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -4145,8 +4440,13 @@
 						"selection":
 						[
 							[
+<<<<<<< HEAD
 								727,
 								727
+=======
+								0,
+								0
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 							]
 						],
 						"settings":
@@ -4158,7 +4458,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 2,
+=======
+					"stack_index": 28,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -4186,7 +4490,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 29,
+=======
+					"stack_index": 34,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"type": "text"
 				},
 				{
@@ -4214,6 +4522,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 28,
 					"type": "text"
 				},
@@ -4277,19 +4586,35 @@
 				},
 				{
 					"buffer": 82,
+=======
+					"stack_index": 33,
+					"type": "text"
+				},
+				{
+					"buffer": 79,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"file": "test1.go",
 					"semi_transient": false,
 					"settings":
 					{
+<<<<<<< HEAD
 						"buffer_size": 476,
+=======
+						"buffer_size": 588,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
+<<<<<<< HEAD
 								421,
 								421
+=======
+								588,
+								588
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 							]
 						],
 						"settings":
@@ -4301,11 +4626,19 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 1,
 					"type": "text"
 				},
 				{
 					"buffer": 83,
+=======
+					"stack_index": 11,
+					"type": "text"
+				},
+				{
+					"buffer": 80,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"file": "src/gohome/rendermanager.go",
 					"semi_transient": false,
 					"settings":
@@ -4317,8 +4650,13 @@
 						"selection":
 						[
 							[
+<<<<<<< HEAD
 								16561,
 								16561
+=======
+								0,
+								0
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 							]
 						],
 						"settings":
@@ -4330,11 +4668,19 @@
 						"translation.y": 8990.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 8,
 					"type": "text"
 				},
 				{
 					"buffer": 84,
+=======
+					"stack_index": 37,
+					"type": "text"
+				},
+				{
+					"buffer": 81,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"file": "postProcessingShaderFrag.glsl",
 					"semi_transient": false,
 					"settings":
@@ -4360,11 +4706,19 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 81,
 					"type": "text"
 				},
 				{
 					"buffer": 85,
+=======
+					"stack_index": 76,
+					"type": "text"
+				},
+				{
+					"buffer": 82,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"file": "src/gohome/transformableobject2d.go",
 					"semi_transient": false,
 					"settings":
@@ -4389,11 +4743,19 @@
 						"translation.y": 209.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 7,
 					"type": "text"
 				},
 				{
 					"buffer": 86,
+=======
+					"stack_index": 85,
+					"type": "text"
+				},
+				{
+					"buffer": 83,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"file": "src/gohome/transformableobject3d.go",
 					"semi_transient": false,
 					"settings":
@@ -4418,11 +4780,19 @@
 						"translation.y": 255.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 88,
 					"type": "text"
 				},
 				{
 					"buffer": 87,
+=======
+					"stack_index": 84,
+					"type": "text"
+				},
+				{
+					"buffer": 84,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"file": "src/gohome/level.go",
 					"semi_transient": false,
 					"settings":
@@ -4447,11 +4817,19 @@
 						"translation.y": 51.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 74,
 					"type": "text"
 				},
 				{
 					"buffer": 88,
+=======
+					"stack_index": 70,
+					"type": "text"
+				},
+				{
+					"buffer": 85,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"file": "src/gohome/resourcemanager.go",
 					"semi_transient": false,
 					"settings":
@@ -4463,8 +4841,13 @@
 						"selection":
 						[
 							[
+<<<<<<< HEAD
 								3729,
 								3729
+=======
+								0,
+								0
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 							]
 						],
 						"settings":
@@ -4476,11 +4859,19 @@
 						"translation.y": 1787.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 6,
 					"type": "text"
 				},
 				{
 					"buffer": 89,
+=======
+					"stack_index": 26,
+					"type": "text"
+				},
+				{
+					"buffer": 86,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"file": "src/gohome/preloader.go",
 					"semi_transient": false,
 					"settings":
@@ -4505,11 +4896,19 @@
 						"translation.y": 3981.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 78,
 					"type": "text"
 				},
 				{
 					"buffer": 90,
+=======
+					"stack_index": 74,
+					"type": "text"
+				},
+				{
+					"buffer": 87,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"file": "src/gohome/scenemanager.go",
 					"semi_transient": false,
 					"settings":
@@ -4534,11 +4933,19 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 89,
 					"type": "text"
 				},
 				{
 					"buffer": 91,
+=======
+					"stack_index": 86,
+					"type": "text"
+				},
+				{
+					"buffer": 88,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"file": "src/gohome/shader.go",
 					"semi_transient": false,
 					"settings":
@@ -4567,20 +4974,29 @@
 					"type": "text"
 				},
 				{
+<<<<<<< HEAD
 					"buffer": 92,
+=======
+					"buffer": 89,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"file": "src/renderers/OpenGL/openglshader.go",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 16030,
+						"buffer_size": 16037,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
+<<<<<<< HEAD
 								4806,
 								4806
+=======
+								15301,
+								15301
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 							]
 						],
 						"settings":
@@ -4589,6 +5005,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
+<<<<<<< HEAD
 						"translation.y": 2581.0,
 						"zoom_level": 1.0
 					},
@@ -4597,6 +5014,16 @@
 				},
 				{
 					"buffer": 93,
+=======
+						"translation.y": 7916.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 90,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"file": "src/gohome/material.go",
 					"semi_transient": false,
 					"settings":
@@ -4621,11 +5048,19 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 77,
 					"type": "text"
 				},
 				{
 					"buffer": 94,
+=======
+					"stack_index": 73,
+					"type": "text"
+				},
+				{
+					"buffer": 91,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"file": "fragment.glsl",
 					"semi_transient": false,
 					"settings":
@@ -4649,11 +5084,19 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 62,
 					"type": "text"
 				},
 				{
 					"buffer": 95,
+=======
+					"stack_index": 61,
+					"type": "text"
+				},
+				{
+					"buffer": 92,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"file": "shadowMapRenderFrag.glsl",
 					"semi_transient": false,
 					"settings":
@@ -4677,11 +5120,19 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 86,
 					"type": "text"
 				},
 				{
 					"buffer": 96,
+=======
+					"stack_index": 81,
+					"type": "text"
+				},
+				{
+					"buffer": 93,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"file": "vertex.glsl",
 					"semi_transient": false,
 					"settings":
@@ -4706,11 +5157,19 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+<<<<<<< HEAD
 					"stack_index": 97,
 					"type": "text"
 				},
 				{
 					"buffer": 97,
+=======
+					"stack_index": 94,
+					"type": "text"
+				},
+				{
+					"buffer": 94,
+>>>>>>> a06f70ae1b7555aecde254756653490270c666f8
 					"file": "vertex1.glsl",
 					"semi_transient": false,
 					"settings":
@@ -4815,7 +5274,7 @@
 	"project": "gohomeengine.sublime-project",
 	"replace":
 	{
-		"height": 70.0
+		"height": 72.0
 	},
 	"save_all_on_build": true,
 	"select_file":
