@@ -234,9 +234,7 @@ func (pl *DirectionalLight) SetUniforms(s Shader, arrayIndex uint32) error {
 	size := make([]int32, 2)
 	size[0] = int32(pl.ShadowMap.GetWidth())
 	size[1] = int32(pl.ShadowMap.GetHeight())
-	if err = s.SetUniformIV2(DIRECTIONAL_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+SHADOWMAP_SIZE_UNIFORM_NAME, size); err != nil {
-		return err
-	}
+	s.SetUniformIV2(DIRECTIONAL_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+SHADOWMAP_SIZE_UNIFORM_NAME, size)
 	if err = s.SetUniformB(DIRECTIONAL_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+CASTSSHADOWS_UNIFORM_NAME, pl.CastsShadows); err != nil {
 		return err
 	}
@@ -455,9 +453,7 @@ func (pl *SpotLight) SetUniforms(s Shader, arrayIndex uint32) error {
 	size := make([]int32, 2)
 	size[0] = int32(pl.ShadowMap.GetWidth())
 	size[1] = int32(pl.ShadowMap.GetHeight())
-	if err = s.SetUniformIV2(SPOT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+SHADOWMAP_SIZE_UNIFORM_NAME, size); err != nil {
-		return err
-	}
+	s.SetUniformIV2(SPOT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+SHADOWMAP_SIZE_UNIFORM_NAME, size)
 	if err = s.SetUniformB(SPOT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+CASTSSHADOWS_UNIFORM_NAME, pl.CastsShadows); err != nil {
 		return err
 	}

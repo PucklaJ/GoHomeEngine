@@ -12,5 +12,5 @@ import (
 )
 
 func main() {
-	gohome.MainLoop{}.Run(&framework.GLFWFramework{}, &renderer.OpenGLRenderer{}, 600, 800, "GoHomeEngine", &TestScene2{})
+	gohome.MainLoop{}.Run(&framework.GLFWFramework{}, &renderer.OpenGLRenderer{}, 1280, 720, "GoHomeEngine", &TestScene{})
 }
