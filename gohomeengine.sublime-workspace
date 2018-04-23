@@ -1318,7 +1318,7 @@
 			"file": "src/renderers/OpenGL/openglshader.go",
 			"settings":
 			{
-				"buffer_size": 16029,
+				"buffer_size": 16037,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -4450,15 +4450,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 16029,
+						"buffer_size": 16037,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								15341,
-								15341
+								15301,
+								15301
 							]
 						],
 						"settings":
