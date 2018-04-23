@@ -10,6 +10,7 @@ import (
 	"log"
 	"math"
 	"os"
+	"strings"
 )
 
 type GLFWFramework struct {
@@ -43,20 +44,18 @@ func (gfw *GLFWFramework) Terminate() {
 }
 
 func setProfile() {
-	defer func() {
-		if r := recover(); r != nil {
-			log.Println("Recover:", r)
-		}
-	}()
 	glfw.WindowHint(glfw.ContextVersionMajor, 4)
-	glfw.WindowHint(glfw.ContextVersionMinor, 1)
+	glfw.WindowHint(glfw.ContextVersionMinor, 5)
 	glfw.WindowHint(glfw.OpenGLProfile, glfw.OpenGLCoreProfile)
 	glfw.WindowHint(glfw.OpenGLForwardCompatible, glfw.True)
 }
 
-func (gfw *GLFWFramework) CreateWindow(windowWidth, windowHeight uint32, title string) error {
+func (gfw *GLFWFramework) createWindowProfile(windowWidth, windowHeight uint32, title string, setprofile bool) error {
+	glfw.DefaultWindowHints()
 	glfw.WindowHint(glfw.Resizable, glfw.True)
-	setProfile()
+	if setprofile {
+		setProfile()
+	}
 	glfw.WindowHint(glfw.Samples, 8)
 	var err error
 	gfw.window, err = glfw.CreateWindow(int(windowWidth), int(windowHeight), title, nil, nil)
@@ -71,6 +70,26 @@ func (gfw *GLFWFramework) CreateWindow(windowWidth, windowHeight uint32, title s
 	gfw.window.SetFramebufferSizeCallback(onResize)
 
 	glfw.SwapInterval(1)
+	return nil
+}
+
+func (gfw *GLFWFramework) CreateWindow(windowWidth, windowHeight uint32, title string) error {
+	defer func() {
+		if r := recover(); r != nil {
+			log.Println("Recover:", r)
+			if err := gfw.createWindowProfile(windowWidth, windowHeight, title, false); err != nil {
+				panic("Error creating window:" + err.Error())
+			}
+		}
+	}()
+	if err := gfw.createWindowProfile(windowWidth, windowHeight, title, true); err != nil {
+		if strings.Contains(err.Error(), "VersionUnavailable") {
+			log.Println("Error creating window: Couldn't set profile:", err)
+			if err1 := gfw.createWindowProfile(windowWidth, windowHeight, title, false); err1 != nil {
+				return err1
+			}
+		}
+	}
 	return nil
 }
 

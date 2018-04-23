@@ -4,6 +4,10 @@
 		"selected_items":
 		[
 			[
+				"PR",
+				"Println\t ƒ"
+			],
+			[
 				"Main",
 				"MainLoop"
 			],
@@ -62,10 +66,6 @@
 			[
 				"St",
 				"StageVisible\t Ɩ"
-			],
-			[
-				"PR",
-				"Println\tn int, err error ƒ"
 			],
 			[
 				"Cro",
@@ -978,7 +978,7 @@
 			"file": "src/frameworks/GLFW/glfwframework.go",
 			"settings":
 			{
-				"buffer_size": 11289,
+				"buffer_size": 11967,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -3387,15 +3387,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 11289,
+						"buffer_size": 11967,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1366,
-								1366
+								2123,
+								2123
 							]
 						],
 						"settings":
@@ -3405,7 +3405,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 357.0,
+						"translation.y": 816.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
