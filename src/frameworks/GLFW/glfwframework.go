@@ -7,6 +7,7 @@ import (
 	"github.com/go-gl/glfw/v3.2/glfw"
 	"github.com/go-gl/mathgl/mgl32"
 	"io"
+	"log"
 	"math"
 	"os"
 )
@@ -41,12 +42,21 @@ func (gfw *GLFWFramework) Terminate() {
 	defer gfw.window.Destroy()
 }
 
+func setProfile() {
+	defer func() {
+		if r := recover(); r != nil {
+			log.Println("Recover:", r)
+		}
+	}()
+	glfw.WindowHint(glfw.ContextVersionMajor, 4)
+	glfw.WindowHint(glfw.ContextVersionMinor, 1)
+	glfw.WindowHint(glfw.OpenGLProfile, glfw.OpenGLCoreProfile)
+	glfw.WindowHint(glfw.OpenGLForwardCompatible, glfw.True)
+}
+
 func (gfw *GLFWFramework) CreateWindow(windowWidth, windowHeight uint32, title string) error {
 	glfw.WindowHint(glfw.Resizable, glfw.True)
-	// glfw.WindowHint(glfw.ContextVersionMajor, 4)
-	// glfw.WindowHint(glfw.ContextVersionMinor, 1)
-	// glfw.WindowHint(glfw.OpenGLProfile, glfw.OpenGLCoreProfile)
-	// glfw.WindowHint(glfw.OpenGLForwardCompatible, glfw.True)
+	setProfile()
 	glfw.WindowHint(glfw.Samples, 8)
 	var err error
 	gfw.window, err = glfw.CreateWindow(int(windowWidth), int(windowHeight), title, nil, nil)
