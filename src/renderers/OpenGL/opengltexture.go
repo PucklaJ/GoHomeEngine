@@ -3,7 +3,7 @@ package renderer
 import (
 	// "fmt"
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
-	"github.com/go-gl/gl/v4.1-core/gl"
+	"github.com/go-gl/gl/all-core/gl"
 	"image/color"
 	"log"
 	"strconv"
@@ -86,7 +86,7 @@ func (ogltex *OpenGLTexture) Load(data []byte, width, height int, shadowMap bool
 	gl.TexParameteri(ogltex.bindingPoint(), gl.TEXTURE_BASE_LEVEL, 0)
 	gl.TexParameteri(ogltex.bindingPoint(), gl.TEXTURE_MAX_LEVEL, 10)
 	if oglRenderer, ok := gohome.Render.(*OpenGLRenderer); ok {
-		if oglRenderer.hasExtenstion("GL_EXT_texture_filter_anisotropic") {
+		if oglRenderer.HasExtension("GL_EXT_texture_filter_anisotropic") {
 			gl.TexParameterf(ogltex.bindingPoint(), GL_TEXTURE_MAX_ANISOTROPY, 4.0)
 		}
 	}

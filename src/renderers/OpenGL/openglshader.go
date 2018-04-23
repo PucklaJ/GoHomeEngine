@@ -2,7 +2,7 @@ package renderer
 
 import (
 	// "fmt"
-	"github.com/go-gl/gl/v4.1-core/gl"
+	"github.com/go-gl/gl/all-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
 	"runtime"
 	"strconv"

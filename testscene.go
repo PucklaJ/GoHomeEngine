@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
-	// "github.com/go-gl/gl/v4.1-core/gl"
+	// "github.com/go-gl/gl/all-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
 	"golang.org/x/image/colornames"
 	"math"

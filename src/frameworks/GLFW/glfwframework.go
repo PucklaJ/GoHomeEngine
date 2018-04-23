@@ -43,10 +43,10 @@ func (gfw *GLFWFramework) Terminate() {
 
 func (gfw *GLFWFramework) CreateWindow(windowWidth, windowHeight uint32, title string) error {
 	glfw.WindowHint(glfw.Resizable, glfw.True)
-	glfw.WindowHint(glfw.ContextVersionMajor, 4)
-	glfw.WindowHint(glfw.ContextVersionMinor, 1)
-	glfw.WindowHint(glfw.OpenGLProfile, glfw.OpenGLCoreProfile)
-	glfw.WindowHint(glfw.OpenGLForwardCompatible, glfw.True)
+	// glfw.WindowHint(glfw.ContextVersionMajor, 4)
+	// glfw.WindowHint(glfw.ContextVersionMinor, 1)
+	// glfw.WindowHint(glfw.OpenGLProfile, glfw.OpenGLCoreProfile)
+	// glfw.WindowHint(glfw.OpenGLForwardCompatible, glfw.True)
 	glfw.WindowHint(glfw.Samples, 8)
 	var err error
 	gfw.window, err = glfw.CreateWindow(int(windowWidth), int(windowHeight), title, nil, nil)

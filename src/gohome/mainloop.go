@@ -61,7 +61,7 @@ func (this *MainLoop) InitWindowAndRenderer() {
 	var err error
 	if Framew != nil {
 		if err = Framew.CreateWindow(this.windowWidth, this.windowHeight, this.windowTitle); err != nil {
-			log.Println("Error creating window:", err)
+			log.Fatalln("Error creating window:", err)
 			return
 		}
 	} else {
@@ -70,7 +70,7 @@ func (this *MainLoop) InitWindowAndRenderer() {
 
 	if Render != nil {
 		if err = Render.Init(); err != nil {
-			log.Println("Error initializing Renderer:", err)
+			log.Fatalln("Error initializing Renderer:", err)
 			return
 		}
 	}

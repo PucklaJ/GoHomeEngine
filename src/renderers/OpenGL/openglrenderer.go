@@ -2,7 +2,7 @@ package renderer
 
 import (
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
-	"github.com/go-gl/gl/v4.1-core/gl"
+	"github.com/go-gl/gl/all-core/gl"
 	"image/color"
 	"log"
 )
@@ -40,7 +40,7 @@ func (this *OpenGLRenderer) Init() error {
 	return nil
 }
 
-func (this *OpenGLRenderer) hasExtenstion(name string) bool {
+func (this *OpenGLRenderer) HasExtension(name string) bool {
 	var numExtensions int32
 	gl.GetIntegerv(gl.NUM_EXTENSIONS, &numExtensions)
 	for i := 0; i < int(numExtensions); i++ {
