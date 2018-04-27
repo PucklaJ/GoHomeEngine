@@ -92,9 +92,11 @@ func (this *OpenGLRenderTexture) Create(name string, width, height, textures uin
 		textures = 1
 	}
 
+	render, _ := gohome.Render.(*OpenGLRenderer)
+
 	this.Name = name
 	this.shadowMap = shadowMap
-	this.multiSampled = multiSampled
+	this.multiSampled = multiSampled && render.hasFunctionAvailable("MULTISAMPLE")
 	this.depthBuffer = depthBuffer && !shadowMap
 	this.cubeMap = cubeMap
 

@@ -15,6 +15,8 @@ const (
 type OpenGLRenderer struct {
 	BackBufferVao      uint32
 	CurrentTextureUnit uint32
+
+	availableFunctions map[string]bool
 }
 
 func (this *OpenGLRenderer) Init() error {
@@ -36,6 +38,9 @@ func (this *OpenGLRenderer) Init() error {
 	gl.GenVertexArrays(1, &this.BackBufferVao)
 
 	this.CurrentTextureUnit = 0
+
+	this.availableFunctions = make(map[string]bool)
+	this.gatherAvailableFunctions()
 
 	return nil
 }
@@ -244,4 +249,28 @@ func (this *OpenGLRenderer) NextTextureUnit() uint32 {
 
 func (this *OpenGLRenderer) DecrementTextureUnit(amount uint32) {
 	this.CurrentTextureUnit -= amount
+}
+
+func (this *OpenGLRenderer) gatherAvailableFunctions() {
+	var major, minor, combined int32
+	gl.GetIntegerv(gl.MAJOR_VERSION, &major)
+	gl.GetIntegerv(gl.MINOR_VERSION, &minor)
+
+	combined = major*10 + minor
+
+	if combined >= 32 {
+		this.availableFunctions["MULTISAMPLE"] = true
+	}
+	if combined >= 31 {
+		this.availableFunctions["INSTANCED"] = true
+	}
+	if combined >= 40 {
+		this.availableFunctions["INDIRECT"] = true
+	}
+
+}
+
+func (this *OpenGLRenderer) hasFunctionAvailable(function string) bool {
+	v, ok := this.availableFunctions[function]
+	return ok && v
 }
