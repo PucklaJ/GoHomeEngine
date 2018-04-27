@@ -30,6 +30,7 @@ type Renderer interface {
 	GetMaxTextures() int32
 	NextTextureUnit() uint32
 	DecrementTextureUnit(amount uint32)
+	FilterShaderFiles(name, file, shader_type string) string
 }
 
 var Render Renderer

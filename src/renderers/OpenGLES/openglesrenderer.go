@@ -241,3 +241,7 @@ func (this *OpenGLESRenderer) SetOpenGLESContex(context gl.Context) {
 func (this *OpenGLESRenderer) GetContext() gl.Context {
 	return this.gles
 }
+
+func (this *OpenGLESRenderer) FilterShaderFiles(name, file, shader_type string) string {
+	return file
+}

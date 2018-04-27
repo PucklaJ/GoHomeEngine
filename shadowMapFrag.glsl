@@ -1,6 +1,11 @@
-#version 410
+#version 100
 
-struct Material
+precision mediump float;
+precision mediump sampler2D;
+
+varying	vec2 fragTexCoord;
+
+uniform struct Material
 {
 	vec3 diffuseColor;
 	vec3 specularColor;
@@ -14,19 +19,13 @@ struct Material
 	bool NormalMapLoaded;
 
 	float shinyness;
-};
-
-in VertexOut{
-	vec2 fragTexCoord;
-} FragIn;
-
-uniform Material material;
+} material;
 
 vec4 getDiffuseTexture()
 {
 	if(material.DiffuseTextureLoaded)
 	{
-		return texture(material.diffuseTexture,FragIn.fragTexCoord);
+		return texture2D(material.diffuseTexture,fragTexCoord);
 	}
 	else
 	{

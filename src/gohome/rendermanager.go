@@ -208,8 +208,10 @@ func (rmgr *RenderManager) updateCamera(robj RenderObject) {
 		if rmgr.currentCamera3D != nil && rmgr.CurrentShader != nil {
 			rmgr.currentCamera3D.CalculateViewMatrix()
 			rmgr.CurrentShader.SetUniformM4("viewMatrix3D", rmgr.currentCamera3D.GetViewMatrix())
+			rmgr.CurrentShader.SetUniformM4("inverseViewMatrix3D", rmgr.currentCamera3D.GetInverseViewMatrix())
 		} else if rmgr.CurrentShader != nil {
 			rmgr.CurrentShader.SetUniformM4("viewMatrix3D", mgl32.Ident4())
+			rmgr.CurrentShader.SetUniformM4("inverseViewMatrix3D", mgl32.Ident4())
 		}
 	}
 }

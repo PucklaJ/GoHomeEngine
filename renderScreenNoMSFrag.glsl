@@ -1,8 +1,8 @@
-#version 150
+#version 100
 
-in vec2 fragTexCoords;
+precision mediump float;
 
-out vec4 fragColor;
+varying vec2 fragTexCoords;
 
 uniform sampler2D backBuffer;
 
@@ -17,5 +17,5 @@ vec4 fetchColor()
 
 void main()
 {
-	fragColor = fetchColor();
+	gl_FragColor = fetchColor();
 }

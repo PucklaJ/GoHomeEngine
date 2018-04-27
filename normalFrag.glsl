@@ -1,6 +1,15 @@
-#version 410
+#version 100
 
-struct Material
+precision mediump float;
+
+varying vec2 fragTexCoord;
+varying vec3 fragPos;
+varying vec3 fragNormal;
+varying mat3 fragToTangentSpace;
+varying mat4 fragViewMatrix3D;
+varying mat4 fragInverseViewMatrix3D;
+
+uniform struct Material
 {
 	vec3 diffuseColor;
 	vec3 specularColor;
@@ -14,19 +23,32 @@ struct Material
 	bool normalMapLoaded;
 
 	float shinyness;
-};
+} material;
 
-in VertexOut {
-	vec2 fragTexCoord;
-	vec3 fragPos;
-	vec3 fragNormal;
-	mat3 fragToTangentSpace;
-	mat4 viewMatrix3D;
-} FragIn;
+float detMat3(mat3 m)
+{
+	return m[0][0]*m[1][1]*m[2][2] + m[1][0]*m[2][1]*m[0][2] + m[2][0]*m[0][1]*m[1][2] - m[2][0]*m[1][1]*m[0][2] - m[1][0]*m[0][1]*m[2][2] - m[0][0]*m[2][1]*m[1][2];
+}
 
-out vec4 fragColor;
+mat3 inverseMat3(mat3 m)
+{
+	float det = detMat3(m);
+	if(det == 0.0)
+		return m;
 
-uniform Material material;
+	mat3 retMat; 
+	retMat[0][0] = m[1][1]*m[2][2] - m[1][2]*m[2][1];
+	retMat[0][1] = m[0][2]*m[2][1] - m[0][1]*m[2][2];
+	retMat[0][2] = m[0][1]*m[1][2] - m[0][2]*m[1][1];
+	retMat[1][0] = m[1][2]*m[2][0] - m[1][0]*m[2][2];
+	retMat[1][1] = m[0][0]*m[2][2] - m[0][2]*m[2][0];
+	retMat[1][2] = m[0][2]*m[1][0] - m[0][0]*m[1][2];
+	retMat[2][0] = m[1][0]*m[2][1] - m[1][1]*m[2][0];
+	retMat[2][1] = m[0][1]*m[2][0] - m[0][0]*m[2][1];
+	retMat[2][2] = m[0][0]*m[1][1] - m[0][1]*m[1][0];
+
+	return retMat * (1.0 / det);
+}
 
 void main()
 {	
@@ -35,24 +57,25 @@ void main()
 		vec3 normal = vec3(0.0,0.0,0.0);
 		if(material.normalMapLoaded)
 		{
-			normal = 2.0*(texture(material.normalMap,FragIn.fragTexCoord).xyz)-1.0;
-			normal = normalize((inverse(FragIn.viewMatrix3D)*vec4(inverse(FragIn.fragToTangentSpace)*normal,0.0)).xyz);
+			normal = 2.0*(texture2D(material.normalMap,fragTexCoord).xyz)-1.0;
+			normal = normalize((fragInverseViewMatrix3D*vec4(inverseMat3(fragToTangentSpace)*normal,0.0)).xyz);
 		}
 		else 
 		{
-			normal = FragIn.fragNormal;
-			normal = normalize((inverse(FragIn.viewMatrix3D)*vec4(normal,0.0)).xyz);
+			normal = fragNormal;
+			normal = normalize((fragInverseViewMatrix3D*vec4(normal,0.0)).xyz);
 		}
 
-		fragColor = vec4(normal,1.0);
-		if (fragColor.r < 0.0) {
-			fragColor.r = abs(fragColor.r) * 0.1;
+		gl_FragColor = vec4(normal,1.0);
+		if (gl_FragColor.r < 0.0) {
+			gl_FragColor.r = abs(gl_FragColor.r) * 0.1;
 		}
-		if (fragColor.g < 0.0) {
-			fragColor.g = abs(fragColor.g) * 0.1;
+		if (gl_FragColor.g < 0.0) {
+			gl_FragColor.g = abs(gl_FragColor.g) * 0.1;
 		}
-		if (fragColor.b < 0.0) {
-			fragColor.b = abs(fragColor.b) * 0.1;
+		if (gl_FragColor.b < 0.0) {
+			gl_FragColor.b = abs(gl_FragColor.b) * 0.1;
 		}
+		gl_FragColor = vec4(1.0,0.0,0.0,1.0);
 	}
 }
