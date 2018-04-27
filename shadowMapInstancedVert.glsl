@@ -1,4 +1,4 @@
-#version 100
+#version 120
 
 attribute vec3 vertex;
 attribute vec3 normal;

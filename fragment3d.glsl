@@ -1,8 +1,4 @@
-#version 100
-
-precision mediump float;
-precision mediump sampler2D;
-precision mediump samplerCube;
+#version 120
 
 #define MAX_POINT_LIGHTS 5
 #define MAX_DIRECTIONAL_LIGHTS 2

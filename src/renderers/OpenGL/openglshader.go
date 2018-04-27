@@ -605,6 +605,7 @@ func (s *OpenGLShader) validate() error {
 	if s.validated {
 		return nil
 	}
+	render, _ := gohome.Render.(*OpenGLRenderer)
 	s.Use()
 	maxtextures := gohome.Render.GetMaxTextures()
 	for i := 0; i < 31; i++ {
@@ -613,10 +614,12 @@ func (s *OpenGLShader) validate() error {
 	s.Unuse()
 	s.validated = true
 	var vao uint32
-	gl.CreateVertexArrays(1, &vao)
-	gl.BindVertexArray(vao)
-	defer gl.DeleteVertexArrays(1, &vao)
-	defer gl.BindVertexArray(0)
+	if render.hasFunctionAvailable("VERTEX_ARRAY") {
+		gl.CreateVertexArrays(1, &vao)
+		gl.BindVertexArray(vao)
+		defer gl.DeleteVertexArrays(1, &vao)
+		defer gl.BindVertexArray(0)
+	}
 	gl.ValidateProgram(s.program)
 	var status int32
 	gl.GetProgramiv(s.program, gl.VALIDATE_STATUS, &status)

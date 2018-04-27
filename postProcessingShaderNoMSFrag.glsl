@@ -1,6 +1,4 @@
-#version 100
-
-precision mediump float;
+#version 120
 
 varying vec2 fragTexCoords;
 

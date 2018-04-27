@@ -1,4 +1,4 @@
-#version 100
+#version 120
 
 attribute vec2 vertex;
 attribute vec2 texCoord;

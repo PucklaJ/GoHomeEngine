@@ -70,7 +70,7 @@ func (this *OpenGLRenderer) Init() error {
 	this.availableFunctions = make(map[string]bool)
 	this.gatherAvailableFunctions()
 
-	if !this.hasFunctionAvailable("VERTEX_ID") {
+	if !this.hasFunctionAvailable("VERTEX_ID") || !this.hasFunctionAvailable("MULTISAMPLE") {
 		this.createBackBufferMesh()
 	}
 

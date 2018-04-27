@@ -28,6 +28,7 @@ type OpenGLMesh3D struct {
 	Material *gohome.Material
 
 	tangentsCalculated bool
+	canUseVAOs         bool
 }
 
 func (oglm *OpenGLMesh3D) CalculateTangentsRoutine(startIndex, maxIndex uint32, wg *sync.WaitGroup) {
@@ -124,6 +125,8 @@ func CreateOpenGLMesh3D(name string) *OpenGLMesh3D {
 		Name:               name,
 		tangentsCalculated: false,
 	}
+	render, _ := gohome.Render.(*OpenGLRenderer)
+	mesh.canUseVAOs = render.hasFunctionAvailable("VERTEX_ARRAY")
 
 	return &mesh
 }
@@ -131,6 +134,21 @@ func CreateOpenGLMesh3D(name string) *OpenGLMesh3D {
 func (oglm *OpenGLMesh3D) deleteElements() {
 	oglm.vertices = append(oglm.vertices[:0], oglm.vertices[len(oglm.vertices):]...)
 	oglm.indices = append(oglm.indices[:0], oglm.indices[len(oglm.indices):]...)
+}
+
+func (oglm *OpenGLMesh3D) attributePointer() {
+	gl.BindBuffer(gl.ARRAY_BUFFER, oglm.buffer)
+	gl.VertexAttribPointer(0, 3, gl.FLOAT, false, int32(MESH3DVERTEX_SIZE), gl.PtrOffset(0))
+	gl.VertexAttribPointer(1, 3, gl.FLOAT, false, int32(MESH3DVERTEX_SIZE), gl.PtrOffset(3*4))
+	gl.VertexAttribPointer(2, 2, gl.FLOAT, false, int32(MESH3DVERTEX_SIZE), gl.PtrOffset(3*4+3*4))
+	gl.VertexAttribPointer(3, 3, gl.FLOAT, false, int32(MESH3DVERTEX_SIZE), gl.PtrOffset(3*4+3*4+2*4))
+
+	gl.EnableVertexAttribArray(0)
+	gl.EnableVertexAttribArray(1)
+	gl.EnableVertexAttribArray(2)
+	gl.EnableVertexAttribArray(3)
+
+	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, oglm.buffer)
 }
 
 func (oglm *OpenGLMesh3D) Load() {
@@ -148,7 +166,9 @@ func (oglm *OpenGLMesh3D) Load() {
 
 	oglm.CalculateTangents()
 
-	gl.GenVertexArrays(1, &oglm.vao)
+	if oglm.canUseVAOs {
+		gl.GenVertexArrays(1, &oglm.vao)
+	}
 	gl.GenBuffers(1, &oglm.buffer)
 
 	gl.BindBuffer(gl.ARRAY_BUFFER, oglm.buffer)
@@ -161,22 +181,11 @@ func (oglm *OpenGLMesh3D) Load() {
 	gl.BufferSubData(gl.ELEMENT_ARRAY_BUFFER, int(verticesSize), int(indicesSize), unsafe.Pointer(&oglm.indices[0]))
 	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, 0)
 
-	gl.BindVertexArray(oglm.vao)
-
-	gl.BindBuffer(gl.ARRAY_BUFFER, oglm.buffer)
-	gl.VertexAttribPointer(0, 3, gl.FLOAT, false, int32(MESH3DVERTEX_SIZE), gl.PtrOffset(0))
-	gl.VertexAttribPointer(1, 3, gl.FLOAT, false, int32(MESH3DVERTEX_SIZE), gl.PtrOffset(3*4))
-	gl.VertexAttribPointer(2, 2, gl.FLOAT, false, int32(MESH3DVERTEX_SIZE), gl.PtrOffset(3*4+3*4))
-	gl.VertexAttribPointer(3, 3, gl.FLOAT, false, int32(MESH3DVERTEX_SIZE), gl.PtrOffset(3*4+3*4+2*4))
-
-	gl.EnableVertexAttribArray(0)
-	gl.EnableVertexAttribArray(1)
-	gl.EnableVertexAttribArray(2)
-	gl.EnableVertexAttribArray(3)
-
-	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, oglm.buffer)
-
-	gl.BindVertexArray(0)
+	if oglm.canUseVAOs {
+		gl.BindVertexArray(oglm.vao)
+		oglm.attributePointer()
+		gl.BindVertexArray(0)
+	}
 
 	oglm.deleteElements()
 }
@@ -190,13 +199,24 @@ func (oglm *OpenGLMesh3D) Render() {
 			// fmt.Println("Error:", err)
 		}
 	}
-	gl.BindVertexArray(oglm.vao)
+	if oglm.canUseVAOs {
+		gl.BindVertexArray(oglm.vao)
+	} else {
+		oglm.attributePointer()
+	}
 	gl.DrawElements(gl.TRIANGLES, int32(oglm.numIndices), gl.UNSIGNED_INT, gl.PtrOffset(int(oglm.numVertices*MESH3DVERTEX_SIZE)))
-	gl.BindVertexArray(0)
+	if oglm.canUseVAOs {
+		gl.BindVertexArray(0)
+	} else {
+		gl.BindBuffer(gl.ARRAY_BUFFER, 0)
+		gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, 0)
+	}
 }
 
 func (oglm *OpenGLMesh3D) Terminate() {
-	defer gl.DeleteVertexArrays(1, &oglm.vao)
+	if oglm.canUseVAOs {
+		defer gl.DeleteVertexArrays(1, &oglm.vao)
+	}
 	defer gl.DeleteBuffers(1, &oglm.buffer)
 }
 
