@@ -60,6 +60,7 @@ func loadShaderFile(path string) (string, error) {
 }
 
 func loadShader(path, name_shader, name string) (string, bool) {
+	path = Render.FilterShaderFiles(name_shader, path, name)
 	contents, err := loadShaderFile(path)
 	if err != nil {
 		log.Println("Couldn't load", name, "of", name_shader, ":", err)

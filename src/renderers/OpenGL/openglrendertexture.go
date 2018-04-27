@@ -31,6 +31,7 @@ func CreateOpenGLRenderTexture(name string, width, height, textures uint32, dept
 
 func (this *OpenGLRenderTexture) loadTextures(width, height, textures uint32, cubeMap bool) {
 	var i uint32
+	render, _ := gohome.Render.(*OpenGLRenderer)
 	for i = 0; i < textures; i++ {
 		var ogltex *OpenGLTexture
 		var oglcubemap *OpenGLCubeMap
@@ -50,13 +51,21 @@ func (this *OpenGLRenderTexture) loadTextures(width, height, textures uint32, cu
 		}
 		if this.shadowMap {
 			if cubeMap {
-				gl.FramebufferTexture(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, oglcubemap.oglName, 0)
+				if render.hasFunctionAvailable("FRAMEBUFFER_TEXTURE") {
+					gl.FramebufferTexture(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, oglcubemap.oglName, 0)
+				} else {
+					gl.FramebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.TEXTURE_CUBE_MAP_POSITIVE_X, oglcubemap.oglName, 0)
+				}
 			} else {
 				gl.FramebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, ogltex.bindingPoint(), ogltex.oglName, 0)
 			}
 		} else {
 			if cubeMap {
-				gl.FramebufferTexture(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0+i, oglcubemap.oglName, 0)
+				if render.hasFunctionAvailable("FRAMEBUFFER_TEXTURE") {
+					gl.FramebufferTexture(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0+i, oglcubemap.oglName, 0)
+				} else {
+					gl.FramebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0+i, gl.TEXTURE_CUBE_MAP_POSITIVE_X, oglcubemap.oglName, 0)
+				}
 			} else {
 				gl.FramebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0+i, ogltex.bindingPoint(), ogltex.oglName, 0)
 			}

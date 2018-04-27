@@ -1,13 +1,13 @@
-#version 410
+#version 100
 
-layout(location = 0) in vec2 vertex;
-layout(location = 1) in vec2 texCoord;
+attribute vec2 vertex;
+attribute vec2 texCoord;
 
 uniform mat3 transformMatrix2D;
 uniform mat4 projectionMatrix2D;
 uniform mat3 viewMatrix2D;
 
-out vec2 fragTexCoord;
+varying vec2 fragTexCoord;
 
 void main()
 {

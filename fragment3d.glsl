@@ -1,27 +1,15 @@
-#version 410
+#version 100
 
-#define MAX_POINT_LIGHTS 20
+precision mediump float;
+precision mediump sampler2D;
+precision mediump samplerCube;
+
+#define MAX_POINT_LIGHTS 5
 #define MAX_DIRECTIONAL_LIGHTS 2
 #define MAX_SPOT_LIGHTS 1
 
 #define MAX_SPECULAR_EXPONENT 50.0
 #define MIN_SPECULAR_EXPONENT 5.0
-
-struct Material
-{
-	vec3 diffuseColor;
-	vec3 specularColor;
-
-	sampler2D diffuseTexture;
-	sampler2D specularTexture;
-	sampler2D normalMap;
-
-	bool DiffuseTextureLoaded;
-	bool SpecularTextureLoaded;
-	bool NormalMapLoaded;
-
-	float shinyness;
-};
 
 struct Attentuation
 {
@@ -30,7 +18,17 @@ struct Attentuation
 	float quadratic;
 };
 
-struct PointLight
+
+
+const float shadowDistance = 50.0;
+const float transitionDistance = 5.0;
+const float bias = 0.005;
+
+uniform int numPointLights;
+uniform int numDirectionalLights;
+uniform int numSpotLights;
+uniform vec3 ambientLight;
+uniform struct PointLight
 {
 	vec3 position;
 
@@ -44,9 +42,8 @@ struct PointLight
 	bool castsShadows;
 
 	float farPlane;
-};
-
-struct DirectionalLight
+} pointLights[MAX_POINT_LIGHTS];
+uniform struct DirectionalLight
 {
 	vec3 direction;
 
@@ -56,11 +53,11 @@ struct DirectionalLight
 	mat4 lightSpaceMatrix;
 	sampler2D shadowmap;
 	bool castsShadows;
+	ivec2 shadowMapSize;
 
 	float shadowDistance;
-};
-
-struct SpotLight
+} directionalLights[MAX_DIRECTIONAL_LIGHTS];
+uniform struct SpotLight
 {
 	vec3 position;
 	vec3 direction;
@@ -76,29 +73,23 @@ struct SpotLight
 	mat4 lightSpaceMatrix;
 	sampler2D shadowmap;
 	bool castsShadows;
-};
+	ivec2 shadowMapSize;
+} spotLights[MAX_SPOT_LIGHTS];
+uniform struct Material
+{
+	vec3 diffuseColor;
+	vec3 specularColor;
 
-in VertexOut {
-	vec2 fragTexCoord;
-	vec3 fragPos;
-	vec3 fragNormal;
-	mat3 fragToTangentSpace;
-	mat4 viewMatrix3D;
-} FragIn;
+	sampler2D diffuseTexture;
+	sampler2D specularTexture;
+	sampler2D normalMap;
 
-out vec4 fragColor;
+	bool DiffuseTextureLoaded;
+	bool SpecularTextureLoaded;
+	bool NormalMapLoaded;
 
-uniform Material material;
-uniform uint numPointLights = 0;
-uniform uint numDirectionalLights = 0;
-uniform uint numSpotLights = 0;
-uniform vec3 ambientLight;
-uniform PointLight[MAX_POINT_LIGHTS] pointLights;
-uniform DirectionalLight[MAX_DIRECTIONAL_LIGHTS] directionalLights;
-uniform SpotLight[MAX_SPOT_LIGHTS] spotLights;
-uniform float shadowDistance = 50.0;
-uniform float transitionDistance = 5.0;
-uniform float bias = 0.005;
+	float shinyness;
+} material;
 
 void calculatePointLight(PointLight pl);
 void calculateDirectionalLight(DirectionalLight pl);
@@ -123,6 +114,13 @@ vec4 finalAmbientColor;
 vec3 norm;
 vec3 viewDir;
 
+varying vec2 fragTexCoord;
+varying vec3 fragPos;
+varying vec3 fragNormal;
+varying mat3 fragToTangentSpace;
+varying mat4 fragViewMatrix3D;
+varying mat4 fragInverseViewMatrix3D;
+
 void main()
 {	
 	finalDiffuseColor = vec4(0.0,0.0,0.0,0.0);
@@ -145,7 +143,7 @@ vec4 getDiffuseTexture()
 {
 	if(material.DiffuseTextureLoaded)
 	{
-		return texture(material.diffuseTexture,FragIn.fragTexCoord);
+		return texture2D(material.diffuseTexture,fragTexCoord);
 	}
 	else
 	{
@@ -157,7 +155,7 @@ vec4 getSpecularTexture()
 {
 	if(material.SpecularTextureLoaded)
 	{
-		return texture(material.specularTexture,FragIn.fragTexCoord);
+		return texture2D(material.specularTexture,fragTexCoord);
 	}
 	else
 	{
@@ -179,7 +177,7 @@ void calculateLightColors()
 	finalSpecularColor *= vec4(material.specularColor,1.0) * texSpecCol;
 	finalAmbientColor *= vec4(material.diffuseColor,1.0) * texDifCol;
 
-	fragColor = finalDiffuseColor + finalSpecularColor  + finalAmbientColor;
+	gl_FragColor = finalDiffuseColor + finalSpecularColor  + finalAmbientColor;
 }
 
 void calculatePointLights()
@@ -189,62 +187,204 @@ void calculatePointLights()
 	// 	calculatePointLight(pointLights[i]);
 	// }
 
+	#if MAX_POINT_LIGHTS > 0
 	if(numPointLights > 0)
 		calculatePointLight(pointLights[0]);
+	#endif
+	#if MAX_POINT_LIGHTS > 1
 	if(numPointLights > 1)
 		calculatePointLight(pointLights[1]);
+	#endif
+	#if MAX_POINT_LIGHTS > 2
 	if(numPointLights > 2)
 		calculatePointLight(pointLights[2]);
+	#endif
+	#if MAX_POINT_LIGHTS > 3
 	if(numPointLights > 3)
 		calculatePointLight(pointLights[3]);
+	#endif
+	#if MAX_POINT_LIGHTS > 4
 	if(numPointLights > 4)
 		calculatePointLight(pointLights[4]);
+	#endif
+	#if MAX_POINT_LIGHTS > 5
 	if(numPointLights > 5)
 		calculatePointLight(pointLights[5]);
+	#endif
+	#if MAX_POINT_LIGHTS > 6
 	if(numPointLights > 6)
 		calculatePointLight(pointLights[6]);
+	#endif
+	#if MAX_POINT_LIGHTS > 7
 	if(numPointLights > 7)
 		calculatePointLight(pointLights[7]);
+	#endif
+	#if MAX_POINT_LIGHTS > 8
 	if(numPointLights > 8)
 		calculatePointLight(pointLights[8]);
+	#endif
+	#if MAX_POINT_LIGHTS > 9
 	if(numPointLights > 9)
 		calculatePointLight(pointLights[9]);
+	#endif
+	#if MAX_POINT_LIGHTS > 10
 	if(numPointLights > 10)
 		calculatePointLight(pointLights[10]);
+	#endif
+	#if MAX_POINT_LIGHTS > 11
 	if(numPointLights > 11)
 		calculatePointLight(pointLights[11]);
+	#endif
+	#if MAX_POINT_LIGHTS > 12
 	if(numPointLights > 12)
 		calculatePointLight(pointLights[12]);
+	#endif
+	#if MAX_POINT_LIGHTS > 13
 	if(numPointLights > 13)
 		calculatePointLight(pointLights[13]);
+	#endif
+	#if MAX_POINT_LIGHTS > 14
 	if(numPointLights > 14)
 		calculatePointLight(pointLights[14]);
+	#endif
+	#if MAX_POINT_LIGHTS > 15
 	if(numPointLights > 15)
 		calculatePointLight(pointLights[15]);
+	#endif
+	#if MAX_POINT_LIGHTS > 16
 	if(numPointLights > 16)
 		calculatePointLight(pointLights[16]);
+	#endif
+	#if MAX_POINT_LIGHTS > 17
 	if(numPointLights > 17)
 		calculatePointLight(pointLights[17]);
+	#endif
+	#if MAX_POINT_LIGHTS > 18
 	if(numPointLights > 18)
 		calculatePointLight(pointLights[18]);
+	#endif
+	#if MAX_POINT_LIGHTS > 19
 	if(numPointLights > 19)
 		calculatePointLight(pointLights[19]);
-	// if(numPointLights > 20)
-	// 	calculatePointLight(pointLights[20]);
+	#endif
+	#if MAX_POINT_LIGHTS > 20
+	if(numPointLights > 20)
+		calculatePointLight(pointLights[20]);
+	#endif
 }
 void calculateDirectionalLights()
 {	
-	if(numDirectionalLights > 0)
+	#if MAX_DIRECTIONAL_LIGHTS > 0
+	if(int(numDirectionalLights) > 0)
 		calculateDirectionalLight(directionalLights[0]);
-	if(numDirectionalLights > 1)
+	#endif
+	#if MAX_DIRECTIONAL_LIGHTS > 1
+	if(int(numDirectionalLights) > 1)
 		calculateDirectionalLight(directionalLights[1]);
+	#endif
+	#if MAX_DIRECTIONAL_LIGHTS > 2
+	if(int(numDirectionalLights) > 2)
+		calculateDirectionalLight(directionalLights[2]);
+	#endif
+	#if MAX_DIRECTIONAL_LIGHTS > 3
+	if(int(numDirectionalLights) > 3)
+		calculateDirectionalLight(directionalLights[3]);
+	#endif
+	#if MAX_DIRECTIONAL_LIGHTS > 4
+	if(int(numDirectionalLights) > 4)
+		calculateDirectionalLight(directionalLights[4]);
+	#endif
+	#if MAX_DIRECTIONAL_LIGHTS > 5
+	if(int(numDirectionalLights) > 5)
+		calculateDirectionalLight(directionalLights[5]);
+	#endif
+	#if MAX_DIRECTIONAL_LIGHTS > 6
+	if(int(numDirectionalLights) > 6)
+		calculateDirectionalLight(directionalLights[6]);
+	#endif
+	#if MAX_DIRECTIONAL_LIGHTS > 7
+	if(int(numDirectionalLights) > 7)
+		calculateDirectionalLight(directionalLights[7]);
+	#endif
+	#if MAX_DIRECTIONAL_LIGHTS > 8
+	if(int(numDirectionalLights) > 8)
+		calculateDirectionalLight(directionalLights[8]);
+	#endif
 }
 void calculateSpotLights()
 {
-	for(uint i = 0;i<numSpotLights&&i<MAX_SPOT_LIGHTS;i++)
-	{
-		calculateSpotLight(spotLights[i]);
-	}	
+	// for(int i=0; i<numSpotLights && i<MAX_SPOT_LIGHTS ; i++)
+	// {
+	// 	calculateSpotLight(spotLights[i]);
+	// }
+	#if MAX_SPOT_LIGHTS > 0
+	if(int(numSpotLights) > 0)
+		calculateSpotLight(spotLights[0]);
+	#endif
+	#if MAX_SPOT_LIGHTS > 1
+	if(int(numSpotLights) > 1)
+		calculateSpotLight(spotLights[1]);
+	#endif
+	#if MAX_SPOT_LIGHTS > 2
+	if(int(numSpotLights) > 2)
+		calculateSpotLight(spotLights[2]);
+	#endif
+	#if MAX_SPOT_LIGHTS > 3
+	if(int(numSpotLights) > 3)
+		calculateSpotLight(spotLights[3]);
+	#endif
+	#if MAX_SPOT_LIGHTS > 4
+	if(int(numSpotLights) > 4)
+		calculateSpotLight(spotLights[4]);
+	#endif
+	#if MAX_SPOT_LIGHTS > 5
+	if(int(numSpotLights) > 5)
+		calculateSpotLight(spotLights[5]);
+	#endif
+	#if MAX_SPOT_LIGHTS > 6
+	if(int(numSpotLights) > 6)
+		calculateSpotLight(spotLights[6]);
+	#endif
+	#if MAX_SPOT_LIGHTS > 7
+	if(int(numSpotLights) > 7)
+		calculateSpotLight(spotLights[7]);
+	#endif
+	#if MAX_SPOT_LIGHTS > 8
+	if(int(numSpotLights) > 8)
+		calculateSpotLight(spotLights[8]);
+	#endif
+	#if MAX_SPOT_LIGHTS > 9
+	if(int(numSpotLights) > 9)
+		calculateSpotLight(spotLights[9]);
+	#endif
+	#if MAX_SPOT_LIGHTS > 10
+	if(int(numSpotLights) > 10)
+		calculateSpotLight(spotLights[10]);
+	#endif
+	#if MAX_SPOT_LIGHTS > 11
+	if(int(numSpotLights) > 11)
+		calculateSpotLight(spotLights[11]);
+	#endif
+	#if MAX_SPOT_LIGHTS > 12
+	if(int(numSpotLights) > 12)
+		calculateSpotLight(spotLights[12]);
+	#endif
+	#if MAX_SPOT_LIGHTS > 13
+	if(int(numSpotLights) > 13)
+		calculateSpotLight(spotLights[13]);
+	#endif
+	#if MAX_SPOT_LIGHTS > 14
+	if(int(numSpotLights) > 14)
+		calculateSpotLight(spotLights[14]);
+	#endif
+	#if MAX_SPOT_LIGHTS > 15
+	if(int(numSpotLights) > 15)
+		calculateSpotLight(spotLights[15]);
+	#endif
+	#if MAX_SPOT_LIGHTS > 16
+	if(int(numSpotLights) > 16)
+		calculateSpotLight(spotLights[16]);
+	#endif
 }
 
 vec3 diffuseLighting(vec3 lightDir,vec3 diffuse)
@@ -263,27 +403,27 @@ vec3 specularLighting(vec3 lightDir,vec3 specular)
 	return specular;
 }
 
-float calcShadow(sampler2D shadowMap,mat4 lightSpaceMatrix,float shadowdistance,bool distanceTransition)
+float calcShadow(sampler2D shadowMap,mat4 lightSpaceMatrix,float shadowdistance,bool distanceTransition,ivec2 shadowMapSize)
 {	
 	float distance = 0.0;
 	if(distanceTransition)
 	{
-		distance = length(FragIn.fragPos);
+		distance = length(fragPos);
 		distance = distance - (shadowdistance - transitionDistance);
 		distance = distance / transitionDistance;
 		distance = clamp(1.0-distance,0.0,1.0);
 	}
-	vec4 fragPosLightSpace = lightSpaceMatrix*inverse(FragIn.viewMatrix3D)*vec4(FragIn.fragPos,1.0);
+	vec4 fragPosLightSpace = lightSpaceMatrix*fragInverseViewMatrix3D*vec4(fragPos,1.0);
 	vec3 projCoords = clamp((fragPosLightSpace.xyz / fragPosLightSpace.w)*0.5+0.5,-1.0,1.0);
 	float currentDepth = projCoords.z-bias;
 	float shadowresult = 0.0;
-	float closestDepth = texture(shadowMap, projCoords.xy).r;
-	vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
+	float closestDepth = texture2D(shadowMap, projCoords.xy).r;
+	vec2 texelSize = 1.0 / vec2(shadowMapSize);
 	for(int x = -1; x <= 1; ++x)
 	{
 	    for(int y = -1; y <= 1; ++y)
 	    {
-	        float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r; 
+	        float pcfDepth = texture2D(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r; 
 	        shadowresult += currentDepth > pcfDepth ? 0.0 : 1.0;        
 	    }    
 	}
@@ -295,25 +435,29 @@ float calcShadow(sampler2D shadowMap,mat4 lightSpaceMatrix,float shadowdistance,
 	return shadowresult;
 }
 
-vec3 sampleOffsetDirections[20] = vec3[]
-(
-   vec3( 1,  1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1,  1,  1), 
-   vec3( 1,  1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1,  1, -1),
-   vec3( 1,  1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1,  1,  0),
-   vec3( 1,  0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1,  0, -1),
-   vec3( 0,  1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0,  1, -1)
-);   
+vec3 sampleOffsetDirections[20];
+
+void setOffsetDirections()
+{
+   sampleOffsetDirections[1] = vec3( 1,  1,  1); sampleOffsetDirections[2] = vec3( 1, -1,  1); sampleOffsetDirections[3] = vec3(-1, -1,  1); sampleOffsetDirections[4] = vec3(-1,  1,  1); 
+   sampleOffsetDirections[5] = vec3( 1,  1, -1); sampleOffsetDirections[6] = vec3( 1, -1, -1); sampleOffsetDirections[7] = vec3(-1, -1, -1); sampleOffsetDirections[8] = vec3(-1,  1, -1);
+   sampleOffsetDirections[9] = vec3( 1,  1,  0); sampleOffsetDirections[10] = vec3( 1, -1,  0); sampleOffsetDirections[11] = vec3(-1, -1,  0); sampleOffsetDirections[12] = vec3(-1,  1,  0);
+   sampleOffsetDirections[13] = vec3( 1,  0,  1); sampleOffsetDirections[14] = vec3(-1,  0,  1); sampleOffsetDirections[15] = vec3( 1,  0, -1); sampleOffsetDirections[15] = vec3(-1,  0, -1);
+   sampleOffsetDirections[17] = vec3( 0,  1,  1); sampleOffsetDirections[18] = vec3( 0, -1,  1); sampleOffsetDirections[19] = vec3( 0, -1, -1); sampleOffsetDirections[19] = vec3( 0,  1, -1);
+}
 
 float calcShadowPointLight(PointLight pl)
 {
-	vec3 fragToLight = (inverse(FragIn.viewMatrix3D)*vec4(FragIn.fragPos,1.0)).xyz - pl.position;
+	setOffsetDirections();
+
+	vec3 fragToLight = (fragInverseViewMatrix3D*vec4(fragPos,1.0)).xyz - pl.position;
 	float currentDepth = length(fragToLight)-bias*10.0*pl.farPlane;
 	float shadow  = 0.0;
 	int samples = 20;
-	float viewDistance = length(-FragIn.fragPos);
+	float viewDistance = length(-fragPos);
 	float diskRadius = (1.0 + (viewDistance / pl.farPlane)) / 70.0;
 	for(int i = 0;i<samples;i++) {
-		 float closestDepth = texture(pl.shadowmap, fragToLight + sampleOffsetDirections[i]*diskRadius).r;
+		 float closestDepth = textureCube(pl.shadowmap, fragToLight + sampleOffsetDirections[i]*diskRadius).r;
 	            closestDepth *= pl.farPlane;   // Undo mapping [0;1]
 	            if(currentDepth <= closestDepth)
 	                shadow += 1.0;
@@ -324,15 +468,15 @@ float calcShadowPointLight(PointLight pl)
 
 float calcAttentuation(vec3 lightPosition,Attentuation attentuation)
 {
-	float distance = distance(lightPosition,FragIn.fragPos);
+	float distance = distance(lightPosition,fragPos);
 	float attent = 1.0/(attentuation.quadratic*distance*distance + attentuation.linear*distance + attentuation.constant);
 	return attent;
 }
 
 void calculatePointLight(PointLight pl)
 {
-	vec3 lightPosition = (FragIn.viewMatrix3D*vec4(pl.position,1.0)).xyz;
-	vec3 lightDir = normalize(FragIn.fragToTangentSpace*(lightPosition - FragIn.fragPos));
+	vec3 lightPosition = (fragViewMatrix3D*vec4(pl.position,1.0)).xyz;
+	vec3 lightDir = normalize(fragToTangentSpace*(lightPosition - fragPos));
 
 
 	// Diffuse
@@ -356,8 +500,8 @@ void calculatePointLight(PointLight pl)
 }
 void calculateDirectionalLight(DirectionalLight dl)
 {
-	vec3 lightDirection = (FragIn.viewMatrix3D*vec4(dl.direction*-1.0,0.0)).xyz;
-	vec3 lightDir = normalize(FragIn.fragToTangentSpace*lightDirection);
+	vec3 lightDirection = (fragViewMatrix3D*vec4(dl.direction*-1.0,0.0)).xyz;
+	vec3 lightDir = normalize(fragToTangentSpace*lightDirection);
 	
 	// Diffuse
 	vec3 diffuse = diffuseLighting(lightDir,dl.diffuseColor);
@@ -366,7 +510,7 @@ void calculateDirectionalLight(DirectionalLight dl)
 	vec3 specular = specularLighting(lightDir,dl.specularColor);
 	
 	// Shadow
-	float shadow = dl.castsShadows ? calcShadow(dl.shadowmap,dl.lightSpaceMatrix,dl.shadowDistance,true) : 1.0;
+	float shadow = dl.castsShadows ? calcShadow(dl.shadowmap,dl.lightSpaceMatrix,dl.shadowDistance,true,dl.shadowMapSize) : 1.0;
 	
 	diffuse *= shadow;
 	specular *= shadow;
@@ -382,7 +526,7 @@ float degToRad(float deg)
 
 float calcSpotAmount(vec3 lightDir,vec3 lightDirection,SpotLight pl)
 {
-	float theta = dot(lightDir, normalize(FragIn.fragToTangentSpace*lightDirection));
+	float theta = dot(lightDir, normalize(fragToTangentSpace*lightDirection));
 	float spotAmount = 0.0;
 	float outerCutOff = cos(degToRad(pl.outerCutOff));
 	float innerCutOff = cos(degToRad(pl.innerCutOff));
@@ -394,9 +538,9 @@ float calcSpotAmount(vec3 lightDir,vec3 lightDirection,SpotLight pl)
 
 void calculateSpotLight(SpotLight pl)
 {
-	vec3 lightPosition = (FragIn.viewMatrix3D*vec4(pl.position,1.0)).xyz;
-	vec3 lightDirection = (FragIn.viewMatrix3D*vec4(pl.direction*-1.0,0.0)).xyz;
-	vec3 lightDir = normalize(FragIn.fragToTangentSpace*(lightPosition-FragIn.fragPos));
+	vec3 lightPosition = (fragViewMatrix3D*vec4(pl.position,1.0)).xyz;
+	vec3 lightDirection = (fragViewMatrix3D*vec4(pl.direction*-1.0,0.0)).xyz;
+	vec3 lightDir = normalize(fragToTangentSpace*(lightPosition-fragPos));
 
 	// Spotamount
 	float spotAmount = calcSpotAmount(lightDir,lightDirection,pl);
@@ -411,7 +555,7 @@ void calculateSpotLight(SpotLight pl)
 	float attent = calcAttentuation(lightPosition,pl.attentuation);
 
 	// Shadow
-	float shadow = pl.castsShadows ? calcShadow(pl.shadowmap,pl.lightSpaceMatrix,50.0,false) : 1.0;
+	float shadow = pl.castsShadows ? calcShadow(pl.shadowmap,pl.lightSpaceMatrix,50.0,false,pl.shadowMapSize) : 1.0;
 	// float shadow = 1.0;
 
 	diffuse *= attent * spotAmount * shadow;
@@ -430,12 +574,12 @@ void setVariables()
 {
 	if(material.NormalMapLoaded)
 	{
-		norm = normalize(2.0*(texture(material.normalMap,FragIn.fragTexCoord)).xyz-1.0);
+		norm = normalize(2.0*(texture2D(material.normalMap,fragTexCoord)).xyz-1.0);
 	}
 	else
 	{
-		norm = normalize(FragIn.fragToTangentSpace*FragIn.fragNormal);
+		norm = normalize(fragToTangentSpace*fragNormal);
 	}
-	viewDir = normalize((FragIn.fragToTangentSpace*(FragIn.fragPos*-1.0)));
+	viewDir = normalize((fragToTangentSpace*(fragPos*-1.0)));
 }
 

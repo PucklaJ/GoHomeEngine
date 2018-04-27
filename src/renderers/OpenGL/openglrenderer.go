@@ -17,6 +17,34 @@ type OpenGLRenderer struct {
 	CurrentTextureUnit uint32
 
 	availableFunctions map[string]bool
+	backBufferMesh     *OpenGLMesh2D
+}
+
+func (this *OpenGLRenderer) createBackBufferMesh() {
+	this.backBufferMesh = CreateOpenGLMesh2D("BackBufferMesh")
+
+	var vertices []gohome.Mesh2DVertex = make([]gohome.Mesh2DVertex, 4)
+	var indices []uint32 = make([]uint32, 6)
+
+	vertices[0].Vertex(-1.0, -1.0)
+	vertices[1].Vertex(1.0, -1.0)
+	vertices[2].Vertex(1.0, 1.0)
+	vertices[3].Vertex(-1.0, 1.0)
+
+	vertices[0].TexCoord(0.0, 0.0)
+	vertices[1].TexCoord(1.0, 0.0)
+	vertices[2].TexCoord(1.0, 1.0)
+	vertices[3].TexCoord(0.0, 1.0)
+
+	indices[0] = 0
+	indices[1] = 1
+	indices[2] = 2
+	indices[3] = 2
+	indices[4] = 3
+	indices[5] = 0
+
+	this.backBufferMesh.AddVertices(vertices, indices)
+	this.backBufferMesh.Load()
 }
 
 func (this *OpenGLRenderer) Init() error {
@@ -41,6 +69,10 @@ func (this *OpenGLRenderer) Init() error {
 
 	this.availableFunctions = make(map[string]bool)
 	this.gatherAvailableFunctions()
+
+	if !this.hasFunctionAvailable("VERTEX_ID") {
+		this.createBackBufferMesh()
+	}
 
 	return nil
 }
@@ -67,6 +99,9 @@ func (this *OpenGLRenderer) SetWireFrame(b bool) {
 
 func (this *OpenGLRenderer) Terminate() {
 	gl.DeleteVertexArrays(1, &this.BackBufferVao)
+	if this.backBufferMesh != nil {
+		this.backBufferMesh.Terminate()
+	}
 }
 
 func (*OpenGLRenderer) ClearScreen(c color.Color) {
@@ -107,7 +142,7 @@ func (*OpenGLRenderer) CreateInstancedMesh3D(name string) gohome.InstancedMesh3D
 	return CreateOpenGLInstancedMesh3D(name)
 }
 
-func (*OpenGLRenderer) LoadShader(name, vertex_contents, fragment_contents, geometry_contents, tesselletion_control_contents, eveluation_contents, compute_contents string) (gohome.Shader, error) {
+func (this *OpenGLRenderer) LoadShader(name, vertex_contents, fragment_contents, geometry_contents, tesselletion_control_contents, eveluation_contents, compute_contents string) (gohome.Shader, error) {
 	var shader *OpenGLShader
 	var err error
 
@@ -166,9 +201,13 @@ func (*OpenGLRenderer) LoadShader(name, vertex_contents, fragment_contents, geom
 }
 
 func (this *OpenGLRenderer) RenderBackBuffer() {
-	gl.BindVertexArray(this.BackBufferVao)
-	gl.DrawArrays(gl.TRIANGLES, 0, 6)
-	gl.BindVertexArray(0)
+	if this.backBufferMesh != nil {
+		this.backBufferMesh.Render()
+	} else {
+		gl.BindVertexArray(this.BackBufferVao)
+		gl.DrawArrays(gl.TRIANGLES, 0, 6)
+		gl.BindVertexArray(0)
+	}
 }
 
 func (this *OpenGLRenderer) SetViewport(viewport gohome.Viewport) {
@@ -258,19 +297,53 @@ func (this *OpenGLRenderer) gatherAvailableFunctions() {
 
 	combined = major*10 + minor
 
-	if combined >= 32 {
-		this.availableFunctions["MULTISAMPLE"] = true
+	if combined >= 30 {
+		this.availableFunctions["VERTEX_ID"] = true
+		this.availableFunctions["VERTEX_ARRAY"] = true
 	}
 	if combined >= 31 {
 		this.availableFunctions["INSTANCED"] = true
 	}
+	if combined >= 32 {
+		this.availableFunctions["MULTISAMPLE"] = true
+		this.availableFunctions["FRAMEBUFFER_TEXTURE"] = true
+	}
 	if combined >= 40 {
 		this.availableFunctions["INDIRECT"] = true
 	}
-
 }
 
 func (this *OpenGLRenderer) hasFunctionAvailable(function string) bool {
 	v, ok := this.availableFunctions[function]
 	return ok && v
+}
+
+func (this *OpenGLRenderer) FilterShaderFiles(name, file, shader_type string) string {
+	if name == "BackBufferShader" {
+		if !this.hasFunctionAvailable("MULTISAMPLE") {
+			if shader_type == "Vertex File" {
+				file = "backBufferShaderNoMSVert.glsl"
+			} else if shader_type == "Fragment File" {
+				file = "backBufferShaderNoMSFrag.glsl"
+			}
+		}
+	} else if name == "PostProcessingShader" {
+		if !this.hasFunctionAvailable("MULTISAMPLE") {
+			if shader_type == "Vertex File" {
+				file = "postProcessingShaderNoMSVert.glsl"
+			} else if shader_type == "Fragment File" {
+				file = "postProcessingShaderNoMSFrag.glsl"
+			}
+		}
+	} else if name == "RenderScreenShader" {
+		if !this.hasFunctionAvailable("MULTISAMPLE") {
+			if shader_type == "Vertex File" {
+				file = "postProcessingShaderNoMSVert.glsl"
+			} else if shader_type == "Fragment File" {
+				file = "renderScreenNoMSFrag.glsl"
+			}
+		}
+	}
+
+	return file
 }

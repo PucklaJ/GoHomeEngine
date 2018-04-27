@@ -1,12 +1,13 @@
-#version 410
+#version 100
 
-in vec2 fragTexCoord;
-out vec4 fragColor;
+precision mediump float;
+
+varying vec2 fragTexCoord;
 
 uniform sampler2D texture0;
 
 void main()
 {
-	float depth = texture(texture0,fragTexCoord).r;
-	fragColor = vec4(depth,depth,depth,1.0);
+	float depth = texture2D(texture0,fragTexCoord).r;
+	gl_FragColor = vec4(depth,depth,depth,1.0);
 }

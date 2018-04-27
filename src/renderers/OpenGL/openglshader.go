@@ -2,12 +2,13 @@ package renderer
 
 import (
 	// "fmt"
+	"bytes"
+	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
 	"github.com/go-gl/gl/all-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
+	// "log"
 	"runtime"
 	"strconv"
-	// "log"
-	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
 	"strings"
 )
 
@@ -58,6 +59,76 @@ func getShaderTypeName(shader_type uint8) string {
 	return shader_type_name
 }
 
+func bindAttributesFromFile(program uint32, src string) {
+
+	var line bytes.Buffer
+	var lineString string
+	var attributeNames []string
+	var curChar byte = ' '
+	var curIndex uint32 = 0
+	var curWordIndex uint32 = 0
+	var curWord uint32 = 0
+	var wordBuffer bytes.Buffer
+	var wordsString []string
+	var readWord bool = false
+	var version uint32 = 0
+
+	for curIndex < uint32(len(src)) {
+		for curChar = ' '; curChar != '\n'; curChar = src[curIndex] {
+			line.WriteByte(curChar)
+			curIndex++
+			if curIndex == uint32(len(src)) {
+				break
+			}
+		}
+
+		lineString = line.String()
+		readWord = false
+		curWord = 0
+		for curWordIndex = 0; curWordIndex < uint32(len(lineString)); curWordIndex++ {
+			curChar = lineString[curWordIndex]
+			if curChar == ' ' {
+				if readWord {
+					wordsString[curWord] = wordBuffer.String()
+					wordBuffer.Reset()
+					curWord++
+					readWord = false
+				}
+			} else {
+				if !readWord {
+					readWord = true
+					wordsString = append(wordsString, string(' '))
+				}
+				wordBuffer.WriteByte(curChar)
+			}
+		}
+		if readWord {
+			wordsString[curWord] = wordBuffer.String()
+		}
+		wordBuffer.Reset()
+		line.Reset()
+		if len(wordsString) >= 2 && wordsString[0] == "#version" {
+			versionInt, _ := strconv.Atoi(wordsString[1])
+			version = uint32(versionInt)
+		}
+		if len(wordsString) >= 2 && wordsString[0] == "void" && wordsString[1] == "main()" {
+			break
+		} else if len(wordsString) >= 3 {
+			if (version >= 130 && wordsString[0] == "in") || (version <= 120 && wordsString[0] == "attribute") {
+				if wordsString[2][len(wordsString[2])-1] == ';' {
+					wordsString[2] = wordsString[2][0 : len(wordsString[2])-1]
+				}
+				attributeNames = append(attributeNames, wordsString[2])
+			}
+		}
+		wordsString = append(wordsString[len(wordsString):], wordsString[:0]...)
+	}
+
+	for i := 0; i < len(attributeNames); i++ {
+		gl.BindAttribLocation(program, uint32(i), gl.Str(attributeNames[i]+"\x00"))
+	}
+}
+
 func compileOpenGLShader(shader_type uint32, src **uint8, program uint32) (uint32, error) {
 	shader := gl.CreateShader(shader_type)
 	gl.ShaderSource(shader, 1, src, nil)
@@ -75,6 +146,9 @@ func compileOpenGLShader(shader_type uint32, src **uint8, program uint32) (uint3
 		return 0, &OpenGLError{errorString: logText}
 	}
 	gl.AttachShader(program, shader)
+	if shader_type == gl.VERTEX_SHADER {
+		bindAttributesFromFile(program, gl.GoStr(*src))
+	}
 
 	return shader, nil
 }
@@ -470,18 +544,18 @@ func (s *OpenGLShader) SetUniformMaterial(mat gohome.Material) error {
 func (s *OpenGLShader) SetUniformLights(lightCollectionIndex int32) error {
 	if lightCollectionIndex == -1 || lightCollectionIndex > int32(len(gohome.LightMgr.LightCollections)-1) {
 		var err error
-		if err = s.SetUniformUI(gohome.NUM_POINT_LIGHTS_UNIFORM_NAME, 0); err != nil {
-			// return err
+		if err = s.SetUniformI(gohome.NUM_POINT_LIGHTS_UNIFORM_NAME, 0); err != nil {
+			return err
 		}
-		if err = s.SetUniformUI(gohome.NUM_DIRECTIONAL_LIGHTS_UNIFORM_NAME, 0); err != nil {
-			// return err
+		if err = s.SetUniformI(gohome.NUM_DIRECTIONAL_LIGHTS_UNIFORM_NAME, 0); err != nil {
+			return err
 		}
-		if err = s.SetUniformUI(gohome.NUM_SPOT_LIGHTS_UNIFORM_NAME, 0); err != nil {
-			// return err
+		if err = s.SetUniformI(gohome.NUM_SPOT_LIGHTS_UNIFORM_NAME, 0); err != nil {
+			return err
 		}
 
 		if err = s.SetUniformV3(gohome.AMBIENT_LIGHT_UNIFORM_NAME, mgl32.Vec3{1.0, 1.0, 1.0}); err != nil {
-			// return err
+			return err
 		}
 		return nil
 	}
@@ -489,18 +563,18 @@ func (s *OpenGLShader) SetUniformLights(lightCollectionIndex int32) error {
 	lightColl := gohome.LightMgr.LightCollections[lightCollectionIndex]
 
 	var err error
-	if err = s.SetUniformUI(gohome.NUM_POINT_LIGHTS_UNIFORM_NAME, uint32(len(lightColl.PointLights))); err != nil {
-		// return err
+	if err = s.SetUniformI(gohome.NUM_POINT_LIGHTS_UNIFORM_NAME, int32(len(lightColl.PointLights))); err != nil {
+		return err
 	}
-	if err = s.SetUniformUI(gohome.NUM_DIRECTIONAL_LIGHTS_UNIFORM_NAME, uint32(len(lightColl.DirectionalLights))); err != nil {
-		// return err
+	if err = s.SetUniformI(gohome.NUM_DIRECTIONAL_LIGHTS_UNIFORM_NAME, int32(len(lightColl.DirectionalLights))); err != nil {
+		return err
 	}
-	if err = s.SetUniformUI(gohome.NUM_SPOT_LIGHTS_UNIFORM_NAME, uint32(len(lightColl.SpotLights))); err != nil {
-		// return err
+	if err = s.SetUniformI(gohome.NUM_SPOT_LIGHTS_UNIFORM_NAME, int32(len(lightColl.SpotLights))); err != nil {
+		return err
 	}
 
 	if err = s.SetUniformV3(gohome.AMBIENT_LIGHT_UNIFORM_NAME, gohome.ColorToVec3(lightColl.AmbientLight)); err != nil {
-		// return err
+		return err
 	}
 
 	var i uint32

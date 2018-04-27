@@ -1,6 +1,11 @@
-#version 410
+#version 150
 
-struct Material
+in vec2 fragTexCoord;
+in vec4 fragPos;
+
+uniform vec3 lightPos;
+uniform float farPlane;
+uniform struct Material
 {
 	vec3 diffuseColor;
 	vec3 specularColor;
@@ -14,22 +19,13 @@ struct Material
 	bool NormalMapLoaded;
 
 	float shinyness;
-};
-
-in VertexOut{
-	vec2 fragTexCoord;
-	vec4 fragPos;
-} FragIn;
-
-uniform vec3 lightPos;
-uniform float farPlane;
-uniform Material material;
+} material;
 
 vec4 fetchColor()
 {
 	if(material.DiffuseTextureLoaded)
 	{
-		return texture(material.diffuseTexture,FragIn.fragTexCoord);
+		return texture2D(material.diffuseTexture,fragTexCoord);
 	}
 	else
 	{
@@ -42,7 +38,7 @@ void main()
 	vec4 color = fetchColor();
 	if(color.a < 0.1)
 		discard;
-	float lightDistance = length(FragIn.fragPos.xyz - lightPos);
+	float lightDistance = length(fragPos.xyz - lightPos);
 	lightDistance = lightDistance / farPlane;
 	gl_FragDepth = lightDistance;
 }

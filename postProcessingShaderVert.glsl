@@ -1,4 +1,4 @@
-#version 410
+#version 150
 
 out vec2 fragTexCoords;
 
