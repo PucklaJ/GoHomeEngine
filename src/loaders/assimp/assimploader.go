@@ -13,6 +13,38 @@ const (
 	NUM_GO_ROUTINES_MESH_VERTICES_LOADING uint32 = 10
 )
 
+func importFile(path string) *assimp.Scene {
+	var scene *assimp.Scene
+	scene = assimp.ImportFile(path, uint(assimp.Process_Triangulate|assimp.Process_FlipUVs|assimp.Process_GenNormals|assimp.Process_OptimizeMeshes))
+	if scene == nil || (scene.Flags()&assimp.SceneFlags_Incomplete) != 0 || scene.RootNode() == nil {
+		return nil
+	}
+	return scene
+}
+
+func importFileWithPaths(path string, paths []string) (*assimp.Scene, string) {
+	var scene *assimp.Scene
+	var worked bool = false
+	var workingPath string
+	for i := 0; i < len(paths); i++ {
+		if scene = importFile(paths[i] + path); scene != nil {
+			worked = true
+			workingPath = paths[i] + path
+			break
+		} else if scene = importFile(paths[i] + gohome.GetFileFromPath(path)); scene != nil {
+			worked = true
+			workingPath = paths[i] + gohome.GetFileFromPath(path)
+			break
+		}
+	}
+
+	if worked {
+		return scene, workingPath
+	} else {
+		return nil, ""
+	}
+}
+
 func LoadLevelAssimp(rsmgr *gohome.ResourceManager, name, path string, preloaded, loadToGPU bool) *gohome.Level {
 	if _, ok := rsmgr.Levels[name]; ok {
 		log.Println("The level with the name", name, "has already been loaded!")
@@ -20,19 +52,19 @@ func LoadLevelAssimp(rsmgr *gohome.ResourceManager, name, path string, preloaded
 	}
 	level := &gohome.Level{Name: name}
 	var scene *assimp.Scene
-	if scene = assimp.ImportFile(path, uint(assimp.Process_Triangulate|assimp.Process_FlipUVs|assimp.Process_GenNormals|assimp.Process_OptimizeMeshes)); scene == nil || (scene.Flags()&assimp.SceneFlags_Incomplete) != 0 || scene.RootNode() == nil {
-		if scene = assimp.ImportFile("assets/"+path, uint(assimp.Process_Triangulate|assimp.Process_FlipUVs|assimp.Process_GenNormals|assimp.Process_OptimizeMeshes)); scene == nil || (scene.Flags()&assimp.SceneFlags_Incomplete) != 0 || scene.RootNode() == nil {
-			log.Println("Couldn't load level", name, "with path", path, ":", assimp.GetErrorString())
-		}
+	var workingPath string
+	if scene, workingPath = importFileWithPaths(path, gohome.LEVEL_PATHS[:]); scene == nil {
+		log.Println("Couldn't load level", name, "with path", path, ":", assimp.GetErrorString())
 		return nil
 	}
 
-	directory := path
+	directory := workingPath
 	if index := strings.LastIndex(directory, "/"); index != -1 {
-		directory = directory[index:]
+		directory = directory[:index+1]
 	} else {
 		directory = ""
 	}
+	log.Println("Directory of", path, "is", directory)
 
 	processNode(rsmgr, scene.RootNode(), scene, level, directory, preloaded, loadToGPU)
 

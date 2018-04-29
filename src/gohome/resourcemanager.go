@@ -10,11 +10,35 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
+	"strings"
 	"sync"
 )
 
 const (
 	NUM_GO_ROUTINES_TEXTURE_LOADING uint32 = 10
+)
+
+var (
+	SHADER_PATHS = [4]string{
+		"",
+		"shaders/",
+		"assets/",
+		"assets/shaders/",
+	}
+	TEXTURE_PATHS = [4]string{
+		"",
+		"textures/",
+		"assets/",
+		"assets/textures/",
+	}
+	LEVEL_PATHS = [6]string{
+		"",
+		"models/",
+		"levels/",
+		"assets/",
+		"assets/models/",
+		"assets/levels/",
+	}
 )
 
 type ResourceManager struct {
@@ -37,16 +61,36 @@ func (rsmgr *ResourceManager) Init() {
 	tga.RegisterFormat()
 }
 
+func GetFileFromPath(path string) string {
+	if index := strings.LastIndex(path, "/"); index != -1 {
+		return path[index+1:]
+	} else {
+		return path
+	}
+}
+
+func OpenFileWithPaths(path string, paths []string) (io.Reader, error) {
+	var reader io.Reader
+	var err error
+
+	for i := 0; i < len(paths); i++ {
+		if reader, err = Framew.OpenFile(paths[i] + path); err == nil {
+			break
+		} else if reader, err = Framew.OpenFile(paths[i] + GetFileFromPath(path)); err == nil {
+			break
+		}
+	}
+
+	return reader, err
+}
+
 func loadShaderFile(path string) (string, error) {
 	if path == "" {
 		return "", nil
 	} else {
 		var reader io.Reader
 		var err1 error
-		reader, err1 = Framew.OpenFile(path)
-		if err1 != nil {
-			reader, err1 = Framew.OpenFile("assets/" + path)
-		}
+		reader, err1 = OpenFileWithPaths(path, SHADER_PATHS[:])
 		if err1 != nil {
 			return "", err1
 		}
@@ -253,10 +297,7 @@ func (rsmgr *ResourceManager) LoadTextureFunction(name, path string, preloaded b
 
 	var reader io.Reader
 	var err error
-	reader, err = Framew.OpenFile(path)
-	if err != nil {
-		reader, err = Framew.OpenFile("assets/" + path)
-	}
+	reader, err = OpenFileWithPaths(path, TEXTURE_PATHS[:])
 	if err != nil {
 		log.Println("Couldn't load texture file", name, ":", err)
 		return nil
