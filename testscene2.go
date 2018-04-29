@@ -19,15 +19,15 @@ func (this *TestScene2) Init() {
 	gohome.FPSLimit.MaxFPS = 1000
 
 	gohome.ResourceMgr.LoadTexture("Image", "image.tga")
-	// width, height := gohome.Render.GetNativeResolution()
+	width, height := gohome.Render.GetNativeResolution()
 
-	// var spr gohome.Sprite2D
-	// var sprTobj gohome.TransformableObject2D
-	// spr.Init("Image", &sprTobj)
-	// gohome.RenderMgr.AddObject(&spr, &sprTobj)
+	var spr gohome.Sprite2D
+	var sprTobj gohome.TransformableObject2D
+	spr.Init("Image", &sprTobj)
+	gohome.RenderMgr.AddObject(&spr, &sprTobj)
 
-	// sprTobj.Size[0] = float32(width)
-	// sprTobj.Size[1] = float32(height)
+	sprTobj.Size[0] = float32(width)
+	sprTobj.Size[1] = float32(height)
 
 	this.box.InitMesh(gohome.Box("Box", [3]float32{1.0, 1.0, 1.0}), &this.boxTobj)
 	this.boxTobj.Position = [3]float32{0.0, 0.0, -3.0}
