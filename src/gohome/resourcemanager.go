@@ -343,4 +343,34 @@ func (rsmgr *ResourceManager) LoadPreloadedResources() {
 	rsmgr.preloader.loadPreloadedResources()
 }
 
+func (rsmgr *ResourceManager) SetShader(name string, name1 string) {
+	s := rsmgr.shaders[name1]
+	if s == nil {
+		log.Println("Couldn't set shader", name, "to", name1, ", because", name1, "is nil")
+		return
+	}
+	rsmgr.shaders[name] = s
+	log.Println("Set shader", name, "to", name1)
+}
+
+func (rsmgr *ResourceManager) SetTexture(name string, name1 string) {
+	s := rsmgr.textures[name1]
+	if s == nil {
+		log.Println("Couldn't set texture", name, "to", name1, ", because", name1, "is nil")
+		return
+	}
+	rsmgr.textures[name] = s
+	log.Println("Set texture", name, "to", name1)
+}
+
+func (rsmgr *ResourceManager) SetLevel(name string, name1 string) {
+	s := rsmgr.Levels[name1]
+	if s == nil {
+		log.Println("Couldn't set level", name, "to", name1, ", because", name1, "is nil")
+		return
+	}
+	rsmgr.Levels[name] = s
+	log.Println("Set level", name, "to", name1)
+}
+
 var ResourceMgr ResourceManager

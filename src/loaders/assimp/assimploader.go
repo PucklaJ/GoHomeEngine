@@ -64,7 +64,6 @@ func LoadLevelAssimp(rsmgr *gohome.ResourceManager, name, path string, preloaded
 	} else {
 		directory = ""
 	}
-	log.Println("Directory of", path, "is", directory)
 
 	processNode(rsmgr, scene.RootNode(), scene, level, directory, preloaded, loadToGPU)
 

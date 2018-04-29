@@ -127,6 +127,18 @@ func (this *MainLoop) Quit() {
 
 func InitDefaultValues() {
 	ResourceMgr.LoadShader(ENTITY3D_SHADER_NAME, "vertex3d.glsl", "fragment3d.glsl", "", "", "", "")
+	if ResourceMgr.GetShader(ENTITY3D_SHADER_NAME) == nil {
+		ResourceMgr.LoadShader("3D No Shadows", "vertex3dNoShadows.glsl", "fragment3dNoShadows.glsl", "", "", "", "")
+		if ResourceMgr.GetShader("3D No Shadows") == nil {
+			ResourceMgr.LoadShader("3D Simple", "vertex3dNoShadows.glsl", "fragment3dSimple.glsl", "", "", "", "")
+			if ResourceMgr.GetShader("3D Simple") != nil {
+				ResourceMgr.SetShader(ENTITY3D_SHADER_NAME, "3D Simple")
+			}
+		} else {
+			ResourceMgr.SetShader(ENTITY3D_SHADER_NAME, "3D No Shadows")
+		}
+	}
+
 	ResourceMgr.LoadShader(SPRITE2D_SHADER_NAME, "vertex1.glsl", "fragment.glsl", "", "", "", "")
 	RenderMgr.SetProjection2D(&Ortho2DProjection{
 		Left:   0.0,
