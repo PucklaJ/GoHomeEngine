@@ -577,7 +577,7 @@
 			"file": "fragment3d.glsl",
 			"settings":
 			{
-				"buffer_size": 15456,
+				"buffer_size": 15434,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -766,7 +766,7 @@
 			"file": "src/renderers/OpenGL/openglrenderer.go",
 			"settings":
 			{
-				"buffer_size": 9013,
+				"buffer_size": 9175,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -1395,7 +1395,7 @@
 			"file": "src/renderers/OpenGL/openglshader.go",
 			"settings":
 			{
-				"buffer_size": 18143,
+				"buffer_size": 19994,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -2136,15 +2136,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 15456,
+						"buffer_size": 15434,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1686,
-								1686
+								0,
+								0
 							]
 						],
 						"settings":
@@ -2741,15 +2741,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 9013,
+						"buffer_size": 9175,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								7572,
-								7572
+								0,
+								0
 							]
 						],
 						"settings":
@@ -4802,15 +4802,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 18143,
+						"buffer_size": 19994,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								17277,
-								17277
+								0,
+								0
 							]
 						],
 						"settings":

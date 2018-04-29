@@ -59,6 +59,29 @@ func getShaderTypeName(shader_type uint8) string {
 	return shader_type_name
 }
 
+func toGohomeShaderType(shader_type uint32) uint8 {
+	switch shader_type {
+	case gl.VERTEX_SHADER:
+		return gohome.VERTEX
+	case gl.FRAGMENT_SHADER:
+		return gohome.FRAGMENT
+	case gl.GEOMETRY_SHADER:
+		return gohome.GEOMETRY
+	case gl.TESS_CONTROL_SHADER:
+		return gohome.TESSELLETION
+	case gl.TESS_EVALUATION_SHADER:
+		return gohome.EVELUATION
+	case gl.COMPUTE_SHADER:
+		return gohome.COMPUTE
+	}
+
+	return 255
+}
+
+func toShaderTypeName(shader_type uint32) string {
+	return getShaderTypeName(toGohomeShaderType(shader_type))
+}
+
 func bindAttributesFromFile(program uint32, src string) {
 
 	var line bytes.Buffer
@@ -129,7 +152,7 @@ func bindAttributesFromFile(program uint32, src string) {
 	}
 }
 
-func compileOpenGLShader(shader_type uint32, src **uint8, program uint32) (uint32, error) {
+func compileOpenGLShader(shader_name string, shader_type uint32, src **uint8, program uint32) (uint32, error) {
 	shader := gl.CreateShader(shader_type)
 	gl.ShaderSource(shader, 1, src, nil)
 	gl.CompileShader(shader)
@@ -145,7 +168,11 @@ func compileOpenGLShader(shader_type uint32, src **uint8, program uint32) (uint3
 
 		return 0, &OpenGLError{errorString: logText}
 	}
+	gl.GetError()
 	gl.AttachShader(program, shader)
+	if err := gl.GetError(); err != gl.NO_ERROR {
+		return 0, &OpenGLError{errorString: "Couldn't attach " + toShaderTypeName(shader_type) + " of " + shader_name + ": ErrorCode: " + strconv.Itoa(int(err))}
+	}
 	if shader_type == gl.VERTEX_SHADER {
 		bindAttributesFromFile(program, gl.GoStr(*src))
 	}
@@ -154,23 +181,30 @@ func compileOpenGLShader(shader_type uint32, src **uint8, program uint32) (uint3
 }
 
 func (s *OpenGLShader) AddShader(shader_type uint8, src string) error {
+	if shader_type == gohome.GEOMETRY {
+		render, _ := gohome.Render.(*OpenGLRenderer)
+		if !render.hasFunctionAvailable("GEOMETRY_SHADER") {
+			return &OpenGLError{errorString: "Geometry shaders are not supported by this implementation"}
+		}
+	}
+
 	csource, free := gl.Strs(src + "\x00")
 	defer free()
 	var err error
 	var shaderName uint32
 	switch shader_type {
 	case gohome.VERTEX:
-		shaderName, err = compileOpenGLShader(gl.VERTEX_SHADER, csource, s.program)
+		shaderName, err = compileOpenGLShader(s.name, gl.VERTEX_SHADER, csource, s.program)
 	case gohome.FRAGMENT:
-		shaderName, err = compileOpenGLShader(gl.FRAGMENT_SHADER, csource, s.program)
+		shaderName, err = compileOpenGLShader(s.name, gl.FRAGMENT_SHADER, csource, s.program)
 	case gohome.GEOMETRY:
-		shaderName, err = compileOpenGLShader(gl.GEOMETRY_SHADER, csource, s.program)
+		shaderName, err = compileOpenGLShader(s.name, gl.GEOMETRY_SHADER, csource, s.program)
 	case gohome.TESSELLETION:
-		shaderName, err = compileOpenGLShader(gl.TESS_CONTROL_SHADER, csource, s.program)
+		shaderName, err = compileOpenGLShader(s.name, gl.TESS_CONTROL_SHADER, csource, s.program)
 	case gohome.EVELUATION:
-		shaderName, err = compileOpenGLShader(gl.TESS_EVALUATION_SHADER, csource, s.program)
+		shaderName, err = compileOpenGLShader(s.name, gl.TESS_EVALUATION_SHADER, csource, s.program)
 	case gohome.COMPUTE:
-		shaderName, err = compileOpenGLShader(gl.COMPUTE_SHADER, csource, s.program)
+		shaderName, err = compileOpenGLShader(s.name, gl.COMPUTE_SHADER, csource, s.program)
 	}
 
 	if err != nil {
@@ -194,16 +228,32 @@ func (s *OpenGLShader) deleteAllShaders() {
 func (s *OpenGLShader) Link() error {
 	defer s.deleteAllShaders()
 
+	gl.GetError()
 	gl.LinkProgram(s.program)
+	if err := gl.GetError(); err != gl.NO_ERROR {
+		return &OpenGLError{errorString: "Couldn't link shader " + s.name + ": ErrorCode: " + strconv.Itoa(int(err))}
+	}
 
 	var status int32
+	gl.GetError()
 	gl.GetProgramiv(s.program, gl.LINK_STATUS, &status)
+	if err := gl.GetError(); err != gl.NO_ERROR {
+		return &OpenGLError{errorString: "Couldn't link shader " + s.name + ": Couldn't get link status: ErrorCode: " + strconv.Itoa(int(err))}
+	}
 	if status == gl.FALSE {
 		var logLength int32
+		gl.GetError()
 		gl.GetProgramiv(s.program, gl.INFO_LOG_LENGTH, &logLength)
+		if err := gl.GetError(); err != gl.NO_ERROR {
+			return &OpenGLError{errorString: "Couldn't link shader " + s.name + ": Couldn't get info log length: ErrorCode: " + strconv.Itoa(int(err))}
+		}
 
 		logtext := strings.Repeat("\x00", int(logLength+1))
+		gl.GetError()
 		gl.GetProgramInfoLog(s.program, logLength, nil, gl.Str(logtext))
+		if err := gl.GetError(); err != gl.NO_ERROR {
+			return &OpenGLError{errorString: "Couldn't link shader " + s.name + ": Couldn't get info log: ErrorCode: " + strconv.Itoa(int(err))}
+		}
 
 		return &OpenGLError{errorString: "Couldn't link shader " + s.name + ": " + logtext}
 	}
