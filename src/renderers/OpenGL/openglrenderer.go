@@ -53,6 +53,9 @@ func (this *OpenGLRenderer) Init() error {
 	}
 	version := gl.GoStr(gl.GetString(gl.VERSION))
 	log.Println("OpenGL Version:", version)
+	if this.GetVersioni() < 21 {
+		return &OpenGLError{errorString: "You don't have a graphics card or your graphics card is not supported! Minimum: OpenGL 2.1"}
+	}
 
 	gl.Enable(gl.MULTISAMPLE)
 	gl.Enable(gl.DEPTH_TEST)

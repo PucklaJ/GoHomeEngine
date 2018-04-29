@@ -4,6 +4,10 @@
 		"selected_items":
 		[
 			[
+				"error",
+				"errorString"
+			],
+			[
 				"SHAO",
 				"SHADOWMAP_UNIFORM_NAME"
 			],
@@ -510,10 +514,6 @@
 			[
 				"GetPro",
 				"GetProgramInfoLog\tstring ƒ"
-			],
-			[
-				"GetS",
-				"GetShaderInfoLog\tstring ƒ"
 			]
 		]
 	},
@@ -766,7 +766,7 @@
 			"file": "src/renderers/OpenGL/openglrenderer.go",
 			"settings":
 			{
-				"buffer_size": 9175,
+				"buffer_size": 9337,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -1680,6 +1680,7 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"GetVersioni",
 			"int(numPointLights)",
 			"discard",
 			"fragColor",
@@ -1806,8 +1807,7 @@
 			"RenderSh",
 			"GetMat",
 			"PtrOffset(*offset)",
-			"vertexIndexBuffer",
-			"oglm"
+			"vertexIndexBuffer"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -1953,7 +1953,7 @@
 	"groups":
 	[
 		{
-			"selected": 79,
+			"selected": 27,
 			"sheets":
 			[
 				{
@@ -1982,7 +1982,7 @@
 						"translation.y": 9828.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 16,
+					"stack_index": 17,
 					"type": "text"
 				},
 				{
@@ -2156,7 +2156,7 @@
 						"translation.y": 765.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 13,
+					"stack_index": 14,
 					"type": "text"
 				},
 				{
@@ -2185,7 +2185,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
@@ -2355,7 +2355,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 2,
 					"type": "text"
 				},
 				{
@@ -2741,15 +2741,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 9175,
+						"buffer_size": 9337,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								7728,
+								7728
 							]
 						],
 						"settings":
@@ -2758,10 +2758,10 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 4254.0,
+						"translation.y": 4560.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 19,
+					"stack_index": 0,
 					"type": "text"
 				},
 				{
@@ -3288,7 +3288,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 10,
+					"stack_index": 11,
 					"type": "text"
 				},
 				{
@@ -3346,7 +3346,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 11,
+					"stack_index": 12,
 					"type": "text"
 				},
 				{
@@ -3492,7 +3492,7 @@
 						"translation.y": 612.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 18,
+					"stack_index": 19,
 					"type": "text"
 				},
 				{
@@ -4184,7 +4184,7 @@
 						"translation.y": 1592.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 15,
+					"stack_index": 16,
 					"type": "text"
 				},
 				{
@@ -4213,7 +4213,7 @@
 						"translation.y": 867.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 14,
+					"stack_index": 15,
 					"type": "text"
 				},
 				{
@@ -4242,7 +4242,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 17,
+					"stack_index": 18,
 					"type": "text"
 				},
 				{
@@ -4258,8 +4258,8 @@
 						"selection":
 						[
 							[
-								583,
-								583
+								586,
+								586
 							]
 						],
 						"settings":
@@ -4271,7 +4271,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 1,
 					"type": "text"
 				},
 				{
@@ -4330,7 +4330,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 9,
+					"stack_index": 10,
 					"type": "text"
 				},
 				{
@@ -4418,7 +4418,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 8,
+					"stack_index": 9,
 					"type": "text"
 				},
 				{
@@ -4476,7 +4476,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
+					"stack_index": 8,
 					"type": "text"
 				},
 				{
@@ -4561,7 +4561,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 7,
 					"type": "text"
 				},
 				{
@@ -4590,7 +4590,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 6,
 					"type": "text"
 				},
 				{
@@ -4822,7 +4822,7 @@
 						"translation.y": 10044.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 12,
+					"stack_index": 13,
 					"type": "text"
 				},
 				{
@@ -4879,7 +4879,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 5,
 					"type": "text"
 				},
 				{
@@ -4907,7 +4907,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 4,
 					"type": "text"
 				},
 				{
