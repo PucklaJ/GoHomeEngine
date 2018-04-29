@@ -523,7 +523,7 @@
 			"file": "src/gohome/light.go",
 			"settings":
 			{
-				"buffer_size": 23881,
+				"buffer_size": 23875,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
@@ -577,7 +577,7 @@
 			"file": "fragment3d.glsl",
 			"settings":
 			{
-				"buffer_size": 15021,
+				"buffer_size": 15456,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
@@ -586,7 +586,7 @@
 			"file": "shadowMapFrag.glsl",
 			"settings":
 			{
-				"buffer_size": 568,
+				"buffer_size": 418,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
@@ -640,7 +640,7 @@
 			"file": "pointLightShadowMapFrag.glsl",
 			"settings":
 			{
-				"buffer_size": 727,
+				"buffer_size": 578,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
@@ -1193,9 +1193,9 @@
 			"file": "testscene1.go",
 			"settings":
 			{
-				"buffer_size": 3666,
+				"buffer_size": 3815,
 				"encoding": "UTF-8",
-				"line_ending": "Unix"
+				"line_ending": "Windows"
 			}
 		},
 		{
@@ -1345,7 +1345,7 @@
 			"file": "src/renderers/OpenGL/openglshader.go",
 			"settings":
 			{
-				"buffer_size": 18113,
+				"buffer_size": 18143,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
@@ -1902,7 +1902,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 23881,
+						"buffer_size": 23875,
 						"regions":
 						{
 						},
@@ -2076,15 +2076,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 15021,
+						"buffer_size": 15456,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1502,
-								1502
+								0,
+								0
 							]
 						],
 						"settings":
@@ -2105,15 +2105,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 568,
+						"buffer_size": 418,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								568,
-								568
+								0,
+								0
 							]
 						],
 						"settings":
@@ -2275,15 +2275,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 727,
+						"buffer_size": 578,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								250,
-								250
+								0,
+								0
 							]
 						],
 						"settings":
@@ -4063,7 +4063,7 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3666,
+						"buffer_size": 3815,
 						"regions":
 						{
 						},
@@ -4071,7 +4071,7 @@
 						[
 							[
 								0,
-								3666
+								0
 							]
 						],
 						"settings":
@@ -4553,15 +4553,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 18113,
+						"buffer_size": 18143,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								15293,
-								15293
+								0,
+								0
 							]
 						],
 						"settings":

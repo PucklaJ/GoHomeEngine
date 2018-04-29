@@ -34,11 +34,11 @@ uniform struct PointLight
 	Attentuation attentuation;
 
 	mat4 lightSpaceMatrix[6];
-	samplerCube shadowmap;
 	bool castsShadows;
 
 	float farPlane;
 } pointLights[MAX_POINT_LIGHTS];
+uniform samplerCube pointLightsshadowmap[MAX_POINT_LIGHTS];
 uniform struct DirectionalLight
 {
 	vec3 direction;
@@ -47,12 +47,12 @@ uniform struct DirectionalLight
 	vec3 specularColor;
 
 	mat4 lightSpaceMatrix;
-	sampler2D shadowmap;
 	bool castsShadows;
 	ivec2 shadowMapSize;
 
 	float shadowDistance;
 } directionalLights[MAX_DIRECTIONAL_LIGHTS];
+uniform sampler2D directionalLightsshadowmap[MAX_DIRECTIONAL_LIGHTS];
 uniform struct SpotLight
 {
 	vec3 position;
@@ -71,14 +71,11 @@ uniform struct SpotLight
 	bool castsShadows;
 	ivec2 shadowMapSize;
 } spotLights[MAX_SPOT_LIGHTS];
+uniform sampler2D spotLightsshadowmap[MAX_SPOT_LIGHTS];
 uniform struct Material
 {
 	vec3 diffuseColor;
 	vec3 specularColor;
-
-	sampler2D diffuseTexture;
-	sampler2D specularTexture;
-	sampler2D normalMap;
 
 	bool DiffuseTextureLoaded;
 	bool SpecularTextureLoaded;
@@ -86,10 +83,13 @@ uniform struct Material
 
 	float shinyness;
 } material;
+uniform sampler2D materialdiffuseTexture;
+uniform sampler2D materialspecularTexture;
+uniform sampler2D materialnormalMap;
 
-void calculatePointLight(PointLight pl);
-void calculateDirectionalLight(DirectionalLight pl);
-void calculateSpotLight(SpotLight pl);
+void calculatePointLight(PointLight pl,int index);
+void calculateDirectionalLight(DirectionalLight pl,int index);
+void calculateSpotLight(SpotLight pl,int index);
 
 void calculatePointLights();
 void calculateDirectionalLights();
@@ -139,7 +139,7 @@ vec4 getDiffuseTexture()
 {
 	if(material.DiffuseTextureLoaded)
 	{
-		return texture2D(material.diffuseTexture,fragTexCoord);
+		return texture2D(materialdiffuseTexture,fragTexCoord);
 	}
 	else
 	{
@@ -151,7 +151,7 @@ vec4 getSpecularTexture()
 {
 	if(material.SpecularTextureLoaded)
 	{
-		return texture2D(material.specularTexture,fragTexCoord);
+		return texture2D(materialspecularTexture,fragTexCoord);
 	}
 	else
 	{
@@ -185,126 +185,126 @@ void calculatePointLights()
 
 	#if MAX_POINT_LIGHTS > 0
 	if(numPointLights > 0)
-		calculatePointLight(pointLights[0]);
+		calculatePointLight(pointLights[0],0);
 	#endif
 	#if MAX_POINT_LIGHTS > 1
 	if(numPointLights > 1)
-		calculatePointLight(pointLights[1]);
+		calculatePointLight(pointLights[1],1);
 	#endif
 	#if MAX_POINT_LIGHTS > 2
 	if(numPointLights > 2)
-		calculatePointLight(pointLights[2]);
+		calculatePointLight(pointLights[2],2);
 	#endif
 	#if MAX_POINT_LIGHTS > 3
 	if(numPointLights > 3)
-		calculatePointLight(pointLights[3]);
+		calculatePointLight(pointLights[3],3);
 	#endif
 	#if MAX_POINT_LIGHTS > 4
 	if(numPointLights > 4)
-		calculatePointLight(pointLights[4]);
+		calculatePointLight(pointLights[4],4);
 	#endif
 	#if MAX_POINT_LIGHTS > 5
 	if(numPointLights > 5)
-		calculatePointLight(pointLights[5]);
+		calculatePointLight(pointLights[5],5);
 	#endif
 	#if MAX_POINT_LIGHTS > 6
 	if(numPointLights > 6)
-		calculatePointLight(pointLights[6]);
+		calculatePointLight(pointLights[6],6);
 	#endif
 	#if MAX_POINT_LIGHTS > 7
 	if(numPointLights > 7)
-		calculatePointLight(pointLights[7]);
+		calculatePointLight(pointLights[7],7);
 	#endif
 	#if MAX_POINT_LIGHTS > 8
 	if(numPointLights > 8)
-		calculatePointLight(pointLights[8]);
+		calculatePointLight(pointLights[8],8);
 	#endif
 	#if MAX_POINT_LIGHTS > 9
 	if(numPointLights > 9)
-		calculatePointLight(pointLights[9]);
+		calculatePointLight(pointLights[9],9);
 	#endif
 	#if MAX_POINT_LIGHTS > 10
 	if(numPointLights > 10)
-		calculatePointLight(pointLights[10]);
+		calculatePointLight(pointLights[10],10);
 	#endif
 	#if MAX_POINT_LIGHTS > 11
 	if(numPointLights > 11)
-		calculatePointLight(pointLights[11]);
+		calculatePointLight(pointLights[11],11);
 	#endif
 	#if MAX_POINT_LIGHTS > 12
 	if(numPointLights > 12)
-		calculatePointLight(pointLights[12]);
+		calculatePointLight(pointLights[12],12);
 	#endif
 	#if MAX_POINT_LIGHTS > 13
 	if(numPointLights > 13)
-		calculatePointLight(pointLights[13]);
+		calculatePointLight(pointLights[13],13);
 	#endif
 	#if MAX_POINT_LIGHTS > 14
 	if(numPointLights > 14)
-		calculatePointLight(pointLights[14]);
+		calculatePointLight(pointLights[14],14);
 	#endif
 	#if MAX_POINT_LIGHTS > 15
 	if(numPointLights > 15)
-		calculatePointLight(pointLights[15]);
+		calculatePointLight(pointLights[15],15);
 	#endif
 	#if MAX_POINT_LIGHTS > 16
 	if(numPointLights > 16)
-		calculatePointLight(pointLights[16]);
+		calculatePointLight(pointLights[16],16);
 	#endif
 	#if MAX_POINT_LIGHTS > 17
 	if(numPointLights > 17)
-		calculatePointLight(pointLights[17]);
+		calculatePointLight(pointLights[17],17);
 	#endif
 	#if MAX_POINT_LIGHTS > 18
 	if(numPointLights > 18)
-		calculatePointLight(pointLights[18]);
+		calculatePointLight(pointLights[18],18);
 	#endif
 	#if MAX_POINT_LIGHTS > 19
 	if(numPointLights > 19)
-		calculatePointLight(pointLights[19]);
+		calculatePointLight(pointLights[19],19);
 	#endif
 	#if MAX_POINT_LIGHTS > 20
 	if(numPointLights > 20)
-		calculatePointLight(pointLights[20]);
+		calculatePointLight(pointLights[20],20);
 	#endif
 }
 void calculateDirectionalLights()
 {	
 	#if MAX_DIRECTIONAL_LIGHTS > 0
 	if(int(numDirectionalLights) > 0)
-		calculateDirectionalLight(directionalLights[0]);
+		calculateDirectionalLight(directionalLights[0],0);
 	#endif
 	#if MAX_DIRECTIONAL_LIGHTS > 1
 	if(int(numDirectionalLights) > 1)
-		calculateDirectionalLight(directionalLights[1]);
+		calculateDirectionalLight(directionalLights[1],1);
 	#endif
 	#if MAX_DIRECTIONAL_LIGHTS > 2
 	if(int(numDirectionalLights) > 2)
-		calculateDirectionalLight(directionalLights[2]);
+		calculateDirectionalLight(directionalLights[2],2);
 	#endif
 	#if MAX_DIRECTIONAL_LIGHTS > 3
 	if(int(numDirectionalLights) > 3)
-		calculateDirectionalLight(directionalLights[3]);
+		calculateDirectionalLight(directionalLights[3],3);
 	#endif
 	#if MAX_DIRECTIONAL_LIGHTS > 4
 	if(int(numDirectionalLights) > 4)
-		calculateDirectionalLight(directionalLights[4]);
+		calculateDirectionalLight(directionalLights[4],4);
 	#endif
 	#if MAX_DIRECTIONAL_LIGHTS > 5
 	if(int(numDirectionalLights) > 5)
-		calculateDirectionalLight(directionalLights[5]);
+		calculateDirectionalLight(directionalLights[5],5);
 	#endif
 	#if MAX_DIRECTIONAL_LIGHTS > 6
 	if(int(numDirectionalLights) > 6)
-		calculateDirectionalLight(directionalLights[6]);
+		calculateDirectionalLight(directionalLights[6],6);
 	#endif
 	#if MAX_DIRECTIONAL_LIGHTS > 7
 	if(int(numDirectionalLights) > 7)
-		calculateDirectionalLight(directionalLights[7]);
+		calculateDirectionalLight(directionalLights[7],7);
 	#endif
 	#if MAX_DIRECTIONAL_LIGHTS > 8
 	if(int(numDirectionalLights) > 8)
-		calculateDirectionalLight(directionalLights[8]);
+		calculateDirectionalLight(directionalLights[8],8);
 	#endif
 }
 void calculateSpotLights()
@@ -315,71 +315,71 @@ void calculateSpotLights()
 	// }
 	#if MAX_SPOT_LIGHTS > 0
 	if(int(numSpotLights) > 0)
-		calculateSpotLight(spotLights[0]);
+		calculateSpotLight(spotLights[0],0);
 	#endif
 	#if MAX_SPOT_LIGHTS > 1
 	if(int(numSpotLights) > 1)
-		calculateSpotLight(spotLights[1]);
+		calculateSpotLight(spotLights[1],1);
 	#endif
 	#if MAX_SPOT_LIGHTS > 2
 	if(int(numSpotLights) > 2)
-		calculateSpotLight(spotLights[2]);
+		calculateSpotLight(spotLights[2],2);
 	#endif
 	#if MAX_SPOT_LIGHTS > 3
 	if(int(numSpotLights) > 3)
-		calculateSpotLight(spotLights[3]);
+		calculateSpotLight(spotLights[3],3);
 	#endif
 	#if MAX_SPOT_LIGHTS > 4
 	if(int(numSpotLights) > 4)
-		calculateSpotLight(spotLights[4]);
+		calculateSpotLight(spotLights[4],4);
 	#endif
 	#if MAX_SPOT_LIGHTS > 5
 	if(int(numSpotLights) > 5)
-		calculateSpotLight(spotLights[5]);
+		calculateSpotLight(spotLights[5],5);
 	#endif
 	#if MAX_SPOT_LIGHTS > 6
 	if(int(numSpotLights) > 6)
-		calculateSpotLight(spotLights[6]);
+		calculateSpotLight(spotLights[6],6);
 	#endif
 	#if MAX_SPOT_LIGHTS > 7
 	if(int(numSpotLights) > 7)
-		calculateSpotLight(spotLights[7]);
+		calculateSpotLight(spotLights[7],7);
 	#endif
 	#if MAX_SPOT_LIGHTS > 8
 	if(int(numSpotLights) > 8)
-		calculateSpotLight(spotLights[8]);
+		calculateSpotLight(spotLights[8],8);
 	#endif
 	#if MAX_SPOT_LIGHTS > 9
 	if(int(numSpotLights) > 9)
-		calculateSpotLight(spotLights[9]);
+		calculateSpotLight(spotLights[9],9);
 	#endif
 	#if MAX_SPOT_LIGHTS > 10
 	if(int(numSpotLights) > 10)
-		calculateSpotLight(spotLights[10]);
+		calculateSpotLight(spotLights[10],10);
 	#endif
 	#if MAX_SPOT_LIGHTS > 11
 	if(int(numSpotLights) > 11)
-		calculateSpotLight(spotLights[11]);
+		calculateSpotLight(spotLights[11],11);
 	#endif
 	#if MAX_SPOT_LIGHTS > 12
 	if(int(numSpotLights) > 12)
-		calculateSpotLight(spotLights[12]);
+		calculateSpotLight(spotLights[12],12);
 	#endif
 	#if MAX_SPOT_LIGHTS > 13
 	if(int(numSpotLights) > 13)
-		calculateSpotLight(spotLights[13]);
+		calculateSpotLight(spotLights[13],13);
 	#endif
 	#if MAX_SPOT_LIGHTS > 14
 	if(int(numSpotLights) > 14)
-		calculateSpotLight(spotLights[14]);
+		calculateSpotLight(spotLights[14],14);
 	#endif
 	#if MAX_SPOT_LIGHTS > 15
 	if(int(numSpotLights) > 15)
-		calculateSpotLight(spotLights[15]);
+		calculateSpotLight(spotLights[15],15);
 	#endif
 	#if MAX_SPOT_LIGHTS > 16
 	if(int(numSpotLights) > 16)
-		calculateSpotLight(spotLights[16]);
+		calculateSpotLight(spotLights[16],16);
 	#endif
 }
 
@@ -442,7 +442,7 @@ void setOffsetDirections()
    sampleOffsetDirections[17] = vec3( 0,  1,  1); sampleOffsetDirections[18] = vec3( 0, -1,  1); sampleOffsetDirections[19] = vec3( 0, -1, -1); sampleOffsetDirections[19] = vec3( 0,  1, -1);
 }
 
-float calcShadowPointLight(PointLight pl)
+float calcShadowPointLight(PointLight pl,samplerCube shadowmap)
 {
 	setOffsetDirections();
 
@@ -453,7 +453,7 @@ float calcShadowPointLight(PointLight pl)
 	float viewDistance = length(-fragPos);
 	float diskRadius = (1.0 + (viewDistance / pl.farPlane)) / 70.0;
 	for(int i = 0;i<samples;i++) {
-		 float closestDepth = textureCube(pl.shadowmap, fragToLight + sampleOffsetDirections[i]*diskRadius).r;
+		 float closestDepth = textureCube(shadowmap, fragToLight + sampleOffsetDirections[i]*diskRadius).r;
 	            closestDepth *= pl.farPlane;   // Undo mapping [0;1]
 	            if(currentDepth <= closestDepth)
 	                shadow += 1.0;
@@ -469,7 +469,7 @@ float calcAttentuation(vec3 lightPosition,Attentuation attentuation)
 	return attent;
 }
 
-void calculatePointLight(PointLight pl)
+void calculatePointLight(PointLight pl,int index)
 {
 	vec3 lightPosition = (fragViewMatrix3D*vec4(pl.position,1.0)).xyz;
 	vec3 lightDir = normalize(fragToTangentSpace*(lightPosition - fragPos));
@@ -485,7 +485,7 @@ void calculatePointLight(PointLight pl)
 	float attent = calcAttentuation(lightPosition,pl.attentuation);
 
 	// Shadow
-	float shadow = pl.castsShadows ? calcShadowPointLight(pl) : 1.0;
+	float shadow = pl.castsShadows ? calcShadowPointLight(pl,pointLightsshadowmap[index]) : 1.0;
 
 	diffuse *= attent * shadow;
 	specular *= attent * shadow;
@@ -494,7 +494,7 @@ void calculatePointLight(PointLight pl)
 	finalSpecularColor += vec4(specular,0.0);
 
 }
-void calculateDirectionalLight(DirectionalLight dl)
+void calculateDirectionalLight(DirectionalLight dl,int index)
 {
 	vec3 lightDirection = (fragViewMatrix3D*vec4(dl.direction*-1.0,0.0)).xyz;
 	vec3 lightDir = normalize(fragToTangentSpace*lightDirection);
@@ -506,7 +506,7 @@ void calculateDirectionalLight(DirectionalLight dl)
 	vec3 specular = specularLighting(lightDir,dl.specularColor);
 	
 	// Shadow
-	float shadow = dl.castsShadows ? calcShadow(dl.shadowmap,dl.lightSpaceMatrix,dl.shadowDistance,true,dl.shadowMapSize) : 1.0;
+	float shadow = dl.castsShadows ? calcShadow(directionalLightsshadowmap[index],dl.lightSpaceMatrix,dl.shadowDistance,true,dl.shadowMapSize) : 1.0;
 	
 	diffuse *= shadow;
 	specular *= shadow;
@@ -532,7 +532,7 @@ float calcSpotAmount(vec3 lightDir,vec3 lightDirection,SpotLight pl)
 	return spotAmount;
 }
 
-void calculateSpotLight(SpotLight pl)
+void calculateSpotLight(SpotLight pl,int index)
 {
 	vec3 lightPosition = (fragViewMatrix3D*vec4(pl.position,1.0)).xyz;
 	vec3 lightDirection = (fragViewMatrix3D*vec4(pl.direction*-1.0,0.0)).xyz;
@@ -551,7 +551,7 @@ void calculateSpotLight(SpotLight pl)
 	float attent = calcAttentuation(lightPosition,pl.attentuation);
 
 	// Shadow
-	float shadow = pl.castsShadows ? calcShadow(pl.shadowmap,pl.lightSpaceMatrix,50.0,false,pl.shadowMapSize) : 1.0;
+	float shadow = pl.castsShadows ? calcShadow(spotLightsshadowmap[index],pl.lightSpaceMatrix,50.0,false,pl.shadowMapSize) : 1.0;
 	// float shadow = 1.0;
 
 	diffuse *= attent * spotAmount * shadow;
@@ -570,7 +570,7 @@ void setVariables()
 {
 	if(material.NormalMapLoaded)
 	{
-		norm = normalize(2.0*(texture2D(material.normalMap,fragTexCoord)).xyz-1.0);
+		norm = normalize(2.0*(texture2D(materialnormalMap,fragTexCoord)).xyz-1.0);
 	}
 	else
 	{

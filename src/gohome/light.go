@@ -99,12 +99,12 @@ func (pl PointLight) SetUniforms(s Shader, arrayIndex uint32) error {
 		maxtextures := Render.GetMaxTextures()
 		currentTextureUnit := Render.NextTextureUnit()
 		if currentTextureUnit > uint32(maxtextures)-1 {
-			s.SetUniformI(POINT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+SHADOWMAP_UNIFORM_NAME, maxtextures-1)
+			s.SetUniformI(POINT_LIGHTS_UNIFORM_NAME+SHADOWMAP_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]", maxtextures-1)
 			s.SetUniformB(POINT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+CASTSSHADOWS_UNIFORM_NAME, 0)
 		} else {
 			pl.ShadowMap.Bind(currentTextureUnit)
 			// fmt.Println("Binding PointLight to ", rnd.CurrentTextureUnit)
-			s.SetUniformI(POINT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+SHADOWMAP_UNIFORM_NAME, int32(currentTextureUnit))
+			s.SetUniformI(POINT_LIGHTS_UNIFORM_NAME+SHADOWMAP_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]", int32(currentTextureUnit))
 		}
 		s.SetUniformF(POINT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+FAR_PLANE_UNIFORM_NAME, pl.FarPlane)
 		for i := 0; i < 6; i++ {
@@ -242,12 +242,12 @@ func (pl *DirectionalLight) SetUniforms(s Shader, arrayIndex uint32) error {
 		maxtextures := Render.GetMaxTextures()
 		currentTextureUnit := Render.NextTextureUnit()
 		if currentTextureUnit >= uint32(maxtextures)-1 {
-			s.SetUniformI(DIRECTIONAL_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+SHADOWMAP_UNIFORM_NAME, 0)
+			s.SetUniformI(DIRECTIONAL_LIGHTS_UNIFORM_NAME+SHADOWMAP_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]", 0)
 			s.SetUniformB(DIRECTIONAL_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+CASTSSHADOWS_UNIFORM_NAME, 0)
 		} else {
 			pl.ShadowMap.Bind(currentTextureUnit)
 			// fmt.Println("Binding Directional to ", rnd.CurrentTextureUnit)
-			s.SetUniformI(DIRECTIONAL_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+SHADOWMAP_UNIFORM_NAME, int32(currentTextureUnit))
+			s.SetUniformI(DIRECTIONAL_LIGHTS_UNIFORM_NAME+SHADOWMAP_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]", int32(currentTextureUnit))
 		}
 
 		s.SetUniformF(DIRECTIONAL_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+SHADOW_DISTANCE_UNIFORM_NAME, pl.ShadowDistance)
@@ -461,12 +461,12 @@ func (pl *SpotLight) SetUniforms(s Shader, arrayIndex uint32) error {
 		maxtextures := Render.GetMaxTextures()
 		currentTextureUnit := Render.NextTextureUnit()
 		if currentTextureUnit >= uint32(maxtextures)-1 {
-			s.SetUniformI(SPOT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+SHADOWMAP_UNIFORM_NAME, 0)
+			s.SetUniformI(SPOT_LIGHTS_UNIFORM_NAME+SHADOWMAP_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]", 0)
 			s.SetUniformB(SPOT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+CASTSSHADOWS_UNIFORM_NAME, 0)
 		} else {
 			pl.ShadowMap.Bind(currentTextureUnit)
 			// fmt.Println("Binding SpotLight to ", rnd.CurrentTextureUnit)
-			s.SetUniformI(SPOT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+SHADOWMAP_UNIFORM_NAME, int32(currentTextureUnit))
+			s.SetUniformI(SPOT_LIGHTS_UNIFORM_NAME+SHADOWMAP_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]", int32(currentTextureUnit))
 		}
 
 	}

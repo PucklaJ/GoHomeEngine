@@ -515,13 +515,13 @@ func (s *OpenGLShader) SetUniformMaterial(mat gohome.Material) error {
 	if err = s.SetUniformV3(gohome.MATERIAL_UNIFORM_NAME+"."+gohome.MATERIAL_SPECULAR_COLOR_UNIFORM_NAME, gohome.ColorToVec3(mat.SpecularColor)); err != nil {
 		// return err
 	}
-	if err = s.SetUniformI(gohome.MATERIAL_UNIFORM_NAME+"."+gohome.MATERIAL_DIFFUSE_TEXTURE_UNIFORM_NAME, diffBind); err != nil {
+	if err = s.SetUniformI(gohome.MATERIAL_UNIFORM_NAME+gohome.MATERIAL_DIFFUSE_TEXTURE_UNIFORM_NAME, diffBind); err != nil {
 		// return err
 	}
-	if err = s.SetUniformI(gohome.MATERIAL_UNIFORM_NAME+"."+gohome.MATERIAL_SPECULAR_TEXTURE_UNIFORM_NAME, specBind); err != nil {
+	if err = s.SetUniformI(gohome.MATERIAL_UNIFORM_NAME+gohome.MATERIAL_SPECULAR_TEXTURE_UNIFORM_NAME, specBind); err != nil {
 		// return err
 	}
-	if err = s.SetUniformI(gohome.MATERIAL_UNIFORM_NAME+"."+gohome.MATERIAL_NORMALMAP_UNIFORM_NAME, normBind); err != nil {
+	if err = s.SetUniformI(gohome.MATERIAL_UNIFORM_NAME+gohome.MATERIAL_NORMALMAP_UNIFORM_NAME, normBind); err != nil {
 		// return err
 	}
 	if err = s.SetUniformF(gohome.MATERIAL_UNIFORM_NAME+"."+gohome.MATERIAL_SHINYNESS_UNIFORM_NAME, mat.Shinyness); err != nil {
@@ -609,7 +609,7 @@ func (s *OpenGLShader) validate() error {
 	s.Use()
 	maxtextures := gohome.Render.GetMaxTextures()
 	for i := 0; i < 31; i++ {
-		s.SetUniformI("pointLights["+strconv.Itoa(i)+"].shadowmap", maxtextures-1)
+		s.SetUniformI(gohome.POINT_LIGHTS_UNIFORM_NAME+gohome.SHADOWMAP_UNIFORM_NAME+"["+strconv.Itoa(i)+"]", maxtextures-1)
 	}
 	s.Unuse()
 	s.validated = true

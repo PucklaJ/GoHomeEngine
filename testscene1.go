@@ -20,6 +20,7 @@ type TestScene1 struct {
 func (this *TestScene1) Init() {
 	fmt.Println("Hello")
 	gohome.InitDefaultValues()
+	gohome.ResourceMgr.LoadTexture("NormalMap", "159_norm.JPG")
 
 	for i := 0; i < 5; i++ {
 		this.boxEnts[i].InitMesh(gohome.Box("Box", [3]float32{1.0, 1.0, 1.0}), &this.boxEntTobjs[i])
@@ -74,6 +75,7 @@ func (this *TestScene1) Init() {
 
 	for i := 0; i < 6; i++ {
 		this.planes[i].InitMesh(gohome.Plane("Plane", [2]float32{PLANE_SIZE, PLANE_SIZE}, 1), &this.planeTobjs[i])
+		this.planes[i].Model3D.GetMeshIndex(0).GetMaterial().SetTextures("", "", "NormalMap")
 		gohome.RenderMgr.AddObject(&this.planes[i], &this.planeTobjs[i])
 	}
 
