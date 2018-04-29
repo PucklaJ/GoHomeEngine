@@ -24,28 +24,56 @@ type OpenGLESRenderer struct {
 func (this *OpenGLESRenderer) createBackBufferMesh() {
 	this.backBufferMesh = CreateOpenGLESMesh2D("BackBufferMesh")
 
-	var vertices []gohome.Mesh2DVertex = make([]gohome.Mesh2DVertex, 4)
-	var indices []uint32 = make([]uint32, 6)
+	vertices := []gohome.Mesh2DVertex{
+		/*X,Y
+		  U,V
+		*/
+		gohome.Mesh2DVertex{-1.0, -1.0, // LEFT-DOWN
+			0.0, 0.0},
 
-	vertices[0].Vertex(-1.0, -1.0)
-	vertices[1].Vertex(1.0, -1.0)
-	vertices[2].Vertex(1.0, 1.0)
-	vertices[3].Vertex(-1.0, 1.0)
+		gohome.Mesh2DVertex{1.0, -1.0, // RIGHT-DOWN
+			1.0, 0.0},
 
-	vertices[0].TexCoord(0.0, 0.0)
-	vertices[1].TexCoord(1.0, 0.0)
-	vertices[2].TexCoord(1.0, 1.0)
-	vertices[3].TexCoord(0.0, 1.0)
+		gohome.Mesh2DVertex{1.0, 1.0, // RIGHT-UP
+			1.0, 1.0},
 
-	indices[0] = 0
-	indices[1] = 1
-	indices[2] = 2
-	indices[3] = 2
-	indices[4] = 3
-	indices[5] = 0
+		gohome.Mesh2DVertex{-1.0, 1.0, // LEFT-UP
+			0.0, 1.0},
+	}
+
+	indices := []uint32{
+		0, 1, 2, // LEFT-TRI
+		2, 3, 0, // RIGHT-TRI
+	}
 
 	this.backBufferMesh.AddVertices(vertices, indices)
 	this.backBufferMesh.Load()
+
+	// this.backBufferMesh = CreateOpenGLESMesh2D("BackBufferMesh")
+
+	// var vertices []gohome.Mesh2DVertex = make([]gohome.Mesh2DVertex, 4)
+	// var indices []uint32 = make([]uint32, 6)
+
+	// vertices[0].Vertex(-1.0, -1.0)
+	// vertices[1].Vertex(1.0, -1.0)
+	// vertices[2].Vertex(1.0, 1.0)
+	// vertices[3].Vertex(-1.0, 1.0)
+
+	// vertices[0].TexCoord(0.0, 0.0)
+	// vertices[1].TexCoord(1.0, 0.0)
+	// vertices[2].TexCoord(1.0, 1.0)
+	// vertices[3].TexCoord(0.0, 1.0)
+
+	// indices[0] = 0
+	// indices[1] = 1
+	// indices[2] = 2
+	// indices[3] = 2
+	// indices[4] = 3
+	// indices[5] = 0
+
+	// this.backBufferMesh.AddVertices(vertices, indices)
+	// this.backBufferMesh.Load()
+
 }
 
 func (this *OpenGLESRenderer) Init() error {
@@ -53,7 +81,6 @@ func (this *OpenGLESRenderer) Init() error {
 
 	version := this.gles.GetString(gl.VERSION)
 	fmt.Println("Version:", version)
-
 	this.gles.Enable(gl.DEPTH_TEST)
 	this.gles.Enable(gl.CULL_FACE)
 

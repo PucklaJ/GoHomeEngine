@@ -46,20 +46,44 @@ func (this *OpenGLESRenderTexture) loadTextures(width, height, textures uint32, 
 		texture.Load(nil, int(width), int(height), this.shadowMap)
 		if cubeMap {
 			(*this.gles).BindTexture(gl.TEXTURE_CUBE_MAP, oglcubemap.oglName)
+			if err := CheckOpenGLESError((*this.gles), "Couldn't bind cubemap: "+this.Name+":"); err != nil {
+				log.Println(err)
+				return
+			}
 		} else {
 			(*this.gles).BindTexture(ogltex.bindingPoint(), ogltex.oglName)
+			if err := CheckOpenGLESError((*this.gles), "Couldn't bind texture: "+this.Name+":"); err != nil {
+				log.Println(err)
+				return
+			}
 		}
 		if this.shadowMap {
 			if cubeMap {
 				(*this.gles).FramebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.TEXTURE_CUBE_MAP_POSITIVE_X, oglcubemap.oglName, 0)
+				if err := CheckOpenGLESError((*this.gles), "Couldn't add depth cubemap to framebuffer: "+this.Name+":"); err != nil {
+					log.Println(err)
+					return
+				}
 			} else {
 				(*this.gles).FramebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, ogltex.bindingPoint(), ogltex.oglName, 0)
+				if err := CheckOpenGLESError((*this.gles), "Couldn't add depth texture to framebuffer: "+this.Name+":"); err != nil {
+					log.Println(err)
+					return
+				}
 			}
 		} else {
 			if cubeMap {
 				(*this.gles).FramebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0+gl.Enum(i), gl.TEXTURE_CUBE_MAP_POSITIVE_X, oglcubemap.oglName, 0)
+				if err := CheckOpenGLESError((*this.gles), "Couldn't add cubeMap to framebuffer: "+this.Name+":"); err != nil {
+					log.Println(err)
+					return
+				}
 			} else {
 				(*this.gles).FramebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0+gl.Enum(i), ogltex.bindingPoint(), ogltex.oglName, 0)
+				if err := CheckOpenGLESError((*this.gles), "Couldn't add texture to framebuffer: "+this.Name+":"); err != nil {
+					log.Println(err)
+					return
+				}
 			}
 		}
 		if !cubeMap {
@@ -67,8 +91,16 @@ func (this *OpenGLESRenderTexture) loadTextures(width, height, textures uint32, 
 		}
 		if cubeMap {
 			(*this.gles).BindTexture(gl.TEXTURE_CUBE_MAP, gl.Texture{0})
+			if err := CheckOpenGLESError((*this.gles), "Couldn't bind no cubemap: "+this.Name+":"); err != nil {
+				log.Println(err)
+				return
+			}
 		} else {
 			(*this.gles).BindTexture(ogltex.bindingPoint(), gl.Texture{0})
+			if err := CheckOpenGLESError((*this.gles), "Couldn't bind no texture: "+this.Name+":"); err != nil {
+				log.Println(err)
+				return
+			}
 		}
 		this.textures = append(this.textures, texture)
 	}
@@ -77,10 +109,30 @@ func (this *OpenGLESRenderTexture) loadTextures(width, height, textures uint32, 
 func (this *OpenGLESRenderTexture) loadRenderBuffer(width, height uint32) {
 	if this.depthBuffer {
 		this.rbo = (*this.gles).CreateRenderbuffer()
+		if err := CheckOpenGLESError((*this.gles), "Couldn't create renderbuffer: "+this.Name+":"); err != nil {
+			log.Println(err)
+			return
+		}
 		(*this.gles).BindRenderbuffer(gl.RENDERBUFFER, this.rbo)
+		if err := CheckOpenGLESError((*this.gles), "Couldn't bind renderbuffer: "+this.Name+":"); err != nil {
+			log.Println(err)
+			return
+		}
 		(*this.gles).RenderbufferStorage(gl.RENDERBUFFER, gl.DEPTH24_STENCIL8, int(width), int(height))
+		if err := CheckOpenGLESError((*this.gles), "Couldn't storage renderbuffer: "+this.Name+":"); err != nil {
+			log.Println(err)
+			return
+		}
 		(*this.gles).FramebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, this.rbo)
+		if err := CheckOpenGLESError((*this.gles), "Couldn't add renderbuffer to framebuffer: "+this.Name+":"); err != nil {
+			log.Println(err)
+			return
+		}
 		(*this.gles).BindRenderbuffer(gl.RENDERBUFFER, gl.Renderbuffer{0})
+		if err := CheckOpenGLESError((*this.gles), "Couldn't bind no renderbuffer: "+this.Name+":"); err != nil {
+			log.Println(err)
+			return
+		}
 	}
 }
 
@@ -94,9 +146,18 @@ func (this *OpenGLESRenderTexture) Create(name string, width, height, textures u
 	this.depthBuffer = depthBuffer && !shadowMap
 	this.cubeMap = cubeMap
 
+	(*this.gles).GetError()
 	this.fbo = (*this.gles).CreateFramebuffer()
+	if err := CheckOpenGLESError((*this.gles), "Couldn't create framebuffer: "+name+":"); err != nil {
+		log.Println(err)
+		return
+	}
 
 	(*this.gles).BindFramebuffer(gl.FRAMEBUFFER, this.fbo)
+	if err := CheckOpenGLESError((*this.gles), "Couldn't bind framebuffer: "+name+":"); err != nil {
+		log.Println(err)
+		return
+	}
 
 	this.loadRenderBuffer(width, height)
 	this.loadTextures(width, height, textures, cubeMap)
@@ -104,7 +165,15 @@ func (this *OpenGLESRenderTexture) Create(name string, width, height, textures u
 		log.Println("Error creating gohome.RenderTexture: Framebuffer is not complete")
 		return
 	}
+	if err := CheckOpenGLESError((*this.gles), "Couldn't checking framebuffer status: "+name+":"); err != nil {
+		log.Println(err)
+		return
+	}
 	(*this.gles).BindFramebuffer(gl.FRAMEBUFFER, gl.Framebuffer{0})
+	if err := CheckOpenGLESError((*this.gles), "Couldn't bind no framebuffer: "+name+":"); err != nil {
+		log.Println(err)
+		return
+	}
 
 	this.viewport = gohome.Viewport{
 		0,

@@ -2,12 +2,12 @@ package renderer
 
 import (
 	// "fmt"
-	"github.com/go-gl/mathgl/mgl32"
-	"golang.org/x/mobile/gl"
-	"strconv"
-	// "log"
 	"bytes"
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
+	"github.com/go-gl/mathgl/mgl32"
+	"golang.org/x/mobile/gl"
+	// "log"
+	"strconv"
 )
 
 type OpenGLESShader struct {
@@ -105,10 +105,8 @@ func bindAttributesFromFile(program gl.Program, src string, gles gl.Context) {
 		}
 		wordBuffer.Reset()
 		line.Reset()
-		if len(wordsString) >= 2 {
-			if wordsString[0] == "void" && wordsString[1] == "main()" {
-				break
-			}
+		if len(wordsString) >= 2 && wordsString[0] == "void" && wordsString[1] == "main()" {
+			break
 		} else if len(wordsString) >= 3 {
 			if wordsString[0] == "attribute" {
 				if wordsString[2][len(wordsString[2])-1] == ';' {
@@ -125,18 +123,60 @@ func bindAttributesFromFile(program gl.Program, src string, gles gl.Context) {
 	}
 }
 
-func compileOpenGLESShader(shader_type gl.Enum, src string, program gl.Program, gles gl.Context) (gl.Shader, error) {
+func CheckOpenGLESError(gles gl.Context, errorString string) *OpenGLESError {
+	if err := gles.GetError(); err != gl.NO_ERROR {
+		return &OpenGLESError{errorString: errorString + " ErrorCode: " + strconv.Itoa(int(err))}
+	}
+	return nil
+}
+
+func toGohomeShaderType(shader_type gl.Enum) uint8 {
+	switch shader_type {
+	case gl.VERTEX_SHADER:
+		return gohome.VERTEX
+	case gl.FRAGMENT_SHADER:
+		return gohome.FRAGMENT
+	default:
+		return 255
+	}
+	return 255
+}
+
+func toShaderName(shader_type gl.Enum) string {
+	return getShaderTypeName(toGohomeShaderType(shader_type))
+}
+
+func compileOpenGLESShader(shader_name string, shader_type gl.Enum, src string, program gl.Program, gles gl.Context) (gl.Shader, error) {
+	gles.GetError()
 	shader := gles.CreateShader(shader_type)
+	if err := CheckOpenGLESError(gles, "Couldn't create "+toShaderName(shader_type)+" of "+shader_name+":"); err != nil {
+		return shader, err
+	}
 	gles.ShaderSource(shader, src)
+	if err := CheckOpenGLESError(gles, "Couldn't source "+toShaderName(shader_type)+" of "+shader_name+":"); err != nil {
+		return shader, err
+	}
 	gles.CompileShader(shader)
+	if err := CheckOpenGLESError(gles, "Couldn't call compile function of "+toShaderName(shader_type)+" of "+shader_name+":"); err != nil {
+		return shader, err
+	}
 
 	status := gles.GetShaderi(shader, gl.COMPILE_STATUS)
+	if err := CheckOpenGLESError(gles, "Couldn't get compile status of "+toShaderName(shader_type)+" of "+shader_name+":"); err != nil {
+		return shader, err
+	}
 	if status == gl.FALSE {
 		logText := gles.GetShaderInfoLog(shader)
+		if err := CheckOpenGLESError(gles, "Couldn't get info log of "+toShaderName(shader_type)+" of "+shader_name+":"); err != nil {
+			return shader, err
+		}
 
 		return gl.Shader{0}, &OpenGLESError{errorString: logText}
 	}
 	gles.AttachShader(program, shader)
+	if err := CheckOpenGLESError(gles, "Couldn't attach "+toShaderName(shader_type)+" of "+shader_name+":"); err != nil {
+		return shader, err
+	}
 	if shader_type == gl.VERTEX_SHADER {
 		bindAttributesFromFile(program, src, gles)
 	}
@@ -148,9 +188,9 @@ func (s *OpenGLESShader) AddShader(shader_type uint8, src string) error {
 	var shaderName gl.Shader
 	switch shader_type {
 	case gohome.VERTEX:
-		shaderName, err = compileOpenGLESShader(gl.VERTEX_SHADER, src, s.program, (*s.gles))
+		shaderName, err = compileOpenGLESShader(s.name, gl.VERTEX_SHADER, src, s.program, (*s.gles))
 	case gohome.FRAGMENT:
-		shaderName, err = compileOpenGLESShader(gl.FRAGMENT_SHADER, src, s.program, (*s.gles))
+		shaderName, err = compileOpenGLESShader(s.name, gl.FRAGMENT_SHADER, src, s.program, (*s.gles))
 	case gohome.GEOMETRY:
 		err = &OpenGLESError{errorString: "Geometry shader is not supported by OpenGLES"}
 		// shaderName, err = compileOpenGLESShader(gl.GEOMETRY_SHADER, src, s.program, (*s.gles))
@@ -213,186 +253,133 @@ func (s *OpenGLESShader) Terminate() {
 	(*s.gles).DeleteProgram(s.program)
 }
 
-func (s *OpenGLESShader) SetUniformV2(name string, value mgl32.Vec2) error {
+func (s *OpenGLESShader) getUniformLocation(name, shader_name string) (gl.Uniform, *OpenGLESError) {
 	var loc gl.Uniform
 	var ok bool
 	if loc, ok = s.uniform_locations[name]; !ok {
 		loc = (*s.gles).GetUniformLocation(s.program, name)
 		s.uniform_locations[name] = loc
 	}
-	if loc.Value == -1 {
-		return &OpenGLESError{errorString: "Couldn't find uniform " + name + " in shader " + s.name}
+	if !ok && loc.Value == -1 {
+		return loc, &OpenGLESError{errorString: "Couldn't find uniform " + name + " in shader " + shader_name}
+	} else if loc.Value == -1 {
+		return loc, &OpenGLESError{}
+	}
+	return loc, nil
+}
+
+func (s *OpenGLESShader) SetUniformV2(name string, value mgl32.Vec2) error {
+	loc, err := s.getUniformLocation(name, s.name)
+	if err != nil {
+		return err
 	}
 	(*s.gles).Uniform2f(loc, value[0], value[1])
 
 	return nil
 }
 func (s *OpenGLESShader) SetUniformV3(name string, value mgl32.Vec3) error {
-	var loc gl.Uniform
-	var ok bool
-	if loc, ok = s.uniform_locations[name]; !ok {
-		loc = (*s.gles).GetUniformLocation(s.program, name)
-		s.uniform_locations[name] = loc
-	}
-	if loc.Value == -1 {
-		return &OpenGLESError{errorString: "Couldn't find uniform " + name + " in shader " + s.name}
+	loc, err := s.getUniformLocation(name, s.name)
+	if err != nil {
+		return err
 	}
 	(*s.gles).Uniform3f(loc, value[0], value[1], value[2])
 
 	return nil
 }
 func (s *OpenGLESShader) SetUniformV4(name string, value mgl32.Vec4) error {
-	var loc gl.Uniform
-	var ok bool
-	if loc, ok = s.uniform_locations[name]; !ok {
-		loc = (*s.gles).GetUniformLocation(s.program, name)
-		s.uniform_locations[name] = loc
-	}
-	if loc.Value == -1 {
-		return &OpenGLESError{errorString: "Couldn't find uniform " + name + " in shader " + s.name}
+	loc, err := s.getUniformLocation(name, s.name)
+	if err != nil {
+		return err
 	}
 	(*s.gles).Uniform4f(loc, value[0], value[1], value[2], value[3])
 
 	return nil
 }
 func (s *OpenGLESShader) SetUniformIV2(name string, value []int32) error {
-	var loc gl.Uniform
-	var ok bool
-	if loc, ok = s.uniform_locations[name]; !ok {
-		loc = (*s.gles).GetUniformLocation(s.program, name)
-		s.uniform_locations[name] = loc
+	loc, err := s.getUniformLocation(name, s.name)
+	if err != nil {
+		return err
 	}
-	if loc.Value == -1 {
-		return &OpenGLESError{errorString: "Couldn't find uniform " + name + " in shader " + s.name}
-	}
-
 	(*s.gles).Uniform2i(loc, int(value[0]), int(value[1]))
 
 	return nil
 }
 func (s *OpenGLESShader) SetUniformIV3(name string, value []int32) error {
-	var loc gl.Uniform
-	var ok bool
-	if loc, ok = s.uniform_locations[name]; !ok {
-		loc = (*s.gles).GetUniformLocation(s.program, name)
-		s.uniform_locations[name] = loc
+	loc, err := s.getUniformLocation(name, s.name)
+	if err != nil {
+		return err
 	}
-	if loc.Value == -1 {
-		return &OpenGLESError{errorString: "Couldn't find uniform " + name + " in shader " + s.name}
-	}
-
 	(*s.gles).Uniform3i(loc, value[0], value[1], value[2])
 
 	return nil
 }
 func (s *OpenGLESShader) SetUniformIV4(name string, value []int32) error {
-	var loc gl.Uniform
-	var ok bool
-	if loc, ok = s.uniform_locations[name]; !ok {
-		loc = (*s.gles).GetUniformLocation(s.program, name)
-		s.uniform_locations[name] = loc
+	loc, err := s.getUniformLocation(name, s.name)
+	if err != nil {
+		return err
 	}
-	if loc.Value == -1 {
-		return &OpenGLESError{errorString: "Couldn't find uniform " + name + " in shader " + s.name}
-	}
-
 	(*s.gles).Uniform4i(loc, value[0], value[1], value[2], value[3])
 
 	return nil
 }
 func (s *OpenGLESShader) SetUniformF(name string, value float32) error {
-	var loc gl.Uniform
-	var ok bool
-	if loc, ok = s.uniform_locations[name]; !ok {
-		loc = (*s.gles).GetUniformLocation(s.program, name)
-		s.uniform_locations[name] = loc
-	}
-	if loc.Value == -1 {
-		return &OpenGLESError{errorString: "Couldn't find uniform " + name + " in shader " + s.name}
+	loc, err := s.getUniformLocation(name, s.name)
+	if err != nil {
+		return err
 	}
 	(*s.gles).Uniform1f(loc, value)
 
 	return nil
 }
 func (s *OpenGLESShader) SetUniformI(name string, value int32) error {
-	var loc gl.Uniform
-	var ok bool
-	if loc, ok = s.uniform_locations[name]; !ok {
-		loc = (*s.gles).GetUniformLocation(s.program, name)
-		s.uniform_locations[name] = loc
-	}
-	if loc.Value == -1 {
-		return &OpenGLESError{errorString: "Couldn't find uniform " + name + " in shader " + s.name}
+	loc, err := s.getUniformLocation(name, s.name)
+	if err != nil {
+		return err
 	}
 	(*s.gles).Uniform1i(loc, int(value))
 
 	return nil
 }
 func (s *OpenGLESShader) SetUniformUI(name string, value uint32) error {
-	var loc gl.Uniform
-	var ok bool
-	if loc, ok = s.uniform_locations[name]; !ok {
-		loc = (*s.gles).GetUniformLocation(s.program, name)
-		s.uniform_locations[name] = loc
-	}
-	if loc.Value == -1 {
-		return &OpenGLESError{errorString: "Couldn't find uniform " + name + " in shader " + s.name}
+	loc, err := s.getUniformLocation(name, s.name)
+	if err != nil {
+		return err
 	}
 	(*s.gles).Uniform1i(loc, int(value))
 
 	return nil
 }
 func (s *OpenGLESShader) SetUniformB(name string, value uint8) error {
-	var loc gl.Uniform
-	var ok bool
-	if loc, ok = s.uniform_locations[name]; !ok {
-		loc = (*s.gles).GetUniformLocation(s.program, name)
-		s.uniform_locations[name] = loc
-	}
-	if loc.Value == -1 {
-		return &OpenGLESError{errorString: "Couldn't find uniform " + name + " in shader " + s.name}
+	loc, err := s.getUniformLocation(name, s.name)
+	if err != nil {
+		return err
 	}
 	(*s.gles).Uniform1i(loc, int(value))
 
 	return nil
 }
 func (s *OpenGLESShader) SetUniformM2(name string, value mgl32.Mat2) error {
-	var loc gl.Uniform
-	var ok bool
-	if loc, ok = s.uniform_locations[name]; !ok {
-		loc = (*s.gles).GetUniformLocation(s.program, name)
-		s.uniform_locations[name] = loc
-	}
-	if loc.Value == -1 {
-		return &OpenGLESError{errorString: "Couldn't find uniform " + name + " in shader " + s.name}
+	loc, err := s.getUniformLocation(name, s.name)
+	if err != nil {
+		return err
 	}
 	(*s.gles).UniformMatrix2fv(loc, value[:])
 
 	return nil
 }
 func (s *OpenGLESShader) SetUniformM3(name string, value mgl32.Mat3) error {
-	var loc gl.Uniform
-	var ok bool
-	if loc, ok = s.uniform_locations[name]; !ok {
-		loc = (*s.gles).GetUniformLocation(s.program, name)
-		s.uniform_locations[name] = loc
-	}
-	if loc.Value == -1 {
-		return &OpenGLESError{errorString: "Couldn't find uniform " + name + " in shader " + s.name}
+	loc, err := s.getUniformLocation(name, s.name)
+	if err != nil {
+		return err
 	}
 	(*s.gles).UniformMatrix3fv(loc, value[:])
 
 	return nil
 }
 func (s *OpenGLESShader) SetUniformM4(name string, value mgl32.Mat4) error {
-	var loc gl.Uniform
-	var ok bool
-	if loc, ok = s.uniform_locations[name]; !ok {
-		loc = (*s.gles).GetUniformLocation(s.program, name)
-		s.uniform_locations[name] = loc
-	}
-	if loc.Value == -1 {
-		return &OpenGLESError{errorString: "Couldn't find uniform " + name + " in shader " + s.name}
+	loc, err := s.getUniformLocation(name, s.name)
+	if err != nil {
+		return err
 	}
 	(*s.gles).UniformMatrix4fv(loc, value[:])
 

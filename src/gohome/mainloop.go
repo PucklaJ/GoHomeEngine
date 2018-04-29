@@ -2,7 +2,7 @@ package gohome
 
 import (
 	// "fmt"
-	"golang.org/x/image/colornames"
+	// "golang.org/x/image/colornames"
 	"log"
 	"runtime"
 )
@@ -103,7 +103,6 @@ func (MainLoop) InnerLoop() {
 	UpdateMgr.Update(FPSLimit.DeltaTime)
 	LightMgr.Update()
 	InputMgr.Update(FPSLimit.DeltaTime)
-	Render.ClearScreen(colornames.Black)
 	RenderMgr.Update()
 	Framew.WindowSwap()
 	Framew.Update()

@@ -4,16 +4,16 @@ in vec2 fragTexCoords;
 
 out vec4 fragColor;
 
-uniform sampler2DMS backBuffer;
+uniform sampler2DMS BackBuffer;
 
 vec4 fetchColor()
 {
 	vec4 color = vec4(0.0);
-	ivec2 texCoords = ivec2(fragTexCoords * textureSize(backBuffer));
+	ivec2 texCoords = ivec2(fragTexCoords * textureSize(BackBuffer));
 
 	for(int i = 0;i<8;i++)
 	{
-		color += texelFetch(backBuffer,texCoords,i);
+		color += texelFetch(BackBuffer,texCoords,i);
 	}
 	color /= 8.0;
 

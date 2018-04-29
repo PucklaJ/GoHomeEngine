@@ -111,8 +111,8 @@ vec4 getSpecularTexture();
 vec4 finalDiffuseColor;
 vec4 finalSpecularColor;
 vec4 finalAmbientColor;
-vec3 norm;
-vec3 viewDir;
+vec3 norm = vec3(0.0,0.0,0.0);
+vec3 viewDir = vec3(0.0,0.0,0.0);
 
 varying vec2 fragTexCoord;
 varying vec3 fragPos;
@@ -141,26 +141,12 @@ void calculateAllLights()
 
 vec4 getDiffuseTexture()
 {
-	if(material.DiffuseTextureLoaded)
-	{
-		return texture2D(material.diffuseTexture,fragTexCoord);
-	}
-	else
-	{
-		return vec4(1.0,1.0,1.0,1.0);
-	}
+	return mix(vec4(1.0,1.0,1.0,1.0),texture2D(material.diffuseTexture,fragTexCoord),material.DiffuseTextureLoaded ? 1.0 : 0.0);
 }
 
 vec4 getSpecularTexture()
 {
-	if(material.SpecularTextureLoaded)
-	{
-		return texture2D(material.specularTexture,fragTexCoord);
-	}
-	else
-	{
-		return vec4(1.0,1.0,1.0,1.0);
-	}
+	return mix(vec4(1.0,1.0,1.0,1.0),texture2D(material.specularTexture,fragTexCoord),material.SpecularTextureLoaded ? 1.0 : 0.0);
 }
 
 void calculateLightColors()
@@ -417,17 +403,18 @@ float calcShadow(sampler2D shadowMap,mat4 lightSpaceMatrix,float shadowdistance,
 	vec3 projCoords = clamp((fragPosLightSpace.xyz / fragPosLightSpace.w)*0.5+0.5,-1.0,1.0);
 	float currentDepth = projCoords.z-bias;
 	float shadowresult = 0.0;
+	// vec2 texelSize = 1.0 / vec2(shadowMapSize);
+	// for(int x = -1; x <= 1; ++x)
+	// {
+	//     for(int y = -1; y <= 1; ++y)
+	//     {
+	//         float pcfDepth = texture2D(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r; 
+	//         shadowresult += currentDepth > pcfDepth ? 0.0 : 1.0;        
+	//     }    
+	// }
+	// shadowresult /= 9.0;
 	float closestDepth = texture2D(shadowMap, projCoords.xy).r;
-	vec2 texelSize = 1.0 / vec2(shadowMapSize);
-	for(int x = -1; x <= 1; ++x)
-	{
-	    for(int y = -1; y <= 1; ++y)
-	    {
-	        float pcfDepth = texture2D(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r; 
-	        shadowresult += currentDepth > pcfDepth ? 0.0 : 1.0;        
-	    }    
-	}
-	shadowresult /= 9.0;
+	shadowresult = currentDepth > closestDepth ? 0.0 : 1.0;
 	if(distanceTransition)
 	{
 		shadowresult = 1.0 - (1.0-shadowresult)*distance;
@@ -453,16 +440,20 @@ float calcShadowPointLight(PointLight pl)
 	vec3 fragToLight = (fragInverseViewMatrix3D*vec4(fragPos,1.0)).xyz - pl.position;
 	float currentDepth = length(fragToLight)-bias*10.0*pl.farPlane;
 	float shadow  = 0.0;
-	int samples = 20;
-	float viewDistance = length(-fragPos);
-	float diskRadius = (1.0 + (viewDistance / pl.farPlane)) / 70.0;
-	for(int i = 0;i<samples;i++) {
-		 float closestDepth = textureCube(pl.shadowmap, fragToLight + sampleOffsetDirections[i]*diskRadius).r;
-	            closestDepth *= pl.farPlane;   // Undo mapping [0;1]
-	            if(currentDepth <= closestDepth)
-	                shadow += 1.0;
-	}
-	shadow /= float(samples);
+	// int samples = 20;
+	// float viewDistance = length(-fragPos);
+	// float diskRadius = (1.0 + (viewDistance / pl.farPlane)) / 70.0;
+	// for(int i = 0;i<samples;i++) {
+	// 	 float closestDepth = textureCube(pl.shadowmap, fragToLight + sampleOffsetDirections[i]*diskRadius).r;
+	//             closestDepth *= pl.farPlane;   // Undo mapping [0;1]
+	//             if(currentDepth <= closestDepth)
+	//                 shadow += 1.0;
+	// }
+	// shadow /= float(samples);
+	float closestDepth = textureCube(pl.shadowmap,fragToLight).r;
+	closestDepth *= pl.farPlane;
+	if(currentDepth <= closestDepth)
+		shadow = 1.0;
 	return shadow;
 }
 
@@ -572,14 +563,7 @@ float calculateShinyness(float shinyness)
 
 void setVariables()
 {
-	if(material.NormalMapLoaded)
-	{
-		norm = normalize(2.0*(texture2D(material.normalMap,fragTexCoord)).xyz-1.0);
-	}
-	else
-	{
-		norm = normalize(fragToTangentSpace*fragNormal);
-	}
+	norm = mix(normalize(fragToTangentSpace*fragNormal),normalize(2.0*(texture2D(material.normalMap,fragTexCoord)).xyz-1.0),material.NormalMapLoaded ? 1.0 : 0.0);
 	viewDir = normalize((fragToTangentSpace*(fragPos*-1.0)));
 }
 

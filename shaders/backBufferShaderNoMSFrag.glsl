@@ -2,11 +2,11 @@
 
 varying vec2 fragTexCoords;
 
-uniform sampler2D backBuffer;
+uniform sampler2D BackBuffer;
 
 vec4 fetchColor()
 {
-	return texture2D(backBuffer,fragTexCoords);
+	return texture2D(BackBuffer,fragTexCoords);
 }
 
 void main()

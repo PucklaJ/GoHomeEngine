@@ -3,6 +3,7 @@ package gohome
 import (
 	// "fmt"
 	"github.com/go-gl/mathgl/mgl32"
+	// "log"
 )
 
 type RenderType uint8
@@ -255,6 +256,34 @@ func (rmgr *RenderManager) updateLights(lightCollectionIndex int32) {
 	}
 }
 
+func (rmgr *RenderManager) GetBackBuffer() RenderTexture {
+	return rmgr.BackBuffer
+}
+
+func (rmgr *RenderManager) render3D() {
+	if rmgr.BackBuffer3D != nil && rmgr.EnableBackBuffer {
+		rmgr.BackBuffer3D.SetAsTarget()
+	}
+	for i := 0; i < len(rmgr.viewport3Ds); i++ {
+		rmgr.Render(TYPE_3D, rmgr.viewport3Ds[i].CameraIndex, int32(i), LightMgr.CurrentLightCollection)
+	}
+	if rmgr.BackBuffer3D != nil && rmgr.EnableBackBuffer {
+		rmgr.BackBuffer3D.UnsetAsTarget()
+	}
+}
+
+func (rmgr *RenderManager) render2D() {
+	if rmgr.BackBuffer2D != nil && rmgr.EnableBackBuffer {
+		rmgr.BackBuffer2D.SetAsTarget()
+	}
+	for i := 0; i < len(rmgr.viewport2Ds); i++ {
+		rmgr.Render(TYPE_2D, rmgr.viewport2Ds[i].CameraIndex, int32(i), LightMgr.CurrentLightCollection)
+	}
+	if rmgr.BackBuffer2D != nil && rmgr.EnableBackBuffer {
+		rmgr.BackBuffer2D.UnsetAsTarget()
+	}
+}
+
 func (rmgr *RenderManager) renderBackBuffers() {
 	if !rmgr.EnableBackBuffer {
 		return
@@ -293,34 +322,6 @@ func (rmgr *RenderManager) renderBackBuffers() {
 	}
 }
 
-func (rmgr *RenderManager) render3D() {
-	if rmgr.BackBuffer3D != nil && rmgr.EnableBackBuffer {
-		rmgr.BackBuffer3D.SetAsTarget()
-	}
-	for i := 0; i < len(rmgr.viewport3Ds); i++ {
-		rmgr.Render(TYPE_3D, rmgr.viewport3Ds[i].CameraIndex, int32(i), LightMgr.CurrentLightCollection)
-	}
-	if rmgr.BackBuffer3D != nil && rmgr.EnableBackBuffer {
-		rmgr.BackBuffer3D.UnsetAsTarget()
-	}
-}
-
-func (rmgr *RenderManager) render2D() {
-	if rmgr.BackBuffer2D != nil && rmgr.EnableBackBuffer {
-		rmgr.BackBuffer2D.SetAsTarget()
-	}
-	for i := 0; i < len(rmgr.viewport2Ds); i++ {
-		rmgr.Render(TYPE_2D, rmgr.viewport2Ds[i].CameraIndex, int32(i), LightMgr.CurrentLightCollection)
-	}
-	if rmgr.BackBuffer2D != nil && rmgr.EnableBackBuffer {
-		rmgr.BackBuffer2D.UnsetAsTarget()
-	}
-}
-
-func (rmgr *RenderManager) GetBackBuffer() RenderTexture {
-	return rmgr.BackBuffer
-}
-
 func (rmgr *RenderManager) renderPostProcessing() {
 	if !rmgr.EnableBackBuffer {
 		return
@@ -354,7 +355,6 @@ func (rmgr *RenderManager) renderToScreen() {
 	if !rmgr.EnableBackBuffer {
 		return
 	}
-
 	if rmgr.renderScreenShader != nil {
 		rmgr.renderScreenShader.Use()
 		rmgr.renderScreenShader.SetUniformI("BackBuffer", 0)
@@ -372,6 +372,7 @@ func (rmgr *RenderManager) renderToScreen() {
 }
 
 func (rmgr *RenderManager) Update() {
+	Render.ClearScreen(Color{0, 0, 0, 255})
 	rmgr.render3D()
 	rmgr.render2D()
 	rmgr.renderBackBuffers()
@@ -457,6 +458,28 @@ func (rmgr *RenderManager) Render(rtype RenderType, cameraIndex int32, viewportI
 
 	if rmgr.CurrentShader != nil {
 		rmgr.CurrentShader.Unuse()
+	}
+
+	Render.SetWireFrame(false)
+}
+
+func (rmgr *RenderManager) RenderRenderObject(robj RenderObject, tobj TransformableObject) {
+	rpair := RenderPair{}
+	rpair.RenderObject = robj
+	rpair.TransformableObject = tobj
+	rmgr.handleCurrentCameraAndViewport(robj.GetType(), 0, 0)
+
+	Render.SetWireFrame(rmgr.WireFrameMode)
+
+	rmgr.CurrentShader = nil
+
+	Render.PreRender()
+	rmgr.renderRenderObject(&rpair, LightMgr.CurrentLightCollection)
+	Render.AfterRender()
+
+	if rmgr.CurrentShader != nil {
+		rmgr.CurrentShader.Unuse()
+		rmgr.CurrentShader = nil
 	}
 
 	Render.SetWireFrame(false)
