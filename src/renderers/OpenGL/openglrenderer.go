@@ -290,12 +290,18 @@ func (this *OpenGLRenderer) DecrementTextureUnit(amount uint32) {
 	this.CurrentTextureUnit -= amount
 }
 
-func (this *OpenGLRenderer) gatherAvailableFunctions() {
+func (this *OpenGLRenderer) GetVersioni() uint8 {
 	var major, minor, combined int32
 	gl.GetIntegerv(gl.MAJOR_VERSION, &major)
 	gl.GetIntegerv(gl.MINOR_VERSION, &minor)
 
 	combined = major*10 + minor
+
+	return uint8(combined)
+}
+
+func (this *OpenGLRenderer) gatherAvailableFunctions() {
+	combined := this.GetVersioni()
 
 	if combined >= 30 {
 		this.availableFunctions["VERTEX_ID"] = true
@@ -307,6 +313,7 @@ func (this *OpenGLRenderer) gatherAvailableFunctions() {
 	if combined >= 32 {
 		this.availableFunctions["MULTISAMPLE"] = true
 		this.availableFunctions["FRAMEBUFFER_TEXTURE"] = true
+		this.availableFunctions["GEOMETRY_SHADER"] = true
 	}
 	if combined >= 40 {
 		this.availableFunctions["INDIRECT"] = true

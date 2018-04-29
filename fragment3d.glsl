@@ -1,7 +1,7 @@
-#version 120
+#version 110
 
-#define MAX_POINT_LIGHTS 5
-#define MAX_DIRECTIONAL_LIGHTS 2
+#define MAX_POINT_LIGHTS 1
+#define MAX_DIRECTIONAL_LIGHTS 1
 #define MAX_SPOT_LIGHTS 1
 
 #define MAX_SPECULAR_EXPONENT 50.0
@@ -67,7 +67,6 @@ uniform struct SpotLight
 	Attentuation attentuation;
 
 	mat4 lightSpaceMatrix;
-	sampler2D shadowmap;
 	bool castsShadows;
 	ivec2 shadowMapSize;
 } spotLights[MAX_SPOT_LIGHTS];
