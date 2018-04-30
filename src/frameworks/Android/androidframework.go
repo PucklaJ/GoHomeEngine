@@ -3,6 +3,7 @@ package framework
 import (
 	"fmt"
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
+	"github.com/PucklaMotzer09/gohomeengine/src/loaders/obj"
 	"github.com/PucklaMotzer09/gohomeengine/src/renderers/OpenGLES"
 	"github.com/go-gl/mathgl/mgl32"
 	"golang.org/x/mobile/app"
@@ -13,6 +14,8 @@ import (
 	"golang.org/x/mobile/event/touch"
 	"golang.org/x/mobile/gl"
 	"io"
+	"log"
+	"strings"
 	"time"
 )
 
@@ -165,8 +168,52 @@ func (this *AndroidFramework) OpenFile(file string) (io.ReadCloser, error) {
 	return asset.Open(file)
 }
 
+func getFileExtension(file string) string {
+	index := strings.LastIndex(file, ".")
+	if index == -1 {
+		return ""
+	}
+	return file[index+1:]
+}
+
+func equalIgnoreCase(str1, str string) bool {
+	if len(str1) != len(str) {
+		return false
+	}
+	for i := 0; i < len(str1); i++ {
+		if str1[i] != str[i] {
+			if str1[i] >= 65 && str1[i] <= 90 {
+				if str[i] >= 97 && str[i] <= 122 {
+					if str1[i]+32 != str[i] {
+						return false
+					}
+				} else {
+					return false
+				}
+			} else if str1[i] >= 97 && str1[i] <= 122 {
+				if str[i] >= 65 && str[i] <= 90 {
+					if str1[i]-32 != str[i] {
+						return false
+					}
+				} else {
+					return false
+				}
+			} else {
+				return false
+			}
+		}
+	}
+
+	return true
+}
+
 func (this *AndroidFramework) LoadLevel(rsmgr *gohome.ResourceManager, name, path string, preloaded, loadToGPU bool) *gohome.Level {
-	return nil
+	extension := getFileExtension(path)
+	if !equalIgnoreCase(extension, "obj") {
+		log.Println("Couldn't load level", name, "with path", path, ": The file format", extension, "is not supported")
+		return nil
+	}
+	return loader.LoadLevelOBJ(rsmgr, name, path, preloaded, loadToGPU)
 }
 
 func Quit() {

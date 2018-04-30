@@ -1,7 +1,7 @@
 package gohome
 
 import (
-	"fmt"
+	// "fmt"
 	"github.com/blezek/tga"
 	"image"
 	"image/color"
@@ -162,9 +162,7 @@ func (rsmgr *ResourceManager) GetTexture(name string) Texture {
 }
 
 func (rsmgr *ResourceManager) LoadLevel(name, path string, loadToGPU bool) {
-	fmt.Println("Loading level")
 	level := rsmgr.loadLevel(name, path, false, loadToGPU)
-	fmt.Println("Loaded level")
 	if level != nil {
 		rsmgr.Levels[name] = level
 		log.Println("Finished loading Level", name, "!")

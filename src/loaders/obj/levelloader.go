@@ -37,7 +37,7 @@ func loadFileWithPaths(path string, paths []string, objLoader *OBJLoader) error 
 	return nil
 }
 
-func processModel(level *gohome.Level, model *OBJModel, preloaded, loadToGPU bool) {
+func processModel(rsmgr *gohome.ResourceManager, level *gohome.Level, model *OBJModel, preloaded, loadToGPU bool) {
 	level.LevelObjects = append(level.LevelObjects, gohome.LevelObject{})
 	lvlObj := &level.LevelObjects[len(level.LevelObjects)-1]
 	var lvlObjTobj gohome.TransformableObject3D
@@ -55,6 +55,7 @@ func processModel(level *gohome.Level, model *OBJModel, preloaded, loadToGPU boo
 		model3d.AddMesh3D(mesh3d)
 	}
 	lvlObj.Entity3D.InitModel(&model3d, nil)
+	rsmgr.Models[model3d.Name] = &model3d
 }
 
 func toMesh3DVertex(vertex *OBJVertex) gohome.Mesh3DVertex {
@@ -88,10 +89,10 @@ func processMesh(mesh3d gohome.Mesh3D, mesh *OBJMesh, preloaded, loadToGPU bool)
 	}
 }
 
-func toGohomeLevel(name string, objLoader *OBJLoader, preloaded, loadToGPU bool) *gohome.Level {
+func toGohomeLevel(rsmgr *gohome.ResourceManager, name string, objLoader *OBJLoader, preloaded, loadToGPU bool) *gohome.Level {
 	level := &gohome.Level{Name: name}
 	for i := 0; i < len(objLoader.Models); i++ {
-		processModel(level, &objLoader.Models[i], preloaded, loadToGPU)
+		processModel(rsmgr, level, &objLoader.Models[i], preloaded, loadToGPU)
 	}
 	return level
 }
@@ -106,6 +107,6 @@ func LoadLevelOBJ(rsmgr *gohome.ResourceManager, name, path string, preloaded, l
 		log.Println("Couldn't load level", name, "with path", path, ":", err.Error())
 		return nil
 	}
-
-	return toGohomeLevel(name, &objLoader, preloaded, loadToGPU)
+	lvl := toGohomeLevel(rsmgr, name, &objLoader, preloaded, loadToGPU)
+	return lvl
 }

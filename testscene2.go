@@ -15,11 +15,16 @@ func (this *TestScene2) Init() {
 
 	gohome.ResourceMgr.LoadTexture("Image", "image.tga")
 	gohome.ResourceMgr.LoadShader("3D Simple", "vertex3dNoShadows.glsl", "fragment3dSimple.glsl", "", "", "", "")
+	gohome.ResourceMgr.LoadLevel("Kratos", "Kratos.obj", true)
 
-	this.box.InitMesh(gohome.Box("Box", [3]float32{1.0, 1.0, 1.0}), &this.boxTobj)
-	this.boxTobj.Position = [3]float32{0.0, 0.0, -3.0}
-	this.box.Model3D.GetMeshIndex(0).GetMaterial().DiffuseTexture = gohome.ResourceMgr.GetTexture("Image")
-	gohome.RenderMgr.AddObject(&this.box, &this.boxTobj)
+	// this.box.InitMesh(gohome.Box("Box", [3]float32{1.0, 1.0, 1.0}), &this.boxTobj)
+	if gohome.ResourceMgr.GetLevel("Kratos") != nil {
+		this.box.InitModel(gohome.ResourceMgr.GetLevel("Kratos").GetModel("Kratos"), &this.boxTobj)
+		this.boxTobj.Position = [3]float32{0.0, -1.0, -5.0}
+		// this.boxTobj.Scale = [3]float32{0.1, 0.1, 0.1}
+		// this.box.Model3D.GetMeshIndex(0).GetMaterial().DiffuseTexture = gohome.ResourceMgr.GetTexture("Image")
+		gohome.RenderMgr.AddObject(&this.box, &this.boxTobj)
+	}
 
 	gohome.LightMgr.CurrentLightCollection = -1
 	gohome.RenderMgr.EnableBackBuffer = false

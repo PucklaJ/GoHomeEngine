@@ -41,7 +41,9 @@ func (this *Entity3D) InitMesh(mesh Mesh3D, tobj *TransformableObject3D) {
 func (this *Entity3D) InitModel(model *Model3D, tobj *TransformableObject3D) {
 	this.commonInit(tobj)
 	this.Model3D = model
-	this.Name = model.Name
+	if model != nil {
+		this.Name = model.Name
+	}
 }
 
 func (this *Entity3D) GetShader() Shader {
@@ -64,11 +66,15 @@ func (this *Entity3D) GetType() RenderType {
 }
 
 func (this *Entity3D) Render() {
-	this.Model3D.Render()
+	if this.Model3D != nil {
+		this.Model3D.Render()
+	}
 }
 
 func (this *Entity3D) Terminate() {
-	this.Model3D.Terminate()
+	if this.Model3D != nil {
+		this.Model3D.Terminate()
+	}
 }
 
 func (this *Entity3D) IsVisible() bool {
