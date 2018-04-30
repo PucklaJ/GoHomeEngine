@@ -4,6 +4,142 @@
 		"selected_items":
 		[
 			[
+				"REs",
+				"ResourceMgr\tgohome.ResourceManager ν"
+			],
+			[
+				"vertex3d",
+				"vertex3dNoShadows.glsl"
+			],
+			[
+				"Pre",
+				"PreloadShader\t ƒ"
+			],
+			[
+				"Resour",
+				"ResourceMgr\tgohome.ResourceManager ν"
+			],
+			[
+				"PR",
+				"Println\t ƒ"
+			],
+			[
+				"fragment3d",
+				"fragment3dSimple.glsl"
+			],
+			[
+				"Tex",
+				"Texture"
+			],
+			[
+				"BackBufferM",
+				"BackBufferMesh"
+			],
+			[
+				"OpenGLESM",
+				"OpenGLESMesh2D\tstruct ʈ"
+			],
+			[
+				"BA",
+				"BackBuffer2D\tRenderTexture ν"
+			],
+			[
+				"B",
+				"BackBuffer2D\tRenderTexture ν"
+			],
+			[
+				"T",
+				"Texture\tTexture ν"
+			],
+			[
+				"Transform",
+				"TransformableObject2D"
+			],
+			[
+				"rend",
+				"renderSprTobj\tgohome.TransformableObject2D ν"
+			],
+			[
+				"re",
+				"renderSprTobj\tgohome.TransformableObject2D ν"
+			],
+			[
+				"spr",
+				"sprTobj\tgohome.TransformableObject2D ν"
+			],
+			[
+				"Trans",
+				"TransformableObject2D\tstruct ʈ"
+			],
+			[
+				"s",
+				"spr\t*gohome.Sprite2D ν"
+			],
+			[
+				"Create",
+				"CreateRenderTexture\tgohome.RenderTexture ƒ"
+			],
+			[
+				"R",
+				"RenderObject\tRenderObject ν"
+			],
+			[
+				"RenderP",
+				"RenderPair\tstruct ʈ"
+			],
+			[
+				"get",
+				"GetType\tRenderType ƒ"
+			],
+			[
+				"Frame",
+				"Framew\tgohome.Framework ν"
+			],
+			[
+				"Open",
+				"OpenGLESRenderer\tstruct ʈ"
+			],
+			[
+				"Get",
+				"GetError\tuint32 ƒ"
+			],
+			[
+				"Pr",
+				"Println\tn int, err error ƒ"
+			],
+			[
+				"Ini",
+				"Init"
+			],
+			[
+				"gles",
+				"gles2"
+			],
+			[
+				"sp",
+				"sprTobj\tgohome.TransformableObject2D ν"
+			],
+			[
+				"Check",
+				"CheckOpenGLESError"
+			],
+			[
+				"Sp",
+				"Sprite2D\tstruct ʈ"
+			],
+			[
+				"Tra",
+				"TransformableObject2D\tstruct ʈ"
+			],
+			[
+				"In",
+				"InputMgr\tgohome.InputManager ν"
+			],
+			[
+				"v",
+				"viewport3Ds\t[]*Viewport ν"
+			],
+			[
 				"shado",
 				"shadowMap"
 			],
@@ -140,10 +276,6 @@
 				"inverseViewMatrix3D"
 			],
 			[
-				"Get",
-				"GetInverseViewMatrix\tmgl32.Mat4 ƒ"
-			],
-			[
 				"att",
 				"attribute"
 			],
@@ -153,10 +285,6 @@
 			],
 			[
 				"pri",
-				"Println\t ƒ"
-			],
-			[
-				"PR",
 				"Println\t ƒ"
 			],
 			[
@@ -248,10 +376,6 @@
 				"boxTobj\tgohome.TransformableObject3D ν"
 			],
 			[
-				"Trans",
-				"TransformableObject3D\tstruct ʈ"
-			],
-			[
 				"S",
 				"Size\tmgl32.Vec2 ν"
 			],
@@ -262,10 +386,6 @@
 			[
 				"STAT",
 				"STATIC_DRAW\t Ɩ"
-			],
-			[
-				"OpenGLESM",
-				"OpenGLESMesh3D"
 			],
 			[
 				"is",
@@ -332,10 +452,6 @@
 				"Println"
 			],
 			[
-				"B",
-				"BackBuffer2D\tgohome.RenderTexture ν"
-			],
-			[
 				"Ren",
 				"Render\tgohome.Renderer ν"
 			],
@@ -350,10 +466,6 @@
 			[
 				"N",
 				"NewEncoder\t*gob.Encoder ƒ"
-			],
-			[
-				"v",
-				"vbo\tgl.Buffer ν"
 			],
 			[
 				"RE",
@@ -376,20 +488,12 @@
 				"Println\t ƒ"
 			],
 			[
-				"Pr",
-				"Println\t ƒ"
-			],
-			[
 				"CreateOp",
 				"CreateOpenGLESTexture"
 			],
 			[
 				"TexPa",
 				"TexParameterfv\t ƒ"
-			],
-			[
-				"Tex",
-				"Texture\tstruct ʈ"
 			],
 			[
 				"TEX",
@@ -410,110 +514,6 @@
 			[
 				"directiona",
 				"directionalLights"
-			],
-			[
-				"gle",
-				"gles2\t package ρ"
-			],
-			[
-				"GetStr",
-				"GetString"
-			],
-			[
-				"attri",
-				"attribute"
-			],
-			[
-				"Clear",
-				"Clear\t ƒ"
-			],
-			[
-				"Co",
-				"ColorToVec4\tmgl32.Vec4 ƒ"
-			],
-			[
-				"ClearB",
-				"ClearBufferfv\t ƒ"
-			],
-			[
-				"word",
-				"wordBuffer"
-			],
-			[
-				"Writ",
-				"WriteByte\terror ƒ"
-			],
-			[
-				"Wr",
-				"WriteByte\terror ƒ"
-			],
-			[
-				"Write",
-				"WriteByte\terror ƒ"
-			],
-			[
-				"cur",
-				"curIndex"
-			],
-			[
-				"conte",
-				"contents"
-			],
-			[
-				"calculateSp",
-				"calculateSpotLight"
-			],
-			[
-				"sh",
-				"ShadowMap\tRenderTexture ν"
-			],
-			[
-				"inver",
-				"inverseViewMatrix"
-			],
-			[
-				"inv",
-				"inverse"
-			],
-			[
-				"shadowMap",
-				"shadowMapSize"
-			],
-			[
-				"invers",
-				"inverseViewMatrix"
-			],
-			[
-				"offst",
-				"offsets"
-			],
-			[
-				"setVa",
-				"setValues"
-			],
-			[
-				"gl_Frag",
-				"gl_FragColor"
-			],
-			[
-				"Ver",
-				"VertexArray\tstruct ʈ"
-			],
-			[
-				"SPR",
-				"SPRITE2D_SHADER_NAME"
-			],
-			[
-				"POINT_LIGHT_SH",
-				"POINT_LIGHT_SHADOWMAP_INSTANCED_SHADER_NAME"
-			],
-			[
-				"Ptr",
-				"Println\tn int, err error ƒ"
-			],
-			[
-				"sam",
-				"sampler2D"
 			]
 		]
 	},
@@ -611,15 +611,7 @@
 			"file": "src/gohome/mainloop.go",
 			"settings":
 			{
-				"buffer_size": 3000,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "src/gohome/mainloop.sublime-workspace",
-			"settings":
-			{
-				"buffer_size": 22126,
+				"buffer_size": 3492,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -684,7 +676,8 @@
 			"file": "src/gohome/rendermanager.go",
 			"settings":
 			{
-				"buffer_size": 17029,
+				"buffer_size": 17617,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
@@ -700,7 +693,8 @@
 			"file": "src/gohome/resourcemanager.go",
 			"settings":
 			{
-				"buffer_size": 8401,
+				"buffer_size": 9250,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
@@ -796,7 +790,8 @@
 			"file": "src/loaders/assimp/assimploader.go",
 			"settings":
 			{
-				"buffer_size": 8265,
+				"buffer_size": 8213,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
@@ -892,7 +887,8 @@
 			"file": "src/renderers/OpenGLES/openglesrenderer.go",
 			"settings":
 			{
-				"buffer_size": 6611,
+				"buffer_size": 7187,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
@@ -900,7 +896,8 @@
 			"file": "src/renderers/OpenGLES/openglesrendertexture.go",
 			"settings":
 			{
-				"buffer_size": 7178,
+				"buffer_size": 9646,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
@@ -908,7 +905,7 @@
 			"file": "src/renderers/OpenGLES/openglesshader.go",
 			"settings":
 			{
-				"buffer_size": 17190,
+				"buffer_size": 16452,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -926,6 +923,7 @@
 			"settings":
 			{
 				"buffer_size": 398,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
@@ -934,6 +932,7 @@
 			"settings":
 			{
 				"buffer_size": 230,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
@@ -958,6 +957,24 @@
 			"settings":
 			{
 				"buffer_size": 15434,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "shaders/fragment3dNoShadows.glsl",
+			"settings":
+			{
+				"buffer_size": 11563,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "shaders/fragment3dSimple.glsl",
+			"settings":
+			{
+				"buffer_size": 11192,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
@@ -1070,6 +1087,7 @@
 			"settings":
 			{
 				"buffer_size": 243,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
@@ -1078,6 +1096,7 @@
 			"settings":
 			{
 				"buffer_size": 230,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
@@ -1138,6 +1157,15 @@
 			}
 		},
 		{
+			"file": "shaders/vertex3dNoShadows.glsl",
+			"settings":
+			{
+				"buffer_size": 1014,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
 			"file": "shaders/wireFrameGeo.glsl",
 			"settings":
 			{
@@ -1149,7 +1177,8 @@
 			"file": "assets/shaders/backBufferShaderVert.glsl",
 			"settings":
 			{
-				"buffer_size": 797,
+				"buffer_size": 195,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
@@ -1158,6 +1187,7 @@
 			"settings":
 			{
 				"buffer_size": 284,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
@@ -1174,6 +1204,24 @@
 			"settings":
 			{
 				"buffer_size": 15461,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "assets/shaders/fragment3dNoShadows.glsl",
+			"settings":
+			{
+				"buffer_size": 11498,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "assets/shaders/fragment3dSimple.glsl",
+			"settings":
+			{
+				"buffer_size": 11189,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
@@ -1246,6 +1294,7 @@
 			"settings":
 			{
 				"buffer_size": 284,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
@@ -1322,6 +1371,15 @@
 			}
 		},
 		{
+			"file": "assets/shaders/vertex3dNoShadows.glsl",
+			"settings":
+			{
+				"buffer_size": 1010,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
 			"file": "assets/shaders/wireFrameGeo.glsl",
 			"settings":
 			{
@@ -1341,7 +1399,8 @@
 			"file": "test1.go",
 			"settings":
 			{
-				"buffer_size": 594,
+				"buffer_size": 593,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
@@ -1358,6 +1417,7 @@
 			"settings":
 			{
 				"buffer_size": 9420,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
@@ -1365,7 +1425,17 @@
 			"file": "testscene2.go",
 			"settings":
 			{
-				"buffer_size": 1276,
+				"buffer_size": 1052,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "testscene3.go",
+			"settings":
+			{
+				"buffer_size": 733,
+				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
 		},
@@ -1467,6 +1537,10 @@
 	},
 	"file_history":
 	[
+		"/home/johnny/.config/sublime-text-3/Packages/GoSublime/GoSublime.sublime-settings",
+		"/home/johnny/.config/sublime-text-3/Packages/GoSublime/CHANGELOG.md",
+		"/home/johnny/.config/sublime-text-3/Packages/GoSublime/USAGE.md",
+		"/media/johnny/Daten/Meine_Projekte/go/src/github.com/PucklaMotzer09/gohomeengine/src/gohome/mainloop.sublime-workspace",
 		"/media/johnny/Daten/Meine_Projekte/go/src/github.com/PucklaMotzer09/gohomeengine/src/gohome/light.go",
 		"/media/johnny/Daten/Meine_Projekte/go/src/github.com/PucklaMotzer09/gohomeengine/lightentity.go",
 		"/media/johnny/Daten/Meine_Projekte/go/src/github.com/PucklaMotzer09/gohomeengine/src/gohome/cubemap.go",
@@ -1573,8 +1647,6 @@
 		"/media/johnny/Daten/Meine_Projekte/go/src/github.com/PucklaMotzer09/gohomeengine/assets/shaders/vertex1.glsl",
 		"/media/johnny/Daten/Meine_Projekte/go/src/github.com/PucklaMotzer09/gohomeengine/assets/shaders/vertex3d.glsl",
 		"/media/johnny/Daten/Meine_Projekte/go/src/github.com/PucklaMotzer09/gohomeengine/assets/shaders/wireFrameGeo.glsl",
-		"/home/johnny/.config/sublime-text-3/Packages/GoSublime/USAGE.md",
-		"/home/johnny/.config/sublime-text-3/Packages/GoSublime/GoSublime.sublime-settings",
 		"/media/johnny/Daten/Meine_Projekte/go/src/github.com/PucklaMotzer09/gohomeengine/vertex1.glsl",
 		"/media/johnny/Daten/Meine_Projekte/go/src/github.com/PucklaMotzer09/gohomeengine/vertex.glsl",
 		"/media/johnny/Daten/Meine_Projekte/go/src/github.com/PucklaMotzer09/gohomeengine/shadowMapRenderFrag.glsl",
@@ -1592,9 +1664,7 @@
 		"/media/johnny/Daten/Meine_Projekte/go/src/github.com/PucklaMotzer09/gohomeengine/MapleTreeStem.obj",
 		"/media/johnny/Daten/Meine_Projekte/go/src/github.com/PucklaMotzer09/gohomeengine/MapleTreeLeaves.obj",
 		"/media/johnny/Daten/Meine_Projekte/go/src/github.com/PucklaMotzer09/gohomeengine/MapleTree.obj",
-		"/media/johnny/Daten/Meine_Projekte/go/src/github.com/PucklaMotzer09/gohomeengine/tree.obj",
-		"/media/johnny/Daten/Meine_Projekte/go/src/github.com/PucklaMotzer09/gohomeengine/Kratos.mtl",
-		"/media/johnny/Daten/Meine_Projekte/go/src/github.com/PucklaMotzer09/gohomeengine/assets/backBufferShaderVert.glsl"
+		"/media/johnny/Daten/Meine_Projekte/go/src/github.com/PucklaMotzer09/gohomeengine/tree.obj"
 	],
 	"find":
 	{
@@ -1613,6 +1683,11 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"fragToTangentSpace",
+			"fragInverse",
+			"fragView",
+			"0.5",
+			"Update",
 			"openFileWithPaths",
 			"GetVersioni",
 			"int(numPointLights)",
@@ -1735,12 +1810,7 @@
 			"Texture",
 			"SetUniformM",
 			"Key",
-			"InputMgr",
-			"MainLoop",
-			"InputMgr",
-			"RenderSh",
-			"GetMat",
-			"PtrOffset(*offset)"
+			"InputMgr"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -1748,6 +1818,7 @@
 		"regex": false,
 		"replace_history":
 		[
+			"1.0",
 			"OpenFileWithPaths",
 			"numPointLights",
 			"gl_FragColor",
@@ -1874,8 +1945,7 @@
 			"",
 			"Key",
 			"uint8",
-			"",
-			"OpenGLShader"
+			""
 		],
 		"reverse": false,
 		"show_context": true,
@@ -1886,7 +1956,7 @@
 	"groups":
 	[
 		{
-			"selected": 48,
+			"selected": 107,
 			"sheets":
 			[
 				{
@@ -1915,7 +1985,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 106,
+					"stack_index": 112,
 					"type": "text"
 				},
 				{
@@ -1944,7 +2014,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 105,
+					"stack_index": 111,
 					"type": "text"
 				},
 				{
@@ -1973,7 +2043,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 104,
+					"stack_index": 110,
 					"type": "text"
 				},
 				{
@@ -2002,7 +2072,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 103,
+					"stack_index": 109,
 					"type": "text"
 				},
 				{
@@ -2031,7 +2101,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 102,
+					"stack_index": 108,
 					"type": "text"
 				},
 				{
@@ -2060,7 +2130,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 101,
+					"stack_index": 107,
 					"type": "text"
 				},
 				{
@@ -2089,7 +2159,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 100,
+					"stack_index": 106,
 					"type": "text"
 				},
 				{
@@ -2118,7 +2188,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 99,
+					"stack_index": 105,
 					"type": "text"
 				},
 				{
@@ -2147,7 +2217,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 98,
+					"stack_index": 104,
 					"type": "text"
 				},
 				{
@@ -2176,7 +2246,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 97,
+					"stack_index": 103,
 					"type": "text"
 				},
 				{
@@ -2205,7 +2275,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 96,
+					"stack_index": 102,
 					"type": "text"
 				},
 				{
@@ -2214,15 +2284,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3000,
+						"buffer_size": 3492,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								3045,
+								3045
 							]
 						],
 						"settings":
@@ -2231,43 +2301,14 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 1683.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 95,
+					"stack_index": 10,
 					"type": "text"
 				},
 				{
 					"buffer": 12,
-					"file": "src/gohome/mainloop.sublime-workspace",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 22126,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Text/Plain text.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 94,
-					"type": "text"
-				},
-				{
-					"buffer": 13,
 					"file": "src/gohome/material.go",
 					"semi_transient": false,
 					"settings":
@@ -2292,11 +2333,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 93,
+					"stack_index": 101,
 					"type": "text"
 				},
 				{
-					"buffer": 14,
+					"buffer": 13,
 					"file": "src/gohome/mesh2d.go",
 					"semi_transient": false,
 					"settings":
@@ -2321,11 +2362,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 92,
+					"stack_index": 24,
 					"type": "text"
 				},
 				{
-					"buffer": 15,
+					"buffer": 14,
 					"file": "src/gohome/mesh3d.go",
 					"semi_transient": false,
 					"settings":
@@ -2350,11 +2391,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 91,
+					"stack_index": 100,
 					"type": "text"
 				},
 				{
-					"buffer": 16,
+					"buffer": 15,
 					"file": "src/gohome/model3d.go",
 					"semi_transient": false,
 					"settings":
@@ -2379,11 +2420,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 90,
+					"stack_index": 99,
 					"type": "text"
 				},
 				{
-					"buffer": 17,
+					"buffer": 16,
 					"file": "src/gohome/preloader.go",
 					"semi_transient": false,
 					"settings":
@@ -2408,11 +2449,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 89,
+					"stack_index": 98,
 					"type": "text"
 				},
 				{
-					"buffer": 18,
+					"buffer": 17,
 					"file": "src/gohome/projection.go",
 					"semi_transient": false,
 					"settings":
@@ -2437,11 +2478,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 88,
+					"stack_index": 97,
 					"type": "text"
 				},
 				{
-					"buffer": 19,
+					"buffer": 18,
 					"file": "src/gohome/renderer.go",
 					"semi_transient": false,
 					"settings":
@@ -2466,24 +2507,24 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 87,
+					"stack_index": 42,
 					"type": "text"
 				},
 				{
-					"buffer": 20,
+					"buffer": 19,
 					"file": "src/gohome/rendermanager.go",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 17029,
+						"buffer_size": 17617,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								10240,
+								10240
 							]
 						],
 						"settings":
@@ -2492,14 +2533,14 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 5672.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 86,
+					"stack_index": 27,
 					"type": "text"
 				},
 				{
-					"buffer": 21,
+					"buffer": 20,
 					"file": "src/gohome/rendertexture.go",
 					"semi_transient": false,
 					"settings":
@@ -2524,24 +2565,24 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 85,
+					"stack_index": 96,
 					"type": "text"
 				},
 				{
-					"buffer": 22,
+					"buffer": 21,
 					"file": "src/gohome/resourcemanager.go",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 8401,
+						"buffer_size": 9250,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								9214,
+								9214
 							]
 						],
 						"settings":
@@ -2550,14 +2591,14 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 5610.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 84,
+					"stack_index": 9,
 					"type": "text"
 				},
 				{
-					"buffer": 23,
+					"buffer": 22,
 					"file": "src/gohome/scenemanager.go",
 					"semi_transient": false,
 					"settings":
@@ -2582,11 +2623,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 83,
+					"stack_index": 95,
 					"type": "text"
 				},
 				{
-					"buffer": 24,
+					"buffer": 23,
 					"file": "src/gohome/shader.go",
 					"semi_transient": false,
 					"settings":
@@ -2611,11 +2652,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 82,
+					"stack_index": 94,
 					"type": "text"
 				},
 				{
-					"buffer": 25,
+					"buffer": 24,
 					"file": "src/gohome/sprite2D.go",
 					"semi_transient": false,
 					"settings":
@@ -2627,8 +2668,8 @@
 						"selection":
 						[
 							[
-								0,
-								0
+								277,
+								738
 							]
 						],
 						"settings":
@@ -2640,11 +2681,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 81,
+					"stack_index": 25,
 					"type": "text"
 				},
 				{
-					"buffer": 26,
+					"buffer": 25,
 					"file": "src/gohome/testcameramovement3d.go",
 					"semi_transient": false,
 					"settings":
@@ -2669,11 +2710,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 80,
+					"stack_index": 93,
 					"type": "text"
 				},
 				{
-					"buffer": 27,
+					"buffer": 26,
 					"file": "src/gohome/texture.go",
 					"semi_transient": false,
 					"settings":
@@ -2698,11 +2739,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 79,
+					"stack_index": 92,
 					"type": "text"
 				},
 				{
-					"buffer": 28,
+					"buffer": 27,
 					"file": "src/gohome/transformableobject2d.go",
 					"semi_transient": false,
 					"settings":
@@ -2727,11 +2768,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 78,
+					"stack_index": 91,
 					"type": "text"
 				},
 				{
-					"buffer": 29,
+					"buffer": 28,
 					"file": "src/gohome/transformableobject3d.go",
 					"semi_transient": false,
 					"settings":
@@ -2756,11 +2797,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 77,
+					"stack_index": 90,
 					"type": "text"
 				},
 				{
-					"buffer": 30,
+					"buffer": 29,
 					"file": "src/gohome/updatemanager.go",
 					"semi_transient": false,
 					"settings":
@@ -2785,11 +2826,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 76,
+					"stack_index": 89,
 					"type": "text"
 				},
 				{
-					"buffer": 31,
+					"buffer": 30,
 					"file": "src/frameworks/Android/androidframework.go",
 					"semi_transient": false,
 					"settings":
@@ -2814,11 +2855,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 75,
+					"stack_index": 88,
 					"type": "text"
 				},
 				{
-					"buffer": 32,
+					"buffer": 31,
 					"file": "src/frameworks/GLFW/glfwcallbacks.go",
 					"semi_transient": false,
 					"settings":
@@ -2843,11 +2884,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 74,
+					"stack_index": 87,
 					"type": "text"
 				},
 				{
-					"buffer": 33,
+					"buffer": 32,
 					"file": "src/frameworks/GLFW/glfwframework.go",
 					"semi_transient": false,
 					"settings":
@@ -2872,24 +2913,24 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 73,
+					"stack_index": 86,
 					"type": "text"
 				},
 				{
-					"buffer": 34,
+					"buffer": 33,
 					"file": "src/loaders/assimp/assimploader.go",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 8265,
+						"buffer_size": 8213,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								1818,
+								1818
 							]
 						],
 						"settings":
@@ -2898,14 +2939,14 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 561.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 72,
+					"stack_index": 1,
 					"type": "text"
 				},
 				{
-					"buffer": 35,
+					"buffer": 34,
 					"file": "src/renderers/OpenGL/openglcubemap.go",
 					"semi_transient": false,
 					"settings":
@@ -2930,11 +2971,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 71,
+					"stack_index": 85,
 					"type": "text"
 				},
 				{
-					"buffer": 36,
+					"buffer": 35,
 					"file": "src/renderers/OpenGL/openglinstancedmesh3d.go",
 					"semi_transient": false,
 					"settings":
@@ -2959,11 +3000,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 70,
+					"stack_index": 84,
 					"type": "text"
 				},
 				{
-					"buffer": 37,
+					"buffer": 36,
 					"file": "src/renderers/OpenGL/openglmesh2d.go",
 					"semi_transient": false,
 					"settings":
@@ -2988,11 +3029,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 69,
+					"stack_index": 83,
 					"type": "text"
 				},
 				{
-					"buffer": 38,
+					"buffer": 37,
 					"file": "src/renderers/OpenGL/openglmesh3d.go",
 					"semi_transient": false,
 					"settings":
@@ -3017,11 +3058,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 68,
+					"stack_index": 82,
 					"type": "text"
 				},
 				{
-					"buffer": 39,
+					"buffer": 38,
 					"file": "src/renderers/OpenGL/openglrenderer.go",
 					"semi_transient": false,
 					"settings":
@@ -3046,11 +3087,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 67,
+					"stack_index": 81,
 					"type": "text"
 				},
 				{
-					"buffer": 40,
+					"buffer": 39,
 					"file": "src/renderers/OpenGL/openglrendertexture.go",
 					"semi_transient": false,
 					"settings":
@@ -3075,11 +3116,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 66,
+					"stack_index": 41,
 					"type": "text"
 				},
 				{
-					"buffer": 41,
+					"buffer": 40,
 					"file": "src/renderers/OpenGL/openglshader.go",
 					"semi_transient": false,
 					"settings":
@@ -3104,11 +3145,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 65,
+					"stack_index": 80,
 					"type": "text"
 				},
 				{
-					"buffer": 42,
+					"buffer": 41,
 					"file": "src/renderers/OpenGL/opengltexture.go",
 					"semi_transient": false,
 					"settings":
@@ -3133,11 +3174,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 64,
+					"stack_index": 79,
 					"type": "text"
 				},
 				{
-					"buffer": 43,
+					"buffer": 42,
 					"file": "src/renderers/OpenGLES/openglescubemap.go",
 					"semi_transient": false,
 					"settings":
@@ -3162,11 +3203,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 63,
+					"stack_index": 78,
 					"type": "text"
 				},
 				{
-					"buffer": 44,
+					"buffer": 43,
 					"file": "src/renderers/OpenGLES/openglesmesh2d.go",
 					"semi_transient": false,
 					"settings":
@@ -3178,8 +3219,8 @@
 						"selection":
 						[
 							[
-								0,
-								0
+								1624,
+								1624
 							]
 						],
 						"settings":
@@ -3188,14 +3229,14 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 623.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 62,
+					"stack_index": 23,
 					"type": "text"
 				},
 				{
-					"buffer": 45,
+					"buffer": 44,
 					"file": "src/renderers/OpenGLES/openglesmesh3d.go",
 					"semi_transient": false,
 					"settings":
@@ -3220,24 +3261,24 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 61,
+					"stack_index": 77,
 					"type": "text"
 				},
 				{
-					"buffer": 46,
+					"buffer": 45,
 					"file": "src/renderers/OpenGLES/openglesrenderer.go",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 6611,
+						"buffer_size": 7187,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								823,
+								823
 							]
 						],
 						"settings":
@@ -3246,27 +3287,27 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 276.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 60,
+					"stack_index": 19,
 					"type": "text"
 				},
 				{
-					"buffer": 47,
+					"buffer": 46,
 					"file": "src/renderers/OpenGLES/openglesrendertexture.go",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 7178,
+						"buffer_size": 9646,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								4961,
+								4961
 							]
 						],
 						"settings":
@@ -3275,27 +3316,27 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 1906.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 59,
+					"stack_index": 40,
 					"type": "text"
 				},
 				{
-					"buffer": 48,
+					"buffer": 47,
 					"file": "src/renderers/OpenGLES/openglesshader.go",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 17190,
+						"buffer_size": 16452,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2447,
-								2447
+								534,
+								534
 							]
 						],
 						"settings":
@@ -3304,14 +3345,14 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 1581.0,
+						"translation.y": 153.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 18,
 					"type": "text"
 				},
 				{
-					"buffer": 49,
+					"buffer": 48,
 					"file": "src/renderers/OpenGLES/openglestexture.go",
 					"semi_transient": false,
 					"settings":
@@ -3336,11 +3377,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 58,
+					"stack_index": 76,
 					"type": "text"
 				},
 				{
-					"buffer": 50,
+					"buffer": 49,
 					"file": "shaders/backBufferShaderFrag.glsl",
 					"semi_transient": false,
 					"settings":
@@ -3352,8 +3393,8 @@
 						"selection":
 						[
 							[
-								0,
-								0
+								191,
+								191
 							]
 						],
 						"settings":
@@ -3365,11 +3406,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 57,
+					"stack_index": 32,
 					"type": "text"
 				},
 				{
-					"buffer": 51,
+					"buffer": 50,
 					"file": "shaders/backBufferShaderNoMSFrag.glsl",
 					"semi_transient": false,
 					"settings":
@@ -3381,8 +3422,8 @@
 						"selection":
 						[
 							[
-								0,
-								0
+								113,
+								113
 							]
 						],
 						"settings":
@@ -3393,11 +3434,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 56,
+					"stack_index": 31,
 					"type": "text"
 				},
 				{
-					"buffer": 52,
+					"buffer": 51,
 					"file": "shaders/backBufferShaderNoMSVert.glsl",
 					"semi_transient": false,
 					"settings":
@@ -3421,11 +3462,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 55,
+					"stack_index": 75,
 					"type": "text"
 				},
 				{
-					"buffer": 53,
+					"buffer": 52,
 					"file": "shaders/backBufferShaderVert.glsl",
 					"semi_transient": false,
 					"settings":
@@ -3450,11 +3491,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 54,
+					"stack_index": 20,
 					"type": "text"
 				},
 				{
-					"buffer": 54,
+					"buffer": 53,
 					"file": "shaders/fragment3d.glsl",
 					"semi_transient": false,
 					"settings":
@@ -3467,7 +3508,7 @@
 						[
 							[
 								0,
-								0
+								15434
 							]
 						],
 						"settings":
@@ -3479,11 +3520,70 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 53,
+					"stack_index": 7,
+					"type": "text"
+				},
+				{
+					"buffer": 54,
+					"file": "shaders/fragment3dNoShadows.glsl",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 11563,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								11563
+							]
+						],
+						"settings":
+						{
+							"auto_name": "",
+							"syntax": "Packages/OpenGL Shading Language (GLSL)/GLSL.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 7293.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
 					"type": "text"
 				},
 				{
 					"buffer": 55,
+					"file": "shaders/fragment3dSimple.glsl",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 11192,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								11129,
+								11129
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/OpenGL Shading Language (GLSL)/GLSL.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 7038.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 56,
 					"file": "shaders/fragment.glsl",
 					"semi_transient": false,
 					"settings":
@@ -3507,11 +3607,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 52,
+					"stack_index": 74,
 					"type": "text"
 				},
 				{
-					"buffer": 56,
+					"buffer": 57,
 					"file": "shaders/instanced3dVert.glsl",
 					"semi_transient": false,
 					"settings":
@@ -3536,11 +3636,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 51,
+					"stack_index": 73,
 					"type": "text"
 				},
 				{
-					"buffer": 57,
+					"buffer": 58,
 					"file": "shaders/normalFrag.glsl",
 					"semi_transient": false,
 					"settings":
@@ -3565,11 +3665,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 50,
+					"stack_index": 72,
 					"type": "text"
 				},
 				{
-					"buffer": 58,
+					"buffer": 59,
 					"file": "shaders/pointFragment.glsl",
 					"semi_transient": false,
 					"settings":
@@ -3593,11 +3693,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 49,
+					"stack_index": 71,
 					"type": "text"
 				},
 				{
-					"buffer": 59,
+					"buffer": 60,
 					"file": "shaders/pointLightShadowMapFrag.glsl",
 					"semi_transient": false,
 					"settings":
@@ -3622,11 +3722,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 48,
+					"stack_index": 30,
 					"type": "text"
 				},
 				{
-					"buffer": 60,
+					"buffer": 61,
 					"file": "shaders/pointLightShadowMapGeo.glsl",
 					"semi_transient": false,
 					"settings":
@@ -3651,11 +3751,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 47,
+					"stack_index": 70,
 					"type": "text"
 				},
 				{
-					"buffer": 61,
+					"buffer": 62,
 					"file": "shaders/pointLightShadowMapInstancedVert.glsl",
 					"semi_transient": false,
 					"settings":
@@ -3679,11 +3779,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 46,
+					"stack_index": 69,
 					"type": "text"
 				},
 				{
-					"buffer": 62,
+					"buffer": 63,
 					"file": "shaders/pointLightShadowMapVert.glsl",
 					"semi_transient": false,
 					"settings":
@@ -3707,11 +3807,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 45,
+					"stack_index": 68,
 					"type": "text"
 				},
 				{
-					"buffer": 63,
+					"buffer": 64,
 					"file": "shaders/pointVertex.glsl",
 					"semi_transient": false,
 					"settings":
@@ -3735,11 +3835,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 44,
+					"stack_index": 67,
 					"type": "text"
 				},
 				{
-					"buffer": 64,
+					"buffer": 65,
 					"file": "shaders/postProcessingShaderFrag.glsl",
 					"semi_transient": false,
 					"settings":
@@ -3765,11 +3865,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 43,
+					"stack_index": 38,
 					"type": "text"
 				},
 				{
-					"buffer": 65,
+					"buffer": 66,
 					"file": "shaders/postProcessingShaderNoMSFrag.glsl",
 					"semi_transient": false,
 					"settings":
@@ -3795,11 +3895,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 42,
+					"stack_index": 37,
 					"type": "text"
 				},
 				{
-					"buffer": 66,
+					"buffer": 67,
 					"file": "shaders/postProcessingShaderNoMSVert.glsl",
 					"semi_transient": false,
 					"settings":
@@ -3823,11 +3923,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 41,
+					"stack_index": 36,
 					"type": "text"
 				},
 				{
-					"buffer": 67,
+					"buffer": 68,
 					"file": "shaders/postProcessingShaderVert.glsl",
 					"semi_transient": false,
 					"settings":
@@ -3852,11 +3952,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 40,
+					"stack_index": 35,
 					"type": "text"
 				},
 				{
-					"buffer": 68,
+					"buffer": 69,
 					"file": "shaders/renderScreenFrag.glsl",
 					"semi_transient": false,
 					"settings":
@@ -3868,8 +3968,8 @@
 						"selection":
 						[
 							[
-								0,
-								0
+								156,
+								156
 							]
 						],
 						"settings":
@@ -3880,11 +3980,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 39,
+					"stack_index": 34,
 					"type": "text"
 				},
 				{
-					"buffer": 69,
+					"buffer": 70,
 					"file": "shaders/renderScreenNoMSFrag.glsl",
 					"semi_transient": false,
 					"settings":
@@ -3896,8 +3996,8 @@
 						"selection":
 						[
 							[
-								0,
-								0
+								140,
+								140
 							]
 						],
 						"settings":
@@ -3908,11 +4008,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 38,
+					"stack_index": 33,
 					"type": "text"
 				},
 				{
-					"buffer": 70,
+					"buffer": 71,
 					"file": "shaders/shadowMapFrag.glsl",
 					"semi_transient": false,
 					"settings":
@@ -3937,11 +4037,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 37,
+					"stack_index": 66,
 					"type": "text"
 				},
 				{
-					"buffer": 71,
+					"buffer": 72,
 					"file": "shaders/shadowMapInstancedVert.glsl",
 					"semi_transient": false,
 					"settings":
@@ -3965,11 +4065,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 36,
+					"stack_index": 65,
 					"type": "text"
 				},
 				{
-					"buffer": 72,
+					"buffer": 73,
 					"file": "shaders/shadowMapRenderFrag.glsl",
 					"semi_transient": false,
 					"settings":
@@ -3993,11 +4093,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 35,
+					"stack_index": 64,
 					"type": "text"
 				},
 				{
-					"buffer": 73,
+					"buffer": 74,
 					"file": "shaders/shadowMapVert.glsl",
 					"semi_transient": false,
 					"settings":
@@ -4021,11 +4121,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 34,
+					"stack_index": 63,
 					"type": "text"
 				},
 				{
-					"buffer": 74,
+					"buffer": 75,
 					"file": "shaders/vertex.glsl",
 					"semi_transient": false,
 					"settings":
@@ -4050,11 +4150,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 33,
+					"stack_index": 62,
 					"type": "text"
 				},
 				{
-					"buffer": 75,
+					"buffer": 76,
 					"file": "shaders/vertex1.glsl",
 					"semi_transient": false,
 					"settings":
@@ -4078,11 +4178,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 32,
+					"stack_index": 61,
 					"type": "text"
 				},
 				{
-					"buffer": 76,
+					"buffer": 77,
 					"file": "shaders/vertex3d.glsl",
 					"semi_transient": false,
 					"settings":
@@ -4094,8 +4194,8 @@
 						"selection":
 						[
 							[
-								0,
-								0
+								1134,
+								1134
 							]
 						],
 						"settings":
@@ -4107,11 +4207,40 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 31,
+					"stack_index": 6,
 					"type": "text"
 				},
 				{
-					"buffer": 77,
+					"buffer": 78,
+					"file": "shaders/vertex3dNoShadows.glsl",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1014,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								248,
+								248
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/OpenGL Shading Language (GLSL)/GLSL.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 79,
 					"file": "shaders/wireFrameGeo.glsl",
 					"semi_transient": false,
 					"settings":
@@ -4136,24 +4265,24 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 30,
+					"stack_index": 60,
 					"type": "text"
 				},
 				{
-					"buffer": 78,
+					"buffer": 80,
 					"file": "assets/shaders/backBufferShaderVert.glsl",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 797,
+						"buffer_size": 195,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								193,
+								193
 							]
 						],
 						"settings":
@@ -4164,11 +4293,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 29,
+					"stack_index": 21,
 					"type": "text"
 				},
 				{
-					"buffer": 79,
+					"buffer": 81,
 					"file": "assets/shaders/backBufferShaderFrag.glsl",
 					"semi_transient": false,
 					"settings":
@@ -4180,8 +4309,8 @@
 						"selection":
 						[
 							[
-								0,
-								0
+								167,
+								167
 							]
 						],
 						"settings":
@@ -4192,11 +4321,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 28,
+					"stack_index": 26,
 					"type": "text"
 				},
 				{
-					"buffer": 80,
+					"buffer": 82,
 					"file": "assets/shaders/fragment.glsl",
 					"semi_transient": false,
 					"settings":
@@ -4220,11 +4349,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 27,
+					"stack_index": 17,
 					"type": "text"
 				},
 				{
-					"buffer": 81,
+					"buffer": 83,
 					"file": "assets/shaders/fragment3d.glsl",
 					"semi_transient": false,
 					"settings":
@@ -4237,7 +4366,7 @@
 						[
 							[
 								0,
-								0
+								15461
 							]
 						],
 						"settings":
@@ -4249,11 +4378,69 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 26,
+					"stack_index": 16,
 					"type": "text"
 				},
 				{
-					"buffer": 82,
+					"buffer": 84,
+					"file": "assets/shaders/fragment3dNoShadows.glsl",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 11498,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								659,
+								659
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/OpenGL Shading Language (GLSL)/GLSL.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 204.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 13,
+					"type": "text"
+				},
+				{
+					"buffer": 85,
+					"file": "assets/shaders/fragment3dSimple.glsl",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 11189,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1742,
+								1742
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/OpenGL Shading Language (GLSL)/GLSL.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 1221.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 12,
+					"type": "text"
+				},
+				{
+					"buffer": 86,
 					"file": "assets/shaders/pointFragment.glsl",
 					"semi_transient": false,
 					"settings":
@@ -4277,11 +4464,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 25,
+					"stack_index": 59,
 					"type": "text"
 				},
 				{
-					"buffer": 83,
+					"buffer": 87,
 					"file": "assets/shaders/pointLightShadowMapFrag.glsl",
 					"semi_transient": false,
 					"settings":
@@ -4306,11 +4493,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 24,
+					"stack_index": 58,
 					"type": "text"
 				},
 				{
-					"buffer": 84,
+					"buffer": 88,
 					"file": "assets/shaders/pointLightShadowMapGeo.glsl",
 					"semi_transient": false,
 					"settings":
@@ -4335,11 +4522,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 23,
+					"stack_index": 57,
 					"type": "text"
 				},
 				{
-					"buffer": 85,
+					"buffer": 89,
 					"file": "assets/shaders/pointLightShadowMapInstancedVert.glsl",
 					"semi_transient": false,
 					"settings":
@@ -4363,11 +4550,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 22,
+					"stack_index": 56,
 					"type": "text"
 				},
 				{
-					"buffer": 86,
+					"buffer": 90,
 					"file": "assets/shaders/pointLightShadowMapVert.glsl",
 					"semi_transient": false,
 					"settings":
@@ -4391,11 +4578,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 21,
+					"stack_index": 55,
 					"type": "text"
 				},
 				{
-					"buffer": 87,
+					"buffer": 91,
 					"file": "assets/shaders/pointVertex.glsl",
 					"semi_transient": false,
 					"settings":
@@ -4419,11 +4606,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 20,
+					"stack_index": 54,
 					"type": "text"
 				},
 				{
-					"buffer": 88,
+					"buffer": 92,
 					"file": "assets/shaders/postProcessingShaderFrag.glsl",
 					"semi_transient": false,
 					"settings":
@@ -4449,11 +4636,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 19,
+					"stack_index": 29,
 					"type": "text"
 				},
 				{
-					"buffer": 89,
+					"buffer": 93,
 					"file": "assets/shaders/postProcessingShaderVert.glsl",
 					"semi_transient": false,
 					"settings":
@@ -4477,11 +4664,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 18,
+					"stack_index": 39,
 					"type": "text"
 				},
 				{
-					"buffer": 90,
+					"buffer": 94,
 					"file": "assets/shaders/renderScreenFrag.glsl",
 					"semi_transient": false,
 					"settings":
@@ -4493,8 +4680,8 @@
 						"selection":
 						[
 							[
-								0,
-								0
+								194,
+								194
 							]
 						],
 						"settings":
@@ -4505,11 +4692,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 17,
+					"stack_index": 28,
 					"type": "text"
 				},
 				{
-					"buffer": 91,
+					"buffer": 95,
 					"file": "assets/shaders/shadowMapFrag.glsl",
 					"semi_transient": false,
 					"settings":
@@ -4534,11 +4721,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 16,
+					"stack_index": 53,
 					"type": "text"
 				},
 				{
-					"buffer": 92,
+					"buffer": 96,
 					"file": "assets/shaders/shadowMapInstancedVert.glsl",
 					"semi_transient": false,
 					"settings":
@@ -4562,11 +4749,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 15,
+					"stack_index": 52,
 					"type": "text"
 				},
 				{
-					"buffer": 93,
+					"buffer": 97,
 					"file": "assets/shaders/shadowMapRenderFrag.glsl",
 					"semi_transient": false,
 					"settings":
@@ -4590,11 +4777,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 14,
+					"stack_index": 51,
 					"type": "text"
 				},
 				{
-					"buffer": 94,
+					"buffer": 98,
 					"file": "assets/shaders/shadowMapVert.glsl",
 					"semi_transient": false,
 					"settings":
@@ -4618,11 +4805,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 13,
+					"stack_index": 50,
 					"type": "text"
 				},
 				{
-					"buffer": 95,
+					"buffer": 99,
 					"file": "assets/shaders/triangleFrag.glsl",
 					"semi_transient": false,
 					"settings":
@@ -4646,11 +4833,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 12,
+					"stack_index": 49,
 					"type": "text"
 				},
 				{
-					"buffer": 96,
+					"buffer": 100,
 					"file": "assets/shaders/triangleVert.glsl",
 					"semi_transient": false,
 					"settings":
@@ -4674,11 +4861,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 11,
+					"stack_index": 48,
 					"type": "text"
 				},
 				{
-					"buffer": 97,
+					"buffer": 101,
 					"file": "assets/shaders/vertex.glsl",
 					"semi_transient": false,
 					"settings":
@@ -4703,11 +4890,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 10,
+					"stack_index": 47,
 					"type": "text"
 				},
 				{
-					"buffer": 98,
+					"buffer": 102,
 					"file": "assets/shaders/vertex1.glsl",
 					"semi_transient": false,
 					"settings":
@@ -4731,11 +4918,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 9,
+					"stack_index": 22,
 					"type": "text"
 				},
 				{
-					"buffer": 99,
+					"buffer": 103,
 					"file": "assets/shaders/vertex3d.glsl",
 					"semi_transient": false,
 					"settings":
@@ -4748,7 +4935,7 @@
 						[
 							[
 								0,
-								0
+								1130
 							]
 						],
 						"settings":
@@ -4760,11 +4947,40 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 8,
+					"stack_index": 15,
 					"type": "text"
 				},
 				{
-					"buffer": 100,
+					"buffer": 104,
+					"file": "assets/shaders/vertex3dNoShadows.glsl",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1010,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								632,
+								632
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/OpenGL Shading Language (GLSL)/GLSL.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 14,
+					"type": "text"
+				},
+				{
+					"buffer": 105,
 					"file": "assets/shaders/wireFrameGeo.glsl",
 					"semi_transient": false,
 					"settings":
@@ -4789,11 +5005,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
+					"stack_index": 46,
 					"type": "text"
 				},
 				{
-					"buffer": 101,
+					"buffer": 106,
 					"file": "lightentity.go",
 					"semi_transient": false,
 					"settings":
@@ -4818,39 +5034,40 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 45,
 					"type": "text"
 				},
 				{
-					"buffer": 102,
+					"buffer": 107,
 					"file": "test1.go",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 594,
+						"buffer_size": 593,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								465,
+								465
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/GoSublime/syntax/GoSublime-Go.sublime-syntax"
+							"syntax": "Packages/GoSublime/syntax/GoSublime-Go.sublime-syntax",
+							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 0,
 					"type": "text"
 				},
 				{
-					"buffer": 103,
+					"buffer": 108,
 					"file": "testscene1.go",
 					"semi_transient": false,
 					"settings":
@@ -4875,11 +5092,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 44,
 					"type": "text"
 				},
 				{
-					"buffer": 104,
+					"buffer": 109,
 					"file": "testscene.go",
 					"semi_transient": false,
 					"settings":
@@ -4891,8 +5108,8 @@
 						"selection":
 						[
 							[
-								0,
-								0
+								1691,
+								1691
 							]
 						],
 						"settings":
@@ -4901,27 +5118,27 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 408.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 2,
 					"type": "text"
 				},
 				{
-					"buffer": 105,
+					"buffer": 110,
 					"file": "testscene2.go",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1276,
+						"buffer_size": 1052,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								857,
+								857
 							]
 						],
 						"settings":
@@ -4933,11 +5150,40 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 8,
 					"type": "text"
 				},
 				{
-					"buffer": 106,
+					"buffer": 111,
+					"file": "testscene3.go",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 733,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								452,
+								452
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/GoSublime/syntax/GoSublime-Go.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 11,
+					"type": "text"
+				},
+				{
+					"buffer": 112,
 					"file": "AndroidManifest.xml",
 					"semi_transient": false,
 					"settings":
@@ -4963,7 +5209,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 43,
 					"type": "text"
 				}
 			]

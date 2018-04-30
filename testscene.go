@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
+	"github.com/PucklaMotzer09/gohomeengine/src/loaders/obj"
 	// "github.com/go-gl/gl/all-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
 	"golang.org/x/image/colornames"
@@ -57,6 +58,12 @@ func (this *TestScene) Init() {
 	end := time.Now()
 	fmt.Println("Needed Time:", end.Sub(start).Seconds()*1000.0, "ms")
 	gohome.InitDefaultValues()
+	lvl := loader.LoadLevelOBJ(&gohome.ResourceMgr, "Test", "Kratos.obj", false, true)
+	var lvlTobj gohome.TransformableObject3D
+	lvlTobj.Position = [3]float32{10, 10, 0}
+	lvlTobj.Scale = [3]float32{1.0, 1.0, 1.0}
+	lvlTobj.Rotation = [3]float32{0.0, 0.0, 0.0}
+	gohome.RenderMgr.AddObject(&lvl.LevelObjects[0].Entity3D, &lvlTobj)
 
 	gohome.LightMgr.SetAmbientLight(gohome.Color{20, 20, 20, 255}, 0)
 	this.lightEnts[0].Init([3]float32{0.0, 2.0, 0.0}, 0.0, 2.0)
