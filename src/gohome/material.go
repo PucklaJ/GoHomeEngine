@@ -4,7 +4,7 @@ import (
 	// "fmt"
 	"github.com/go-gl/mathgl/mgl32"
 	"image/color"
-	// "math"
+	"math"
 )
 
 const (
@@ -18,6 +18,9 @@ const (
 	MATERIAL_SPECULAR_TEXTURE_LOADED_UNIFORM_NAME string = "SpecularTextureLoaded"
 	MATERIAL_NORMALMAP_LOADED_UNIFORM_NAME        string = "NormalMapLoaded"
 	MATERIAL_NORMALMAP_UNIFORM_NAME               string = "normalMap"
+
+	MAX_SPECULAR_EXPONENT float64 = 50.0
+	MIN_SPECULAR_EXPONENT float64 = 5.0
 )
 
 type Color struct {
@@ -87,6 +90,17 @@ func (mat *Material) SetTextures(diffuse, specular, normalMap string) {
 func (mat *Material) SetColors(diffuse, specular color.Color) {
 	mat.DiffuseColor = diffuse
 	mat.SpecularColor = specular
+}
+
+func (mat *Material) SetShinyness(specularExponent float32) {
+	MISE := MIN_SPECULAR_EXPONENT
+	MASE := MAX_SPECULAR_EXPONENT
+	y := math.Max(float64(specularExponent), 0.0)
+
+	highNumber := -1.0 * math.Log((y-MISE)/MASE+1.0) / 3.0
+	x := math.Pow(math.E, highNumber)
+
+	mat.Shinyness = float32(math.Max(x, 0.0))
 }
 
 func ColorToVec3(c color.Color) mgl32.Vec3 {
