@@ -13,10 +13,9 @@ func (this *TestScene2) Init() {
 	gohome.InitDefaultValues()
 	gohome.FPSLimit.MaxFPS = 1000
 
-	gohome.ResourceMgr.PreloadTexture("Image", "image.tga")
-	gohome.ResourceMgr.PreloadShader("3D Simple", "vertex3dNoShadows.glsl", "fragment3dSimple.glsl", "", "", "", "")
-	gohome.ResourceMgr.PreloadLevel("Kratos", "Kratos.obj", true)
-	gohome.ResourceMgr.LoadPreloadedResources()
+	gohome.ResourceMgr.LoadTexture("Image", "image.tga")
+	gohome.ResourceMgr.LoadShader("3D Simple", "vertex3dNoShadows.glsl", "fragment3dSimple.glsl", "", "", "", "")
+	gohome.ResourceMgr.LoadLevel("Kratos", "Kratos.obj", true)
 
 	// this.box.InitMesh(gohome.Box("Box", [3]float32{1.0, 1.0, 1.0}), &this.boxTobj)
 	if gohome.ResourceMgr.GetLevel("Kratos") != nil {
@@ -34,8 +33,8 @@ func (this *TestScene2) Init() {
 }
 
 func (this *TestScene2) Update(delta_time float32) {
-	this.boxTobj.Rotation[1] += 30.0 * delta_time
-	this.boxTobj.Rotation[0] += 30.0 * delta_time
+	// this.boxTobj.Rotation[1] += 30.0 * delta_time
+	// this.boxTobj.Rotation[0] += 30.0 * delta_time
 }
 
 func (this *TestScene2) Terminate() {

@@ -10,6 +10,9 @@ func loadFile(path string, objLoader *OBJLoader) error {
 	if err != nil {
 		return err
 	}
+	objLoader.SetDirectory(gohome.GetPathFromFile(path))
+	objLoader.SetOpenMaterialFile(gohome.Framew.OpenFile)
+	objLoader.SetMaterialPaths(gohome.MATERIAL_PATHS[:])
 	err1 := objLoader.LoadReader(reader)
 	if err1 != nil {
 		return err1
@@ -74,6 +77,64 @@ func toMesh3DVertex(vertex *OBJVertex) gohome.Mesh3DVertex {
 	return rv
 }
 
+func toGohomeColor(color OBJColor) *gohome.Color {
+	var rv gohome.Color
+	rv.R = uint8(color[0] * 255.0)
+	rv.G = uint8(color[1] * 255.0)
+	rv.B = uint8(color[2] * 255.0)
+	rv.A = 255
+	return &rv
+}
+
+func loadMaterialTexture(path string) {
+	for i := 0; i < len(gohome.TEXTURE_PATHS); i++ {
+		gohome.ResourceMgr.LoadTexture(path, gohome.TEXTURE_PATHS[i]+path)
+		if gohome.ResourceMgr.GetTexture(path) == nil {
+			gohome.ResourceMgr.LoadTexture(path, gohome.TEXTURE_PATHS[i]+gohome.GetFileFromPath(path))
+			if gohome.ResourceMgr.GetTexture(path) != nil {
+				return
+			}
+		} else {
+			return
+		}
+	}
+	for i := 0; i < len(gohome.MATERIAL_PATHS); i++ {
+		gohome.ResourceMgr.LoadTexture(path, gohome.MATERIAL_PATHS[i]+path)
+		if gohome.ResourceMgr.GetTexture(path) == nil {
+			gohome.ResourceMgr.LoadTexture(path, gohome.MATERIAL_PATHS[i]+gohome.GetFileFromPath(path))
+			if gohome.ResourceMgr.GetTexture(path) != nil {
+				return
+			}
+		} else {
+			return
+		}
+	}
+}
+
+func processMaterial(material *gohome.Material, mat *OBJMaterial, preloaded, loadToGPU bool) {
+	material.Name = mat.Name
+	material.DiffuseColor = toGohomeColor(mat.DiffuseColor)
+	material.SpecularColor = toGohomeColor(mat.SpecularColor)
+	material.Shinyness = 1.0 - mat.SpecularExponent/100.0
+	if !preloaded {
+		if loadToGPU {
+			if mat.DiffuseTexture != "" {
+				loadMaterialTexture(mat.DiffuseTexture)
+				material.DiffuseTexture = gohome.ResourceMgr.GetTexture(mat.DiffuseTexture)
+			}
+			if mat.SpecularTexture != "" {
+				loadMaterialTexture(mat.SpecularTexture)
+				material.SpecularTexture = gohome.ResourceMgr.GetTexture(mat.SpecularTexture)
+			}
+			if mat.NormalMap != "" {
+				loadMaterialTexture(mat.NormalMap)
+				material.NormalMap = gohome.ResourceMgr.GetTexture(mat.NormalMap)
+			}
+		}
+	}
+
+}
+
 func processMesh(mesh3d gohome.Mesh3D, mesh *OBJMesh, preloaded, loadToGPU bool) {
 	var vertices []gohome.Mesh3DVertex
 	vertices = make([]gohome.Mesh3DVertex, len(mesh.Vertices))
@@ -82,10 +143,14 @@ func processMesh(mesh3d gohome.Mesh3D, mesh *OBJMesh, preloaded, loadToGPU bool)
 	}
 	var mat gohome.Material
 	mat.InitDefault()
+	processMaterial(&mat, mesh.Material, preloaded, loadToGPU)
 	mesh3d.SetMaterial(&mat)
 	mesh3d.AddVertices(vertices, mesh.Indices)
-	if loadToGPU {
-		mesh3d.Load()
+	if !preloaded {
+		if loadToGPU {
+			mesh3d.Load()
+			log.Println("Finished loading mesh", mesh3d.GetName(), "V:", mesh3d.GetNumVertices(), "I:", mesh3d.GetNumIndices())
+		}
 	}
 }
 

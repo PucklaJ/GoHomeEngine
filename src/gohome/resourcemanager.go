@@ -39,6 +39,16 @@ var (
 		"assets/models/",
 		"assets/levels/",
 	}
+	MATERIAL_PATHS = [8]string{
+		"",
+		"models/",
+		"levels/",
+		"assets/",
+		"assets/models/",
+		"assets/levels/",
+		"materials/",
+		"assets/materials/",
+	}
 )
 
 type ResourceManager struct {
@@ -66,6 +76,14 @@ func GetFileFromPath(path string) string {
 		return path[index+1:]
 	} else {
 		return path
+	}
+}
+
+func GetPathFromFile(path string) string {
+	if index := strings.LastIndex(path, "/"); index != -1 {
+		return path[:index+1]
+	} else {
+		return ""
 	}
 }
 

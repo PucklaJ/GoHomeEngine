@@ -49,6 +49,7 @@ func (this Color) RGBA() (uint32, uint32, uint32, uint32) {
 }
 
 type Material struct {
+	Name          string
 	DiffuseColor  color.Color
 	SpecularColor color.Color
 
@@ -64,6 +65,7 @@ type Material struct {
 }
 
 func (mat *Material) InitDefault() {
+	mat.Name = "Default"
 	mat.DiffuseColor = &Color{255, 255, 255, 255}
 	mat.SpecularColor = &Color{255, 255, 255, 255}
 

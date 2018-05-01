@@ -4,6 +4,7 @@ import (
 	"bytes"
 	// "fmt"
 	"io"
+	"log"
 	"os"
 	"strconv"
 	"strings"
@@ -33,13 +34,24 @@ func (this *OBJVertex) Equals(other *OBJVertex) bool {
 	return true
 }
 
+type OBJColor [3]float32
+
 type OBJMaterial struct {
+	Name             string
+	DiffuseColor     OBJColor
+	SpecularColor    OBJColor
+	Transperancy     float32
+	SpecularExponent float32
+	DiffuseTexture   string
+	SpecularTexture  string
+	NormalMap        string
 }
 
 type OBJMesh struct {
 	Name     string
 	Vertices []OBJVertex
 	Indices  []uint32
+	Material *OBJMaterial
 }
 
 type OBJModel struct {
@@ -55,15 +67,24 @@ func (this *OBJError) Error() string {
 	return this.errorString
 }
 
-type OBJLoader struct {
-	Models []OBJModel
+type MTLLoader struct {
+	Materials       []OBJMaterial
+	currentMaterial *OBJMaterial
+}
 
-	positions       [][3]float32
-	texCoords       [][2]float32
-	normals         [][3]float32
-	faceMethod      uint8
-	normalsLoaded   bool
-	texCoordsLoaded bool
+type OBJLoader struct {
+	Models         []OBJModel
+	MaterialLoader MTLLoader
+
+	positions        [][3]float32
+	texCoords        [][2]float32
+	normals          [][3]float32
+	faceMethod       uint8
+	normalsLoaded    bool
+	texCoordsLoaded  bool
+	materialPaths    []string
+	openMaterialFile func(path string) (io.ReadCloser, error)
+	directory        string
 }
 
 func (this *OBJLoader) Load(path string) error {
@@ -71,6 +92,7 @@ func (this *OBJLoader) Load(path string) error {
 	if err != nil {
 		return err
 	}
+	this.directory = getPathFromFile(path)
 	return this.LoadReader(reader)
 }
 
@@ -91,6 +113,18 @@ func (this *OBJLoader) LoadReader(reader io.ReadCloser) error {
 	reader.Close()
 
 	return nil
+}
+
+func (this *OBJLoader) SetMaterialPaths(paths []string) {
+	this.materialPaths = paths
+}
+
+func (this *OBJLoader) SetOpenMaterialFile(function func(path string) (io.ReadCloser, error)) {
+	this.openMaterialFile = function
+}
+
+func (this *OBJLoader) SetDirectory(dir string) {
+	this.directory = dir
 }
 
 func readLine(reader io.Reader, prevOverFlow []byte) (string, []byte, error) {
@@ -173,6 +207,57 @@ func toTokens(line string) []string {
 	return tokensString
 }
 
+func getFileFromPath(path string) string {
+	if index := strings.LastIndex(path, "/"); index != -1 {
+		return path[index+1:]
+	} else {
+		return path
+	}
+}
+
+func getPathFromFile(path string) string {
+	if index := strings.LastIndex(path, "/"); index != -1 {
+		return path[:index+1]
+	} else {
+		return ""
+	}
+}
+
+func (this *OBJLoader) loadMaterialFile(path string) error {
+	var err error
+	var reader io.ReadCloser
+
+	if len(this.materialPaths) == 0 {
+		this.materialPaths = append(this.materialPaths, "")
+	}
+	if this.openMaterialFile == nil {
+		this.openMaterialFile = func(path string) (io.ReadCloser, error) {
+			return os.Open(path)
+		}
+	}
+	for i := 0; i < len(this.materialPaths); i++ {
+		reader, err = this.openMaterialFile(this.directory + path)
+		if err != nil {
+			reader, err = this.openMaterialFile(this.directory + getFileFromPath(path))
+			if err != nil {
+				reader, err = this.openMaterialFile(this.materialPaths[i] + path)
+				if err != nil {
+					reader, err = this.openMaterialFile(this.materialPaths[i] + getFileFromPath(path))
+				}
+			}
+		}
+		if err == nil {
+			err = this.MaterialLoader.LoadReader(reader)
+			if err != nil {
+				return err
+			}
+			break
+		}
+	}
+
+	return err
+}
+
 func (this *OBJLoader) processTokens(tokens []string) {
 	length := len(tokens)
 
@@ -186,10 +271,16 @@ func (this *OBJLoader) processTokens(tokens []string) {
 		}
 	} else if length == 3 {
 		if tokens[0] == "vt" {
-			this.texCoords = append(this.texCoords, process2Floats(tokens[1:length]))
+			uv := process2Floats(tokens[1:length])
+			uv[1] = 1.0 - uv[1]
+			this.texCoords = append(this.texCoords, uv)
 		}
 	} else if length == 2 {
-		if tokens[0] == "o" {
+		if tokens[0] == "mtllib" {
+			if err := this.loadMaterialFile(tokens[1]); err != nil {
+				log.Println("Couldn't load material file", tokens[1], ":", err)
+			}
+		} else if tokens[0] == "o" {
 			this.Models = append(this.Models, OBJModel{Name: tokens[1]})
 		} else if tokens[0] == "usemtl" {
 			this.Models[len(this.Models)-1].Meshes = append(this.Models[len(this.Models)-1].Meshes, OBJMesh{})
@@ -198,8 +289,19 @@ func (this *OBJLoader) processTokens(tokens []string) {
 	}
 }
 
+func (this *OBJLoader) getMaterial(name string) *OBJMaterial {
+	for i := 0; i < len(this.MaterialLoader.Materials); i++ {
+		if this.MaterialLoader.Materials[i].Name == name {
+			return &this.MaterialLoader.Materials[i]
+		}
+	}
+
+	return nil
+}
+
 func (this *OBJLoader) processMaterial(token string) {
 	this.Models[len(this.Models)-1].Meshes[len(this.Models[len(this.Models)-1].Meshes)-1].Name = token
+	this.Models[len(this.Models)-1].Meshes[len(this.Models[len(this.Models)-1].Meshes)-1].Material = this.getMaterial(token)
 }
 
 func (this *OBJLoader) processFace(tokens []string) error {
@@ -371,4 +473,86 @@ func process2Floats(tokens []string) [2]float32 {
 	}
 
 	return rv
+}
+
+func process1Float(tokens string) float32 {
+	var rv float32
+	var temp float64
+	var err error
+
+	temp, err = strconv.ParseFloat(tokens, 32)
+	if err != nil {
+		return 0.0
+	}
+	rv = float32(temp)
+
+	return rv
+}
+
+func (this *MTLLoader) Load(path string) error {
+	file, err := os.Open(path)
+	if err != nil {
+		return err
+	}
+	return this.LoadReader(file)
+}
+
+func (this *MTLLoader) LoadReader(reader io.ReadCloser) error {
+	var prevOverFlow []byte
+	var err error
+	var line string
+
+	for err != io.EOF || len(prevOverFlow) != 0 {
+		line, prevOverFlow, err = readLine(reader, prevOverFlow)
+		if err != nil && err != io.EOF {
+			return err
+		}
+		if line != "" {
+			this.processTokens(toTokens(line))
+		}
+	}
+	reader.Close()
+
+	return nil
+}
+
+func (this *MTLLoader) checkCurrentMaterial() {
+	if this.currentMaterial == nil {
+		this.Materials = append(this.Materials, OBJMaterial{Name: "Default"})
+		this.currentMaterial = &this.Materials[len(this.Materials)-1]
+	}
+}
+
+func (this *MTLLoader) processTokens(tokens []string) {
+	length := len(tokens)
+
+	if length == 2 {
+		if tokens[0] == "newmtl" {
+			this.Materials = append(this.Materials, OBJMaterial{Name: tokens[1]})
+			this.currentMaterial = &this.Materials[len(this.Materials)-1]
+		} else if tokens[0] == "Ns" {
+			this.checkCurrentMaterial()
+			this.currentMaterial.SpecularExponent = process1Float(tokens[1])
+		} else if tokens[0] == "d" {
+			this.checkCurrentMaterial()
+			this.currentMaterial.Transperancy = process1Float(tokens[1])
+		} else if tokens[0] == "map_Kd" {
+			this.checkCurrentMaterial()
+			this.currentMaterial.DiffuseTexture = tokens[1]
+		} else if tokens[0] == "map_Ks" {
+			this.checkCurrentMaterial()
+			this.currentMaterial.SpecularTexture = tokens[1]
+		} else if tokens[0] == "norm" {
+			this.checkCurrentMaterial()
+			this.currentMaterial.NormalMap = tokens[1]
+		}
+	} else if length == 4 {
+		if tokens[0] == "Kd" {
+			this.checkCurrentMaterial()
+			this.currentMaterial.DiffuseColor = process3Floats(tokens[1:])
+		} else if tokens[0] == "Ks" {
+			this.checkCurrentMaterial()
+			this.currentMaterial.SpecularColor = process3Floats(tokens[1:])
+		}
+	}
 }
