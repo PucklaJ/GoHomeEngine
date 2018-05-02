@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if [ -z ${GOPATH+x} ]
 then
@@ -12,10 +12,19 @@ then
 	exit 1
 fi
 
+PKG_CONFIG_PATH=$PKG_CONFIG_PATH:$GOPATH/src/github.com/PucklaMotzer09/gohomeengine/deps/pkg/linux
+
 wantInstall=0
 wantRun=0
 wantHelp=0
 placedPath=""
+scriptDir=$(dirname "$0")
+scriptDir=${scriptDir#${GOPATH}"/src/"}
+topDirectory=${scriptDir#*/}
+for i in {1..20}
+do
+topDirectory=${topDirectory#*/}
+done
 
 for arg in "$@"
 do
@@ -46,7 +55,7 @@ echo "Compiling ..."
 if	[ $wantInstall -eq 1 ]
 then
 	exitCode=1
-	$GOROOT/bin/go install github.com/PucklaMotzer09/gohomeengine && exitCode=0
+	$GOROOT/bin/go install $scriptDir && exitCode=0
 	if [ $exitCode  -eq 0 ]
 	then
 		placedPath="$GOPATH/bin"
@@ -55,7 +64,7 @@ then
 	fi
 else
 	exitCode=1
-	$GOROOT/bin/go build github.com/PucklaMotzer09/gohomeengine && exitCode=0
+	$GOROOT/bin/go build $scriptDir  && exitCode=0
 	if [ $exitCode -eq 0 ]
 	then
 		placedPath=$("pwd")
@@ -70,7 +79,7 @@ if [ $wantRun -eq 1 ]
 then
 	echo Running ...
 	exitCode=1
-	$placedPath/gohomeengine && exitCode=0
+	$placedPath/$topDirectory && exitCode=0
 	exit $exitCode
 fi
 
