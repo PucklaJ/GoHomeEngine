@@ -55,16 +55,15 @@ uniform struct Material
 	vec3 diffuseColor;
 	vec3 specularColor;
 
-	sampler2D diffuseTexture;
-	sampler2D specularTexture;
-	sampler2D normalMap;
-
 	bool DiffuseTextureLoaded;
 	bool SpecularTextureLoaded;
 	bool NormalMapLoaded;
 
 	float shinyness;
 } material;
+uniform sampler2D materialdiffuseTexture;
+uniform sampler2D materialspecularTexture;
+uniform sampler2D materialnormalMap;
 
 void calculatePointLight(PointLight pl);
 void calculateDirectionalLight(DirectionalLight pl);
@@ -115,12 +114,12 @@ void calculateAllLights()
 
 vec4 getDiffuseTexture()
 {
-	return mix(vec4(1.0,1.0,1.0,1.0),texture2D(material.diffuseTexture,fragTexCoord),material.DiffuseTextureLoaded ? 1.0 : 0.0);
+	return mix(vec4(1.0,1.0,1.0,1.0),texture2D(materialdiffuseTexture,fragTexCoord),material.DiffuseTextureLoaded ? 1.0 : 0.0);
 }
 
 vec4 getSpecularTexture()
 {
-	return mix(vec4(1.0,1.0,1.0,1.0),texture2D(material.specularTexture,fragTexCoord),material.SpecularTextureLoaded ? 1.0 : 0.0);
+	return mix(vec4(1.0,1.0,1.0,1.0),texture2D(materialspecularTexture,fragTexCoord),material.SpecularTextureLoaded ? 1.0 : 0.0);
 }
 
 void calculateLightColors()
@@ -456,7 +455,7 @@ float calculateShinyness(float shinyness)
 
 void setVariables()
 {
-	norm = mix(normalize(fragToTangentSpace*fragNormal),normalize(2.0*(texture2D(material.normalMap,fragTexCoord)).xyz-1.0),material.NormalMapLoaded ? 1.0 : 0.0);
+	norm = mix(normalize(fragToTangentSpace*fragNormal),normalize(2.0*(texture2D(materialnormalMap,fragTexCoord)).xyz-1.0),material.NormalMapLoaded ? 1.0 : 0.0);
 	viewDir = normalize((fragToTangentSpace*(fragPos*-1.0)));
 }
 

@@ -451,13 +451,13 @@ func (s *OpenGLESShader) SetUniformMaterial(mat gohome.Material) error {
 	if err = s.SetUniformV3(gohome.MATERIAL_UNIFORM_NAME+"."+gohome.MATERIAL_SPECULAR_COLOR_UNIFORM_NAME, gohome.ColorToVec3(mat.SpecularColor)); err != nil {
 		// return err
 	}
-	if err = s.SetUniformI(gohome.MATERIAL_UNIFORM_NAME+"."+gohome.MATERIAL_DIFFUSE_TEXTURE_UNIFORM_NAME, diffBind); err != nil {
+	if err = s.SetUniformI(gohome.MATERIAL_UNIFORM_NAME+gohome.MATERIAL_DIFFUSE_TEXTURE_UNIFORM_NAME, diffBind); err != nil {
 		// return err
 	}
-	if err = s.SetUniformI(gohome.MATERIAL_UNIFORM_NAME+"."+gohome.MATERIAL_SPECULAR_TEXTURE_UNIFORM_NAME, specBind); err != nil {
+	if err = s.SetUniformI(gohome.MATERIAL_UNIFORM_NAME+gohome.MATERIAL_SPECULAR_TEXTURE_UNIFORM_NAME, specBind); err != nil {
 		// return err
 	}
-	if err = s.SetUniformI(gohome.MATERIAL_UNIFORM_NAME+"."+gohome.MATERIAL_NORMALMAP_UNIFORM_NAME, normBind); err != nil {
+	if err = s.SetUniformI(gohome.MATERIAL_UNIFORM_NAME+gohome.MATERIAL_NORMALMAP_UNIFORM_NAME, normBind); err != nil {
 		// return err
 	}
 	if err = s.SetUniformF(gohome.MATERIAL_UNIFORM_NAME+"."+gohome.MATERIAL_SHINYNESS_UNIFORM_NAME, mat.Shinyness); err != nil {
@@ -480,13 +480,13 @@ func (s *OpenGLESShader) SetUniformMaterial(mat gohome.Material) error {
 func (s *OpenGLESShader) SetUniformLights(lightCollectionIndex int32) error {
 	if lightCollectionIndex == -1 || lightCollectionIndex > int32(len(gohome.LightMgr.LightCollections)-1) {
 		var err error
-		if err = s.SetUniformUI(gohome.NUM_POINT_LIGHTS_UNIFORM_NAME, 0); err != nil {
+		if err = s.SetUniformI(gohome.NUM_POINT_LIGHTS_UNIFORM_NAME, 0); err != nil {
 			// return err
 		}
-		if err = s.SetUniformUI(gohome.NUM_DIRECTIONAL_LIGHTS_UNIFORM_NAME, 0); err != nil {
+		if err = s.SetUniformI(gohome.NUM_DIRECTIONAL_LIGHTS_UNIFORM_NAME, 0); err != nil {
 			// return err
 		}
-		if err = s.SetUniformUI(gohome.NUM_SPOT_LIGHTS_UNIFORM_NAME, 0); err != nil {
+		if err = s.SetUniformI(gohome.NUM_SPOT_LIGHTS_UNIFORM_NAME, 0); err != nil {
 			// return err
 		}
 
@@ -499,13 +499,13 @@ func (s *OpenGLESShader) SetUniformLights(lightCollectionIndex int32) error {
 	lightColl := gohome.LightMgr.LightCollections[lightCollectionIndex]
 
 	var err error
-	if err = s.SetUniformUI(gohome.NUM_POINT_LIGHTS_UNIFORM_NAME, uint32(len(lightColl.PointLights))); err != nil {
+	if err = s.SetUniformI(gohome.NUM_POINT_LIGHTS_UNIFORM_NAME, int32(len(lightColl.PointLights))); err != nil {
 		// return err
 	}
-	if err = s.SetUniformUI(gohome.NUM_DIRECTIONAL_LIGHTS_UNIFORM_NAME, uint32(len(lightColl.DirectionalLights))); err != nil {
+	if err = s.SetUniformI(gohome.NUM_DIRECTIONAL_LIGHTS_UNIFORM_NAME, int32(len(lightColl.DirectionalLights))); err != nil {
 		// return err
 	}
-	if err = s.SetUniformUI(gohome.NUM_SPOT_LIGHTS_UNIFORM_NAME, uint32(len(lightColl.SpotLights))); err != nil {
+	if err = s.SetUniformI(gohome.NUM_SPOT_LIGHTS_UNIFORM_NAME, int32(len(lightColl.SpotLights))); err != nil {
 		// return err
 	}
 
