@@ -10,6 +10,15 @@ A game engine for 2D and 3D games written in go
   -[bindings](https://github.com/go-gl/glfw)
 - [tga](https://github.com/blezek/tga)
 
+## Platforms
+
+* Windows
+* Linux (Ubuntu)
+* Mac (not tested) 
+* Android
+* iOS (not tested) 
+
+
 ## Features
 
 #### General
