@@ -1,3 +1,5 @@
+#!/bin/sh
+
 if [ -z ${GOPATH+x} ]
 then
 	echo GOPATH is not set

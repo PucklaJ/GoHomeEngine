@@ -477,10 +477,9 @@ func getFocusedMonitor(window *glfw.Window) *glfw.Monitor {
 
 	if maxIndex == -1 {
 		return nil
-	} else {
-		return glfw.GetMonitors()[maxIndex]
 	}
 
+	return glfw.GetMonitors()[maxIndex]
 }
 
 func (gfw *GLFWFramework) WindowIsFullscreen() bool {

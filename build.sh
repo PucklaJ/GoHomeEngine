@@ -1,3 +1,5 @@
+#!/bin/sh
+
 platform="desktop"
 
 for arg in "$@"
