@@ -9,3 +9,17 @@ A game engine for 2D and 3D games written in go
 - [glfw](https://github.com/glfw/glfw)
   -[bindings](https://github.com/go-gl/glfw)
 - [tga](https://github.com/blezek/tga)
+
+## Features
+
+#### General
+* Loading Shaders
+* Multiple Viewports
+
+#### 3D
+* Rendering 3D Models
+* Camera
+#### 2D
+* Rendering 2D Sprites
+* Camera (Translating, Rotating and Zooming) 
+
