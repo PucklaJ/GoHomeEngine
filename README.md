@@ -21,7 +21,7 @@ A game engine for 2D and 3D games written in go
 
 * Windows
 * Linux (Ubuntu)
-* Mac (not tested) 
+* Mac (not tested)
 * Android
 * iOS (not tested) 
 

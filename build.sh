@@ -1,20 +1,24 @@
 #!/bin/bash
 
-platform="desktop"
+platform=""
 
 for arg in "$@"
 do
-	if [ "$arg" = "-desktop" ]
+	if [ "$arg" = "-windows" ]
 	then
-		platform="desktop"
+		platform="windows"
 	elif [ "$arg" = "-android" ]
 	then
 		platform="android"
+	elif [ "$arg" = "-linux" ]
+	then
+		platform="linux"
 	elif [ "$arg" = "-help" ]
 	then
 		echo build.sh [options]
 		echo options:
-		echo -desktop: compiles for linux
+		echo -windows: compiles for windows
+		echo -linux: compiles for linux
 		echo -android: compiles for android
 		echo ""
 		echo "-install: uses go install (-desktop only)"
@@ -23,10 +27,19 @@ do
 	fi
 done
 
-if [ $platform = "desktop" ]
+if [ "$platform" = "" ]
 then
-	sh $(dirname "$0")/build_linux.sh "$@"
+	$(dirname "$0")/build.sh -help
+	exit 0
+fi
+
+if [ $platform = "linux" ]
+then
+	bash $(dirname "$0")/build_linux.sh "$@"
+elif [ $platform = "windows" ]
+then
+	bash $(dirname "$0")/build_windows.sh "$@"
 elif [ $platform = "android" ]
 then
-	sh $(dirname "$0")/build_android.sh "$@"
+	bash $(dirname "$0")/build_android.sh "$@"
 fi
