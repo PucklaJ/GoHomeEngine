@@ -1,6 +1,8 @@
 # GoHomeEngine
 [![godoc](https://godoc.org/github.com/PucklaMotzer09/gohomeengine/src/gohome?status.svg)](https://godoc.org/github.com/PucklaMotzer09/gohomeengine/src/gohome)
-[![AUR](https://img.shields.io/aur/license/yaourt.svg)](https://github.com/PucklaMotzer09/GoHomeEngine/blob/master/LICENSE.md)
+[![License: Zlib](https://img.shields.io/badge/License-Zlib-green.svg)](https://github.com/PucklaMotzer09/GoHomeEngine/blob/master/LICENSE.md)
+[![GitHub last commit](https://img.shields.io/github/last-commit/PucklaMotzer09/GoHomeEngine.svg)](https://github.com/PucklaMotzer09/GoHomeEngine/commits/master)
+![GitHub repo size in bytes](https://img.shields.io/github/repo-size/PucklaMotzer09/GoHomeEngine.svg)
 <br>
 A game engine for 2D and 3D games written in go
 
