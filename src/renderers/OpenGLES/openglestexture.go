@@ -61,7 +61,7 @@ func printOGLESTexture2DError(ogltex *OpenGLESTexture, data []byte, width, heigh
 			errString = "Invalid Operation"
 		}
 
-		log.Println("Error loading texture data:", err, errString)
+		log.Println("Error loading texture data of", ogltex.name, ":", err, errString)
 	}
 }
 

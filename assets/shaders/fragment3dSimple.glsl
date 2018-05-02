@@ -55,12 +55,11 @@ uniform struct Material
 	vec3 diffuseColor;
 	vec3 specularColor;
 
-	sampler2D diffuseTexture;
-
 	bool DiffuseTextureLoaded;
 
 	float shinyness;
 } material;
+uniform sampler2D materialdiffuseTexture;
 
 void calculatePointLight(PointLight pl);
 void calculateDirectionalLight(DirectionalLight pl);
@@ -111,7 +110,7 @@ void calculateAllLights()
 
 vec4 getDiffuseTexture()
 {
-	return mix(vec4(1.0,1.0,1.0,1.0),texture2D(material.diffuseTexture,fragTexCoord),material.DiffuseTextureLoaded ? 1.0 : 0.0);
+	return mix(vec4(1.0,1.0,1.0,1.0),texture2D(materialdiffuseTexture,fragTexCoord),material.DiffuseTextureLoaded ? 1.0 : 0.0);
 }
 
 vec4 getSpecularTexture()
