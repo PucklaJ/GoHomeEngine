@@ -130,6 +130,10 @@ func loadMaterialTexture(path string, preloaded bool) gohome.Texture {
 }
 
 func processMaterial(material *gohome.Material, mat *OBJMaterial, preloaded, loadToGPU bool) {
+	if mat == nil {
+		material.InitDefault()
+		return
+	}
 	material.Name = mat.Name
 	material.DiffuseColor = toGohomeColor(mat.DiffuseColor)
 	material.SpecularColor = toGohomeColor(mat.SpecularColor)

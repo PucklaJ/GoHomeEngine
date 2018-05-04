@@ -74,5 +74,5 @@ func (this *TestScene2) Update(delta_time float32) {
 }
 
 func (this *TestScene2) Terminate() {
-
+	this.kratosEnt.Terminate()
 }

@@ -91,6 +91,7 @@ func (this *TestScene) Init() {
 	this.oakTreeMesh.AddVertices(normalOakTreeMesh.GetVertices(), normalOakTreeMesh.GetIndices())
 	this.oakTreeMesh.AddValue(gohome.VALUE_MAT4)
 	this.oakTreeMesh.SetNumInstances(NUM_PLANES * NUM_PLANES)
+	this.oakTreeMesh.SetName(0, gohome.VALUE_MAT4, "transformMatrix3D")
 	this.oakTreeMesh.Load()
 	this.oakTrees.Model3D.GetMesh("Pine").GetMaterial().DiffuseTexture = gohome.ResourceMgr.GetTexture("Pine")
 	this.oakTrees.SetShader(gohome.ResourceMgr.GetShader("Instanced3D"))
@@ -103,14 +104,14 @@ func (this *TestScene) Init() {
 		DiffuseColor:   colornames.Khaki,
 		SpecularColor:  colornames.Yellow,
 		Direction:      [3]float32{1.0, -1.0, 0.0},
-		CastsShadows:   1,
+		CastsShadows:   0,
 		ShadowDistance: 50.0,
 	}
 	this.direct1 = gohome.DirectionalLight{
 		DiffuseColor:   colornames.Lime,
 		SpecularColor:  colornames.Azure,
 		Direction:      [3]float32{1.0, -100000000.0, 0.0},
-		CastsShadows:   1,
+		CastsShadows:   0,
 		ShadowDistance: 50.0,
 	}
 	this.spot = gohome.SpotLight{
@@ -123,7 +124,7 @@ func (this *TestScene) Init() {
 		Attentuation: gohome.Attentuation{
 			Constant: 1.0,
 		},
-		CastsShadows: 1,
+		CastsShadows: 0,
 	}
 	this.spot.InitShadowmap(1024, 1024)
 	this.direct.InitShadowmap(gohome.DEFAULT_DIRECTIONAL_LIGHTS_SHADOWMAP_SIZE, gohome.DEFAULT_DIRECTIONAL_LIGHTS_SHADOWMAP_SIZE)

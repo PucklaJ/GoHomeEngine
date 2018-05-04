@@ -281,12 +281,37 @@ func (this *OpenGLESInstancedMesh3D) Render() {
 	}
 }
 
+func (this *OpenGLESInstancedMesh3D) deleteInstancedValues() {
+	if len(this.floats) != 0 {
+		this.floats = this.floats[len(this.floats)-1 : 0]
+	}
+	if len(this.vec2s) != 0 {
+		this.vec2s = this.vec2s[len(this.vec2s)-1 : 0]
+	}
+	if len(this.vec3s) != 0 {
+		this.vec3s = this.vec3s[len(this.vec3s)-1 : 0]
+	}
+	if len(this.vec4s) != 0 {
+		this.vec4s = this.vec4s[len(this.vec4s)-1 : 0]
+	}
+	if len(this.mat2s) != 0 {
+		this.mat2s = this.mat2s[len(this.mat2s)-1 : 0]
+	}
+	if len(this.mat3s) != 0 {
+		this.mat3s = this.mat3s[len(this.mat3s)-1 : 0]
+	}
+	if len(this.mat4s) != 0 {
+		this.mat4s = this.mat4s[len(this.mat4s)-1 : 0]
+	}
+}
+
 func (this *OpenGLESInstancedMesh3D) Terminate() {
 	if this.isgles3 {
 		defer (*this.gles).DeleteVertexArray(this.vao)
 	}
 	defer (*this.gles).DeleteBuffer(this.vbo)
 	defer (*this.gles).DeleteBuffer(this.ibo)
+	defer this.deleteInstancedValues()
 }
 
 func (this *OpenGLESInstancedMesh3D) SetMaterial(mat *gohome.Material) {

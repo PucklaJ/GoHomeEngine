@@ -59,13 +59,13 @@ func (this *OpenGLESRenderTexture) loadTextures(width, height, textures uint32, 
 		}
 		if this.shadowMap {
 			if cubeMap {
-				(*this.gles).FramebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.TEXTURE_CUBE_MAP_POSITIVE_X, oglcubemap.oglName, 0)
+				(*this.gles).FramebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0+gl.Enum(i), gl.TEXTURE_CUBE_MAP_POSITIVE_X, oglcubemap.oglName, 0)
 				if err := CheckOpenGLESError((*this.gles), "Couldn't add depth cubemap to framebuffer: "+this.Name+":"); err != nil {
 					log.Println(err)
 					return
 				}
 			} else {
-				(*this.gles).FramebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, ogltex.bindingPoint(), ogltex.oglName, 0)
+				(*this.gles).FramebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0+gl.Enum(i), ogltex.bindingPoint(), ogltex.oglName, 0)
 				if err := CheckOpenGLESError((*this.gles), "Couldn't add depth texture to framebuffer: "+this.Name+":"); err != nil {
 					log.Println(err)
 					return
@@ -162,7 +162,7 @@ func (this *OpenGLESRenderTexture) Create(name string, width, height, textures u
 	this.loadRenderBuffer(width, height)
 	this.loadTextures(width, height, textures, cubeMap)
 	if (*this.gles).CheckFramebufferStatus(gl.FRAMEBUFFER) != gl.FRAMEBUFFER_COMPLETE {
-		log.Println("Error creating gohome.RenderTexture: Framebuffer is not complete")
+		log.Println("Error creating gohome.RenderTexture", this.Name, ": Framebuffer is not complete")
 		return
 	}
 	if err := CheckOpenGLESError((*this.gles), "Couldn't checking framebuffer status: "+name+":"); err != nil {
@@ -253,10 +253,16 @@ func (this *OpenGLESRenderTexture) UnbindIndex(index, unit uint32) {
 }
 
 func (this *OpenGLESRenderTexture) GetWidth() int {
+	if len(this.textures) == 0 {
+		return 0
+	}
 	return this.textures[0].GetWidth()
 }
 
 func (this *OpenGLESRenderTexture) GetHeight() int {
+	if len(this.textures) == 0 {
+		return 0
+	}
 	return this.textures[0].GetHeight()
 }
 

@@ -84,9 +84,11 @@ func (spr *Sprite2D) GetType() RenderType {
 }
 
 func (spr *Sprite2D) Render() {
-	spr.Texture.Bind(0)
-	sprite2DMesh.Render()
-	spr.Texture.Unbind(0)
+	if spr.Texture != nil {
+		spr.Texture.Bind(0)
+		sprite2DMesh.Render()
+		spr.Texture.Unbind(0)
+	}
 }
 
 func (spr *Sprite2D) Terminate() {

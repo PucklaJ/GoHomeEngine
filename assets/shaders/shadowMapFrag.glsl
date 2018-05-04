@@ -4,6 +4,7 @@ precision mediump float;
 precision mediump sampler2D;
 
 varying vec2 fragTexCoord;
+varying float fragDepth;
 
 uniform struct Material
 {
@@ -31,4 +32,8 @@ void main()
 	{
 		discard;
 	}
+
+	float depth = (fragDepth + 1.0) / 2.0;
+
+	gl_FragColor = vec4(depth,depth,depth,1.0);
 }
