@@ -556,3 +556,7 @@ func (this *OpenGLInstancedMesh3D) GetVertices() []gohome.Mesh3DVertex {
 func (this *OpenGLInstancedMesh3D) GetIndices() []uint32 {
 	return this.indices
 }
+
+func (this *OpenGLInstancedMesh3D) SetName(index uint32, value_type uint32, value string) {
+	// Nothing
+}
