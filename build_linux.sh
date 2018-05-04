@@ -18,7 +18,11 @@ wantInstall=0
 wantRun=0
 wantHelp=0
 placedPath=""
+prevPath=$("pwd")
 scriptDir=$(dirname "$0")
+cd $scriptDir
+scriptDir=$("pwd")
+cd $prevPath
 scriptDir=${scriptDir#${GOPATH}"/src/"}
 topDirectory=${scriptDir#*/}
 for i in {1..20}
@@ -79,6 +83,7 @@ if [ $wantRun -eq 1 ]
 then
 	echo Running ...
 	exitCode=1
+	echo Starting $placedPath/$topDirectory ...
 	$placedPath/$topDirectory && exitCode=0
 	exit $exitCode
 fi
