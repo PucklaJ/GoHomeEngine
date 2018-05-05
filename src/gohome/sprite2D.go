@@ -45,9 +45,7 @@ func createSprite2DMesh() {
 	sprite2DMesh.Load()
 }
 
-func (spr *Sprite2D) Init(texName string, transform *TransformableObject2D) {
-	spr.Texture = ResourceMgr.GetTexture(texName)
-
+func (spr *Sprite2D) commonInit(transform *TransformableObject2D) {
 	if spr.Texture != nil && transform != nil {
 		transform.Scale = [2]float32{1.0, 1.0}
 		transform.Size = [2]float32{float32(spr.Texture.GetWidth()), float32(spr.Texture.GetHeight())}
@@ -62,6 +60,16 @@ func (spr *Sprite2D) Init(texName string, transform *TransformableObject2D) {
 	spr.Visible = true
 	spr.NotRelativeToCamera = -1
 	spr.RenderType = TYPE_2D_NORMAL
+}
+
+func (spr *Sprite2D) Init(texName string, transform *TransformableObject2D) {
+	spr.Texture = ResourceMgr.GetTexture(texName)
+	spr.commonInit(transform)
+}
+
+func (spr *Sprite2D) InitTexture(texture Texture, transform *TransformableObject2D) {
+	spr.Texture = texture
+	spr.commonInit(transform)
 }
 
 func (spr *Sprite2D) SetShader(s Shader) {

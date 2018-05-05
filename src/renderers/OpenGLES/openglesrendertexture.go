@@ -4,6 +4,7 @@ import (
 	// "fmt"
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
 	"golang.org/x/mobile/gl"
+	"image"
 	"image/color"
 	"log"
 )
@@ -184,6 +185,10 @@ func (this *OpenGLESRenderTexture) Create(name string, width, height, textures u
 
 func (this *OpenGLESRenderTexture) Load(data []byte, width, height int, shadowMap bool) error {
 	return &OpenGLESError{errorString: "The Load method of RenderTexture is not used!"}
+}
+
+func (ogltex *OpenGLESRenderTexture) LoadFromImage(img image.Image) error {
+	return &OpenGLESError{errorString: "The LoadFromImage method of RenderTexture is not used!"}
 }
 
 func (this *OpenGLESRenderTexture) GetName() string {

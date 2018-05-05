@@ -4,9 +4,11 @@ import (
 	// "fmt"
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
 	"github.com/go-gl/gl/all-core/gl"
+	"image"
 	"image/color"
 	"log"
 	"strconv"
+	"sync"
 	"unsafe"
 )
 
@@ -115,6 +117,47 @@ func (ogltex *OpenGLTexture) Load(data []byte, width, height int, shadowMap bool
 
 	return nil
 
+}
+
+func loadImageData(img_data *[]byte, img image.Image, start_width, end_width, max_width, max_height uint32, wg *sync.WaitGroup) {
+	if wg != nil {
+		defer wg.Done()
+	}
+	var y uint32
+	var x uint32
+	var r, g, b, a uint32
+	var color color.Color
+	for x = start_width; x < max_width && x < end_width; x++ {
+		for y = 0; y < max_height; y++ {
+			color = img.At(int(x), int(y))
+			r, g, b, a = color.RGBA()
+			(*img_data)[(x+y*max_width)*4+0] = byte(float64(r) / float64(0xffff) * float64(255.0))
+			(*img_data)[(x+y*max_width)*4+1] = byte(float64(g) / float64(0xffff) * float64(255.0))
+			(*img_data)[(x+y*max_width)*4+2] = byte(float64(b) / float64(0xffff) * float64(255.0))
+			(*img_data)[(x+y*max_width)*4+3] = byte(float64(a) / float64(0xffff) * float64(255.0))
+		}
+	}
+}
+
+func (ogltex *OpenGLTexture) LoadFromImage(img image.Image) error {
+
+	width := img.Bounds().Size().X
+	height := img.Bounds().Size().Y
+
+	img_data := make([]byte, width*height*4)
+
+	var wg1 sync.WaitGroup
+	var i uint32
+	deltaWidth := uint32(width) / gohome.NUM_GO_ROUTINES_TEXTURE_LOADING
+	wg1.Add(int(gohome.NUM_GO_ROUTINES_TEXTURE_LOADING + 1))
+	for i = 0; i <= gohome.NUM_GO_ROUTINES_TEXTURE_LOADING; i++ {
+		go loadImageData(&img_data, img, i*deltaWidth, (i+1)*deltaWidth, uint32(width), uint32(height), &wg1)
+	}
+	wg1.Wait()
+
+	ogltex.Load(img_data, width, height, false)
+
+	return nil
 }
 
 func toTextureUnit(unit uint32) uint32 {

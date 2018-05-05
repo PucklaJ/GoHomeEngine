@@ -1,11 +1,13 @@
 package gohome
 
 import (
+	"image"
 	"image/color"
 )
 
 type CubeMap interface {
 	Load(data []byte, width, height int, shadowMap bool) error
+	LoadFromImage(img image.Image) error
 	Bind(unit uint32)
 	Unbind(unit uint32)
 	GetWidth() int

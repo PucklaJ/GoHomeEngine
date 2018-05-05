@@ -4,6 +4,7 @@ import (
 	// "fmt"
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
 	"golang.org/x/mobile/gl"
+	"image"
 	"image/color"
 	"log"
 	"strconv"
@@ -96,6 +97,10 @@ func (ogltex *OpenGLESTexture) Load(data []byte, width, height int, shadowMap bo
 
 	return nil
 
+}
+
+func (ogltex *OpenGLESTexture) LoadFromImage(img image.Image) error {
+	return nil
 }
 
 func (ogltex *OpenGLESTexture) Bind(unit uint32) {
