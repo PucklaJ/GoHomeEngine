@@ -125,7 +125,7 @@ func (this *MainLoop) Quit() {
 	}
 }
 
-func InitDefaultValues() {
+func Init3DShaders() {
 	ResourceMgr.LoadShader(ENTITY3D_SHADER_NAME, "vertex3d.glsl", "fragment3d.glsl", "", "", "", "")
 	if ResourceMgr.GetShader(ENTITY3D_SHADER_NAME) == nil {
 		ResourceMgr.LoadShader("3D No Shadows", "vertex3dNoShadows.glsl", "fragment3dNoShadows.glsl", "", "", "", "")
@@ -138,6 +138,15 @@ func InitDefaultValues() {
 			ResourceMgr.SetShader(ENTITY3D_SHADER_NAME, "3D No Shadows")
 		}
 	}
+}
 
+func Init2DShaders() {
 	ResourceMgr.LoadShader(SPRITE2D_SHADER_NAME, "vertex1.glsl", "fragment.glsl", "", "", "", "")
+}
+
+func InitDefaultValues() {
+	Init3DShaders()
+	Init2DShaders()
+
+	Render.SetBackgroundColor(Color{0, 0, 0, 255})
 }

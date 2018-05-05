@@ -142,7 +142,7 @@ func (this *OpenGLRenderTexture) GetName() string {
 
 func (this *OpenGLRenderTexture) SetAsTarget() {
 	gl.BindFramebuffer(gl.FRAMEBUFFER, this.fbo)
-	gohome.Render.ClearScreen(&gohome.Color{0, 0, 0, 0})
+	gohome.Render.ClearScreen(gohome.Render.GetBackgroundColor())
 	this.prevViewport = gohome.Render.GetViewport()
 	gohome.Render.SetViewport(this.viewport)
 }

@@ -192,7 +192,7 @@ func (this *OpenGLESRenderTexture) GetName() string {
 
 func (this *OpenGLESRenderTexture) SetAsTarget() {
 	(*this.gles).BindFramebuffer(gl.FRAMEBUFFER, this.fbo)
-	gohome.Render.ClearScreen(&gohome.Color{0, 0, 0, 0})
+	gohome.Render.ClearScreen(gohome.Render.GetBackgroundColor())
 	this.prevViewport = gohome.Render.GetViewport()
 	gohome.Render.SetViewport(this.viewport)
 }

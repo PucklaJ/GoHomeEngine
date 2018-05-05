@@ -8,8 +8,8 @@ type BasicScene struct {
 }
 
 func (this *BasicScene) Init() {
+	gohome.Init2DShaders()
 	gohome.ResourceMgr.LoadTexture("Gopher", "gopher.png")
-	gohome.ResourceMgr.LoadShader(gohome.SPRITE2D_SHADER_NAME, "vertex1.glsl", "fragment.glsl", "", "", "", "")
 
 	var gopher gohome.Sprite2D
 	var gopherTobj gohome.TransformableObject2D

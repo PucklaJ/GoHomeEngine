@@ -3,6 +3,7 @@ package renderer
 import (
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
 	"github.com/go-gl/gl/all-core/gl"
+	"log"
 	"unsafe"
 )
 
@@ -86,7 +87,12 @@ func (oglm *OpenGLMesh2D) Render() {
 		oglm.attributePointer()
 	}
 
+	gl.GetError()
 	gl.DrawElements(gl.TRIANGLES, int32(oglm.numIndices), gl.UNSIGNED_INT, nil)
+	err := gl.GetError()
+	if err != gl.NO_ERROR {
+		log.Println("Mesh2D Render Error:", oglm.Name, ":", err)
+	}
 
 	if oglm.canUseVAOs {
 		gl.BindVertexArray(0)

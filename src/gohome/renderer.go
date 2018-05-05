@@ -23,6 +23,8 @@ type Renderer interface {
 	OnResize(newWidth, newHeight uint32)
 	PreRender()
 	AfterRender()
+	SetBackgroundColor(bgColor color.Color)
+	GetBackgroundColor() color.Color
 
 	RenderBackBuffer()
 

@@ -385,7 +385,7 @@ func (rmgr *RenderManager) renderToScreen() {
 }
 
 func (rmgr *RenderManager) Update() {
-	Render.ClearScreen(Color{0, 0, 0, 255})
+	Render.ClearScreen(Render.GetBackgroundColor())
 	rmgr.render3D()
 	rmgr.render2D()
 	rmgr.renderBackBuffers()

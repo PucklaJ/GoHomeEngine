@@ -18,6 +18,7 @@ type OpenGLRenderer struct {
 
 	availableFunctions map[string]bool
 	backBufferMesh     *OpenGLMesh2D
+	backgroundColor    color.Color
 }
 
 func (this *OpenGLRenderer) createBackBufferMesh() {
@@ -356,4 +357,12 @@ func (this *OpenGLRenderer) FilterShaderFiles(name, file, shader_type string) st
 	}
 
 	return file
+}
+
+func (this *OpenGLRenderer) SetBackgroundColor(bgColor color.Color) {
+	this.backgroundColor = bgColor
+}
+
+func (this *OpenGLRenderer) GetBackgroundColor() color.Color {
+	return this.backgroundColor
 }

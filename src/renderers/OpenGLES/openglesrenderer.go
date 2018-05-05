@@ -19,6 +19,7 @@ type OpenGLESRenderer struct {
 	gles               gl.Context
 	CurrentTextureUnit uint32
 	backBufferMesh     *OpenGLESMesh2D
+	backgroundColor    color.Color
 }
 
 func (this *OpenGLESRenderer) createBackBufferMesh() {
@@ -271,4 +272,12 @@ func (this *OpenGLESRenderer) GetContext() gl.Context {
 
 func (this *OpenGLESRenderer) FilterShaderFiles(name, file, shader_type string) string {
 	return file
+}
+
+func (this *OpenGLESRenderer) SetBackgroundColor(bgColor color.Color) {
+	this.backgroundColor = bgColor
+}
+
+func (this *OpenGLESRenderer) GetBackgroundColor() color.Color {
+	return this.backgroundColor
 }

@@ -81,6 +81,7 @@ func (ogltex *OpenGLTexture) Load(data []byte, width, height int, shadowMap bool
 	gl.TexParameterf(ogltex.bindingPoint(), gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
 	gl.TexParameterf(ogltex.bindingPoint(), gl.TEXTURE_WRAP_R, gl.CLAMP_TO_EDGE)
 	gl.TexParameterf(ogltex.bindingPoint(), gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR)
+	gl.TexParameterf(ogltex.bindingPoint(), gl.TEXTURE_MIN_FILTER, gl.LINEAR)
 	gl.TexParameterf(ogltex.bindingPoint(), gl.TEXTURE_MAG_FILTER, gl.LINEAR)
 	gl.TexParameterf(ogltex.bindingPoint(), gl.TEXTURE_LOD_BIAS, -0.4)
 	gl.TexParameteri(ogltex.bindingPoint(), gl.TEXTURE_BASE_LEVEL, 0)

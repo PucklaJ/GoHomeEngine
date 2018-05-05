@@ -325,8 +325,8 @@ func (rsmgr *ResourceManager) LoadTextureFunction(name, path string, preloaded b
 	var wg1 sync.WaitGroup
 	var i uint32
 	deltaWidth := uint32(width) / NUM_GO_ROUTINES_TEXTURE_LOADING
-	wg1.Add(int(NUM_GO_ROUTINES_TEXTURE_LOADING))
-	for i = 0; i < NUM_GO_ROUTINES_TEXTURE_LOADING; i++ {
+	wg1.Add(int(NUM_GO_ROUTINES_TEXTURE_LOADING + 1))
+	for i = 0; i <= NUM_GO_ROUTINES_TEXTURE_LOADING; i++ {
 		go loadImageData(&img_data, img, i*deltaWidth, (i+1)*deltaWidth, uint32(width), uint32(height), &wg1)
 	}
 	wg1.Wait()
