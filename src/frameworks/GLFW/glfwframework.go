@@ -490,6 +490,49 @@ func (gfw *GLFWFramework) OpenFile(file string) (io.ReadCloser, error) {
 	return os.Open(file)
 }
 
+func getFileExtension(file string) string {
+	index := strings.LastIndex(file, ".")
+	if index == -1 {
+		return ""
+	}
+	return file[index+1:]
+}
+
+func equalIgnoreCase(str1, str string) bool {
+	if len(str1) != len(str) {
+		return false
+	}
+	for i := 0; i < len(str1); i++ {
+		if str1[i] != str[i] {
+			if str1[i] >= 65 && str1[i] <= 90 {
+				if str[i] >= 97 && str[i] <= 122 {
+					if str1[i]+32 != str[i] {
+						return false
+					}
+				} else {
+					return false
+				}
+			} else if str1[i] >= 97 && str1[i] <= 122 {
+				if str[i] >= 65 && str[i] <= 90 {
+					if str1[i]-32 != str[i] {
+						return false
+					}
+				} else {
+					return false
+				}
+			} else {
+				return false
+			}
+		}
+	}
+
+	return true
+}
+
 func (gfw *GLFWFramework) LoadLevel(rsmgr *gohome.ResourceManager, name, path string, preloaded, loadToGPU bool) *gohome.Level {
+	extension := getFileExtension(path)
+	if equalIgnoreCase(extension, "obj") {
+		return loadLevelOBJ(rsmgr, name, path, preloaded, loadToGPU)
+	}
 	return loader.LoadLevelAssimp(rsmgr, name, path, preloaded, loadToGPU)
 }
