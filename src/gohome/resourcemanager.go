@@ -259,32 +259,26 @@ func (rsmgr *ResourceManager) loadShader(name, vertex_path, fragment_path, geome
 
 	contents[VERTEX], err = loadShader(vertex_path, name, "Vertex File")
 	if err {
-		log.Println(err)
 		return nil
 	}
 	contents[FRAGMENT], err = loadShader(fragment_path, name, "Fragment File")
 	if err {
-		log.Println(err)
 		return nil
 	}
 	contents[GEOMETRY], err = loadShader(geometry_path, name, "Geometry File")
 	if err {
-		log.Println(err)
 		return nil
 	}
 	contents[TESSELLETION], err = loadShader(tesselletion_control_path, name, "Tesselletion File")
 	if err {
-		log.Println(err)
 		return nil
 	}
 	contents[EVELUATION], err = loadShader(eveluation_path, name, "Eveluation File")
 	if err {
-		log.Println(err)
 		return nil
 	}
 	contents[COMPUTE], err = loadShader(compute_path, name, "Compute File")
 	if err {
-		log.Println(err)
 		return nil
 	}
 

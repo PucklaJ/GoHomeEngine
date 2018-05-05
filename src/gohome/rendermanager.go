@@ -148,6 +148,19 @@ func (rmgr *RenderManager) Init() {
 		int(Framew.WindowGetSize()[0]),
 		int(Framew.WindowGetSize()[1]),
 	})
+	rmgr.SetProjection2D(&Ortho2DProjection{
+		Left:   0.0,
+		Right:  Framew.WindowGetSize()[0],
+		Top:    0.0,
+		Bottom: Framew.WindowGetSize()[1],
+	})
+	rmgr.SetProjection3D(&PerspectiveProjection{
+		Width:     Framew.WindowGetSize()[0],
+		Height:    Framew.WindowGetSize()[1],
+		FOV:       70.0,
+		NearPlane: 0.1,
+		FarPlane:  1000.0,
+	})
 
 	rmgr.EnableBackBuffer = true
 }

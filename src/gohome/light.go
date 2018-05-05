@@ -122,6 +122,12 @@ func (this *PointLight) InitShadowmap(width, height uint32) {
 	if this.CastsShadows == 0 {
 		return
 	}
+	if ResourceMgr.GetShader(POINT_LIGHT_SHADOWMAP_SHADER_NAME) == nil {
+		ResourceMgr.LoadShader(POINT_LIGHT_SHADOWMAP_SHADER_NAME, "pointLightShadowMapVert.glsl", "pointLightShadowMapFrag.glsl", "", "", "", "")
+	}
+	if ResourceMgr.GetShader(POINT_LIGHT_SHADOWMAP_INSTANCED_SHADER_NAME) == nil {
+		ResourceMgr.LoadShader(POINT_LIGHT_SHADOWMAP_INSTANCED_SHADER_NAME, "pointLightShadowMapInstancedVert.glsl", "pointLightShadowMapFrag.glsl", "", "", "", "")
+	}
 	if this.ShadowMap != nil {
 		this.ShadowMap.Terminate()
 	} else {
@@ -271,6 +277,12 @@ func (pl *DirectionalLight) SetUniforms(s Shader, arrayIndex uint32) error {
 func (this *DirectionalLight) InitShadowmap(width, height uint32) {
 	if this.CastsShadows == 0 {
 		return
+	}
+	if ResourceMgr.GetShader(SHADOWMAP_SHADER_NAME) == nil {
+		ResourceMgr.LoadShader(SHADOWMAP_SHADER_NAME, "shadowMapVert.glsl", "shadowMapFrag.glsl", "", "", "", "")
+	}
+	if ResourceMgr.GetShader(SHADOWMAP_INSTANCED_SHADER_NAME) == nil {
+		ResourceMgr.LoadShader(SHADOWMAP_INSTANCED_SHADER_NAME, "shadowMapInstancedVert.glsl", "shadowMapFrag.glsl", "", "", "", "")
 	}
 	if this.ShadowMap != nil {
 		this.ShadowMap.Terminate()
@@ -500,6 +512,12 @@ func (this *SpotLight) InitShadowmap(width, height uint32) {
 	if this.CastsShadows == 0 {
 		return
 	}
+	if ResourceMgr.GetShader(SHADOWMAP_SHADER_NAME) == nil {
+		ResourceMgr.LoadShader(SHADOWMAP_SHADER_NAME, "shadowMapVert.glsl", "shadowMapFrag.glsl", "", "", "", "")
+	}
+	if ResourceMgr.GetShader(SHADOWMAP_INSTANCED_SHADER_NAME) == nil {
+		ResourceMgr.LoadShader(SHADOWMAP_INSTANCED_SHADER_NAME, "shadowMapInstancedVert.glsl", "shadowMapFrag.glsl", "", "", "", "")
+	}
 	if this.ShadowMap != nil {
 		this.ShadowMap.Terminate()
 	} else {
@@ -606,10 +624,6 @@ type LightManager struct {
 func (this *LightManager) Init() {
 	this.LightCollections = make([]LightCollection, 1)
 	this.CurrentLightCollection = 0
-	ResourceMgr.LoadShader(SHADOWMAP_SHADER_NAME, "shadowMapVert.glsl", "shadowMapFrag.glsl", "", "", "", "")
-	ResourceMgr.LoadShader(SHADOWMAP_INSTANCED_SHADER_NAME, "shadowMapInstancedVert.glsl", "shadowMapFrag.glsl", "", "", "", "")
-	ResourceMgr.LoadShader(POINT_LIGHT_SHADOWMAP_SHADER_NAME, "pointLightShadowMapVert.glsl", "pointLightShadowMapFrag.glsl", "pointLightShadowMapGeo.glsl", "", "", "")
-	ResourceMgr.LoadShader(POINT_LIGHT_SHADOWMAP_INSTANCED_SHADER_NAME, "pointLightShadowMapInstancedVert.glsl", "pointLightShadowMapFrag.glsl", "pointLightShadowMapGeo.glsl", "", "", "")
 }
 
 func (this *LightManager) Update() {
