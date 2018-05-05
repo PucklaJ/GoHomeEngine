@@ -9,14 +9,17 @@ type TextRenderingScene struct {
 
 func (this *TextRenderingScene) Init() {
 	gohome.Init2DShaders()
-	gohome.ResourceMgr.LoadFont("AbyssinicaSIL-R", "/usr/share/fonts/truetype/abyssinica/AbyssinicaSIL-R.ttf")
+	gohome.ResourceMgr.LoadFont("Font", "/usr/share/fonts/truetype/freefont/FreeMonoBold.ttf")
 
 	var text gohome.Text2D
 	var textTobj gohome.TransformableObject2D
-	text.Init("AbyssinicaSIL-R", 24, "Hello World", &textTobj)
+
+	text.Init("Font", 30, "Hello World! I can render text too!", &textTobj)
+
+	textTobj.Origin = [2]float32{0.5, 0.5}
+	textTobj.Position = gohome.Framew.WindowGetSize().Mul(0.5)
 
 	gohome.RenderMgr.AddObject(&text, &textTobj)
-
 }
 
 func (this *TextRenderingScene) Update(delta_time float32) {

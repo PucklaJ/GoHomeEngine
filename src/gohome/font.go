@@ -28,7 +28,7 @@ func (this *Font) DrawString(str string) Texture {
 	this.drawContext.SetFontSize(float64(this.FontSize))
 	this.drawContext.SetClip(img.Bounds())
 	this.drawContext.SetDst(img)
-	this.drawContext.DrawString(str, freetype.Pt(0, 0))
+	this.drawContext.DrawString(str, freetype.Pt(0, int(imgHeight*7/9)))
 
 	rv = Render.CreateTexture("Text "+str, false)
 	rv.LoadFromImage(img)
@@ -39,7 +39,7 @@ func (this *Font) DrawString(str string) Texture {
 func (this *Font) Init(ttf *truetype.Font) {
 	this.ttf = ttf
 	this.drawContext = freetype.NewContext()
-	this.drawContext.SetDPI(float64(72))
+	this.drawContext.SetDPI(float64(DPI))
 	this.drawContext.SetFont(this.ttf)
 	this.drawContext.SetSrc(image.White)
 	this.drawContext.SetFontSize(float64(this.FontSize))
@@ -50,9 +50,9 @@ func (this *Font) getTextureSize(str string) (uint32, uint32) {
 	var width uint32 = 0
 	var height uint32 = 0
 
-	scale := fixed.I(int(this.FontSize))
+	scale := fixed.Int26_6(this.FontSize)
 	bounds := this.ttf.Bounds(scale)
-	height = uint32(fixed.Int26_6(bounds.Max.Y - bounds.Min.Y))
+	height = uint32(bounds.Max.Y - bounds.Min.Y)
 
 	for i := 0; i < len(runeString); i++ {
 		hmetric := this.ttf.HMetric(scale, this.ttf.Index(runeString[i]))
