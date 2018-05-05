@@ -18,16 +18,12 @@ func (this *TextRenderingScene) Init() {
 		return
 	}
 
-	gohome.Render.SetBackgroundColor(gohome.Color{255, 0, 0, 255})
-
 	var textureAtlasSpr gohome.Sprite2D
 	var textureAtlas gohome.Texture
 	var textureAtlasTobj gohome.TransformableObject2D
 	textureAtlas = gohome.Render.CreateTexture("TextureAtlas", false)
 	textureAtlas.LoadFromImage(font.TextureAtlas)
 	textureAtlasSpr.InitTexture(textureAtlas, &textureAtlasTobj)
-
-	textureAtlasTobj.Size = gohome.Framew.WindowGetSize()
 
 	log.Println("TextureAtlas: W:", textureAtlas.GetWidth(), "H:", textureAtlas.GetHeight())
 
