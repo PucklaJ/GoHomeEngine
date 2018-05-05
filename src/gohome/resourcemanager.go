@@ -3,6 +3,7 @@ package gohome
 import (
 	// "fmt"
 	"github.com/blezek/tga"
+	"github.com/golang/freetype"
 	"image"
 	"image/color"
 	_ "image/jpeg"
@@ -49,6 +50,12 @@ var (
 		"materials/",
 		"assets/materials/",
 	}
+	FONT_PATHS = [4]string{
+		"",
+		"fonts/",
+		"assets/",
+		"assets/fonts",
+	}
 )
 
 type ResourceManager struct {
@@ -56,6 +63,7 @@ type ResourceManager struct {
 	shaders  map[string]Shader
 	Models   map[string]*Model3D
 	Levels   map[string]*Level
+	fonts    map[string]*Font
 
 	preloader
 }
@@ -65,6 +73,7 @@ func (rsmgr *ResourceManager) Init() {
 	rsmgr.shaders = make(map[string]Shader)
 	rsmgr.Models = make(map[string]*Model3D)
 	rsmgr.Levels = make(map[string]*Level)
+	rsmgr.fonts = make(map[string]*Font)
 
 	rsmgr.preloader.Init()
 
@@ -87,8 +96,8 @@ func GetPathFromFile(path string) string {
 	}
 }
 
-func OpenFileWithPaths(path string, paths []string) (io.Reader, error) {
-	var reader io.Reader
+func OpenFileWithPaths(path string, paths []string) (io.ReadCloser, error) {
+	var reader io.ReadCloser
 	var err error
 
 	for i := 0; i < len(paths); i++ {
@@ -197,6 +206,11 @@ func (rsmgr *ResourceManager) GetModel(name string) *Model3D {
 	return m
 }
 
+func (rsmgr *ResourceManager) GetFont(name string) *Font {
+	font := rsmgr.fonts[name]
+	return font
+}
+
 func (rsmgr *ResourceManager) Terminate() {
 	for k, v := range rsmgr.shaders {
 		v.Terminate()
@@ -297,6 +311,35 @@ func (rsmgr *ResourceManager) loadShader(name, vertex_path, fragment_path, geome
 	}
 
 	return shader
+}
+
+func (rsmgr *ResourceManager) LoadFont(name, path string) {
+	if _, ok := rsmgr.fonts[name]; ok {
+		log.Println("Font", name, "has already been loaded!")
+		return
+	}
+
+	reader, err := OpenFileWithPaths(path, FONT_PATHS[:])
+	if err != nil {
+		log.Println("Couldn't load font", name, ":", err)
+		return
+	}
+
+	data, err := ioutil.ReadAll(reader)
+	if err != nil {
+		log.Println("Couldn't read font", name, ":", err)
+		return
+	}
+
+	ttf, err := freetype.ParseFont(data)
+	if err != nil {
+		log.Println("Couldn't parse font", name, ":", err)
+	}
+
+	var font Font
+	font.Init(ttf)
+
+	rsmgr.fonts[name] = &font
 }
 
 func (rsmgr *ResourceManager) LoadTextureFunction(name, path string, preloaded bool) Texture {
