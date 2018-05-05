@@ -1,4 +1,4 @@
 *.sublime-project
 *.sublime-workspace
-gohomeengine.sublime-workspace
-gohomeengine.sublime-project
+*gohomeengine.sublime-workspace*
+*gohomeengine.sublime-project*
