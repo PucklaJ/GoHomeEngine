@@ -37,4 +37,5 @@ type InstancedMesh3D interface {
 	SetM2(index uint32, value []mgl32.Mat2)
 	SetM3(index uint32, value []mgl32.Mat3)
 	SetM4(index uint32, value []mgl32.Mat4)
+	SetName(index uint32, value_type uint32, value string)
 }

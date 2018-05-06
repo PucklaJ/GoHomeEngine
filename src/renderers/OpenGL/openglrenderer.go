@@ -18,6 +18,7 @@ type OpenGLRenderer struct {
 
 	availableFunctions map[string]bool
 	backBufferMesh     *OpenGLMesh2D
+	backgroundColor    color.Color
 }
 
 func (this *OpenGLRenderer) createBackBufferMesh() {
@@ -62,6 +63,8 @@ func (this *OpenGLRenderer) Init() error {
 	gl.DepthFunc(gl.LESS)
 	gl.Enable(gl.DEPTH_CLAMP)
 	gl.ClearDepth(1.0)
+	gl.Enable(gl.BLEND)
+	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
 
 	gl.FrontFace(gl.CCW)
 	gl.Enable(gl.CULL_FACE)
@@ -356,4 +359,12 @@ func (this *OpenGLRenderer) FilterShaderFiles(name, file, shader_type string) st
 	}
 
 	return file
+}
+
+func (this *OpenGLRenderer) SetBackgroundColor(bgColor color.Color) {
+	this.backgroundColor = bgColor
+}
+
+func (this *OpenGLRenderer) GetBackgroundColor() color.Color {
+	return this.backgroundColor
 }

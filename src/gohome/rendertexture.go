@@ -1,11 +1,13 @@
 package gohome
 
 import (
+	"image"
 	"image/color"
 )
 
 type RenderTexture interface {
 	Load(data []byte, width, height int, shadowMap bool) error // Is not used. It there just make RenderTexture able to be a Texture
+	LoadFromImage(img image.Image) error
 	GetName() string
 	SetAsTarget()
 	UnsetAsTarget()

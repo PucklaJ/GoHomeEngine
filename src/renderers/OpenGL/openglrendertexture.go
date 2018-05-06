@@ -4,6 +4,7 @@ import (
 	// "fmt"
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
 	"github.com/go-gl/gl/all-core/gl"
+	"image"
 	"image/color"
 	"log"
 )
@@ -136,13 +137,17 @@ func (this *OpenGLRenderTexture) Load(data []byte, width, height int, shadowMap 
 	return &OpenGLError{errorString: "The Load method of RenderTexture is not used!"}
 }
 
+func (ogltex *OpenGLRenderTexture) LoadFromImage(img image.Image) error {
+	return &OpenGLError{errorString: "The LoadFromImage method of RenderTexture is not used!"}
+}
+
 func (this *OpenGLRenderTexture) GetName() string {
 	return this.Name
 }
 
 func (this *OpenGLRenderTexture) SetAsTarget() {
 	gl.BindFramebuffer(gl.FRAMEBUFFER, this.fbo)
-	gohome.Render.ClearScreen(&gohome.Color{0, 0, 0, 0})
+	gohome.Render.ClearScreen(gohome.Render.GetBackgroundColor())
 	this.prevViewport = gohome.Render.GetViewport()
 	gohome.Render.SetViewport(this.viewport)
 }

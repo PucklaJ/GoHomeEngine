@@ -3,6 +3,7 @@ package renderer
 import (
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
 	"golang.org/x/mobile/gl"
+	"image"
 	"image/color"
 	"log"
 )
@@ -52,6 +53,10 @@ func (this *OpenGLESCubeMap) Load(data []byte, width, height int, shadowMap bool
 	(*this.gles).TexParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
 	(*this.gles).TexParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_R, gl.CLAMP_TO_EDGE)
 
+	return nil
+}
+
+func (this *OpenGLESCubeMap) LoadFromImage(img image.Image) error {
 	return nil
 }
 

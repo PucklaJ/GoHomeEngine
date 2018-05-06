@@ -130,20 +130,22 @@ func loadMaterialTexture(path string, preloaded bool) gohome.Texture {
 }
 
 func processMaterial(material *gohome.Material, mat *OBJMaterial, preloaded, loadToGPU bool) {
+	if mat == nil {
+		material.InitDefault()
+		return
+	}
 	material.Name = mat.Name
 	material.DiffuseColor = toGohomeColor(mat.DiffuseColor)
 	material.SpecularColor = toGohomeColor(mat.SpecularColor)
 	material.SetShinyness(mat.SpecularExponent)
-	if loadToGPU {
-		if mat.DiffuseTexture != "" {
-			material.DiffuseTexture = loadMaterialTexture(mat.DiffuseTexture, preloaded)
-		}
-		if mat.SpecularTexture != "" {
-			material.SpecularTexture = loadMaterialTexture(mat.SpecularTexture, preloaded)
-		}
-		if mat.NormalMap != "" {
-			material.NormalMap = loadMaterialTexture(mat.NormalMap, preloaded)
-		}
+	if mat.DiffuseTexture != "" {
+		material.DiffuseTexture = loadMaterialTexture(mat.DiffuseTexture, preloaded)
+	}
+	if mat.SpecularTexture != "" {
+		material.SpecularTexture = loadMaterialTexture(mat.SpecularTexture, preloaded)
+	}
+	if mat.NormalMap != "" {
+		material.NormalMap = loadMaterialTexture(mat.NormalMap, preloaded)
 	}
 
 }
