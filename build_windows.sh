@@ -12,7 +12,7 @@ then
 	exit 1
 fi
 
-PKG_CONFIG_PATH=$PKG_CONFIG_PATH:$GOPATH/src/github.com/PucklaMotzer09/gohomeengine/deps/pkg/windows
+PKG_CONFIG_PATH=${GOPATH}/src/github.com/PucklaMotzer09/gohomeengine/deps/pkg/windows
 
 wantInstall=0
 wantRun=0
