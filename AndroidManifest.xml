@@ -16,15 +16,15 @@
 -->
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.golang.app"
+    package="org.golang.todo.%appname%"
     android:versionCode="1"
     android:versionName="1.0">
-    <application android:label="Mobiletest" android:debuggable="true">
+    <application android:label="%APPNAME%" android:debuggable="true">
     <activity android:name="org.golang.app.GoNativeActivity"
-        android:label="GoHomeEngine"
+        android:label="%APPNAME%"
         android:configChanges="orientation|keyboardHidden"
         android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
-        <meta-data android:name="android.app.lib_name" android:value="Mobiletest" />
+        <meta-data android:name="android.app.lib_name" android:value="%APPNAME%" />
         <intent-filter>
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />
