@@ -9,7 +9,7 @@ type TextRenderingScene struct {
 
 func (this *TextRenderingScene) Init() {
 	gohome.Init2DShaders()
-	gohome.ResourceMgr.LoadFont("Font", "/usr/share/fonts/truetype/freefont/FreeMonoBold.ttf")
+	gohome.ResourceMgr.LoadFont("Font", "FreeMonoBold.ttf")
 
 	var text gohome.Text2D
 	var textTobj gohome.TransformableObject2D
