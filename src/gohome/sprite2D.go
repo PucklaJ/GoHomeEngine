@@ -11,6 +11,7 @@ type Sprite2D struct {
 	Texture
 	Visible             bool
 	NotRelativeToCamera int
+	Flip                uint8
 
 	Shader
 	RenderType
@@ -60,6 +61,7 @@ func (spr *Sprite2D) commonInit(transform *TransformableObject2D) {
 	spr.Visible = true
 	spr.NotRelativeToCamera = -1
 	spr.RenderType = TYPE_2D_NORMAL
+	spr.Flip = FLIP_NONE
 }
 
 func (spr *Sprite2D) Init(texName string, transform *TransformableObject2D) {
@@ -93,6 +95,7 @@ func (spr *Sprite2D) GetType() RenderType {
 
 func (spr *Sprite2D) Render() {
 	if spr.Texture != nil {
+		RenderMgr.CurrentShader.SetUniformI("flip", int32(spr.Flip))
 		spr.Texture.Bind(0)
 		sprite2DMesh.Render()
 		spr.Texture.Unbind(0)
