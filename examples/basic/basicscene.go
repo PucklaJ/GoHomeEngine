@@ -20,6 +20,8 @@ func (this *BasicScene) Init() {
 	gopherTobj.Position = [2]float32{float32(nw) / 2.0, float32(nh) / 2.0}
 
 	gohome.RenderMgr.AddObject(&gopher, &gopherTobj)
+
+	gohome.RenderMgr.EnableBackBuffer = false
 }
 
 func (this *BasicScene) Update(delta_time float32) {

@@ -21,6 +21,7 @@ func (this *ModelScene) Init() {
 	gohome.RenderMgr.AddObject(&this.gopher, &this.gopherTobj)
 
 	gohome.LightMgr.CurrentLightCollection = -1
+	gohome.RenderMgr.EnableBackBuffer = false
 }
 
 func (this *ModelScene) Update(delta_time float32) {

@@ -14,12 +14,14 @@ func (this *TextRenderingScene) Init() {
 	var text gohome.Text2D
 	var textTobj gohome.TransformableObject2D
 
-	text.Init("Font", 30, "Hello World! I can render text too!", &textTobj)
+	text.Init("Font", 30, "Hello World!", &textTobj)
 
 	textTobj.Origin = [2]float32{0.5, 0.5}
 	textTobj.Position = gohome.Framew.WindowGetSize().Mul(0.5)
 
 	gohome.RenderMgr.AddObject(&text, &textTobj)
+
+	gohome.RenderMgr.EnableBackBuffer = false
 }
 
 func (this *TextRenderingScene) Update(delta_time float32) {

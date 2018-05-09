@@ -54,7 +54,7 @@ var (
 		"",
 		"fonts/",
 		"assets/",
-		"assets/fonts",
+		"assets/fonts/",
 	}
 )
 
