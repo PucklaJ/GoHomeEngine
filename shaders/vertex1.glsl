@@ -28,28 +28,32 @@ vec2 flipTexCoord()
 {
 	vec2 flippedTexCoord;
 
-	switch(flip)
+	
+	if(flip == FLIP_NONE)
 	{
-		case FLIP_NONE:
-			flippedTexCoord = texCoord;
-			break;
-		case FLIP_HORIZONTAL:
-			flippedTexCoord.x = 1.0-texCoord.x;
-			flippedTexCoord.y = texCoord.y;
-			break;
-		case FLIP_VERTICAL:
-			flippedTexCoord.x = texCoord.x;
-			flippedTexCoord.y = 1.0-texCoord.y;
-			break;
-		case FLIP_DIAGONALLY:
-			flippedTexCoord.x = 1.0-texCoord.x;
-			flippedTexCoord.y = 1.0-texCoord.y;
-			break;
-		default:
-			flippedTexCoord = texCoord;
-			break;
-
+		flippedTexCoord = texCoord;
 	}
+	else if(flip == FLIP_HORIZONTAL)
+	{
+		flippedTexCoord.x = 1.0-texCoord.x;
+		flippedTexCoord.y = texCoord.y;
+	}
+	else if(flip == FLIP_VERTICAL)
+	{
+		flippedTexCoord.x = texCoord.x;
+		flippedTexCoord.y = 1.0-texCoord.y;
+	}
+	else if(flip == FLIP_DIAGONALLY)
+	{
+		flippedTexCoord.x = 1.0-texCoord.x;
+		flippedTexCoord.y = 1.0-texCoord.y;
+	}
+	else
+	{
+		flippedTexCoord = texCoord;
+	}
+
+	
 
 	return flippedTexCoord;
 }

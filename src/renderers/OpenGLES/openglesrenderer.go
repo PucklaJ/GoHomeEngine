@@ -1,7 +1,6 @@
 package renderer
 
 import (
-	"fmt"
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
 	"golang.org/x/mobile/gl"
 	"image/color"
@@ -81,7 +80,7 @@ func (this *OpenGLESRenderer) Init() error {
 	this.CurrentTextureUnit = 0
 
 	version := this.gles.GetString(gl.VERSION)
-	fmt.Println("Version:", version)
+	gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_LOG, "Renderer", "OpenGLES\t", "Version: "+version)
 	this.gles.Enable(gl.DEPTH_TEST)
 	this.gles.Enable(gl.CULL_FACE)
 

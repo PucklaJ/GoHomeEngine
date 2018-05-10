@@ -6,7 +6,6 @@ import (
 	"github.com/go-gl/gl/all-core/gl"
 	"image"
 	"image/color"
-	"log"
 )
 
 type OpenGLRenderTexture struct {

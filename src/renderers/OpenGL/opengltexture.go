@@ -6,7 +6,6 @@ import (
 	"github.com/go-gl/gl/all-core/gl"
 	"image"
 	"image/color"
-	"log"
 	"strconv"
 	"sync"
 	"unsafe"
@@ -67,7 +66,7 @@ func printOGLTexture2DError(ogltex *OpenGLTexture, data []byte, width, height in
 			errString = "Invalid Operation"
 		}
 
-		log.Println("Error loading texture data:", err, errString)
+		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "Texture", ogltex.GetName(), "Couldn't load data: "+strconv.Itoa(int(err))+": "+errString)
 	}
 }
 

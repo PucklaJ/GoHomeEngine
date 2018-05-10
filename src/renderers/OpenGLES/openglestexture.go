@@ -6,7 +6,6 @@ import (
 	"golang.org/x/mobile/gl"
 	"image"
 	"image/color"
-	"log"
 	"strconv"
 	"sync"
 )
@@ -63,7 +62,7 @@ func printOGLESTexture2DError(ogltex *OpenGLESTexture, data []byte, width, heigh
 			errString = "Invalid Operation"
 		}
 
-		log.Println("Error loading texture data of", ogltex.name, ":", err, errString)
+		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "Texture", ogltex.GetName(), "Couldn't load data: "+strconv.Itoa(int(err))+": "+errString)
 	}
 }
 
@@ -183,7 +182,7 @@ func (ogltex *OpenGLESTexture) SetWrapping(wrapping uint32) {
 	if wrapping == gohome.WRAPPING_REPEAT {
 		wrap = gl.REPEAT
 	} else if wrapping == gohome.WRAPPING_CLAMP_TO_BORDER {
-		log.Println("CLAMP_TO_BORDER is not supported by OpenGLES")
+		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_WARNING, "Texture", ogltex.GetName(), "CLAMP_TO_BORDER is not supported by OpenGLES")
 	} else if wrapping == gohome.WRAPPING_CLAMP_TO_EDGE {
 		wrap = gl.CLAMP_TO_EDGE
 	} else if wrapping == gohome.WRAPPING_MIRRORED_REPEAT {
@@ -205,7 +204,7 @@ func (ogltex *OpenGLESTexture) SetBorderColor(col color.Color) {
 	// (*ogltex.gles).TexParameterfv(ogltex.bindingPoint(), gl, &borderColor[0])
 
 	// gl.BindTexture(ogltex.bindingPoint(), 0)
-	log.Println("Border color is not supported by OpenGLES")
+	gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_WARNING, "Texture", ogltex.GetName(), "Border color is not supported by OpenGLES")
 }
 
 func (ogltex *OpenGLESTexture) SetBorderDepth(depth float32) {
@@ -216,7 +215,7 @@ func (ogltex *OpenGLESTexture) SetBorderDepth(depth float32) {
 	// gl.TexParameterfv(ogltex.bindingPoint(), gl.TEXTURE_BORDER_COLOR, &col[0])
 
 	// gl.BindTexture(ogltex.bindingPoint(), 0)
-	log.Println("Border depth is not supported by OpenGLES")
+	gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_WARNING, "Texture", ogltex.GetName(), "Border depth is not supported by OpenGLES")
 }
 
 func (ogltex *OpenGLESTexture) GetName() string {

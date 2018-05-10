@@ -7,7 +7,7 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 	"golang.org/x/mobile/exp/f32"
 	"golang.org/x/mobile/gl"
-	"log"
+	"strconv"
 	"sync"
 )
 
@@ -197,7 +197,7 @@ func (this *OpenGLESInstancedMesh3D) Load() {
 	this.numIndices = uint32(len(this.indices))
 
 	if this.numVertices == 0 || this.numIndices == 0 {
-		log.Println("No vertices or indices have been added for mesh", this.Name, "!")
+		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "InstancedMesh", this.Name, "No vertices or indices have been added!")
 		return
 	}
 
@@ -436,64 +436,64 @@ func (this *OpenGLESInstancedMesh3D) AddValue(valueType uint32) {
 }
 func (this *OpenGLESInstancedMesh3D) SetF(index uint32, value []float32) {
 	if uint32(len(value)) < this.numInstances {
-		log.Println("Float value", index, "of instanced mesh", this.Name, "is too small!")
+		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "InstancedMesh", this.Name, "Float value "+strconv.Itoa(int(index))+" is too small!")
 		return
 	} else if uint32(len(value)) > this.numInstances {
-		log.Println("Float value", index, "of instanced mesh", this.Name, "is too big! Using", this.numInstances, "values")
+		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_WARNING, "InstancedMesh", this.Name, "Float value "+strconv.Itoa(int(index))+" is too big! Using "+strconv.Itoa(int(this.numInstances))+" values")
 	}
 	this.floats[index] = value[:this.numInstances]
 }
 func (this *OpenGLESInstancedMesh3D) SetV2(index uint32, value []mgl32.Vec2) {
 	if uint32(len(value)) < this.numInstances {
-		log.Println("Vec2 value", index, "of instanced mesh", this.Name, "is too small!")
+		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "InstancedMesh", this.Name, "Vec2 value "+strconv.Itoa(int(index))+" is too small!")
 		return
 	} else if uint32(len(value)) > this.numInstances {
-		log.Println("Vec2 value", index, "of instanced mesh", this.Name, "is too big! Using", this.numInstances, "values")
+		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_WARNING, "InstancedMesh", this.Name, "Vec2 value "+strconv.Itoa(int(index))+" is too big! Using "+strconv.Itoa(int(this.numInstances))+" values")
 	}
 	this.vec2s[index] = value[:this.numInstances]
 }
 func (this *OpenGLESInstancedMesh3D) SetV3(index uint32, value []mgl32.Vec3) {
 	if uint32(len(value)) < this.numInstances {
-		log.Println("Vec3 value", index, "of instanced mesh", this.Name, "is too small!")
+		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "InstancedMesh", this.Name, "Vec3 value "+strconv.Itoa(int(index))+" is too small!")
 		return
 	} else if uint32(len(value)) > this.numInstances {
-		log.Println("Vec3 value", index, "of instanced mesh", this.Name, "is too big! Using", this.numInstances, "values")
+		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_WARNING, "InstancedMesh", this.Name, "Vec3 value "+strconv.Itoa(int(index))+" is too big! Using "+strconv.Itoa(int(this.numInstances))+" values")
 	}
 	this.vec3s[index] = value[:this.numInstances]
 }
 func (this *OpenGLESInstancedMesh3D) SetV4(index uint32, value []mgl32.Vec4) {
 	if uint32(len(value)) < this.numInstances {
-		log.Println("Vec4 value", index, "of instanced mesh", this.Name, "is too small!")
+		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "InstancedMesh", this.Name, "Vec4 value "+strconv.Itoa(int(index))+" is too small!")
 		return
 	} else if uint32(len(value)) > this.numInstances {
-		log.Println("Vec4 value", index, "of instanced mesh", this.Name, "is too big! Using", this.numInstances, "values")
+		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_WARNING, "InstancedMesh", this.Name, "Vec4 value "+strconv.Itoa(int(index))+" is too big! Using "+strconv.Itoa(int(this.numInstances))+" values")
 	}
 	this.vec4s[index] = value[:this.numInstances]
 }
 func (this *OpenGLESInstancedMesh3D) SetM2(index uint32, value []mgl32.Mat2) {
 	if uint32(len(value)) < this.numInstances {
-		log.Println("Mat2 value", index, "of instanced mesh", this.Name, "is too small!")
+		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "InstancedMesh", this.Name, "Mat2 value "+strconv.Itoa(int(index))+" is too small!")
 		return
 	} else if uint32(len(value)) > this.numInstances {
-		log.Println("Mat2 value", index, "of instanced mesh", this.Name, "is too big! Using", this.numInstances, "values")
+		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_WARNING, "InstancedMesh", this.Name, "Mat2 value "+strconv.Itoa(int(index))+" is too big! Using "+strconv.Itoa(int(this.numInstances))+" values")
 	}
 	this.mat2s[index] = value[:this.numInstances]
 }
 func (this *OpenGLESInstancedMesh3D) SetM3(index uint32, value []mgl32.Mat3) {
 	if uint32(len(value)) < this.numInstances {
-		log.Println("Mat3 value", index, "of instanced mesh", this.Name, "is too small!")
+		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "InstancedMesh", this.Name, "Mat3 value "+strconv.Itoa(int(index))+" is too small!")
 		return
 	} else if uint32(len(value)) > this.numInstances {
-		log.Println("Mat3 value", index, "of instanced mesh", this.Name, "is too big! Using", this.numInstances, "values")
+		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_WARNING, "InstancedMesh", this.Name, "Mat3 value "+strconv.Itoa(int(index))+" is too big! Using "+strconv.Itoa(int(this.numInstances))+" values")
 	}
 	this.mat3s[index] = value[:this.numInstances]
 }
 func (this *OpenGLESInstancedMesh3D) SetM4(index uint32, value []mgl32.Mat4) {
 	if uint32(len(value)) < this.numInstances {
-		log.Println("Mat4 value", index, "of instanced mesh", this.Name, "is too small!")
+		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "InstancedMesh", this.Name, "Mat4 value "+strconv.Itoa(int(index))+" is too small!")
 		return
 	} else if uint32(len(value)) > this.numInstances {
-		log.Println("Mat4 value", index, "of instanced mesh", this.Name, "is too big! Using", this.numInstances, "values")
+		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_WARNING, "InstancedMesh", this.Name, "Mat4 value "+strconv.Itoa(int(index))+" is too big! Using "+strconv.Itoa(int(this.numInstances))+" values")
 	}
 	this.mat4s[index] = value[:this.numInstances]
 }

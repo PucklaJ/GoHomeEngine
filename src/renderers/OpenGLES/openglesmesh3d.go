@@ -7,7 +7,6 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 	"golang.org/x/mobile/exp/f32"
 	"golang.org/x/mobile/gl"
-	"log"
 	"sync"
 )
 
@@ -185,7 +184,7 @@ func (oglm *OpenGLESMesh3D) Load() {
 	oglm.numIndices = uint32(len(oglm.indices))
 
 	if oglm.numVertices == 0 || oglm.numIndices == 0 {
-		log.Println("No vertices or indices have been added for mesh", oglm.Name, "!")
+		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "Mesh3D", oglm.Name, "No vertices or indices have been added!")
 		return
 	}
 
