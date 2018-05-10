@@ -157,7 +157,7 @@ func (oglm *OpenGLMesh3D) Load() {
 	oglm.numIndices = uint32(len(oglm.indices))
 
 	if oglm.numVertices == 0 || oglm.numIndices == 0 {
-		log.Println("No vertices or indices have been added for mesh", oglm.Name, "!")
+		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "Mesh3D", oglm.Name, "No vertices or indices have been added!")
 		return
 	}
 
@@ -195,9 +195,7 @@ func (oglm *OpenGLMesh3D) Render() {
 		return
 	}
 	if gohome.RenderMgr.CurrentShader != nil {
-		if err := gohome.RenderMgr.CurrentShader.SetUniformMaterial(*oglm.Material); err != nil {
-			// fmt.Println("Error:", err)
-		}
+		gohome.RenderMgr.CurrentShader.SetUniformMaterial(*oglm.Material)
 	}
 	if oglm.canUseVAOs {
 		gl.BindVertexArray(oglm.vao)

@@ -11,6 +11,7 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
+	"strconv"
 	"strings"
 	"sync"
 )
@@ -134,7 +135,7 @@ func loadShader(path, name_shader, name string) (string, bool) {
 	path = Render.FilterShaderFiles(name_shader, path, name)
 	contents, err := loadShaderFile(path)
 	if err != nil {
-		log.Println("Couldn't load", name, "of", name_shader, ":", err)
+		ErrorMgr.Message(ERROR_LEVEL_ERROR, "Shader", name_shader, "Couldn't load "+name+": "+err.Error())
 		return "", true
 	}
 	return contents, false
@@ -145,7 +146,7 @@ func (rsmgr *ResourceManager) LoadShader(name, vertex_path, fragment_path, geome
 	shader := rsmgr.loadShader(name, vertex_path, fragment_path, geometry_path, tesselletion_control_path, eveluation_path, compute_path, false)
 	if shader != nil {
 		rsmgr.shaders[name] = shader
-		log.Println("Finished loading shader", name, "!")
+		ErrorMgr.Message(ERROR_LEVEL_LOG, "Shader", name, "Finished loading!")
 	}
 }
 
@@ -179,7 +180,7 @@ func (rsmgr *ResourceManager) LoadTexture(name, path string) {
 	tex := rsmgr.LoadTextureFunction(name, path, false)
 	if tex != nil {
 		rsmgr.textures[name] = tex
-		log.Println("Finished loading texture", name, "W:", tex.GetWidth(), "H:", tex.GetHeight(), "!")
+		ErrorMgr.Message(ERROR_LEVEL_LOG, "Texture", name, "Finished loading! W: "+strconv.Itoa(tex.GetWidth())+" H: "+strconv.Itoa(tex.GetHeight()))
 	}
 }
 
@@ -192,7 +193,7 @@ func (rsmgr *ResourceManager) LoadLevel(name, path string, loadToGPU bool) {
 	level := rsmgr.loadLevel(name, path, false, loadToGPU)
 	if level != nil {
 		rsmgr.Levels[name] = level
-		log.Println("Finished loading Level", name, "!")
+		ErrorMgr.Message(ERROR_LEVEL_LOG, "Level", name, "Finished loading!")
 	}
 }
 
@@ -263,7 +264,7 @@ func (rsmgr *ResourceManager) loadLevel(name, path string, preloaded, loadToGPU 
 func (rsmgr *ResourceManager) loadShader(name, vertex_path, fragment_path, geometry_path, tesselletion_control_path, eveluation_path, compute_path string, preloaded bool) Shader {
 	_, already := rsmgr.shaders[name]
 	if already {
-		log.Println("Shader", name, "has already been loaded! (Use GetShader(name))")
+		ErrorMgr.Message(ERROR_LEVEL_LOG, "Shader", name, "Has already been loaded!")
 		return nil
 	}
 
@@ -315,25 +316,26 @@ func (rsmgr *ResourceManager) loadShader(name, vertex_path, fragment_path, geome
 
 func (rsmgr *ResourceManager) LoadFont(name, path string) {
 	if _, ok := rsmgr.fonts[name]; ok {
-		log.Println("Font", name, "has already been loaded!")
+		ErrorMgr.Message(ERROR_LEVEL_LOG, "Font", name, "Has already been loaded!")
 		return
 	}
 
 	reader, err := OpenFileWithPaths(path, FONT_PATHS[:])
 	if err != nil {
-		log.Println("Couldn't load font", name, ":", err)
+		ErrorMgr.Message(ERROR_LEVEL_ERROR, "Font", name, "Couldn't load: "+err.Error())
 		return
 	}
 
 	data, err := ioutil.ReadAll(reader)
 	if err != nil {
-		log.Println("Couldn't read font", name, ":", err)
+		ErrorMgr.Message(ERROR_LEVEL_ERROR, "Font", name, "Couldn't read: "+err.Error())
 		return
 	}
 
 	ttf, err := freetype.ParseFont(data)
 	if err != nil {
-		log.Println("Couldn't parse font", name, ":", err)
+		ErrorMgr.Message(ERROR_LEVEL_ERROR, "Font", name, "Couldn't parse: "+err.Error())
+		return
 	}
 
 	var font Font
@@ -344,7 +346,7 @@ func (rsmgr *ResourceManager) LoadFont(name, path string) {
 
 func (rsmgr *ResourceManager) LoadTextureFunction(name, path string, preloaded bool) Texture {
 	if _, ok := rsmgr.textures[name]; ok {
-		log.Println("The texture", name, "has already been loaded")
+		ErrorMgr.Message(ERROR_LEVEL_LOG, "Texture", name, "Has already been loaded!")
 		return nil
 	}
 
@@ -352,12 +354,12 @@ func (rsmgr *ResourceManager) LoadTextureFunction(name, path string, preloaded b
 	var err error
 	reader, err = OpenFileWithPaths(path, TEXTURE_PATHS[:])
 	if err != nil {
-		log.Println("Couldn't load texture file", name, ":", err)
+		ErrorMgr.Message(ERROR_LEVEL_ERROR, "Texture", name, "Couldn't load file: "+err.Error())
 		return nil
 	}
 	img, _, err := image.Decode(reader)
 	if err != nil {
-		log.Println("Couldn't decode texture file", name, ":", err)
+		ErrorMgr.Message(ERROR_LEVEL_ERROR, "Texture", name, "Couldn't decode file: "+err.Error())
 		return nil
 	}
 	width := img.Bounds().Size().X
@@ -399,31 +401,31 @@ func (rsmgr *ResourceManager) LoadPreloadedResources() {
 func (rsmgr *ResourceManager) SetShader(name string, name1 string) {
 	s := rsmgr.shaders[name1]
 	if s == nil {
-		log.Println("Couldn't set shader", name, "to", name1, ", because", name1, "is nil")
+		ErrorMgr.Message(ERROR_LEVEL_ERROR, "Shader", name, "Couldn't set to "+name1+" (It is nil)")
 		return
 	}
 	rsmgr.shaders[name] = s
-	log.Println("Set shader", name, "to", name1)
+	ErrorMgr.Message(ERROR_LEVEL_LOG, "Shader", name, "Set to "+name1)
 }
 
 func (rsmgr *ResourceManager) SetTexture(name string, name1 string) {
 	s := rsmgr.textures[name1]
 	if s == nil {
-		log.Println("Couldn't set texture", name, "to", name1, ", because", name1, "is nil")
+		ErrorMgr.Message(ERROR_LEVEL_ERROR, "Texture", name, "Couldn't set to "+name1+" (It is nil)")
 		return
 	}
 	rsmgr.textures[name] = s
-	log.Println("Set texture", name, "to", name1)
+	ErrorMgr.Message(ERROR_LEVEL_LOG, "Texture", name, "Set to "+name1)
 }
 
 func (rsmgr *ResourceManager) SetLevel(name string, name1 string) {
 	s := rsmgr.Levels[name1]
 	if s == nil {
-		log.Println("Couldn't set level", name, "to", name1, ", because", name1, "is nil")
+		ErrorMgr.Message(ERROR_LEVEL_ERROR, "Level", name, "Couldn't set to "+name1+" (It is nil)")
 		return
 	}
 	rsmgr.Levels[name] = s
-	log.Println("Set level", name, "to", name1)
+	ErrorMgr.Message(ERROR_LEVEL_LOG, "Level", name, "Set to "+name1)
 }
 
 var ResourceMgr ResourceManager

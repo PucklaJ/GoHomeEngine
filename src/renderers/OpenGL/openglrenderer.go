@@ -4,7 +4,6 @@ import (
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
 	"github.com/go-gl/gl/all-core/gl"
 	"image/color"
-	"log"
 )
 
 const (
@@ -53,7 +52,7 @@ func (this *OpenGLRenderer) Init() error {
 		return err
 	}
 	version := gl.GoStr(gl.GetString(gl.VERSION))
-	log.Println("OpenGL Version:", version)
+	gohome.ErrorMgr.Message(ERROR_LEVEL_LOG, "Renderer", "OpenGL", "Version: "+version)
 	if this.GetVersioni() < 21 {
 		return &OpenGLError{errorString: "You don't have a graphics card or your graphics card is not supported! Minimum: OpenGL 2.1"}
 	}

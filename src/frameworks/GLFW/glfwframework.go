@@ -78,13 +78,13 @@ func (gfw *GLFWFramework) CreateWindow(windowWidth, windowHeight uint32, title s
 		if r := recover(); r != nil {
 			log.Println("Recover:", r)
 			if err := gfw.createWindowProfile(windowWidth, windowHeight, title, false); err != nil {
-				panic("Error creating window:" + err.Error())
+				gohome.ErrorMgr.MessageError(gohome.ERROR_LEVEL_FATAL, "WindowCreation", "GLFW", err)
 			}
 		}
 	}()
 	if err := gfw.createWindowProfile(windowWidth, windowHeight, title, true); err != nil {
 		if strings.Contains(err.Error(), "VersionUnavailable") {
-			log.Println("Error creating window: Couldn't set profile:", err)
+			gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "WindowCreation", "GLFW", "Couldn't set profile: "+err.Error())
 			if err1 := gfw.createWindowProfile(windowWidth, windowHeight, title, false); err1 != nil {
 				return err1
 			}

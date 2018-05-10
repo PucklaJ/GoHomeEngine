@@ -210,7 +210,7 @@ func equalIgnoreCase(str1, str string) bool {
 func (this *AndroidFramework) LoadLevel(rsmgr *gohome.ResourceManager, name, path string, preloaded, loadToGPU bool) *gohome.Level {
 	extension := getFileExtension(path)
 	if !equalIgnoreCase(extension, "obj") {
-		log.Println("Couldn't load level", name, "with path", path, ": The file format", extension, "is not supported")
+		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "Level", name, &gohome.GoHomeError{"Couldn't load file: The file format " + extension + " is not supported"})
 		return nil
 	}
 	return loader.LoadLevelOBJ(rsmgr, name, path, preloaded, loadToGPU)

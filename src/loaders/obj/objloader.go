@@ -278,7 +278,7 @@ func (this *OBJLoader) processTokens(tokens []string) {
 	} else if length == 2 {
 		if tokens[0] == "mtllib" {
 			if err := this.loadMaterialFile(tokens[1]); err != nil {
-				log.Println("Couldn't load material file", tokens[1], ":", err)
+				log.Println("OBJLoader: Couldn't load material file", tokens[1], ":", err)
 			}
 		} else if tokens[0] == "o" {
 			this.Models = append(this.Models, OBJModel{Name: tokens[1]})

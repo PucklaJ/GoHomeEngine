@@ -1,7 +1,7 @@
 package gohome
 
 import (
-	"log"
+	"strconv"
 	"sync"
 )
 
@@ -174,7 +174,7 @@ func (this *preloader) finish(wg *sync.WaitGroup) {
 		select {
 		case lvl := <-this.preloadedLevelsChan:
 			ResourceMgr.Levels[lvl.Name] = lvl
-			log.Println("Finished loading level", lvl.Name, "!")
+			ErrorMgr.Message(ERROR_LEVEL_LOG, "Level", lvl.Name, "Finished loading!")
 		case tex := <-this.preloadedTextureDataChan:
 			this.preloadedTexturesToFinish = append(this.preloadedTexturesToFinish, tex)
 		case shader := <-this.preloadedShaderDataChan:
@@ -183,7 +183,7 @@ func (this *preloader) finish(wg *sync.WaitGroup) {
 			this.PreloadedMeshesToFinish = append(this.PreloadedMeshesToFinish, mesh)
 		case model := <-this.PreloadedModelsChan:
 			ResourceMgr.Models[model.Name] = model
-			log.Println("Finished loading model", model.Name, "!")
+			ErrorMgr.Message(ERROR_LEVEL_LOG, "Model", model.Name, "Finished loading!")
 		case <-this.exitChan:
 			done = true
 		default:
@@ -226,7 +226,7 @@ func (this *preloader) finishTextures() {
 		tex := this.preloadedTexturesToFinish[i]
 		tex.Tex.Load(tex.img_data, tex.width, tex.height, false)
 		ResourceMgr.textures[tex.Tex.GetName()] = tex.Tex
-		log.Println("Finished loading Texture", tex.Tex.GetName(), "! W:", tex.width, "H:", tex.height)
+		ErrorMgr.Message(ERROR_LEVEL_LOG, "Texture", tex.Tex.GetName(), "Finished loading! W: "+strconv.Itoa(tex.width)+" H: "+strconv.Itoa(tex.height))
 	}
 }
 
@@ -236,9 +236,9 @@ func (this *preloader) finishShaders() {
 		s, err := Render.LoadShader(shader.name, shader.contents[VERTEX], shader.contents[FRAGMENT], shader.contents[GEOMETRY], shader.contents[TESSELLETION], shader.contents[EVELUATION], shader.contents[COMPUTE])
 		if s != nil {
 			ResourceMgr.shaders[shader.name] = s
-			log.Println("Finished loading Shader", s.GetName(), "!")
+			ErrorMgr.Message(ERROR_LEVEL_LOG, "Shader", s.GetName(), "Finished loading!")
 		} else {
-			log.Println(err)
+			ErrorMgr.MessageError(ERROR_LEVEL_ERROR, "Shader", s.GetName(), err)
 		}
 	}
 }
@@ -249,7 +249,7 @@ func (this *preloader) finishMeshes() {
 		if mesh.LoadToGPU {
 			mesh.Mesh.Load()
 		}
-		log.Println("Finished loading mesh", mesh.Mesh.GetName(), "! V:", mesh.Mesh.GetNumVertices(), "I:", mesh.Mesh.GetNumIndices())
+		ErrorMgr.Message(ERROR_LEVEL_LOG, "Mesh", mesh.Mesh.GetName(), "Finished loading! V: "+strconv.Itoa(int(mesh.Mesh.GetNumVertices()))+" I: "+strconv.Itoa(int(mesh.Mesh.GetNumIndices())))
 	}
 }
 

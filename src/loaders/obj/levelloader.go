@@ -2,7 +2,7 @@ package loader
 
 import (
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
-	"log"
+	"strconv"
 )
 
 func loadFile(path string, objLoader *OBJLoader) error {
@@ -164,7 +164,7 @@ func processMesh(mesh3d gohome.Mesh3D, mesh *OBJMesh, preloaded, loadToGPU bool)
 	if !preloaded {
 		if loadToGPU {
 			mesh3d.Load()
-			log.Println("Finished loading mesh", mesh3d.GetName(), "V:", mesh3d.GetNumVertices(), "I:", mesh3d.GetNumIndices())
+			gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_LOG, "Mesh", mesh3d.GetName(), "Finished loading! V: "+strconv.Itoa(int(mesh3d.GetNumVertices()))+" I: "+strconv.Itoa(int(mesh3d.GetNumIndices())))
 		}
 	} else {
 		mesh3d.CalculateTangents()
@@ -185,12 +185,12 @@ func toGohomeLevel(rsmgr *gohome.ResourceManager, name string, objLoader *OBJLoa
 
 func LoadLevelOBJ(rsmgr *gohome.ResourceManager, name, path string, preloaded, loadToGPU bool) *gohome.Level {
 	if _, ok := rsmgr.Levels[name]; ok {
-		log.Println("The level with the name", name, "has already been loaded!")
+		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_LOG, "Level", name, "Has already been loaded!")
 		return nil
 	}
 	var objLoader OBJLoader
 	if err := loadFileWithPaths(path, gohome.LEVEL_PATHS[:], &objLoader); err != nil {
-		log.Println("Couldn't load level", name, "with path", path, ":", err.Error())
+		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "Level", name, "Couldn't load "+path+": "+err.Error())
 		return nil
 	}
 	lvl := toGohomeLevel(rsmgr, name, &objLoader, preloaded, loadToGPU)

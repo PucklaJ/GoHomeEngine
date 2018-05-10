@@ -4,6 +4,7 @@ import (
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
 	"github.com/go-gl/gl/all-core/gl"
 	"log"
+	"strconv"
 	"unsafe"
 )
 
@@ -91,7 +92,7 @@ func (oglm *OpenGLMesh2D) Render() {
 	gl.DrawElements(gl.TRIANGLES, int32(oglm.numIndices), gl.UNSIGNED_INT, nil)
 	err := gl.GetError()
 	if err != gl.NO_ERROR {
-		log.Println("Mesh2D Render Error:", oglm.Name, ":", err)
+		gohome.ErrorMgr.Message(ERROR_LEVEL_ERROR, "Mesh2D", oglm.Name, "Render Error: "+strconv.Itoa(int(err)))
 	}
 
 	if oglm.canUseVAOs {

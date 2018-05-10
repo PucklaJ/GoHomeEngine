@@ -3,7 +3,6 @@ package gohome
 import (
 	// "fmt"
 	// "golang.org/x/image/colornames"
-	"log"
 	"runtime"
 )
 
@@ -32,7 +31,7 @@ func (this *MainLoop) Init(fw Framework, r Renderer, ww, wh uint32, wt string, s
 	this.startScene = start_scene
 
 	if err = Framew.Init(this); err != nil {
-		log.Println("Error Initializing Framework:", err)
+		ErrorMgr.MessageError(ERROR_LEVEL_FATAL, "FrameworkInitialisation", "", err)
 		return false
 	}
 
@@ -53,7 +52,7 @@ func (this *MainLoop) SetupStartScene() {
 	if this.startScene != nil {
 		SceneMgr.SwitchScene(this.startScene)
 	} else {
-		log.Println("Please specify a start scene!")
+		ErrorMgr.Message(ERROR_LEVEL_LOG, "Scene", "", "Please specify a start scene!")
 	}
 }
 
@@ -61,16 +60,16 @@ func (this *MainLoop) InitWindowAndRenderer() {
 	var err error
 	if Framew != nil {
 		if err = Framew.CreateWindow(this.windowWidth, this.windowHeight, this.windowTitle); err != nil {
-			log.Fatalln("Error creating window:", err)
+			ErrorMgr.MessageError(ERROR_LEVEL_FATAL, "WindowCreation", "", err)
 			return
 		}
 	} else {
-		log.Fatalln("Framework is nil!")
+		ErrorMgr.Message(ERROR_LEVEL_FATAL, "WindowCreation", "", "Framework is nil!")
 	}
 
 	if Render != nil {
 		if err = Render.Init(); err != nil {
-			log.Fatalln("Error initializing Renderer:", err)
+			ErrorMgr.MessageError(ERROR_LEVEL_FATAL, "RendererInitialisation", "", err)
 			return
 		}
 	}
@@ -85,6 +84,7 @@ func (MainLoop) InitManagers() {
 	SceneMgr.Init()
 	InputMgr.Init()
 	FPSLimit.Init()
+	ErrorMgr.Init()
 }
 
 func (this *MainLoop) Loop() {
@@ -123,6 +123,7 @@ func (this *MainLoop) Quit() {
 	if sprite2DMesh != nil {
 		defer this.terminateSprite2DMesh()
 	}
+	defer ErrorMgr.Terminate()
 }
 
 func Init3DShaders() {
