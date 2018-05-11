@@ -22,6 +22,7 @@ func (this *TextRenderingScene) Init() {
 	gohome.RenderMgr.AddObject(&text, &textTobj)
 
 	gohome.RenderMgr.EnableBackBuffer = false
+	gohome.ErrorMgr.ErrorLevel = gohome.ERROR_LEVEL_WARNING
 }
 
 func (this *TextRenderingScene) Update(delta_time float32) {

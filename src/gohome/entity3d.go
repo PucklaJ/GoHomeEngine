@@ -21,6 +21,7 @@ func (this *Entity3D) commonInit(tobj *TransformableObject3D) {
 	this.Visible = true
 	this.NotRelativeToCamera = -1
 	this.RenderType = TYPE_3D_NORMAL
+	this.Shader = ResourceMgr.GetShader(ENTITY3D_SHADER_NAME)
 }
 
 func (this *Entity3D) InitName(name string, tobj *TransformableObject3D) {
@@ -47,9 +48,6 @@ func (this *Entity3D) InitModel(model *Model3D, tobj *TransformableObject3D) {
 }
 
 func (this *Entity3D) GetShader() Shader {
-	if this.Shader == nil {
-		this.Shader = ResourceMgr.GetShader(ENTITY3D_SHADER_NAME)
-	}
 	return this.Shader
 }
 

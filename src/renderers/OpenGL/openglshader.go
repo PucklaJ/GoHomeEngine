@@ -305,7 +305,7 @@ func (s *OpenGLShader) Terminate() {
 	gl.DeleteProgram(s.program)
 }
 
-func (s *OpenGLShader) SetUniformV2(name string, value mgl32.Vec2) error {
+func (s *OpenGLShader) getUniformLocation(name string) int32 {
 	var loc int32
 	var ok bool
 	if loc, ok = s.uniform_locations[name]; !ok {
@@ -313,195 +313,88 @@ func (s *OpenGLShader) SetUniformV2(name string, value mgl32.Vec2) error {
 		s.uniform_locations[name] = loc
 	}
 	if loc == -1 {
-		return &OpenGLError{errorString: "Couldn't find uniform " + name + " in shader " + s.name}
+		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_WARNING, "Shader", s.name, "Couldn't find uniform "+name)
 	}
-	gl.Uniform2f(loc, value[0], value[1])
-
-	return nil
-}
-func (s *OpenGLShader) SetUniformV3(name string, value mgl32.Vec3) error {
-	var loc int32
-	var ok bool
-	if loc, ok = s.uniform_locations[name]; !ok {
-		loc = gl.GetUniformLocation(s.program, gl.Str(name+"\x00"))
-		s.uniform_locations[name] = loc
-	}
-	if loc == -1 {
-		return &OpenGLError{errorString: "Couldn't find uniform " + name + " in shader " + s.name}
-	}
-
-	gl.Uniform3f(loc, value[0], value[1], value[2])
-
-	return nil
-}
-func (s *OpenGLShader) SetUniformV4(name string, value mgl32.Vec4) error {
-	var loc int32
-	var ok bool
-	if loc, ok = s.uniform_locations[name]; !ok {
-		loc = gl.GetUniformLocation(s.program, gl.Str(name+"\x00"))
-		s.uniform_locations[name] = loc
-	}
-	if loc == -1 {
-		return &OpenGLError{errorString: "Couldn't find uniform " + name + " in shader " + s.name}
-	}
-
-	gl.Uniform4f(loc, value[0], value[1], value[2], value[3])
-
-	return nil
-}
-func (s *OpenGLShader) SetUniformIV2(name string, value []int32) error {
-	var loc int32
-	var ok bool
-	if loc, ok = s.uniform_locations[name]; !ok {
-		loc = gl.GetUniformLocation(s.program, gl.Str(name+"\x00"))
-		s.uniform_locations[name] = loc
-	}
-	if loc == -1 {
-		return &OpenGLError{errorString: "Couldn't find uniform " + name + " in shader " + s.name}
-	}
-
-	gl.Uniform2i(loc, value[0], value[1])
-
-	return nil
-}
-func (s *OpenGLShader) SetUniformIV3(name string, value []int32) error {
-	var loc int32
-	var ok bool
-	if loc, ok = s.uniform_locations[name]; !ok {
-		loc = gl.GetUniformLocation(s.program, gl.Str(name+"\x00"))
-		s.uniform_locations[name] = loc
-	}
-	if loc == -1 {
-		return &OpenGLError{errorString: "Couldn't find uniform " + name + " in shader " + s.name}
-	}
-
-	gl.Uniform3i(loc, value[0], value[1], value[2])
-
-	return nil
-}
-func (s *OpenGLShader) SetUniformIV4(name string, value []int32) error {
-	var loc int32
-	var ok bool
-	if loc, ok = s.uniform_locations[name]; !ok {
-		loc = gl.GetUniformLocation(s.program, gl.Str(name+"\x00"))
-		s.uniform_locations[name] = loc
-	}
-	if loc == -1 {
-		return &OpenGLError{errorString: "Couldn't find uniform " + name + " in shader " + s.name}
-	}
-
-	gl.Uniform4i(loc, value[0], value[1], value[2], value[3])
-
-	return nil
-}
-func (s *OpenGLShader) SetUniformF(name string, value float32) error {
-	var loc int32
-	var ok bool
-	if loc, ok = s.uniform_locations[name]; !ok {
-		loc = gl.GetUniformLocation(s.program, gl.Str(name+"\x00"))
-		s.uniform_locations[name] = loc
-	}
-	if loc == -1 {
-		return &OpenGLError{errorString: "Couldn't find uniform " + name + " in shader " + s.name}
-	}
-
-	gl.Uniform1f(loc, value)
-
-	return nil
-}
-func (s *OpenGLShader) SetUniformI(name string, value int32) error {
-	var loc int32
-	var ok bool
-	if loc, ok = s.uniform_locations[name]; !ok {
-		loc = gl.GetUniformLocation(s.program, gl.Str(name+"\x00"))
-		s.uniform_locations[name] = loc
-	}
-	if loc == -1 {
-		return &OpenGLError{errorString: "Couldn't find uniform " + name + " in shader " + s.name}
-	}
-
-	gl.Uniform1i(loc, value)
-
-	return nil
-}
-func (s *OpenGLShader) SetUniformUI(name string, value uint32) error {
-	var loc int32
-	var ok bool
-	if loc, ok = s.uniform_locations[name]; !ok {
-		loc = gl.GetUniformLocation(s.program, gl.Str(name+"\x00"))
-		s.uniform_locations[name] = loc
-	}
-	if loc == -1 {
-		return &OpenGLError{errorString: "Couldn't find uniform " + name + " in shader " + s.name}
-	}
-
-	gl.Uniform1ui(loc, value)
-
-	return nil
-}
-func (s *OpenGLShader) SetUniformB(name string, value uint8) error {
-	var loc int32
-	var ok bool
-	if loc, ok = s.uniform_locations[name]; !ok {
-		loc = gl.GetUniformLocation(s.program, gl.Str(name+"\x00"))
-		s.uniform_locations[name] = loc
-	}
-	if loc == -1 {
-		return &OpenGLError{errorString: "Couldn't find uniform " + name + " in shader " + s.name}
-	}
-
-	gl.Uniform1i(loc, int32(value))
-
-	return nil
-}
-func (s *OpenGLShader) SetUniformM2(name string, value mgl32.Mat2) error {
-	var loc int32
-	var ok bool
-	if loc, ok = s.uniform_locations[name]; !ok {
-		loc = gl.GetUniformLocation(s.program, gl.Str(name+"\x00"))
-		s.uniform_locations[name] = loc
-	}
-	if loc == -1 {
-		return &OpenGLError{errorString: "Couldn't find uniform " + name + " in shader " + s.name}
-	}
-
-	gl.UniformMatrix2fv(loc, 1, false, &value[0])
-
-	return nil
-}
-func (s *OpenGLShader) SetUniformM3(name string, value mgl32.Mat3) error {
-	var loc int32
-	var ok bool
-	if loc, ok = s.uniform_locations[name]; !ok {
-		loc = gl.GetUniformLocation(s.program, gl.Str(name+"\x00"))
-		s.uniform_locations[name] = loc
-	}
-	if loc == -1 {
-		return &OpenGLError{errorString: "Couldn't find uniform " + name + " in shader " + s.name}
-	}
-
-	gl.UniformMatrix3fv(loc, 1, false, &value[0])
-
-	return nil
-}
-func (s *OpenGLShader) SetUniformM4(name string, value mgl32.Mat4) error {
-	var loc int32
-	var ok bool
-	if loc, ok = s.uniform_locations[name]; !ok {
-		loc = gl.GetUniformLocation(s.program, gl.Str(name+"\x00"))
-		s.uniform_locations[name] = loc
-	}
-	if loc == -1 {
-		return &OpenGLError{errorString: "Couldn't find uniform " + name + " in shader " + s.name}
-	}
-
-	gl.UniformMatrix4fv(loc, 1, false, &value[0])
-
-	return nil
+	return loc
 }
 
-func (s *OpenGLShader) SetUniformMaterial(mat gohome.Material) error {
-	var err error
+func (s *OpenGLShader) SetUniformV2(name string, value mgl32.Vec2) {
+	loc := s.getUniformLocation(name)
+	if loc != -1 {
+		gl.Uniform2f(loc, value[0], value[1])
+	}
+}
+func (s *OpenGLShader) SetUniformV3(name string, value mgl32.Vec3) {
+	loc := s.getUniformLocation(name)
+	if loc != -1 {
+		gl.Uniform3f(loc, value[0], value[1], value[2])
+	}
+}
+func (s *OpenGLShader) SetUniformV4(name string, value mgl32.Vec4) {
+	loc := s.getUniformLocation(name)
+	if loc != -1 {
+		gl.Uniform4f(loc, value[0], value[1], value[2], value[3])
+	}
+}
+func (s *OpenGLShader) SetUniformIV2(name string, value []int32) {
+	loc := s.getUniformLocation(name)
+	if loc != -1 {
+		gl.Uniform2i(loc, value[0], value[1])
+	}
+}
+func (s *OpenGLShader) SetUniformIV3(name string, value []int32) {
+	loc := s.getUniformLocation(name)
+	if loc != -1 {
+		gl.Uniform3i(loc, value[0], value[1], value[2])
+	}
+}
+func (s *OpenGLShader) SetUniformIV4(name string, value []int32) {
+	loc := s.getUniformLocation(name)
+	if loc != -1 {
+		gl.Uniform4i(loc, value[0], value[1], value[2], value[3])
+	}
+}
+func (s *OpenGLShader) SetUniformF(name string, value float32) {
+	loc := s.getUniformLocation(name)
+	if loc != -1 {
+		gl.Uniform1f(loc, value)
+	}
+}
+func (s *OpenGLShader) SetUniformI(name string, value int32) {
+	loc := s.getUniformLocation(name)
+	if loc != -1 {
+		gl.Uniform1i(loc, value)
+	}
+}
+func (s *OpenGLShader) SetUniformUI(name string, value uint32) {
+	loc := s.getUniformLocation(name)
+	if loc != -1 {
+		gl.Uniform1ui(loc, value)
+	}
+}
+func (s *OpenGLShader) SetUniformB(name string, value uint8) {
+	s.SetUniformI(name, int32(value))
+}
+func (s *OpenGLShader) SetUniformM2(name string, value mgl32.Mat2) {
+	loc := s.getUniformLocation(name)
+	if loc != -1 {
+		gl.UniformMatrix2fv(loc, 1, false, &value[0])
+	}
+}
+func (s *OpenGLShader) SetUniformM3(name string, value mgl32.Mat3) {
+	loc := s.getUniformLocation(name)
+	if loc != -1 {
+		gl.UniformMatrix3fv(loc, 1, false, &value[0])
+	}
+}
+func (s *OpenGLShader) SetUniformM4(name string, value mgl32.Mat4) {
+	loc := s.getUniformLocation(name)
+	if loc != -1 {
+		gl.UniformMatrix4fv(loc, 1, false, &value[0])
+	}
+}
+
+func (s *OpenGLShader) SetUniformMaterial(mat gohome.Material) {
 	var diffBind int32 = 0
 	var specBind int32 = 0
 	var normBind int32 = 0
@@ -517,7 +410,6 @@ func (s *OpenGLShader) SetUniformMaterial(mat gohome.Material) error {
 			gohome.Render.DecrementTextureUnit(1)
 		} else {
 			mat.DiffuseTexture.Bind(uint32(diffBind))
-			// fmt.Println("Binding Diffuse Texture to ", diffBind)
 			mat.DiffuseTextureLoaded = 1
 			boundTextures++
 		}
@@ -533,7 +425,6 @@ func (s *OpenGLShader) SetUniformMaterial(mat gohome.Material) error {
 			gohome.Render.DecrementTextureUnit(1)
 		} else {
 			mat.SpecularTexture.Bind(uint32(specBind))
-			// fmt.Println("Binding SpecularTexture to ", specBind)
 			mat.SpecularTextureLoaded = 1
 			boundTextures++
 		}
@@ -549,7 +440,6 @@ func (s *OpenGLShader) SetUniformMaterial(mat gohome.Material) error {
 			gohome.Render.DecrementTextureUnit(1)
 		} else {
 			mat.NormalMap.Bind(uint32(normBind))
-			// fmt.Println("Binding NormalMap to ", normBind)
 			mat.NormalMapLoaded = 1
 			boundTextures++
 		}
@@ -559,101 +449,54 @@ func (s *OpenGLShader) SetUniformMaterial(mat gohome.Material) error {
 
 	gohome.Render.DecrementTextureUnit(boundTextures)
 
-	if err = s.SetUniformV3(gohome.MATERIAL_UNIFORM_NAME+"."+gohome.MATERIAL_DIFFUSE_COLOR_UNIFORM_NAME, gohome.ColorToVec3(mat.DiffuseColor)); err != nil {
-		// return err
-	}
-	if err = s.SetUniformV3(gohome.MATERIAL_UNIFORM_NAME+"."+gohome.MATERIAL_SPECULAR_COLOR_UNIFORM_NAME, gohome.ColorToVec3(mat.SpecularColor)); err != nil {
-		// return err
-	}
-	if err = s.SetUniformI(gohome.MATERIAL_UNIFORM_NAME+gohome.MATERIAL_DIFFUSE_TEXTURE_UNIFORM_NAME, diffBind); err != nil {
-		// return err
-	}
-	if err = s.SetUniformI(gohome.MATERIAL_UNIFORM_NAME+gohome.MATERIAL_SPECULAR_TEXTURE_UNIFORM_NAME, specBind); err != nil {
-		// return err
-	}
-	if err = s.SetUniformI(gohome.MATERIAL_UNIFORM_NAME+gohome.MATERIAL_NORMALMAP_UNIFORM_NAME, normBind); err != nil {
-		// return err
-	}
-	if err = s.SetUniformF(gohome.MATERIAL_UNIFORM_NAME+"."+gohome.MATERIAL_SHINYNESS_UNIFORM_NAME, mat.Shinyness); err != nil {
-		// return err
-	}
+	s.SetUniformV3(gohome.MATERIAL_UNIFORM_NAME+"."+gohome.MATERIAL_DIFFUSE_COLOR_UNIFORM_NAME, gohome.ColorToVec3(mat.DiffuseColor))
+	s.SetUniformV3(gohome.MATERIAL_UNIFORM_NAME+"."+gohome.MATERIAL_SPECULAR_COLOR_UNIFORM_NAME, gohome.ColorToVec3(mat.SpecularColor))
+	s.SetUniformF(gohome.MATERIAL_UNIFORM_NAME+"."+gohome.MATERIAL_SHINYNESS_UNIFORM_NAME, mat.Shinyness)
 
-	if err = s.SetUniformB(gohome.MATERIAL_UNIFORM_NAME+"."+gohome.MATERIAL_DIFFUSE_TEXTURE_LOADED_UNIFORM_NAME, mat.DiffuseTextureLoaded); err != nil {
-		// return err
-	}
-	if err = s.SetUniformB(gohome.MATERIAL_UNIFORM_NAME+"."+gohome.MATERIAL_SPECULAR_TEXTURE_LOADED_UNIFORM_NAME, mat.SpecularTextureLoaded); err != nil {
-		// return err
-	}
-	if err = s.SetUniformB(gohome.MATERIAL_UNIFORM_NAME+"."+gohome.MATERIAL_NORMALMAP_LOADED_UNIFORM_NAME, mat.NormalMapLoaded); err != nil {
-		// return err
-	}
-
-	return err
+	s.SetUniformB(gohome.MATERIAL_UNIFORM_NAME+"."+gohome.MATERIAL_DIFFUSE_TEXTURE_LOADED_UNIFORM_NAME, mat.DiffuseTextureLoaded)
+	s.SetUniformB(gohome.MATERIAL_UNIFORM_NAME+"."+gohome.MATERIAL_SPECULAR_TEXTURE_LOADED_UNIFORM_NAME, mat.SpecularTextureLoaded)
+	s.SetUniformB(gohome.MATERIAL_UNIFORM_NAME+"."+gohome.MATERIAL_NORMALMAP_LOADED_UNIFORM_NAME, mat.NormalMapLoaded)
+	s.SetUniformI(gohome.MATERIAL_UNIFORM_NAME+gohome.MATERIAL_DIFFUSE_TEXTURE_UNIFORM_NAME, diffBind)
+	s.SetUniformI(gohome.MATERIAL_UNIFORM_NAME+gohome.MATERIAL_SPECULAR_TEXTURE_UNIFORM_NAME, specBind)
+	s.SetUniformI(gohome.MATERIAL_UNIFORM_NAME+gohome.MATERIAL_NORMALMAP_UNIFORM_NAME, normBind)
 }
 
-func (s *OpenGLShader) SetUniformLights(lightCollectionIndex int32) error {
+func (s *OpenGLShader) SetUniformLights(lightCollectionIndex int32) {
 	if lightCollectionIndex == -1 || lightCollectionIndex > int32(len(gohome.LightMgr.LightCollections)-1) {
-		var err error
-		if err = s.SetUniformI(gohome.NUM_POINT_LIGHTS_UNIFORM_NAME, 0); err != nil {
-			return err
-		}
-		if err = s.SetUniformI(gohome.NUM_DIRECTIONAL_LIGHTS_UNIFORM_NAME, 0); err != nil {
-			return err
-		}
-		if err = s.SetUniformI(gohome.NUM_SPOT_LIGHTS_UNIFORM_NAME, 0); err != nil {
-			return err
-		}
+		s.SetUniformI(gohome.NUM_POINT_LIGHTS_UNIFORM_NAME, 0)
+		s.SetUniformI(gohome.NUM_DIRECTIONAL_LIGHTS_UNIFORM_NAME, 0)
+		s.SetUniformI(gohome.NUM_SPOT_LIGHTS_UNIFORM_NAME, 0)
 
-		if err = s.SetUniformV3(gohome.AMBIENT_LIGHT_UNIFORM_NAME, mgl32.Vec3{1.0, 1.0, 1.0}); err != nil {
-			return err
-		}
-		return nil
+		s.SetUniformV3(gohome.AMBIENT_LIGHT_UNIFORM_NAME, mgl32.Vec3{1.0, 1.0, 1.0})
 	}
 
 	lightColl := gohome.LightMgr.LightCollections[lightCollectionIndex]
 
-	var err error
-	if err = s.SetUniformI(gohome.NUM_POINT_LIGHTS_UNIFORM_NAME, int32(len(lightColl.PointLights))); err != nil {
-		return err
-	}
-	if err = s.SetUniformI(gohome.NUM_DIRECTIONAL_LIGHTS_UNIFORM_NAME, int32(len(lightColl.DirectionalLights))); err != nil {
-		return err
-	}
-	if err = s.SetUniformI(gohome.NUM_SPOT_LIGHTS_UNIFORM_NAME, int32(len(lightColl.SpotLights))); err != nil {
-		return err
-	}
+	s.SetUniformI(gohome.NUM_POINT_LIGHTS_UNIFORM_NAME, int32(len(lightColl.PointLights)))
+	s.SetUniformI(gohome.NUM_DIRECTIONAL_LIGHTS_UNIFORM_NAME, int32(len(lightColl.DirectionalLights)))
+	s.SetUniformI(gohome.NUM_SPOT_LIGHTS_UNIFORM_NAME, int32(len(lightColl.SpotLights)))
 
-	if err = s.SetUniformV3(gohome.AMBIENT_LIGHT_UNIFORM_NAME, gohome.ColorToVec3(lightColl.AmbientLight)); err != nil {
-		return err
-	}
+	s.SetUniformV3(gohome.AMBIENT_LIGHT_UNIFORM_NAME, gohome.ColorToVec3(lightColl.AmbientLight))
 
 	var i uint32
 	for i = 0; i < uint32(len(lightColl.PointLights)); i++ {
-		if err = lightColl.PointLights[i].SetUniforms(s, i); err != nil {
-			// return err
-		}
+		lightColl.PointLights[i].SetUniforms(s, i)
 	}
 	for i = 0; i < uint32(len(lightColl.DirectionalLights)); i++ {
-		if err = lightColl.DirectionalLights[i].SetUniforms(s, i); err != nil {
-			// return err
-		}
+		lightColl.DirectionalLights[i].SetUniforms(s, i)
 	}
 	for i = 0; i < uint32(len(lightColl.SpotLights)); i++ {
-		if err = lightColl.SpotLights[i].SetUniforms(s, i); err != nil {
-			// return err
-		}
+		lightColl.SpotLights[i].SetUniforms(s, i)
 	}
-
-	return err
 }
 
 func (s *OpenGLShader) GetName() string {
 	return s.name
 }
 
-func (s *OpenGLShader) validate() error {
+func (s *OpenGLShader) validate() bool {
 	if s.validated {
-		return nil
+		return true
 	}
 	render, _ := gohome.Render.(*OpenGLRenderer)
 	s.Use()
@@ -680,10 +523,11 @@ func (s *OpenGLShader) validate() error {
 		logtext := strings.Repeat("\x00", int(logLength+1))
 		gl.GetProgramInfoLog(s.program, logLength, nil, gl.Str(logtext))
 		s.validated = false
-		return &OpenGLError{errorString: "Couldn't validate shader " + s.name + ": " + logtext}
+		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "Shader", s.name, "Couldn't validate: "+logtext)
+		return false
 	}
 
-	return nil
+	return true
 }
 
 func (s *OpenGLShader) AddAttribute(name string, location uint32) {

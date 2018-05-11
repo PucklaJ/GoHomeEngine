@@ -263,9 +263,7 @@ func (rmgr *RenderManager) updateTransformMatrix(robj *RenderPair, t RenderType)
 
 func (rmgr *RenderManager) updateLights(lightCollectionIndex int32) {
 	if rmgr.CurrentShader != nil {
-		if err := rmgr.CurrentShader.SetUniformLights(lightCollectionIndex); err != nil {
-			// fmt.Println("Error:", err)
-		}
+		rmgr.CurrentShader.SetUniformLights(lightCollectionIndex)
 	}
 }
 

@@ -260,9 +260,7 @@ func (this *OpenGLESInstancedMesh3D) Render() {
 		return
 	}
 	if gohome.RenderMgr.CurrentShader != nil && this.Material != nil {
-		if err := gohome.RenderMgr.CurrentShader.SetUniformMaterial(*this.Material); err != nil {
-			// fmt.Println("Error:", err)
-		}
+		gohome.RenderMgr.CurrentShader.SetUniformMaterial(*this.Material)
 	}
 	if this.isgles3 {
 		(*this.gles).BindVertexArray(this.vao)

@@ -62,6 +62,9 @@ func (this *ErrorManager) Message(errorLevel uint8, tag string, objectName strin
 }
 
 func (this *ErrorManager) MessageError(errorLevel uint8, tag string, objectName string, err error) {
+	if errorLevel > this.ErrorLevel {
+		return
+	}
 	errMsg := ErrorMessage{
 		ErrorLevel: errorLevel,
 		Tag:        tag,
@@ -83,9 +86,7 @@ func (this *ErrorManager) MessageError(errorLevel uint8, tag string, objectName 
 }
 
 func (this *ErrorManager) onNewError(errMsg ErrorMessage) {
-	if errMsg.ErrorLevel <= this.ErrorLevel {
-		log.Println(errMsg.Error())
-	}
+	log.Println(errMsg.Error())
 }
 
 func (this *ErrorManager) Reset() {

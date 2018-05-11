@@ -219,9 +219,7 @@ func (oglm *OpenGLESMesh3D) Render() {
 		return
 	}
 	if gohome.RenderMgr.CurrentShader != nil {
-		if err := gohome.RenderMgr.CurrentShader.SetUniformMaterial(*oglm.Material); err != nil {
-			// fmt.Println("Error:", err)
-		}
+		gohome.RenderMgr.CurrentShader.SetUniformMaterial(*oglm.Material)
 	}
 	if oglm.isgles3 {
 		(*oglm.gles).BindVertexArray(oglm.vao)
