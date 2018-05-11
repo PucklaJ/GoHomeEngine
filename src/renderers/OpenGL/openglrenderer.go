@@ -4,6 +4,7 @@ import (
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
 	"github.com/go-gl/gl/all-core/gl"
 	"image/color"
+	"strconv"
 )
 
 const (
@@ -366,4 +367,11 @@ func (this *OpenGLRenderer) SetBackgroundColor(bgColor color.Color) {
 
 func (this *OpenGLRenderer) GetBackgroundColor() color.Color {
 	return this.backgroundColor
+}
+
+func handleOpenGLError(tag, objectName, errorPrefix string) {
+	err := gl.GetError()
+	if err != gl.NO_ERROR {
+		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, tag, objectName, errorPrefix+"ErrorCode: "+strconv.Itoa(int(err)))
+	}
 }

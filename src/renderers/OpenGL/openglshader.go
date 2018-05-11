@@ -437,6 +437,7 @@ func (s *OpenGLShader) SetUniformLights(lightCollectionIndex int32) {
 		s.SetUniformI(gohome.NUM_SPOT_LIGHTS_UNIFORM_NAME, 0)
 
 		s.SetUniformV3(gohome.AMBIENT_LIGHT_UNIFORM_NAME, mgl32.Vec3{1.0, 1.0, 1.0})
+		return
 	}
 
 	lightColl := gohome.LightMgr.LightCollections[lightCollectionIndex]

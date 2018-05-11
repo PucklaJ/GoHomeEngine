@@ -201,7 +201,9 @@ func (oglm *OpenGLMesh3D) Render() {
 	} else {
 		oglm.attributePointer()
 	}
+	gl.GetError()
 	gl.DrawElements(gl.TRIANGLES, int32(oglm.numIndices), gl.UNSIGNED_INT, gl.PtrOffset(int(oglm.numVertices*MESH3DVERTEX_SIZE)))
+	handleOpenGLError("Mesh3D", oglm.Name, "RenderError: ")
 	if oglm.canUseVAOs {
 		gl.BindVertexArray(0)
 	} else {
