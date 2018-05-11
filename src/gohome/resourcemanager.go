@@ -1,7 +1,6 @@
 package gohome
 
 import (
-	// "fmt"
 	"github.com/blezek/tga"
 	"github.com/golang/freetype"
 	"image"
@@ -10,7 +9,6 @@ import (
 	_ "image/png"
 	"io"
 	"io/ioutil"
-	"log"
 	"strconv"
 	"strings"
 	"sync"
@@ -301,7 +299,7 @@ func (rsmgr *ResourceManager) loadShader(name, vertex_path, fragment_path, geome
 	if !preloaded {
 		shader, erro = Render.LoadShader(name, contents[VERTEX], contents[FRAGMENT], contents[GEOMETRY], contents[TESSELLETION], contents[EVELUATION], contents[COMPUTE])
 		if erro != nil {
-			log.Println(erro)
+			ErrorMgr.MessageError(ERROR_LEVEL_ERROR, "Shader", name, erro)
 			return nil
 		}
 	} else {

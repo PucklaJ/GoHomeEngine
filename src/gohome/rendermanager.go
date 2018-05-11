@@ -1,9 +1,7 @@
 package gohome
 
 import (
-	// "fmt"
 	"github.com/go-gl/mathgl/mgl32"
-	// "log"
 )
 
 type RenderType uint8
@@ -15,9 +13,13 @@ const (
 	TYPE_2D_NORMAL    RenderType = iota
 	TYPE_3D_INSTANCED RenderType = iota
 	TYPE_2D_INSTANCED RenderType = iota
+	TYPE_EVERYTHING   RenderType = iota
 )
 
 func (this RenderType) Compatible(rtype RenderType) bool {
+	if this == TYPE_EVERYTHING || rtype == TYPE_EVERYTHING {
+		return true
+	}
 	switch this {
 	case TYPE_2D:
 		switch rtype {
@@ -41,24 +43,32 @@ func (this RenderType) Compatible(rtype RenderType) bool {
 		break
 	case TYPE_3D_NORMAL:
 		switch rtype {
+		case TYPE_3D:
+			return true
 		case TYPE_3D_NORMAL:
 			return true
 		}
 		break
 	case TYPE_2D_NORMAL:
 		switch rtype {
+		case TYPE_2D:
+			return true
 		case TYPE_2D_NORMAL:
 			return true
 		}
 		break
 	case TYPE_3D_INSTANCED:
 		switch rtype {
+		case TYPE_3D:
+			return true
 		case TYPE_3D_INSTANCED:
 			return true
 		}
 		break
 	case TYPE_2D_INSTANCED:
 		switch rtype {
+		case TYPE_2D:
+			return true
 		case TYPE_2D_INSTANCED:
 			return true
 		}
@@ -261,9 +271,11 @@ func (rmgr *RenderManager) updateTransformMatrix(robj *RenderPair, t RenderType)
 	}
 }
 
-func (rmgr *RenderManager) updateLights(lightCollectionIndex int32) {
-	if rmgr.CurrentShader != nil {
-		rmgr.CurrentShader.SetUniformLights(lightCollectionIndex)
+func (rmgr *RenderManager) updateLights(lightCollectionIndex int32, rtype RenderType) {
+	if rtype.Compatible(TYPE_3D) {
+		if rmgr.CurrentShader != nil {
+			rmgr.CurrentShader.SetUniformLights(lightCollectionIndex)
+		}
 	}
 }
 
@@ -437,7 +449,7 @@ func (rmgr *RenderManager) prepareRenderRenderObject(robj *RenderPair, lightColl
 	rmgr.updateCamera(robj.RenderObject)
 	rmgr.updateProjection(robj.RenderObject.GetType())
 	rmgr.updateTransformMatrix(robj, robj.RenderObject.GetType())
-	rmgr.updateLights(lightCollectionIndex)
+	rmgr.updateLights(lightCollectionIndex, robj.RenderObject.GetType())
 }
 
 func (rmgr *RenderManager) renderRenderObject(robj *RenderPair, lightCollectionIndex int32) {

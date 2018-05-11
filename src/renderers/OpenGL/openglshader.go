@@ -1,13 +1,10 @@
 package renderer
 
 import (
-	// "fmt"
 	"bytes"
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
 	"github.com/go-gl/gl/all-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
-	// "log"
-	"runtime"
 	"strconv"
 	"strings"
 )
@@ -32,7 +29,7 @@ func CreateOpenGLShader(name string) (*OpenGLShader, error) {
 	}
 	program := gl.CreateProgram()
 	if program == 0 {
-		return shader, &OpenGLError{errorString: "Couldn't create shader program of " + name}
+		return shader, &OpenGLError{errorString: "Couldn't create program"}
 	} else {
 		shader.program = program
 		return shader, nil
@@ -208,7 +205,7 @@ func (s *OpenGLShader) AddShader(shader_type uint8, src string) error {
 	}
 
 	if err != nil {
-		return &OpenGLError{errorString: "Couldn't compile source of " + getShaderTypeName(shader_type) + " of " + s.name + ": " + err.Error()}
+		return &OpenGLError{errorString: "Couldn't compile " + getShaderTypeName(shader_type) + ": " + err.Error()}
 	}
 
 	s.shaders[shader_type] = shaderName
@@ -231,31 +228,31 @@ func (s *OpenGLShader) Link() error {
 	gl.GetError()
 	gl.LinkProgram(s.program)
 	if err := gl.GetError(); err != gl.NO_ERROR {
-		return &OpenGLError{errorString: "Couldn't link shader " + s.name + ": ErrorCode: " + strconv.Itoa(int(err))}
+		return &OpenGLError{errorString: "Couldn't link: ErrorCode: " + strconv.Itoa(int(err))}
 	}
 
 	var status int32
 	gl.GetError()
 	gl.GetProgramiv(s.program, gl.LINK_STATUS, &status)
 	if err := gl.GetError(); err != gl.NO_ERROR {
-		return &OpenGLError{errorString: "Couldn't link shader " + s.name + ": Couldn't get link status: ErrorCode: " + strconv.Itoa(int(err))}
+		return &OpenGLError{errorString: "Couldn't link: Couldn't get link status: ErrorCode: " + strconv.Itoa(int(err))}
 	}
 	if status == gl.FALSE {
 		var logLength int32
 		gl.GetError()
 		gl.GetProgramiv(s.program, gl.INFO_LOG_LENGTH, &logLength)
 		if err := gl.GetError(); err != gl.NO_ERROR {
-			return &OpenGLError{errorString: "Couldn't link shader " + s.name + ": Couldn't get info log length: ErrorCode: " + strconv.Itoa(int(err))}
+			return &OpenGLError{errorString: "Couldn't link: Couldn't get info log length: ErrorCode: " + strconv.Itoa(int(err))}
 		}
 
 		logtext := strings.Repeat("\x00", int(logLength+1))
 		gl.GetError()
 		gl.GetProgramInfoLog(s.program, logLength, nil, gl.Str(logtext))
 		if err := gl.GetError(); err != gl.NO_ERROR {
-			return &OpenGLError{errorString: "Couldn't link shader " + s.name + ": Couldn't get info log: ErrorCode: " + strconv.Itoa(int(err))}
+			return &OpenGLError{errorString: "Couldn't link: Couldn't get info log: ErrorCode: " + strconv.Itoa(int(err))}
 		}
 
-		return &OpenGLError{errorString: "Couldn't link shader " + s.name + ": " + logtext}
+		return &OpenGLError{errorString: "Couldn't link: " + logtext}
 	}
 
 	return nil
@@ -270,35 +267,7 @@ func (s *OpenGLShader) Unuse() {
 }
 
 func (s *OpenGLShader) Setup() error {
-	s.validate()
-	if runtime.GOOS != "windows" {
-		s.Use()
-
-		var c int32
-		var i uint32
-		s.uniform_locations = make(map[string]int32)
-		s.attribute_locations = make(map[string]uint32)
-		gl.GetProgramiv(s.program, gl.ACTIVE_UNIFORMS, &c)
-		for i = 0; i < uint32(c); i++ {
-			var buf [256]byte
-			gl.GetActiveUniform(s.program, i, 256, nil, nil, nil, &buf[0])
-			loc := gl.GetUniformLocation(s.program, &buf[0])
-			name := gl.GoStr(&buf[0])
-			s.uniform_locations[name] = loc
-		}
-		gl.GetProgramiv(s.program, gl.ACTIVE_ATTRIBUTES, &c)
-		for i = 0; i < uint32(c); i++ {
-			var buf [256]byte
-			gl.GetActiveAttrib(s.program, i, 256, nil, nil, nil, &buf[0])
-			loc := gl.GetAttribLocation(s.program, &buf[0])
-			name := gl.GoStr(&buf[0])
-			s.attribute_locations[name] = uint32(loc)
-		}
-
-		s.Unuse()
-	}
-
-	return nil
+	return s.validate()
 }
 
 func (s *OpenGLShader) Terminate() {
@@ -494,9 +463,9 @@ func (s *OpenGLShader) GetName() string {
 	return s.name
 }
 
-func (s *OpenGLShader) validate() bool {
+func (s *OpenGLShader) validate() error {
 	if s.validated {
-		return true
+		return nil
 	}
 	render, _ := gohome.Render.(*OpenGLRenderer)
 	s.Use()
@@ -523,11 +492,10 @@ func (s *OpenGLShader) validate() bool {
 		logtext := strings.Repeat("\x00", int(logLength+1))
 		gl.GetProgramInfoLog(s.program, logLength, nil, gl.Str(logtext))
 		s.validated = false
-		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "Shader", s.name, "Couldn't validate: "+logtext)
-		return false
+		return &OpenGLError{"Couldn't validate: " + logtext}
 	}
 
-	return true
+	return nil
 }
 
 func (s *OpenGLShader) AddAttribute(name string, location uint32) {

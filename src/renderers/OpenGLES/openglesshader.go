@@ -31,7 +31,7 @@ func CreateOpenGLESShader(name string) (*OpenGLESShader, error) {
 	shader.gles = &renderer.gles
 	program := (*shader.gles).CreateProgram()
 	if program.Value == 0 {
-		return shader, &OpenGLESError{errorString: "Couldn't create shader program of " + name}
+		return shader, &OpenGLESError{errorString: "Couldn't create program"}
 	} else {
 		shader.program = program
 		return shader, nil
@@ -149,32 +149,32 @@ func toShaderName(shader_type gl.Enum) string {
 func compileOpenGLESShader(shader_name string, shader_type gl.Enum, src string, program gl.Program, gles gl.Context) (gl.Shader, error) {
 	gles.GetError()
 	shader := gles.CreateShader(shader_type)
-	if err := CheckOpenGLESError(gles, "Couldn't create "+toShaderName(shader_type)+" of "+shader_name+":"); err != nil {
+	if err := CheckOpenGLESError(gles, "Couldn't create "+toShaderName(shader_type)+":"); err != nil {
 		return shader, err
 	}
 	gles.ShaderSource(shader, src)
-	if err := CheckOpenGLESError(gles, "Couldn't source "+toShaderName(shader_type)+" of "+shader_name+":"); err != nil {
+	if err := CheckOpenGLESError(gles, "Couldn't source "+toShaderName(shader_type)+":"); err != nil {
 		return shader, err
 	}
 	gles.CompileShader(shader)
-	if err := CheckOpenGLESError(gles, "Couldn't call compile function of "+toShaderName(shader_type)+" of "+shader_name+":"); err != nil {
+	if err := CheckOpenGLESError(gles, "Couldn't call compile function of "+toShaderName(shader_type)+":"); err != nil {
 		return shader, err
 	}
 
 	status := gles.GetShaderi(shader, gl.COMPILE_STATUS)
-	if err := CheckOpenGLESError(gles, "Couldn't get compile status of "+toShaderName(shader_type)+" of "+shader_name+":"); err != nil {
+	if err := CheckOpenGLESError(gles, "Couldn't get compile status of "+toShaderName(shader_type)+":"); err != nil {
 		return shader, err
 	}
 	if status == gl.FALSE {
 		logText := gles.GetShaderInfoLog(shader)
-		if err := CheckOpenGLESError(gles, "Couldn't get info log of "+toShaderName(shader_type)+" of "+shader_name+":"); err != nil {
+		if err := CheckOpenGLESError(gles, "Couldn't get info log of "+toShaderName(shader_type)+":"); err != nil {
 			return shader, err
 		}
 
 		return gl.Shader{0}, &OpenGLESError{errorString: logText}
 	}
 	gles.AttachShader(program, shader)
-	if err := CheckOpenGLESError(gles, "Couldn't attach "+toShaderName(shader_type)+" of "+shader_name+":"); err != nil {
+	if err := CheckOpenGLESError(gles, "Couldn't attach "+toShaderName(shader_type)+":"); err != nil {
 		return shader, err
 	}
 	if shader_type == gl.VERTEX_SHADER {
@@ -193,20 +193,16 @@ func (s *OpenGLESShader) AddShader(shader_type uint8, src string) error {
 		shaderName, err = compileOpenGLESShader(s.name, gl.FRAGMENT_SHADER, src, s.program, (*s.gles))
 	case gohome.GEOMETRY:
 		err = &OpenGLESError{errorString: "Geometry shader is not supported by OpenGLES"}
-		// shaderName, err = compileOpenGLESShader(gl.GEOMETRY_SHADER, src, s.program, (*s.gles))
 	case gohome.TESSELLETION:
 		err = &OpenGLESError{errorString: "Tesselletion shader is not supported by OpenGLES"}
-		// shaderName, err = compileOpenGLESShader(gl.TESS_CONTROL_SHADER, src, s.program, (*s.gles))
 	case gohome.EVELUATION:
 		err = &OpenGLESError{errorString: "Eveluation shader is not supported by OpenGLES"}
-		// shaderName, err = compileOpenGLESShader(gl.TESS_EVALUATION_SHADER, src, s.program, (*s.gles))
 	case gohome.COMPUTE:
 		err = &OpenGLESError{errorString: "Compute shader is not supported by OpenGLES"}
-		// shaderName, err = compileOpenGLESShader(gl.COMPUTE_SHADER, src, s.program, (*s.gles))
 	}
 
 	if err != nil {
-		return &OpenGLESError{errorString: "Couldn't compile source of " + getShaderTypeName(shader_type) + " of " + s.name + ": " + err.Error()}
+		return &OpenGLESError{errorString: "Couldn't compile " + getShaderTypeName(shader_type) + ": " + err.Error()}
 	}
 
 	s.shaders[shader_type] = shaderName
@@ -230,8 +226,7 @@ func (s *OpenGLESShader) Link() error {
 	status := (*s.gles).GetProgrami(s.program, gl.LINK_STATUS)
 	if status == gl.FALSE {
 		logText := (*s.gles).GetProgramInfoLog(s.program)
-
-		return &OpenGLESError{errorString: "Couldn't link shader " + s.name + ": " + logText}
+		return &OpenGLESError{errorString: "Couldn't link: " + logText}
 	}
 	return nil
 }
@@ -245,8 +240,7 @@ func (s *OpenGLESShader) Unuse() {
 }
 
 func (s *OpenGLESShader) Setup() error {
-	s.validate()
-	return nil
+	return s.validate()
 }
 
 func (s *OpenGLESShader) Terminate() {
@@ -439,14 +433,14 @@ func (s *OpenGLESShader) GetName() string {
 	return s.name
 }
 
-func (s *OpenGLESShader) validate() bool {
+func (s *OpenGLESShader) validate() error {
 	if s.validated {
-		return true
+		return nil
 	}
 	s.Use()
 	maxtextures := gohome.Render.GetMaxTextures()
 	for i := 0; i < 31; i++ {
-		s.SetUniformI("pointLights["+strconv.Itoa(i)+"].shadowmap", maxtextures-1)
+		s.SetUniformI(gohome.POINT_LIGHTS_UNIFORM_NAME+gohome.SHADOWMAP_UNIFORM_NAME+"["+strconv.Itoa(i)+"]", maxtextures-1)
 	}
 	s.Unuse()
 	s.validated = true
@@ -455,11 +449,10 @@ func (s *OpenGLESShader) validate() bool {
 	if status == gl.FALSE {
 		logText := (*s.gles).GetProgramInfoLog(s.program)
 		s.validated = false
-		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "Shader", s.name, "Couldn't validate: "+logText)
-		return false
+		return &OpenGLESError{"Couldn't validate: " + logText}
 	}
 
-	return true
+	return nil
 }
 
 func (s *OpenGLESShader) AddAttribute(name string, location uint32) {

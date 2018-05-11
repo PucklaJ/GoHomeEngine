@@ -80,7 +80,7 @@ func (this *OpenGLESRenderer) Init() error {
 	this.CurrentTextureUnit = 0
 
 	version := this.gles.GetString(gl.VERSION)
-	gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_LOG, "Renderer", "OpenGLES\t", "Version: "+version)
+	gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_LOG, "Renderer", "OpenGLES\t", "Version: "+version+" "+gl.Version())
 	this.gles.Enable(gl.DEPTH_TEST)
 	this.gles.Enable(gl.CULL_FACE)
 
