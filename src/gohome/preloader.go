@@ -87,7 +87,6 @@ type preloader struct {
 }
 
 func (this *preloader) Init() {
-
 }
 
 func (this *preloader) loadPreloadedLevel(lvl *preloadedLevel, wg *sync.WaitGroup) {
@@ -333,14 +332,14 @@ func (this *preloader) closeChannels() {
 }
 
 func (this *preloader) clearSlices() {
-	this.preloadedTextures = this.preloadedTextures[len(this.preloadedTextures)-1:]
-	this.preloadedShaders = this.preloadedShaders[len(this.preloadedShaders)-1:]
-	this.preloadedLevels = this.preloadedLevels[len(this.preloadedLevels)-1:]
-	this.preloadedTexturesToFinish = this.preloadedTexturesToFinish[len(this.preloadedTexturesToFinish)-1:]
-	this.preloadedShadersToFinish = this.preloadedShadersToFinish[len(this.preloadedShadersToFinish)-1:]
-	this.PreloadedMeshesToFinish = this.PreloadedMeshesToFinish[len(this.PreloadedMeshesToFinish)-1:]
-	this.alreadyPreloadedTexturePathsToSet = this.alreadyPreloadedTexturePathsToSet[len(this.alreadyPreloadedTexturePathsToSet)-1:]
-	this.alreadyPreloadedLevelPathsToSet = this.alreadyPreloadedLevelPathsToSet[len(this.alreadyPreloadedLevelPathsToSet)-1:]
+	this.preloadedTextures = this.preloadedTextures[:0]
+	this.preloadedShaders = this.preloadedShaders[:0]
+	this.preloadedLevels = this.preloadedLevels[:0]
+	this.preloadedTexturesToFinish = this.preloadedTexturesToFinish[:0]
+	this.preloadedShadersToFinish = this.preloadedShadersToFinish[:0]
+	this.PreloadedMeshesToFinish = this.PreloadedMeshesToFinish[:0]
+	this.alreadyPreloadedTexturePathsToSet = this.alreadyPreloadedTexturePathsToSet[:0]
+	this.alreadyPreloadedLevelPathsToSet = this.alreadyPreloadedLevelPathsToSet[:0]
 }
 
 func (this *preloader) loadPreloadedResources() {
@@ -358,6 +357,6 @@ func (this *preloader) loadPreloadedResources() {
 	wg.Wait()
 
 	this.closeChannels()
-	this.clearSlices()
 	this.finishData()
+	this.clearSlices()
 }
