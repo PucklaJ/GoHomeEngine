@@ -2,3 +2,4 @@
 *.sublime-workspace
 *gohomeengine.sublime-workspace*
 *gohomeengine.sublime-project*
+.fuse*
