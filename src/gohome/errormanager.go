@@ -23,7 +23,8 @@ type ErrorMessage struct {
 }
 
 type ErrorManager struct {
-	ErrorLevel uint8
+	ErrorLevel        uint8
+	DuplicateMessages bool
 
 	messages []ErrorMessage
 }
@@ -55,6 +56,7 @@ func (this *ErrorMessage) Equals(other ErrorMessage) bool {
 
 func (this *ErrorManager) Init() {
 	this.ErrorLevel = ERROR_LEVEL_ERROR
+	this.DuplicateMessages = false
 }
 
 func (this *ErrorManager) Message(errorLevel uint8, tag string, objectName string, err string) {
@@ -71,7 +73,7 @@ func (this *ErrorManager) MessageError(errorLevel uint8, tag string, objectName 
 		ObjectName: objectName,
 		Err:        err,
 	}
-	if errorLevel != ERROR_LEVEL_FATAL {
+	if errorLevel != ERROR_LEVEL_FATAL && !this.DuplicateMessages {
 		for i := 0; i < len(this.messages); i++ {
 			if this.messages[i].Equals(errMsg) {
 				return

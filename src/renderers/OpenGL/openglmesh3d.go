@@ -191,6 +191,7 @@ func (oglm *OpenGLMesh3D) Load() {
 
 func (oglm *OpenGLMesh3D) Render() {
 	if oglm.numVertices == 0 || oglm.numIndices == 0 {
+		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "Mesh", oglm.Name, "No Vertices or Indices have been loaded!")
 		return
 	}
 	if gohome.RenderMgr.CurrentShader != nil {

@@ -58,11 +58,12 @@ var (
 )
 
 type ResourceManager struct {
-	textures map[string]Texture
-	shaders  map[string]Shader
-	Models   map[string]*Model3D
-	Levels   map[string]*Level
-	fonts    map[string]*Font
+	textures          map[string]Texture
+	shaders           map[string]Shader
+	Models            map[string]*Model3D
+	Levels            map[string]*Level
+	fonts             map[string]*Font
+	resourceFileNames map[string]string
 
 	preloader
 }
@@ -73,6 +74,7 @@ func (rsmgr *ResourceManager) Init() {
 	rsmgr.Models = make(map[string]*Model3D)
 	rsmgr.Levels = make(map[string]*Level)
 	rsmgr.fonts = make(map[string]*Font)
+	rsmgr.resourceFileNames = make(map[string]string)
 
 	rsmgr.preloader.Init()
 
@@ -174,10 +176,10 @@ func loadImageData(img_data *[]byte, img image.Image, start_width, end_width, ma
 }
 
 func (rsmgr *ResourceManager) LoadTexture(name, path string) {
-
 	tex := rsmgr.LoadTextureFunction(name, path, false)
 	if tex != nil {
 		rsmgr.textures[name] = tex
+		rsmgr.resourceFileNames[path] = name
 		ErrorMgr.Message(ERROR_LEVEL_LOG, "Texture", name, "Finished loading! W: "+strconv.Itoa(tex.GetWidth())+" H: "+strconv.Itoa(tex.GetHeight()))
 	}
 }
@@ -191,6 +193,7 @@ func (rsmgr *ResourceManager) LoadLevel(name, path string, loadToGPU bool) {
 	level := rsmgr.loadLevel(name, path, false, loadToGPU)
 	if level != nil {
 		rsmgr.Levels[name] = level
+		rsmgr.resourceFileNames[path] = name
 		ErrorMgr.Message(ERROR_LEVEL_LOG, "Level", name, "Finished loading!")
 	}
 }
@@ -228,7 +231,7 @@ func (rsmgr *ResourceManager) Terminate() {
 }
 
 func (rsmgr *ResourceManager) PreloadShader(name, vertex_path, fragment_path, geometry_path, tesselletion_control_path, eveluation_path, compute_path string) {
-	rsmgr.preloader.preloadedShaders = append(rsmgr.preloader.preloadedShaders, preloadedShader{
+	shader := preloadedShader{
 		name,
 		vertex_path,
 		fragment_path,
@@ -236,26 +239,49 @@ func (rsmgr *ResourceManager) PreloadShader(name, vertex_path, fragment_path, ge
 		tesselletion_control_path,
 		eveluation_path,
 		compute_path,
-	})
+	}
+
+	if !rsmgr.checkPreloadedShader(&shader) {
+		return
+	}
+
+	rsmgr.preloader.preloadedShaders = append(rsmgr.preloader.preloadedShaders, shader)
 }
 
 func (rsmgr *ResourceManager) PreloadTexture(name, path string) {
+
 	tex := preloadedTexture{
 		name,
 		path,
+		false,
+	}
+	if !rsmgr.checkPreloadedTexture(&tex) {
+		return
 	}
 	rsmgr.preloader.preloadedTextures = append(rsmgr.preloader.preloadedTextures, tex)
 }
 
 func (rsmgr *ResourceManager) PreloadLevel(name, path string, loadToGPU bool) {
-	rsmgr.preloader.preloadedLevels = append(rsmgr.preloader.preloadedLevels, preloadedLevel{
+	level := preloadedLevel{
 		name,
 		path,
 		loadToGPU,
-	})
+		false,
+	}
+	if !rsmgr.checkPreloadedLevel(&level) {
+		return
+	}
+	rsmgr.preloader.preloadedLevels = append(rsmgr.preloader.preloadedLevels, level)
 }
 
 func (rsmgr *ResourceManager) loadLevel(name, path string, preloaded, loadToGPU bool) *Level {
+	if !preloaded {
+		if resName, ok := rsmgr.resourceFileNames[path]; ok {
+			rsmgr.Levels[name] = rsmgr.Levels[resName]
+			ErrorMgr.Message(ERROR_LEVEL_WARNING, "Level", name, "Has already been loaded with this or another name!")
+			return nil
+		}
+	}
 	return Framew.LoadLevel(rsmgr, name, path, preloaded, loadToGPU)
 }
 
@@ -313,6 +339,11 @@ func (rsmgr *ResourceManager) loadShader(name, vertex_path, fragment_path, geome
 }
 
 func (rsmgr *ResourceManager) LoadFont(name, path string) {
+	if resName, ok := rsmgr.resourceFileNames[path]; ok {
+		rsmgr.fonts[name] = rsmgr.fonts[resName]
+		ErrorMgr.Message(ERROR_LEVEL_WARNING, "Font", name, "Has already been loaded with this or another name!")
+		return
+	}
 	if _, ok := rsmgr.fonts[name]; ok {
 		ErrorMgr.Message(ERROR_LEVEL_LOG, "Font", name, "Has already been loaded!")
 		return
@@ -340,9 +371,17 @@ func (rsmgr *ResourceManager) LoadFont(name, path string) {
 	font.Init(ttf)
 
 	rsmgr.fonts[name] = &font
+	rsmgr.resourceFileNames[path] = name
 }
 
 func (rsmgr *ResourceManager) LoadTextureFunction(name, path string, preloaded bool) Texture {
+	if !preloaded {
+		if resName, ok := rsmgr.resourceFileNames[path]; ok {
+			rsmgr.textures[name] = rsmgr.textures[resName]
+			ErrorMgr.Message(ERROR_LEVEL_WARNING, "Texture", name, "Has already been loaded with this or another name!")
+			return nil
+		}
+	}
 	if _, ok := rsmgr.textures[name]; ok {
 		ErrorMgr.Message(ERROR_LEVEL_LOG, "Texture", name, "Has already been loaded!")
 		return nil
@@ -386,6 +425,7 @@ func (rsmgr *ResourceManager) LoadTextureFunction(name, path string, preloaded b
 			img_data,
 			width,
 			height,
+			path,
 		}
 	}
 
@@ -424,6 +464,73 @@ func (rsmgr *ResourceManager) SetLevel(name string, name1 string) {
 	}
 	rsmgr.Levels[name] = s
 	ErrorMgr.Message(ERROR_LEVEL_LOG, "Level", name, "Set to "+name1)
+}
+
+func (rsmgr *ResourceManager) checkPreloadedTexture(texture *preloadedTexture) bool {
+	if _, ok := rsmgr.textures[texture.Name]; ok {
+		ErrorMgr.Message(ERROR_LEVEL_LOG, "Texture", texture.Name, "Has already been loaded!")
+		return false
+	}
+	if resName, ok := rsmgr.resourceFileNames[texture.Path]; ok {
+		rsmgr.textures[texture.Name] = rsmgr.textures[resName]
+		ErrorMgr.Message(ERROR_LEVEL_WARNING, "Texture", texture.Name, "Has already been loaded with this or another name!")
+		return false
+	}
+	for i := 0; i < len(rsmgr.preloadedTextures); i++ {
+		if rsmgr.preloadedTextures[i].Name == texture.Name {
+			ErrorMgr.Message(ERROR_LEVEL_LOG, "Texture", texture.Name, "Has already been preloaded!")
+			return false
+		} else if rsmgr.preloadedTextures[i].Path == texture.Path {
+			ErrorMgr.Message(ERROR_LEVEL_WARNING, "Texture", texture.Name, "Has already been preloaded with this or another name!")
+			texture.fileAlreadyPreloaded = true
+			return true
+		}
+	}
+
+	texture.fileAlreadyPreloaded = false
+
+	return true
+}
+
+func (rsmgr *ResourceManager) checkPreloadedLevel(level *preloadedLevel) bool {
+	if _, ok := rsmgr.Levels[level.Name]; ok {
+		ErrorMgr.Message(ERROR_LEVEL_LOG, "Level", level.Name, "Has already been loaded!")
+		return false
+	}
+	if resName, ok := rsmgr.resourceFileNames[level.Path]; ok {
+		rsmgr.textures[level.Name] = rsmgr.textures[resName]
+		ErrorMgr.Message(ERROR_LEVEL_WARNING, "Level", level.Name, "Has already been loaded with this or another name!")
+		return false
+	}
+	for i := 0; i < len(rsmgr.preloadedLevels); i++ {
+		if rsmgr.preloadedLevels[i].Name == level.Name {
+			ErrorMgr.Message(ERROR_LEVEL_LOG, "Level", level.Name, "Has already been preloaded!")
+			return false
+		} else if rsmgr.preloadedLevels[i].Path == level.Path {
+			ErrorMgr.Message(ERROR_LEVEL_WARNING, "Level", level.Name, "Has already been preloaded with this or another name!")
+			level.fileAlreadyPreloaded = true
+			return true
+		}
+	}
+
+	level.fileAlreadyPreloaded = false
+
+	return true
+}
+
+func (rsmgr *ResourceManager) checkPreloadedShader(shader *preloadedShader) bool {
+	if _, ok := rsmgr.shaders[shader.Name]; ok {
+		ErrorMgr.Message(ERROR_LEVEL_LOG, "Shader", shader.Name, "Has already been loaded!")
+		return false
+	}
+	for i := 0; i < len(rsmgr.preloadedShaders); i++ {
+		if rsmgr.preloadedShaders[i].Name == shader.Name {
+			ErrorMgr.Message(ERROR_LEVEL_LOG, "Shader", shader.Name, "Has already been preloaded!")
+			return false
+		}
+	}
+
+	return true
 }
 
 var ResourceMgr ResourceManager

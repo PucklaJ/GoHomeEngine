@@ -41,6 +41,10 @@ func loadFileWithPaths(path string, paths []string, objLoader *OBJLoader) error 
 }
 
 func processModel(rsmgr *gohome.ResourceManager, level *gohome.Level, model *OBJModel, preloaded, loadToGPU bool) {
+	if _, ok := rsmgr.Models[model.Name]; ok {
+		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_LOG, "Model", model.Name, "It has already been loaded!")
+		return
+	}
 	level.LevelObjects = append(level.LevelObjects, gohome.LevelObject{})
 	lvlObj := &level.LevelObjects[len(level.LevelObjects)-1]
 	var lvlObjTobj gohome.TransformableObject3D
@@ -59,6 +63,7 @@ func processModel(rsmgr *gohome.ResourceManager, level *gohome.Level, model *OBJ
 	}
 	lvlObj.Entity3D.InitModel(&model3d, nil)
 	rsmgr.Models[model3d.Name] = &model3d
+	gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_LOG, "Model", model.Name, "Finished loading!")
 }
 
 func toMesh3DVertex(vertex *OBJVertex) gohome.Mesh3DVertex {
