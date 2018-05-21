@@ -12,14 +12,13 @@ func (this *BasicScene) Init() {
 	gohome.ResourceMgr.LoadTexture("Gopher", "gopher.png")
 
 	var gopher gohome.Sprite2D
-	var gopherTobj gohome.TransformableObject2D
-	gopher.Init("Gopher", &gopherTobj)
+	gopher.Init("Gopher")
 
-	gopherTobj.Origin = [2]float32{0.5, 0.5}
+	gopher.Transform.Origin = [2]float32{0.5, 0.5}
 	nw, nh := gohome.Render.GetNativeResolution()
-	gopherTobj.Position = [2]float32{float32(nw) / 2.0, float32(nh) / 2.0}
+	gopher.Transform.Position = [2]float32{float32(nw) / 2.0, float32(nh) / 2.0}
 
-	gohome.RenderMgr.AddObject(&gopher, &gopherTobj)
+	gohome.RenderMgr.AddObject(&gopher)
 
 	gohome.RenderMgr.EnableBackBuffer = false
 }

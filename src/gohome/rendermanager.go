@@ -78,6 +78,11 @@ func (this RenderType) Compatible(rtype RenderType) bool {
 	return false
 }
 
+type TransformableObject interface {
+	CalculateTransformMatrix(rmgr *RenderManager, notRelativeToCamera int)
+	SetTransformMatrix(rmgr *RenderManager)
+}
+
 type RenderObject interface {
 	Render()
 	SetShader(s Shader)
@@ -86,16 +91,8 @@ type RenderObject interface {
 	GetType() RenderType
 	IsVisible() bool
 	NotRelativeCamera() int
-}
-
-type TransformableObject interface {
-	CalculateTransformMatrix(rmgr *RenderManager, notRelativeToCamera int)
-	SetTransformMatrix(rmgr *RenderManager)
-}
-
-type RenderPair struct {
-	RenderObject
-	TransformableObject
+	SetTransformableObject(tobj TransformableObject)
+	GetTransformableObject() TransformableObject
 }
 
 type Viewport struct {
@@ -104,7 +101,7 @@ type Viewport struct {
 }
 
 type RenderManager struct {
-	renderObjects []RenderPair
+	renderObjects []RenderObject
 	CurrentShader Shader
 	camera2Ds     []*Camera2D
 	camera3Ds     []*Camera3D
@@ -175,13 +172,13 @@ func (rmgr *RenderManager) Init() {
 	rmgr.EnableBackBuffer = true
 }
 
-func (rmgr *RenderManager) AddObject(robj RenderObject, tobj TransformableObject) {
-	rmgr.renderObjects = append(rmgr.renderObjects, RenderPair{RenderObject: robj, TransformableObject: tobj})
+func (rmgr *RenderManager) AddObject(robj RenderObject) {
+	rmgr.renderObjects = append(rmgr.renderObjects, robj)
 }
 
-func (rmgr *RenderManager) RemoveObject(robj RenderObject, tobj TransformableObject) {
+func (rmgr *RenderManager) RemoveObject(robj RenderObject) {
 	for i := 0; i < len(rmgr.renderObjects); i++ {
-		if robj == rmgr.renderObjects[i].RenderObject && tobj == rmgr.renderObjects[i].TransformableObject {
+		if robj == rmgr.renderObjects[i] {
 			rmgr.renderObjects = append(rmgr.renderObjects[:i], rmgr.renderObjects[i+1:]...)
 			return
 		}
@@ -258,12 +255,12 @@ func (rmgr *RenderManager) updateProjection(t RenderType) {
 	}
 }
 
-func (rmgr *RenderManager) updateTransformMatrix(robj *RenderPair, t RenderType) {
-	if robj != nil && robj.TransformableObject != nil {
-		robj.TransformableObject.CalculateTransformMatrix(rmgr, robj.RenderObject.NotRelativeCamera())
-		robj.TransformableObject.SetTransformMatrix(rmgr)
+func (rmgr *RenderManager) updateTransformMatrix(robj RenderObject) {
+	if robj != nil && robj.GetTransformableObject() != nil {
+		robj.GetTransformableObject().CalculateTransformMatrix(rmgr, robj.NotRelativeCamera())
+		robj.GetTransformableObject().SetTransformMatrix(rmgr)
 	} else {
-		if t == TYPE_2D {
+		if robj.GetType() == TYPE_2D {
 			rmgr.setTransformMatrix2D(mgl32.Ident3())
 		} else {
 			rmgr.setTransformMatrix3D(mgl32.Ident4())
@@ -444,15 +441,15 @@ func (rmgr *RenderManager) handleCurrentCameraAndViewport(rtype RenderType, came
 	}
 }
 
-func (rmgr *RenderManager) prepareRenderRenderObject(robj *RenderPair, lightCollectionIndex int32) {
-	rmgr.handleShader(robj.RenderObject)
-	rmgr.updateCamera(robj.RenderObject)
-	rmgr.updateProjection(robj.RenderObject.GetType())
-	rmgr.updateTransformMatrix(robj, robj.RenderObject.GetType())
-	rmgr.updateLights(lightCollectionIndex, robj.RenderObject.GetType())
+func (rmgr *RenderManager) prepareRenderRenderObject(robj RenderObject, lightCollectionIndex int32) {
+	rmgr.handleShader(robj)
+	rmgr.updateCamera(robj)
+	rmgr.updateProjection(robj.GetType())
+	rmgr.updateTransformMatrix(robj)
+	rmgr.updateLights(lightCollectionIndex, robj.GetType())
 }
 
-func (rmgr *RenderManager) renderRenderObject(robj *RenderPair, lightCollectionIndex int32) {
+func (rmgr *RenderManager) renderRenderObject(robj RenderObject, lightCollectionIndex int32) {
 	rmgr.prepareRenderRenderObject(robj, lightCollectionIndex)
 	robj.Render()
 }
@@ -475,7 +472,7 @@ func (rmgr *RenderManager) Render(rtype RenderType, cameraIndex int32, viewportI
 			continue
 		}
 		Render.PreRender()
-		rmgr.renderRenderObject(&rmgr.renderObjects[i], lightCollectionIndex)
+		rmgr.renderRenderObject(rmgr.renderObjects[i], lightCollectionIndex)
 		Render.AfterRender()
 	}
 
@@ -486,10 +483,7 @@ func (rmgr *RenderManager) Render(rtype RenderType, cameraIndex int32, viewportI
 	Render.SetWireFrame(false)
 }
 
-func (rmgr *RenderManager) RenderRenderObject(robj RenderObject, tobj TransformableObject) {
-	rpair := RenderPair{}
-	rpair.RenderObject = robj
-	rpair.TransformableObject = tobj
+func (rmgr *RenderManager) RenderRenderObject(robj RenderObject) {
 	rmgr.handleCurrentCameraAndViewport(robj.GetType(), 0, 0)
 
 	Render.SetWireFrame(rmgr.WireFrameMode)
@@ -497,7 +491,7 @@ func (rmgr *RenderManager) RenderRenderObject(robj RenderObject, tobj Transforma
 	rmgr.CurrentShader = nil
 
 	Render.PreRender()
-	rmgr.renderRenderObject(&rpair, LightMgr.CurrentLightCollection)
+	rmgr.renderRenderObject(robj, LightMgr.CurrentLightCollection)
 	Render.AfterRender()
 
 	if rmgr.CurrentShader != nil {

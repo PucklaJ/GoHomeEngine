@@ -20,7 +20,8 @@ type Text2D struct {
 	textures      []Texture
 	renderTexture RenderTexture
 	oldText       string
-	transform     *TransformableObject2D
+	transform     TransformableObject
+	Transform     *TransformableObject2D
 
 	Visible             bool
 	NotRelativeToCamera int
@@ -28,14 +29,13 @@ type Text2D struct {
 	Text                string
 }
 
-func (this *Text2D) Init(font string, fontSize uint32, str string, transform *TransformableObject2D) {
+func (this *Text2D) Init(font string, fontSize uint32, str string) {
 	this.font = ResourceMgr.GetFont(font)
-	if transform != nil {
-		transform.Scale = [2]float32{1.0, 1.0}
-		transform.RotationPoint = [2]float32{0.5, 0.5}
-		transform.Origin = [2]float32{0.0, 0.0}
-		this.transform = transform
-	}
+	this.Transform = &TransformableObject2D{}
+	this.Transform.Scale = [2]float32{1.0, 1.0}
+	this.Transform.RotationPoint = [2]float32{0.5, 0.5}
+	this.Transform.Origin = [2]float32{0.0, 0.0}
+	this.transform = this.Transform
 
 	if sprite2DMesh == nil {
 		createSprite2DMesh()
@@ -141,8 +141,8 @@ func (this *Text2D) updateText() {
 			height = 64
 		}
 
-		if this.transform != nil {
-			this.transform.Size = [2]float32{float32(width), float32(height)}
+		if this.Transform != nil {
+			this.Transform.Size = [2]float32{float32(width), float32(height)}
 		}
 	}
 
@@ -200,7 +200,7 @@ func (this *Text2D) renderTexturesToRenderTexture() {
 			shader.SetUniformM4("projectionMatrix2D", mgl32.Ident4())
 		}
 		if this.transform != nil {
-			shader.SetUniformM3("transformMatrix2D", this.transform.GetTransformMatrix())
+			this.transform.SetTransformMatrix(&RenderMgr)
 		} else {
 			shader.SetUniformM3("transformMatrix2D", mgl32.Ident3())
 		}
@@ -212,4 +212,17 @@ func (this *Text2D) renderTexturesToRenderTexture() {
 		}
 	}
 
+}
+
+func (this *Text2D) SetTransformableObject(tobj TransformableObject) {
+	this.transform = tobj
+	if tobj != nil {
+		this.Transform = tobj.(*TransformableObject2D)
+	} else {
+		this.Transform = nil
+	}
+}
+
+func (this *Text2D) GetTransformableObject() TransformableObject {
+	return this.transform
 }

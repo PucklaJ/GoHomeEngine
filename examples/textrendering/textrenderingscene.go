@@ -12,14 +12,13 @@ func (this *TextRenderingScene) Init() {
 	gohome.ResourceMgr.LoadFont("Font", "FreeMonoBold.ttf")
 
 	var text gohome.Text2D
-	var textTobj gohome.TransformableObject2D
 
-	text.Init("Font", 30, "Lorem ipsum dolor sit amet,\nconsetetur sadipscing elitr,\nsed diam nonumy eirmod tempor invidunt ut\nlabore et dolore magna aliquyam erat,\nsed diam voluptua.\nAt vero eos et accusam et", &textTobj)
+	text.Init("Font", 30, "Lorem ipsum dolor sit amet,\nconsetetur sadipscing elitr,\nsed diam nonumy eirmod tempor invidunt ut\nlabore et dolore magna aliquyam erat,\nsed diam voluptua.\nAt vero eos et accusam et")
 
-	textTobj.Origin = [2]float32{0.5, 0.5}
-	textTobj.Position = gohome.Framew.WindowGetSize().Mul(0.5)
+	text.Transform.Origin = [2]float32{0.5, 0.5}
+	text.Transform.Position = gohome.Framew.WindowGetSize().Mul(0.5)
 
-	gohome.RenderMgr.AddObject(&text, &textTobj)
+	gohome.RenderMgr.AddObject(&text)
 
 	gohome.RenderMgr.EnableBackBuffer = false
 	gohome.ErrorMgr.ErrorLevel = gohome.ERROR_LEVEL_WARNING

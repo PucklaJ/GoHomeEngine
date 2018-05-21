@@ -3,7 +3,6 @@
 + Controller Input
 + Browser support
 + Text Input
-+ Add TransformableObject to RenderObject and remove RenderPair 
 + Add callbacks to window events
 	- onResize
 	- onClose
@@ -13,6 +12,9 @@
 	- [beep](https://github.com/faiface/beep) or OpenAL
 + Complete ErrorManger
 	- Add MessageBoxes for fatal errors
++ Simple Loading Screen
++ Add Font loading to preloader
++ Add delete resource method to resourcemanager
 
 ## Android
 
@@ -29,6 +31,7 @@
 + Physics
 	- [Box2D](https://github.com/ByteArena/box2d)
 + [TiledMaps](https://github.com/pikkpoiss/tmxgo)
++ Tweens
 
 ## 3D
 

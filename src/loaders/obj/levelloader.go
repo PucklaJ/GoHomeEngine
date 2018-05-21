@@ -61,7 +61,7 @@ func processModel(rsmgr *gohome.ResourceManager, level *gohome.Level, model *OBJ
 		processMesh(mesh3d, &model.Meshes[i], preloaded, loadToGPU)
 		model3d.AddMesh3D(mesh3d)
 	}
-	lvlObj.Entity3D.InitModel(&model3d, nil)
+	lvlObj.Entity3D.InitModel(&model3d)
 	rsmgr.Models[model3d.Name] = &model3d
 	gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_LOG, "Model", model.Name, "Finished loading!")
 }
