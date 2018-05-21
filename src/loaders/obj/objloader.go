@@ -2,7 +2,6 @@ package loader
 
 import (
 	"bytes"
-	// "fmt"
 	"io"
 	"log"
 	"os"
