@@ -17,13 +17,15 @@ PKG_CONFIG_PATH=$PKG_CONFIG_PATH:$GOPATH/src/github.com/PucklaMotzer09/gohomeeng
 wantInstall=0
 wantRun=0
 wantHelp=0
+wantRelease=0
 placedPath=""
+compileFlags=''
 projectDir=$("pwd")
 projectDir=${projectDir#${GOPATH}"/src/"}
-topDirectory=${projectDir#*/}
+executableName=${projectDir#*/}
 for i in {1..20}
 do
-topDirectory=${topDirectory#*/}
+executableName=${executableName#*/}
 done
 
 for arg in "$@"
@@ -37,6 +39,9 @@ do
 	elif [ "$arg" = "-help" ]
 	then
 		wantHelp=1
+	elif [ "$arg" = "-release" ]
+	then
+		wantRelease=1
 	fi
 done
 
@@ -47,15 +52,21 @@ then
 	echo -install: uses go install
 	echo -run: starts program after compilation
 	echo -help: shows help page
+	echo -release: removes symbols
 	exit 0
 fi
 
-echo "Compiling $topDirectory ..."
+if [ $wantRelease -eq 1 ]
+then
+	compileFlags='-ldflags "-s"'
+fi
+
+echo "Compiling $executableName ..."
 
 if	[ $wantInstall -eq 1 ]
 then
 	exitCode=1
-	$GOROOT/bin/go install $projectDir && exitCode=0
+	$GOROOT/bin/go install $compileFlags $projectDir && exitCode=0
 	if [ $exitCode  -eq 0 ]
 	then
 		placedPath="$GOPATH/bin"
@@ -64,7 +75,7 @@ then
 	fi
 else
 	exitCode=1
-	$GOROOT/bin/go build $projectDir  && exitCode=0
+	$GOROOT/bin/go build $compileFlags $projectDir  && exitCode=0
 	if [ $exitCode -eq 0 ]
 	then
 		placedPath=$("pwd")
@@ -77,10 +88,9 @@ echo Placed executable in $placedPath
 
 if [ $wantRun -eq 1 ]
 then
-	echo Running ...
 	exitCode=1
-	echo Starting $placedPath/$topDirectory ...
-	$placedPath/$topDirectory && exitCode=0
+	echo Starting $placedPath/$executableName ...
+	$placedPath/$executableName && exitCode=0
 	exit $exitCode
 fi
 

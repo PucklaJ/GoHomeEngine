@@ -16,7 +16,7 @@
 -->
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.golang.todo.%appname%"
+    package="org.golang.todo.%APPNAME%"
     android:versionCode="1"
     android:versionName="1.0">
     <application android:label="%APPNAME%" android:debuggable="true">

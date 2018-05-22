@@ -21,8 +21,10 @@ do
 		echo -linux: compiles for linux
 		echo -android: compiles for android
 		echo ""
-		echo "-install: uses go install (-desktop only)"
-		echo "-run: runs program after compilation (-desktop only)"
+		echo -install: uses go install
+		echo -run: runs program after compilation
+		echo -release: removes debugging symbols
+		echo '-log: runs adb logcat after run (-android only)'
 		exit 0
 	fi
 done
