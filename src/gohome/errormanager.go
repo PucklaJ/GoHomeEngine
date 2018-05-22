@@ -99,7 +99,7 @@ func (this *ErrorManager) onNewError(errMsg ErrorMessage) {
 	}()
 	log.Println(errMsg.Error())
 	if this.ShowMessageBoxes && (errMsg.ErrorLevel == ERROR_LEVEL_ERROR || errMsg.ErrorLevel == ERROR_LEVEL_FATAL) {
-		if !Framew.ShowYesNoDialog("An Error accoured", errMsg.Error()+"\nContinue?") {
+		if Framew.ShowYesNoDialog("An Error accoured", errMsg.Error()+"\nContinue?") == DIALOG_NO {
 			MainLop.Quit()
 			os.Exit(int(errMsg.ErrorLevel))
 		}

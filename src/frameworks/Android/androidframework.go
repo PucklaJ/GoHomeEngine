@@ -219,6 +219,6 @@ func Quit() {
 	framew.mainLoop.Quit()
 }
 
-func (this *AndroidFramework) ShowYesNoDialog(title, message string) bool {
-	return true
+func (this *AndroidFramework) ShowYesNoDialog(title, message string) uint8 {
+	return gohome.DIALOG_CANCELLED
 }
