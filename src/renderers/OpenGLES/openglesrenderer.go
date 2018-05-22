@@ -4,6 +4,7 @@ import (
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
 	"golang.org/x/mobile/gl"
 	"image/color"
+	"strconv"
 )
 
 type OpenGLESError struct {
@@ -279,4 +280,11 @@ func (this *OpenGLESRenderer) SetBackgroundColor(bgColor color.Color) {
 
 func (this *OpenGLESRenderer) GetBackgroundColor() color.Color {
 	return this.backgroundColor
+}
+
+func handleOpenGLESError(tag, objectName, errorPrefix string) {
+	err := gohome.Render.(*OpenGLESRenderer).GetContext().GetError()
+	if err != gl.NO_ERROR {
+		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, tag, objectName, errorPrefix+"ErrorCode: "+strconv.Itoa(int(err)))
+	}
 }

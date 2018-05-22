@@ -216,6 +216,7 @@ func (oglm *OpenGLESMesh3D) Load() {
 
 func (oglm *OpenGLESMesh3D) Render() {
 	if oglm.numVertices == 0 || oglm.numIndices == 0 {
+		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "Mesh", oglm.Name, "No Vertices or Indices have been added")
 		return
 	}
 	if gohome.RenderMgr.CurrentShader != nil {
@@ -226,7 +227,9 @@ func (oglm *OpenGLESMesh3D) Render() {
 	} else {
 		oglm.attributePointer()
 	}
+	(*oglm.gles).GetError()
 	(*oglm.gles).DrawElements(gl.TRIANGLES, int(oglm.numIndices), gl.UNSIGNED_INT, 0)
+	handleOpenGLESError("Mesh", oglm.Name, "RenderError: ")
 	if oglm.isgles3 {
 		(*oglm.gles).BindVertexArray(gl.VertexArray{0})
 	} else {
