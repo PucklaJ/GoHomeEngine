@@ -18,8 +18,6 @@ struct Attentuation
 	float quadratic;
 };
 
-
-
 const float shadowDistance = 50.0;
 const float transitionDistance = 5.0;
 const float bias = 0.005;

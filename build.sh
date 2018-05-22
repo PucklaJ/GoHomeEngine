@@ -25,6 +25,7 @@ do
 		echo -run: runs program after compilation
 		echo -release: removes debugging symbols
 		echo '-log: runs adb logcat after run (-android only)'
+		echo '-big: sets the name of the app with a big first character (-android only)'
 		exit 0
 	fi
 done

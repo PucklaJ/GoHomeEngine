@@ -13,8 +13,6 @@
 + Simple Loading Screen
 + Add Font loading to preloader
 + Add delete resource method to resourcemanager
-+ Complete Dependencies and build scripts
-	- Use right package name for android (no number on front)
 
 ## Android
 
