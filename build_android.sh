@@ -14,9 +14,9 @@ fi
 
 wantInstall=0
 wantHelp=0
-scriptDir=$(dirname "$0")
-scriptDir=${scriptDir#${GOPATH}"/src/"}
-topDirectory=${scriptDir#*/}
+projectDir=$(pwd)
+projectDir=${projectDir#${GOPATH}"/src/"}
+topDirectory=${projectDir#*/}
 for i in {1..20}
 do
 topDirectory=${topDirectory#*/}
@@ -42,12 +42,12 @@ then
 	exit 0
 fi
 
-echo "Compiling ..."
+echo "Compiling $topDirectory ..."
 
 if	[ $wantInstall -eq 1 ]
 then
 	exitCode=1
-	$GOPATH/bin/gomobile install -target=android $scriptDir && exitCode=0
+	$GOPATH/bin/gomobile install -target=android $projectDir && exitCode=0
 	if [ $exitCode  -eq 0 ]
 	then
 		echo Installed $topDirectory.apk onto the android phone
@@ -57,7 +57,7 @@ then
 	fi
 else
 	exitCode=1
-	$GOPATH/bin/gomobile build -target=android $scriptDir && exitCode=0
+	$GOPATH/bin/gomobile build -target=android $projectDir && exitCode=0
 	if [ $exitCode -eq 0 ]
 	then
 		echo Placed $topDirectory.apk into $("pwd")

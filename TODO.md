@@ -15,7 +15,6 @@
 + Add delete resource method to resourcemanager
 + Complete Dependencies and build scripts
 	- Add replace string in file program
-	- Change that the build scripts get executed in the working directory
 
 ## Android
 

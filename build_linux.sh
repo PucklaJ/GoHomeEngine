@@ -18,13 +18,9 @@ wantInstall=0
 wantRun=0
 wantHelp=0
 placedPath=""
-prevPath=$("pwd")
-scriptDir=$(dirname "$0")
-cd $scriptDir
-scriptDir=$("pwd")
-cd $prevPath
-scriptDir=${scriptDir#${GOPATH}"/src/"}
-topDirectory=${scriptDir#*/}
+projectDir=$("pwd")
+projectDir=${projectDir#${GOPATH}"/src/"}
+topDirectory=${projectDir#*/}
 for i in {1..20}
 do
 topDirectory=${topDirectory#*/}
@@ -54,12 +50,12 @@ then
 	exit 0
 fi
 
-echo "Compiling ..."
+echo "Compiling $topDirectory ..."
 
 if	[ $wantInstall -eq 1 ]
 then
 	exitCode=1
-	$GOROOT/bin/go install $scriptDir && exitCode=0
+	$GOROOT/bin/go install $projectDir && exitCode=0
 	if [ $exitCode  -eq 0 ]
 	then
 		placedPath="$GOPATH/bin"
@@ -68,7 +64,7 @@ then
 	fi
 else
 	exitCode=1
-	$GOROOT/bin/go build $scriptDir  && exitCode=0
+	$GOROOT/bin/go build $projectDir  && exitCode=0
 	if [ $exitCode -eq 0 ]
 	then
 		placedPath=$("pwd")
