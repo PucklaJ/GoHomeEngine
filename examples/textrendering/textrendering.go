@@ -9,5 +9,5 @@ import (
 )
 
 func main() {
-	gohome.MainLoop{}.Run(&framework.GLFWFramework{}, &renderer.OpenGLRenderer{}, 1280, 720, "TextRendering", &TextRenderingScene{})
+	gohome.MainLop.Run(&framework.GLFWFramework{}, &renderer.OpenGLRenderer{}, 1280, 720, "TextRendering", &TextRenderingScene{})
 }

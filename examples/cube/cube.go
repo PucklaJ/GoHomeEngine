@@ -9,5 +9,5 @@ import (
 )
 
 func main() {
-	gohome.MainLoop{}.Run(&framework.GLFWFramework{}, &renderer.OpenGLRenderer{}, 640, 480, "Cube", &CubeScene{})
+	gohome.MainLop.Run(&framework.GLFWFramework{}, &renderer.OpenGLRenderer{}, 640, 480, "Cube", &CubeScene{})
 }
