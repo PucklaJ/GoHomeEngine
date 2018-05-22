@@ -15,6 +15,7 @@
 + Add delete resource method to resourcemanager
 + Complete Dependencies and build scripts
 	- Add replace string in file program
+	- Use right package name for android (no number on front)
 
 ## Android
 
