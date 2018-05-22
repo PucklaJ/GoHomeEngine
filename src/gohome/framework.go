@@ -27,6 +27,8 @@ type Framework interface {
 
 	OpenFile(file string) (io.ReadCloser, error)
 	LoadLevel(rsmgr *ResourceManager, name, path string, preloaded, loadToGPU bool) *Level
+
+	ShowYesNoDialog(title, message string) bool
 }
 
 var Framew Framework

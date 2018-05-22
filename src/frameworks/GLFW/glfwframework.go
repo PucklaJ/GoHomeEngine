@@ -536,3 +536,7 @@ func (gfw *GLFWFramework) LoadLevel(rsmgr *gohome.ResourceManager, name, path st
 	}
 	return loader.LoadLevelAssimp(rsmgr, name, path, preloaded, loadToGPU)
 }
+
+func (gfw *GLFWFramework) ShowYesNoDialog(title, message string) bool {
+	return true
+}

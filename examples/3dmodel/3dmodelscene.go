@@ -13,7 +13,7 @@ func (this *ModelScene) Init() {
 	gohome.ErrorMgr.ErrorLevel = gohome.ERROR_LEVEL_ERROR
 
 	gohome.Init3DShaders()
-	gohome.ResourceMgr.PreloadLevel("Gopher", "gopher.obj", true)
+	gohome.ResourceMgr.PreloadLevel("Gopher", "gopher.obj", false)
 	gohome.ResourceMgr.LoadPreloadedResources()
 
 	this.gopher.InitModel(gohome.ResourceMgr.GetModel("Gopher"))

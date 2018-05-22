@@ -29,7 +29,6 @@ func (this *MainLoop) Init(fw Framework, r Renderer, ww, wh uint32, wt string, s
 	this.windowHeight = wh
 	this.windowTitle = wt
 	this.startScene = start_scene
-
 	if err = Framew.Init(this); err != nil {
 		ErrorMgr.MessageError(ERROR_LEVEL_FATAL, "FrameworkInitialisation", "", err)
 		return false
@@ -43,7 +42,6 @@ func (this *MainLoop) DoStuff() {
 	this.InitWindowAndRenderer()
 	this.InitManagers()
 	this.SetupStartScene()
-
 	this.Loop()
 	this.Quit()
 }
@@ -151,3 +149,5 @@ func InitDefaultValues() {
 
 	Render.SetBackgroundColor(Color{0, 0, 0, 255})
 }
+
+var MainLop MainLoop

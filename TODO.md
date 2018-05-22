@@ -10,11 +10,12 @@
 	- etc.
 + Audio
 	- [beep](https://github.com/faiface/beep) or OpenAL
-+ Complete ErrorManger
-	- Add MessageBoxes for fatal errors
 + Simple Loading Screen
 + Add Font loading to preloader
 + Add delete resource method to resourcemanager
++ Complete Dependencies and build scripts
+	- Add replace string in file program
+	- Change that the build scripts get executed in the working directory
 
 ## Android
 

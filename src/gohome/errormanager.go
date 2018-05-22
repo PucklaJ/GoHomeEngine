@@ -2,6 +2,7 @@ package gohome
 
 import (
 	"log"
+	"os"
 )
 
 const (
@@ -25,6 +26,7 @@ type ErrorMessage struct {
 type ErrorManager struct {
 	ErrorLevel        uint8
 	DuplicateMessages bool
+	ShowMessageBoxes  bool
 
 	messages []ErrorMessage
 }
@@ -57,6 +59,7 @@ func (this *ErrorMessage) Equals(other ErrorMessage) bool {
 func (this *ErrorManager) Init() {
 	this.ErrorLevel = ERROR_LEVEL_ERROR
 	this.DuplicateMessages = false
+	this.ShowMessageBoxes = true
 }
 
 func (this *ErrorManager) Message(errorLevel uint8, tag string, objectName string, err string) {
@@ -88,7 +91,19 @@ func (this *ErrorManager) MessageError(errorLevel uint8, tag string, objectName 
 }
 
 func (this *ErrorManager) onNewError(errMsg ErrorMessage) {
+	defer func() {
+		rec := recover()
+		if rec != nil {
+			log.Println("Recovered:", rec)
+		}
+	}()
 	log.Println(errMsg.Error())
+	if this.ShowMessageBoxes && (errMsg.ErrorLevel == ERROR_LEVEL_ERROR || errMsg.ErrorLevel == ERROR_LEVEL_FATAL) {
+		if !Framew.ShowYesNoDialog("An Error accoured", errMsg.Error()+"\nContinue?") {
+			MainLop.Quit()
+			os.Exit(int(errMsg.ErrorLevel))
+		}
+	}
 }
 
 func (this *ErrorManager) Reset() {
