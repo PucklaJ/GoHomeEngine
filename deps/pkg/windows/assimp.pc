@@ -1,4 +1,4 @@
-DEPS_PATH=F:/Gopath/src/github.com/PucklaMotzer09/gohomeengine/deps
+DEPS_PATH=%GOPATH%/src/github.com/PucklaMotzer09/gohomeengine/deps
 libdir=${DEPS_PATH}/windows/lib
 includedir=${DEPS_PATH}/windows/include
 configincludedir=${includedir}

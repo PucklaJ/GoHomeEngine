@@ -12,7 +12,17 @@ then
 	exit 1
 fi
 
+if [ ! -f $GOPATH/src/github.com/PucklaMotzer09/gohomeengine/cmd/fsreplacer/fsreplacer.exe ]
+then
+	echo Compiling string in file replacer ...
+	workingDir=$(pwd)
+	cd $GOPATH/src/github.com/PucklaMotzer09/gohomeengine/cmd/fsreplacer
+	$GOROOT/bin/go build
+	cd $workingDir
+fi
+
 PKG_CONFIG_PATH=${GOPATH}/src/github.com/PucklaMotzer09/gohomeengine/deps/pkg/windows
+$GOPATH/src/github.com/PucklaMotzer09/gohomeengine/cmd/fsreplacer/fsreplacer $PKG_CONFIG_PATH/assimp.pc '%GOPATH%' $GOPATH
 
 wantInstall=0
 wantRun=0
@@ -85,6 +95,8 @@ else
 		exit 1
 	fi
 fi
+
+$GOPATH/src/github.com/PucklaMotzer09/gohomeengine/cmd/fsreplacer/fsreplacer $PKG_CONFIG_PATH/assimp.pc $GOPATH '%GOPATH%'
 
 echo Placed executable in $placedPath
 
