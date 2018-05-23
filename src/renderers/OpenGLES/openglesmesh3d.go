@@ -7,7 +7,6 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 	"golang.org/x/mobile/exp/f32"
 	"golang.org/x/mobile/gl"
-	"log"
 	"sync"
 )
 
@@ -185,7 +184,7 @@ func (oglm *OpenGLESMesh3D) Load() {
 	oglm.numIndices = uint32(len(oglm.indices))
 
 	if oglm.numVertices == 0 || oglm.numIndices == 0 {
-		log.Println("No vertices or indices have been added for mesh", oglm.Name, "!")
+		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "Mesh3D", oglm.Name, "No vertices or indices have been added!")
 		return
 	}
 
@@ -217,19 +216,20 @@ func (oglm *OpenGLESMesh3D) Load() {
 
 func (oglm *OpenGLESMesh3D) Render() {
 	if oglm.numVertices == 0 || oglm.numIndices == 0 {
+		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "Mesh", oglm.Name, "No Vertices or Indices have been added")
 		return
 	}
 	if gohome.RenderMgr.CurrentShader != nil {
-		if err := gohome.RenderMgr.CurrentShader.SetUniformMaterial(*oglm.Material); err != nil {
-			// fmt.Println("Error:", err)
-		}
+		gohome.RenderMgr.CurrentShader.SetUniformMaterial(*oglm.Material)
 	}
 	if oglm.isgles3 {
 		(*oglm.gles).BindVertexArray(oglm.vao)
 	} else {
 		oglm.attributePointer()
 	}
+	(*oglm.gles).GetError()
 	(*oglm.gles).DrawElements(gl.TRIANGLES, int(oglm.numIndices), gl.UNSIGNED_INT, 0)
+	handleOpenGLESError("Mesh", oglm.Name, "RenderError: ")
 	if oglm.isgles3 {
 		(*oglm.gles).BindVertexArray(gl.VertexArray{0})
 	} else {

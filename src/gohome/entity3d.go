@@ -12,25 +12,31 @@ type Entity3D struct {
 
 	Shader
 	RenderType
+
+	Transform *TransformableObject3D
+	transform TransformableObject
 }
 
-func (this *Entity3D) commonInit(tobj *TransformableObject3D) {
-	if tobj != nil {
-		tobj.Scale = [3]float32{1.0, 1.0, 1.0}
-	}
+func (this *Entity3D) commonInit() {
+	this.Transform = &TransformableObject3D{}
+	this.Transform.Scale = [3]float32{1.0, 1.0, 1.0}
+
+	this.transform = this.Transform
+
 	this.Visible = true
 	this.NotRelativeToCamera = -1
 	this.RenderType = TYPE_3D_NORMAL
+	this.Shader = ResourceMgr.GetShader(ENTITY3D_SHADER_NAME)
 }
 
-func (this *Entity3D) InitName(name string, tobj *TransformableObject3D) {
-	this.commonInit(tobj)
+func (this *Entity3D) InitName(name string) {
+	this.commonInit()
 	this.Model3D = ResourceMgr.GetModel(name)
 	this.Name = name
 }
 
-func (this *Entity3D) InitMesh(mesh Mesh3D, tobj *TransformableObject3D) {
-	this.commonInit(tobj)
+func (this *Entity3D) InitMesh(mesh Mesh3D) {
+	this.commonInit()
 	this.Model3D = &Model3D{
 		Name: mesh.GetName(),
 	}
@@ -38,16 +44,15 @@ func (this *Entity3D) InitMesh(mesh Mesh3D, tobj *TransformableObject3D) {
 	this.Name = mesh.GetName()
 }
 
-func (this *Entity3D) InitModel(model *Model3D, tobj *TransformableObject3D) {
-	this.commonInit(tobj)
+func (this *Entity3D) InitModel(model *Model3D) {
+	this.commonInit()
 	this.Model3D = model
-	this.Name = model.Name
+	if model != nil {
+		this.Name = model.Name
+	}
 }
 
 func (this *Entity3D) GetShader() Shader {
-	if this.Shader == nil {
-		this.Shader = ResourceMgr.GetShader(ENTITY3D_SHADER_NAME)
-	}
 	return this.Shader
 }
 
@@ -64,11 +69,15 @@ func (this *Entity3D) GetType() RenderType {
 }
 
 func (this *Entity3D) Render() {
-	this.Model3D.Render()
+	if this.Model3D != nil {
+		this.Model3D.Render()
+	}
 }
 
 func (this *Entity3D) Terminate() {
-	this.Model3D.Terminate()
+	if this.Model3D != nil {
+		this.Model3D.Terminate()
+	}
 }
 
 func (this *Entity3D) IsVisible() bool {
@@ -77,4 +86,17 @@ func (this *Entity3D) IsVisible() bool {
 
 func (this *Entity3D) NotRelativeCamera() int {
 	return this.NotRelativeToCamera
+}
+
+func (this *Entity3D) SetTransformableObject(tobj TransformableObject) {
+	this.transform = tobj
+	if tobj != nil {
+		this.Transform = tobj.(*TransformableObject3D)
+	} else {
+		this.Transform = nil
+	}
+}
+
+func (this *Entity3D) GetTransformableObject() TransformableObject {
+	return this.transform
 }

@@ -20,21 +20,21 @@ type Shader interface {
 	Terminate()
 	Use()
 	Unuse()
-	SetUniformV2(name string, value mgl32.Vec2) error
-	SetUniformV3(name string, value mgl32.Vec3) error
-	SetUniformV4(name string, value mgl32.Vec4) error
-	SetUniformIV2(name string, value []int32) error
-	SetUniformIV3(name string, value []int32) error
-	SetUniformIV4(name string, value []int32) error
-	SetUniformF(name string, value float32) error
-	SetUniformI(name string, value int32) error
-	SetUniformUI(name string, value uint32) error
-	SetUniformB(name string, value uint8) error
-	SetUniformM2(name string, value mgl32.Mat2) error
-	SetUniformM3(name string, value mgl32.Mat3) error
-	SetUniformM4(name string, value mgl32.Mat4) error
-	SetUniformMaterial(mat Material) error
-	SetUniformLights(lightCollectionIndex int32) error
+	SetUniformV2(name string, value mgl32.Vec2)
+	SetUniformV3(name string, value mgl32.Vec3)
+	SetUniformV4(name string, value mgl32.Vec4)
+	SetUniformIV2(name string, value []int32)
+	SetUniformIV3(name string, value []int32)
+	SetUniformIV4(name string, value []int32)
+	SetUniformF(name string, value float32)
+	SetUniformI(name string, value int32)
+	SetUniformUI(name string, value uint32)
+	SetUniformB(name string, value uint8)
+	SetUniformM2(name string, value mgl32.Mat2)
+	SetUniformM3(name string, value mgl32.Mat3)
+	SetUniformM4(name string, value mgl32.Mat4)
+	SetUniformMaterial(mat Material)
+	SetUniformLights(lightCollectionIndex int32)
 	GetName() string
 	AddAttribute(name string, location uint32)
 }

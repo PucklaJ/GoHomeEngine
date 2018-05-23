@@ -5,7 +5,6 @@ import (
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
 	"github.com/go-gl/gl/all-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
-	"log"
 	"sync"
 	"unsafe"
 )
@@ -157,7 +156,7 @@ func (oglm *OpenGLMesh3D) Load() {
 	oglm.numIndices = uint32(len(oglm.indices))
 
 	if oglm.numVertices == 0 || oglm.numIndices == 0 {
-		log.Println("No vertices or indices have been added for mesh", oglm.Name, "!")
+		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "Mesh3D", oglm.Name, "No vertices or indices have been added!")
 		return
 	}
 
@@ -192,19 +191,20 @@ func (oglm *OpenGLMesh3D) Load() {
 
 func (oglm *OpenGLMesh3D) Render() {
 	if oglm.numVertices == 0 || oglm.numIndices == 0 {
+		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "Mesh", oglm.Name, "No Vertices or Indices have been loaded!")
 		return
 	}
 	if gohome.RenderMgr.CurrentShader != nil {
-		if err := gohome.RenderMgr.CurrentShader.SetUniformMaterial(*oglm.Material); err != nil {
-			// fmt.Println("Error:", err)
-		}
+		gohome.RenderMgr.CurrentShader.SetUniformMaterial(*oglm.Material)
 	}
 	if oglm.canUseVAOs {
 		gl.BindVertexArray(oglm.vao)
 	} else {
 		oglm.attributePointer()
 	}
+	gl.GetError()
 	gl.DrawElements(gl.TRIANGLES, int32(oglm.numIndices), gl.UNSIGNED_INT, gl.PtrOffset(int(oglm.numVertices*MESH3DVERTEX_SIZE)))
+	handleOpenGLError("Mesh3D", oglm.Name, "RenderError: ")
 	if oglm.canUseVAOs {
 		gl.BindVertexArray(0)
 	} else {

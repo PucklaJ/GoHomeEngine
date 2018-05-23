@@ -5,7 +5,7 @@ import (
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
 	"github.com/go-gl/gl/all-core/gl"
 	"github.com/go-gl/mathgl/mgl32"
-	"log"
+	"strconv"
 	"sync"
 )
 
@@ -283,11 +283,11 @@ func (this *OpenGLInstancedMesh3D) Load() {
 	this.numIndices = uint32(len(this.indices))
 
 	if this.numVertices == 0 || this.numIndices == 0 {
-		log.Println("No vertices or indices have been added for instanced mesh", this.Name, "!")
+		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "InstancedMesh", this.Name, "No vertices or indices have been added!")
 		return
 	}
 	if this.numInstances == 0 {
-		log.Println("Num Instances hasn't been set for instanced mesh", this.Name, "! Will be set to 1")
+		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_WARNING, "InstancedMesh", this.Name, "Num Instances hasn't been set! Will be set to 1")
 		this.numInstances = 1
 	}
 
@@ -338,9 +338,7 @@ func (this *OpenGLInstancedMesh3D) Render() {
 		return
 	}
 	if gohome.RenderMgr.CurrentShader != nil {
-		if err := gohome.RenderMgr.CurrentShader.SetUniformMaterial(*this.Material); err != nil {
-			// fmt.Println("Error instanced:", err)
-		}
+		gohome.RenderMgr.CurrentShader.SetUniformMaterial(*this.Material)
 	}
 	gl.BindVertexArray(this.vao)
 	gl.DrawElementsInstanced(gl.TRIANGLES, int32(this.numIndices), gl.UNSIGNED_INT, gl.PtrOffset(int(this.numVertices*MESH3DVERTEX_SIZE)), int32(this.numInstances))
@@ -415,7 +413,7 @@ func (this *OpenGLInstancedMesh3D) SetF(index uint32, value []float32) {
 		return
 	}
 	if uint32(len(value)) < this.numInstances {
-		log.Println("Float value", index, "of instanced mesh", this.Name, "is too small!")
+		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "InstancedMesh", this.Name, "Float value "+strconv.Itoa(int(index))+" is too small!")
 		return
 	}
 
@@ -435,7 +433,7 @@ func (this *OpenGLInstancedMesh3D) SetV2(index uint32, value []mgl32.Vec2) {
 		return
 	}
 	if uint32(len(value)) < this.numInstances {
-		log.Println("Vec2 value", index, "of instanced mesh", this.Name, "is too small!")
+		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "InstancedMesh", this.Name, "Vec2 value "+strconv.Itoa(int(index))+" is too small!")
 		return
 	}
 
@@ -456,7 +454,7 @@ func (this *OpenGLInstancedMesh3D) SetV3(index uint32, value []mgl32.Vec3) {
 		return
 	}
 	if uint32(len(value)) < this.numInstances {
-		log.Println("Vec3 value", index, "of instanced mesh", this.Name, "is too small!")
+		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "InstancedMesh", this.Name, "Vec3 value "+strconv.Itoa(int(index))+" is too small!")
 		return
 	}
 
@@ -476,7 +474,7 @@ func (this *OpenGLInstancedMesh3D) SetV4(index uint32, value []mgl32.Vec4) {
 		return
 	}
 	if uint32(len(value)) < this.numInstances {
-		log.Println("Vec4 value", index, "of instanced mesh", this.Name, "is too small!")
+		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "InstancedMesh", this.Name, "Vec4 value "+strconv.Itoa(int(index))+" is too small!")
 		return
 	}
 
@@ -496,7 +494,7 @@ func (this *OpenGLInstancedMesh3D) SetM2(index uint32, value []mgl32.Mat2) {
 		return
 	}
 	if uint32(len(value)) < this.numInstances {
-		log.Println("Mat2 value", index, "of instanced mesh", this.Name, "is too small!")
+		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "InstancedMesh", this.Name, "Mat2 value "+strconv.Itoa(int(index))+" is too small!")
 		return
 	}
 
@@ -516,7 +514,7 @@ func (this *OpenGLInstancedMesh3D) SetM3(index uint32, value []mgl32.Mat3) {
 		return
 	}
 	if uint32(len(value)) < this.numInstances {
-		log.Println("Mat3 value", index, "of instanced mesh", this.Name, "is too small!")
+		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "InstancedMesh", this.Name, "Mat3 value "+strconv.Itoa(int(index))+" is too small!")
 		return
 	}
 
@@ -536,7 +534,7 @@ func (this *OpenGLInstancedMesh3D) SetM4(index uint32, value []mgl32.Mat4) {
 		return
 	}
 	if uint32(len(value)) < this.numInstances {
-		log.Println("Mat4 value", index, "of instanced mesh", this.Name, "is too small!")
+		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "InstancedMesh", this.Name, "Mat4 value "+strconv.Itoa(int(index))+" is too small!")
 		return
 	}
 
@@ -555,4 +553,8 @@ func (this *OpenGLInstancedMesh3D) GetVertices() []gohome.Mesh3DVertex {
 }
 func (this *OpenGLInstancedMesh3D) GetIndices() []uint32 {
 	return this.indices
+}
+
+func (this *OpenGLInstancedMesh3D) SetName(index uint32, value_type uint32, value string) {
+	// Nothing
 }

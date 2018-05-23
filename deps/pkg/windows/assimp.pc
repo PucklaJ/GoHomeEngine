@@ -1,0 +1,10 @@
+DEPS_PATH=%GOPATH%/src/github.com/PucklaMotzer09/gohomeengine/deps
+libdir=${DEPS_PATH}/windows/lib
+includedir=${DEPS_PATH}/windows/include
+configincludedir=${includedir}
+Name: Assimp
+Description: Import various well-known 3D model formats in an uniform manner.
+Version: 4.1.0
+Libs: -L${libdir} -lassimp
+Libs.private:  -lz
+Cflags: -I${includedir} -I${configincludedir}

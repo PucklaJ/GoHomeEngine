@@ -78,13 +78,13 @@ func (gfw *GLFWFramework) CreateWindow(windowWidth, windowHeight uint32, title s
 		if r := recover(); r != nil {
 			log.Println("Recover:", r)
 			if err := gfw.createWindowProfile(windowWidth, windowHeight, title, false); err != nil {
-				panic("Error creating window:" + err.Error())
+				gohome.ErrorMgr.MessageError(gohome.ERROR_LEVEL_FATAL, "WindowCreation", "GLFW", err)
 			}
 		}
 	}()
 	if err := gfw.createWindowProfile(windowWidth, windowHeight, title, true); err != nil {
 		if strings.Contains(err.Error(), "VersionUnavailable") {
-			log.Println("Error creating window: Couldn't set profile:", err)
+			gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "WindowCreation", "GLFW", "Couldn't set profile: "+err.Error())
 			if err1 := gfw.createWindowProfile(windowWidth, windowHeight, title, false); err1 != nil {
 				return err1
 			}
@@ -477,10 +477,9 @@ func getFocusedMonitor(window *glfw.Window) *glfw.Monitor {
 
 	if maxIndex == -1 {
 		return nil
-	} else {
-		return glfw.GetMonitors()[maxIndex]
 	}
 
+	return glfw.GetMonitors()[maxIndex]
 }
 
 func (gfw *GLFWFramework) WindowIsFullscreen() bool {
@@ -491,6 +490,53 @@ func (gfw *GLFWFramework) OpenFile(file string) (io.ReadCloser, error) {
 	return os.Open(file)
 }
 
+func getFileExtension(file string) string {
+	index := strings.LastIndex(file, ".")
+	if index == -1 {
+		return ""
+	}
+	return file[index+1:]
+}
+
+func equalIgnoreCase(str1, str string) bool {
+	if len(str1) != len(str) {
+		return false
+	}
+	for i := 0; i < len(str1); i++ {
+		if str1[i] != str[i] {
+			if str1[i] >= 65 && str1[i] <= 90 {
+				if str[i] >= 97 && str[i] <= 122 {
+					if str1[i]+32 != str[i] {
+						return false
+					}
+				} else {
+					return false
+				}
+			} else if str1[i] >= 97 && str1[i] <= 122 {
+				if str[i] >= 65 && str[i] <= 90 {
+					if str1[i]-32 != str[i] {
+						return false
+					}
+				} else {
+					return false
+				}
+			} else {
+				return false
+			}
+		}
+	}
+
+	return true
+}
+
 func (gfw *GLFWFramework) LoadLevel(rsmgr *gohome.ResourceManager, name, path string, preloaded, loadToGPU bool) *gohome.Level {
+	extension := getFileExtension(path)
+	if equalIgnoreCase(extension, "obj") {
+		return loadLevelOBJ(rsmgr, name, path, preloaded, loadToGPU)
+	}
 	return loader.LoadLevelAssimp(rsmgr, name, path, preloaded, loadToGPU)
+}
+
+func (gfw *GLFWFramework) ShowYesNoDialog(title, message string) uint8 {
+	return gohome.DIALOG_CANCELLED
 }

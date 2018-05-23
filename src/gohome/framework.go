@@ -5,6 +5,13 @@ import (
 	"io"
 )
 
+const (
+	DIALOG_YES       = iota
+	DIALOG_NO        = iota
+	DIALOG_CANCELLED = iota
+	DIALOG_ERROR     = iota
+)
+
 type Framework interface {
 	Init(ml *MainLoop) error
 	Update()
@@ -27,6 +34,8 @@ type Framework interface {
 
 	OpenFile(file string) (io.ReadCloser, error)
 	LoadLevel(rsmgr *ResourceManager, name, path string, preloaded, loadToGPU bool) *Level
+
+	ShowYesNoDialog(title, message string) uint8
 }
 
 var Framew Framework

@@ -3,8 +3,8 @@ package renderer
 import (
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
 	"golang.org/x/mobile/gl"
+	"image"
 	"image/color"
-	"log"
 )
 
 type OpenGLESCubeMap struct {
@@ -55,6 +55,10 @@ func (this *OpenGLESCubeMap) Load(data []byte, width, height int, shadowMap bool
 	return nil
 }
 
+func (this *OpenGLESCubeMap) LoadFromImage(img image.Image) error {
+	return nil
+}
+
 func (this *OpenGLESCubeMap) Bind(unit uint32) {
 	(*this.gles).ActiveTexture(gl.Enum(gl.TEXTURE0 + unit))
 	(*this.gles).BindTexture(gl.TEXTURE_CUBE_MAP, this.oglName)
@@ -95,7 +99,7 @@ func (this *OpenGLESCubeMap) SetWrapping(wrapping uint32) {
 	if wrapping == gohome.WRAPPING_REPEAT {
 		wrap = gl.REPEAT
 	} else if wrapping == gohome.WRAPPING_CLAMP_TO_BORDER {
-		log.Println("CLAMP_TO_BORDER is not supported by OpenGLES")
+		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_WARNING, "CubeMap", this.GetName(), "CLAMP_TO_BORDER is not supported by OpenGLES")
 		return
 	} else if wrapping == gohome.WRAPPING_CLAMP_TO_EDGE {
 		wrap = gl.CLAMP_TO_EDGE
@@ -116,7 +120,7 @@ func (this *OpenGLESCubeMap) SetBorderColor(col color.Color) {
 	// gl.TexParameterfv(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_BORDER_COLOR, &borderColor[0])
 
 	// gl.BindTexture(gl.TEXTURE_CUBE_MAP, 0)
-	log.Println("Border Color is not supported by OpenGLES")
+	gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_WARNING, "CubeMap", this.GetName(), "Border Color is not supported by OpenGLES")
 }
 func (this *OpenGLESCubeMap) SetBorderDepth(depth float32) {
 	// gl.BindTexture(gl.TEXTURE_CUBE_MAP, this.oglName)
@@ -126,5 +130,5 @@ func (this *OpenGLESCubeMap) SetBorderDepth(depth float32) {
 	// gl.TexParameterfv(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_BORDER_COLOR, &col[0])
 
 	// gl.BindTexture(gl.TEXTURE_CUBE_MAP, 0)
-	log.Println("Border Depth is not supported by OpenGLES")
+	gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_WARNING, "CubeMap", this.GetName(), "Border Depth is not supported by OpenGLES")
 }

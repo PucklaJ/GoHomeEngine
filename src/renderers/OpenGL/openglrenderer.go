@@ -4,7 +4,7 @@ import (
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
 	"github.com/go-gl/gl/all-core/gl"
 	"image/color"
-	"log"
+	"strconv"
 )
 
 const (
@@ -18,6 +18,7 @@ type OpenGLRenderer struct {
 
 	availableFunctions map[string]bool
 	backBufferMesh     *OpenGLMesh2D
+	backgroundColor    color.Color
 }
 
 func (this *OpenGLRenderer) createBackBufferMesh() {
@@ -52,13 +53,18 @@ func (this *OpenGLRenderer) Init() error {
 		return err
 	}
 	version := gl.GoStr(gl.GetString(gl.VERSION))
-	log.Println("OpenGL Version:", version)
+	gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_LOG, "Renderer", "OpenGL\t", "Version: "+version)
+	if this.GetVersioni() < 21 {
+		return &OpenGLError{errorString: "You don't have a graphics card or your graphics card is not supported! Minimum: OpenGL 2.1"}
+	}
 
 	gl.Enable(gl.MULTISAMPLE)
 	gl.Enable(gl.DEPTH_TEST)
 	gl.DepthFunc(gl.LESS)
 	gl.Enable(gl.DEPTH_CLAMP)
 	gl.ClearDepth(1.0)
+	gl.Enable(gl.BLEND)
+	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
 
 	gl.FrontFace(gl.CCW)
 	gl.Enable(gl.CULL_FACE)
@@ -353,4 +359,19 @@ func (this *OpenGLRenderer) FilterShaderFiles(name, file, shader_type string) st
 	}
 
 	return file
+}
+
+func (this *OpenGLRenderer) SetBackgroundColor(bgColor color.Color) {
+	this.backgroundColor = bgColor
+}
+
+func (this *OpenGLRenderer) GetBackgroundColor() color.Color {
+	return this.backgroundColor
+}
+
+func handleOpenGLError(tag, objectName, errorPrefix string) {
+	err := gl.GetError()
+	if err != gl.NO_ERROR {
+		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, tag, objectName, errorPrefix+"ErrorCode: "+strconv.Itoa(int(err)))
+	}
 }

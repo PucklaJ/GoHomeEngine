@@ -86,7 +86,9 @@ func (oglm *OpenGLMesh2D) Render() {
 		oglm.attributePointer()
 	}
 
+	gl.GetError()
 	gl.DrawElements(gl.TRIANGLES, int32(oglm.numIndices), gl.UNSIGNED_INT, nil)
+	handleOpenGLError("Mesh2D", oglm.Name, "RenderError: ")
 
 	if oglm.canUseVAOs {
 		gl.BindVertexArray(0)

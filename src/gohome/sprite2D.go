@@ -11,9 +11,12 @@ type Sprite2D struct {
 	Texture
 	Visible             bool
 	NotRelativeToCamera int
+	Flip                uint8
 
 	Shader
 	RenderType
+	transform TransformableObject
+	Transform *TransformableObject2D
 }
 
 func createSprite2DMesh() {
@@ -45,15 +48,17 @@ func createSprite2DMesh() {
 	sprite2DMesh.Load()
 }
 
-func (spr *Sprite2D) Init(texName string, transform *TransformableObject2D) {
-	spr.Texture = ResourceMgr.GetTexture(texName)
+func (spr *Sprite2D) commonInit() {
+	spr.Transform = &TransformableObject2D{}
 
-	if spr.Texture != nil && transform != nil {
-		transform.Scale = [2]float32{1.0, 1.0}
-		transform.Size = [2]float32{float32(spr.Texture.GetWidth()), float32(spr.Texture.GetHeight())}
-		transform.RotationPoint = [2]float32{0.5, 0.5}
-		transform.Origin = [2]float32{0.0, 0.0}
+	spr.Transform.Scale = [2]float32{1.0, 1.0}
+	if spr.Texture != nil {
+		spr.Transform.Size = [2]float32{float32(spr.Texture.GetWidth()), float32(spr.Texture.GetHeight())}
 	}
+	spr.Transform.RotationPoint = [2]float32{0.5, 0.5}
+	spr.Transform.Origin = [2]float32{0.0, 0.0}
+
+	spr.transform = spr.Transform
 
 	if sprite2DMesh == nil {
 		createSprite2DMesh()
@@ -62,6 +67,17 @@ func (spr *Sprite2D) Init(texName string, transform *TransformableObject2D) {
 	spr.Visible = true
 	spr.NotRelativeToCamera = -1
 	spr.RenderType = TYPE_2D_NORMAL
+	spr.Flip = FLIP_NONE
+}
+
+func (spr *Sprite2D) Init(texName string) {
+	spr.Texture = ResourceMgr.GetTexture(texName)
+	spr.commonInit()
+}
+
+func (spr *Sprite2D) InitTexture(texture Texture) {
+	spr.Texture = texture
+	spr.commonInit()
 }
 
 func (spr *Sprite2D) SetShader(s Shader) {
@@ -84,9 +100,12 @@ func (spr *Sprite2D) GetType() RenderType {
 }
 
 func (spr *Sprite2D) Render() {
-	spr.Texture.Bind(0)
-	sprite2DMesh.Render()
-	spr.Texture.Unbind(0)
+	if spr.Texture != nil {
+		RenderMgr.CurrentShader.SetUniformI("flip", int32(spr.Flip))
+		spr.Texture.Bind(0)
+		sprite2DMesh.Render()
+		spr.Texture.Unbind(0)
+	}
 }
 
 func (spr *Sprite2D) Terminate() {
@@ -99,4 +118,17 @@ func (spr *Sprite2D) IsVisible() bool {
 
 func (spr *Sprite2D) NotRelativeCamera() int {
 	return spr.NotRelativeToCamera
+}
+
+func (spr *Sprite2D) SetTransformableObject(tobj TransformableObject) {
+	spr.transform = tobj
+	if tobj != nil {
+		spr.Transform = tobj.(*TransformableObject2D)
+	} else {
+		spr.Transform = nil
+	}
+}
+
+func (spr *Sprite2D) GetTransformableObject() TransformableObject {
+	return spr.transform
 }

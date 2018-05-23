@@ -5,6 +5,7 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/raedatoui/assimp"
 	"log"
+	"strconv"
 	"strings"
 	"sync"
 )
@@ -13,23 +14,54 @@ const (
 	NUM_GO_ROUTINES_MESH_VERTICES_LOADING uint32 = 10
 )
 
+func importFile(path string) *assimp.Scene {
+	var scene *assimp.Scene
+	scene = assimp.ImportFile(path, uint(assimp.Process_Triangulate|assimp.Process_FlipUVs|assimp.Process_GenNormals|assimp.Process_OptimizeMeshes))
+	if scene == nil || (scene.Flags()&assimp.SceneFlags_Incomplete) != 0 || scene.RootNode() == nil {
+		return nil
+	}
+	return scene
+}
+
+func importFileWithPaths(path string, paths []string) (*assimp.Scene, string) {
+	var scene *assimp.Scene
+	var worked bool = false
+	var workingPath string
+	for i := 0; i < len(paths); i++ {
+		if scene = importFile(paths[i] + path); scene != nil {
+			worked = true
+			workingPath = paths[i] + path
+			break
+		} else if scene = importFile(paths[i] + gohome.GetFileFromPath(path)); scene != nil {
+			worked = true
+			workingPath = paths[i] + gohome.GetFileFromPath(path)
+			break
+		}
+	}
+
+	if worked {
+		return scene, workingPath
+	} else {
+		return nil, ""
+	}
+}
+
 func LoadLevelAssimp(rsmgr *gohome.ResourceManager, name, path string, preloaded, loadToGPU bool) *gohome.Level {
 	if _, ok := rsmgr.Levels[name]; ok {
-		log.Println("The level with the name", name, "has already been loaded!")
+		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_LOG, "Level", name, "Has already been loaded!")
 		return nil
 	}
 	level := &gohome.Level{Name: name}
 	var scene *assimp.Scene
-	if scene = assimp.ImportFile(path, uint(assimp.Process_Triangulate|assimp.Process_FlipUVs|assimp.Process_GenNormals|assimp.Process_OptimizeMeshes)); scene == nil || (scene.Flags()&assimp.SceneFlags_Incomplete) != 0 || scene.RootNode() == nil {
-		if scene = assimp.ImportFile("assets/"+path, uint(assimp.Process_Triangulate|assimp.Process_FlipUVs|assimp.Process_GenNormals|assimp.Process_OptimizeMeshes)); scene == nil || (scene.Flags()&assimp.SceneFlags_Incomplete) != 0 || scene.RootNode() == nil {
-			log.Println("Couldn't load level", name, "with path", path, ":", assimp.GetErrorString())
-		}
+	var workingPath string
+	if scene, workingPath = importFileWithPaths(path, gohome.LEVEL_PATHS[:]); scene == nil {
+		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "Level", name, "Couldn't load file "+path+": "+assimp.GetErrorString())
 		return nil
 	}
 
-	directory := path
+	directory := workingPath
 	if index := strings.LastIndex(directory, "/"); index != -1 {
-		directory = directory[index:]
+		directory = directory[:index+1]
 	} else {
 		directory = ""
 	}
@@ -45,10 +77,10 @@ func processNode(rsmgr *gohome.ResourceManager, node *assimp.Node, scene *assimp
 		initModel(model, node, scene, level, directory, preloaded, loadToGPU)
 		if !preloaded {
 			if _, ok := rsmgr.Models[model.Name]; ok {
-				log.Println("Model", model.Name, "has already been loaded! Overwritting ...")
+				gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_LOG, "Model", model.Name, "Has already been loaded! Overwritting ...")
 			}
 			rsmgr.Models[model.Name] = model
-			log.Println("Finished loading Model", model.Name, "!")
+			gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_LOG, "Model", model.Name, "Finished loading!")
 		} else {
 			rsmgr.PreloadedModelsChan <- model
 		}
@@ -76,6 +108,7 @@ func initModel(model *gohome.Model3D, node *assimp.Node, scene *assimp.Scene, le
 				mesh.Load()
 			}
 			log.Println("Finished loading mesh", mesh.GetName(), "V:", mesh.GetNumVertices(), "I:", mesh.GetNumIndices(), "!")
+			gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_LOG, "Mesh", mesh.GetName(), "Finished loading! V:"+strconv.Itoa(int(mesh.GetNumVertices()))+" I: "+strconv.Itoa(int(mesh.GetNumIndices())))
 		} else {
 			mesh.CalculateTangents()
 			gohome.ResourceMgr.PreloadedMeshesChan <- gohome.PreloadedMesh{
@@ -169,7 +202,7 @@ func initMaterial(mat *gohome.Material, material *assimp.Material, scene *assimp
 	for i := 0; i < diffuseTextures; i++ {
 		texPath, _, _, _, _, _, _, ret := material.GetMaterialTexture(1, i)
 		if ret == assimp.Return_Failure {
-			log.Println("Couldn't return diffuse Texture")
+			gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "Material", "assimp", "Couldn't return diffuse Texture")
 		} else {
 			if !preloaded {
 				gohome.ResourceMgr.LoadTexture(texPath, directory+texPath)
@@ -184,7 +217,7 @@ func initMaterial(mat *gohome.Material, material *assimp.Material, scene *assimp
 	for i := 0; i < specularTextures; i++ {
 		texPath, _, _, _, _, _, _, ret := material.GetMaterialTexture(2, i)
 		if ret == assimp.Return_Failure {
-			log.Println("Couldn't return specular Texture")
+			gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "Material", "assimp", "Couldn't return specular Texture")
 		} else {
 			if !preloaded {
 				gohome.ResourceMgr.LoadTexture(texPath, directory+texPath)
@@ -198,7 +231,7 @@ func initMaterial(mat *gohome.Material, material *assimp.Material, scene *assimp
 	for i := 0; i < normalMaps; i++ {
 		texPath, _, _, _, _, _, _, ret := material.GetMaterialTexture(6, i)
 		if ret == assimp.Return_Failure {
-			log.Println("Couldn't return normal map")
+			gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "Material", "assimp", "Couldn't return normal map")
 		} else {
 			if !preloaded {
 				gohome.ResourceMgr.LoadTexture(texPath, directory+texPath)

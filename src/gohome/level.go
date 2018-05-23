@@ -32,9 +32,10 @@ func (this *Level) AddToScene() {
 		m := ResourceMgr.GetModel(this.LevelObjects[i].Name)
 		if m != nil {
 			if this.LevelObjects[i].Entity3D.Model3D == nil {
-				this.LevelObjects[i].Entity3D.InitModel(m, nil)
+				this.LevelObjects[i].Entity3D.InitModel(m)
+				this.LevelObjects[i].Entity3D.SetTransformableObject(&this.LevelObjects[i].Transform)
 			}
-			RenderMgr.AddObject(&this.LevelObjects[i].Entity3D, &this.LevelObjects[i].Transform)
+			RenderMgr.AddObject(&this.LevelObjects[i].Entity3D)
 		}
 	}
 }
@@ -43,7 +44,7 @@ func (this *Level) RemoveFromScene() {
 	for i := 0; i < len(this.LevelObjects); i++ {
 		m := ResourceMgr.GetModel(this.LevelObjects[i].Name)
 		if m != nil {
-			RenderMgr.RemoveObject(&this.LevelObjects[i].Entity3D, &this.LevelObjects[i].Transform)
+			RenderMgr.RemoveObject(&this.LevelObjects[i].Entity3D)
 		}
 	}
 }
