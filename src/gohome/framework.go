@@ -36,6 +36,15 @@ type Framework interface {
 	LoadLevel(rsmgr *ResourceManager, name, path string, preloaded, loadToGPU bool) *Level
 
 	ShowYesNoDialog(title, message string) uint8
+
+	OnResize(callback func(newWidth, newHeight uint32))
+	OnMove(callback func(newPosX, newPosY uint32))
+	OnClose(callback func())
+	OnFocus(callback func(focused bool))
+
+	StartTextInput()
+	GetTextInput() string
+	EndTextInput()
 }
 
 var Framew Framework

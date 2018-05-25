@@ -20,9 +20,18 @@ type GLFWFramework struct {
 	prevWindowHeight int
 	prevWindowX      int
 	prevWindowY      int
+
+	onResizeCallbacks []func(newWidth, newHeight uint32)
+	onMoveCallbacks   []func(newPosX, newPosY uint32)
+	onCloseCallbacks  []func()
+	onFocusCallbacks  []func(focused bool)
+
+	textInputStarted bool
+	textInputBuffer  string
 }
 
 func (gfw *GLFWFramework) Init(ml *gohome.MainLoop) error {
+	gfw.textInputStarted = false
 	gfw.window = nil
 	if err := glfw.Init(); err != nil {
 		return err
@@ -68,6 +77,10 @@ func (gfw *GLFWFramework) createWindowProfile(windowWidth, windowHeight uint32, 
 	gfw.window.SetScrollCallback(onMouseWheelChanged)
 	gfw.window.SetMouseButtonCallback(onMouseButton)
 	gfw.window.SetFramebufferSizeCallback(onResize)
+	gfw.window.SetPosCallback(onMove)
+	gfw.window.SetCloseCallback(onClose)
+	gfw.window.SetFocusCallback(onFocus)
+	gfw.window.SetCharCallback(onTextInput)
 
 	glfw.SwapInterval(1)
 	return nil
@@ -539,4 +552,31 @@ func (gfw *GLFWFramework) LoadLevel(rsmgr *gohome.ResourceManager, name, path st
 
 func (gfw *GLFWFramework) ShowYesNoDialog(title, message string) uint8 {
 	return gohome.DIALOG_CANCELLED
+}
+
+func (gfw *GLFWFramework) OnResize(callback func(newWidth, newHeight uint32)) {
+	gfw.onResizeCallbacks = append(gfw.onResizeCallbacks, callback)
+}
+func (gfw *GLFWFramework) OnMove(callback func(newPosX, newPosY uint32)) {
+	gfw.onMoveCallbacks = append(gfw.onMoveCallbacks, callback)
+}
+func (gfw *GLFWFramework) OnClose(callback func()) {
+	gfw.onCloseCallbacks = append(gfw.onCloseCallbacks, callback)
+}
+
+func (gfw *GLFWFramework) OnFocus(callback func(focused bool)) {
+	gfw.onFocusCallbacks = append(gfw.onFocusCallbacks, callback)
+}
+
+func (gfw *GLFWFramework) StartTextInput() {
+	gfw.textInputStarted = true
+}
+func (gfw *GLFWFramework) GetTextInput() string {
+	str := gfw.textInputBuffer
+	gfw.textInputBuffer = ""
+	return str
+}
+func (gfw *GLFWFramework) EndTextInput() {
+	gfw.textInputStarted = false
+	gfw.textInputBuffer = ""
 }

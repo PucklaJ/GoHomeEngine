@@ -41,4 +41,38 @@ func onMouseButton(w *glfw.Window, button glfw.MouseButton, action glfw.Action, 
 
 func onResize(window *glfw.Window, width, height int) {
 	gohome.Render.OnResize(uint32(width), uint32(height))
+	gfw := gohome.Framew.(*GLFWFramework)
+	for i := 0; i < len(gfw.onResizeCallbacks); i++ {
+		gfw.onResizeCallbacks[i](uint32(width), uint32(height))
+	}
+}
+
+func onMove(window *glfw.Window, posx, posy int) {
+	gfw := gohome.Framew.(*GLFWFramework)
+
+	for i := 0; i < len(gfw.onMoveCallbacks); i++ {
+		gfw.onMoveCallbacks[i](uint32(posx), uint32(posy))
+	}
+}
+
+func onClose(window *glfw.Window) {
+	gfw := gohome.Framew.(*GLFWFramework)
+
+	for i := 0; i < len(gfw.onCloseCallbacks); i++ {
+		gfw.onCloseCallbacks[i]()
+	}
+}
+
+func onFocus(window *glfw.Window, focused bool) {
+	gfw := gohome.Framew.(*GLFWFramework)
+
+	for i := 0; i < len(gfw.onFocusCallbacks); i++ {
+		gfw.onFocusCallbacks[i](focused)
+	}
+}
+
+func onTextInput(window *glfw.Window, char rune) {
+	gfw := gohome.Framew.(*GLFWFramework)
+
+	gfw.textInputBuffer += string(char)
 }

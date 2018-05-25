@@ -57,10 +57,20 @@ func (this *Font) getTextureSize(str string) (uint32, uint32) {
 	for i := 0; i < len(runeString); i++ {
 		hmetric := this.ttf.HMetric(scale, this.ttf.Index(runeString[i]))
 		if i == 0 {
-			width += uint32(fixed.Int26_6(hmetric.LeftSideBearing))
+			width += uint32(fixed.Int26_6(hmetric.LeftSideBearing)) + uint32(fixed.Int26_6(hmetric.AdvanceWidth))
 		}
 		width += uint32(fixed.Int26_6(hmetric.AdvanceWidth))
 	}
 
 	return width, height
+}
+
+func (this *Font) GetGlyphMaxHeight() uint32 {
+	rect := this.ttf.Bounds(fixed.Int26_6(this.FontSize))
+	return uint32(rect.Max.Y - rect.Min.Y)
+}
+
+func (this *Font) GetGlyphMaxWidth() uint32 {
+	rect := this.ttf.Bounds(fixed.Int26_6(this.FontSize))
+	return uint32(rect.Max.X - rect.Min.X)
 }
