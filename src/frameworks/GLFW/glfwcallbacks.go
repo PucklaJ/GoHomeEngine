@@ -70,3 +70,9 @@ func onFocus(window *glfw.Window, focused bool) {
 		gfw.onFocusCallbacks[i](focused)
 	}
 }
+
+func onTextInput(window *glfw.Window, char rune) {
+	gfw := gohome.Framew.(*GLFWFramework)
+
+	gfw.textInputBuffer += string(char)
+}

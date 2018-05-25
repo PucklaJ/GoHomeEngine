@@ -103,17 +103,28 @@ func (this *Text2D) updateText() {
 				this.textures[i].Terminate()
 			}
 		}
-		if len(this.textures) != 0 {
-			this.textures = this.textures[len(this.textures)-1 : 0]
-		}
 		if this.renderTexture != nil {
 			this.renderTexture.Terminate()
 		}
 
+		if len(this.textures) > 0 {
+			this.textures = this.textures[:0]
+		}
+
 		this.font.FontSize = this.FontSize
+		if this.Text == "" {
+			return
+		}
 		lines := strings.Split(this.Text, "\n")
+		if len(lines) == 0 {
+			return
+		}
 		for i := 0; i < len(lines); i++ {
-			this.textures = append(this.textures, this.font.DrawString(lines[i]))
+			if lines[i] != "" {
+				this.textures = append(this.textures, this.font.DrawString(lines[i]))
+			} else {
+				this.textures = append(this.textures, nil)
+			}
 		}
 
 		var width, height uint32 = 0, 0
@@ -136,6 +147,18 @@ func (this *Text2D) updateText() {
 		} else if len(this.textures) > 0 && this.textures[0] != nil {
 			width = uint32(this.textures[0].GetWidth())
 			height = uint32(this.textures[0].GetHeight())
+
+			if this.Transform != nil {
+				this.Transform.Size[0] = float32(width)
+				this.Transform.Size[1] = float32(height)
+			}
+			if RenderMgr.CurrentShader != nil {
+				RenderMgr.CurrentShader.Use()
+			}
+			this.transform.SetTransformMatrix(&RenderMgr)
+			if RenderMgr.CurrentShader != nil {
+				RenderMgr.CurrentShader.Unuse()
+			}
 		} else {
 			width = 1000
 			height = 64
@@ -165,6 +188,7 @@ func (this *Text2D) renderTexturesToRenderTexture() {
 	shader.SetUniformM4("projectionMatrix2D", projectionMatrix)
 	shader.SetUniformM3("viewMatrix2D", viewMatrix)
 	shader.SetUniformI("texture0", 0)
+	shader.SetUniformI("flip", int32(FLIP_NONE))
 
 	var x, y uint32 = 0, 0
 	for i := 0; i < len(this.textures); i++ {
@@ -173,17 +197,18 @@ func (this *Text2D) renderTexturesToRenderTexture() {
 			width = uint32(this.textures[i].GetWidth())
 			height = uint32(this.textures[i].GetHeight())
 			this.textures[i].Bind(0)
-		}
-		var transformMatrix TransformableObject2D
-		transformMatrix.Size = [2]float32{float32(width), float32(height)}
-		transformMatrix.Scale = [2]float32{1.0, 1.0}
-		transformMatrix.Origin = [2]float32{0.0, 0.0}
-		transformMatrix.RotationPoint = [2]float32{0.5, 0.5}
-		transformMatrix.Position = [2]float32{float32(x), float32(y)}
-		transformMatrix.CalculateTransformMatrix(nil, -1)
-		shader.SetUniformM3("transformMatrix2D", transformMatrix.GetTransformMatrix())
 
-		sprite2DMesh.Render()
+			var transformMatrix TransformableObject2D
+			transformMatrix.Size = [2]float32{float32(width), float32(height)}
+			transformMatrix.Scale = [2]float32{1.0, 1.0}
+			transformMatrix.Origin = [2]float32{0.0, 0.0}
+			transformMatrix.RotationPoint = [2]float32{0.5, 0.5}
+			transformMatrix.Position = [2]float32{float32(x), float32(y)}
+			transformMatrix.CalculateTransformMatrix(nil, -1)
+			shader.SetUniformM3("transformMatrix2D", transformMatrix.GetTransformMatrix())
+
+			sprite2DMesh.Render()
+		}
 
 		y += uint32(int32(height) + LINE_PADDING)
 	}

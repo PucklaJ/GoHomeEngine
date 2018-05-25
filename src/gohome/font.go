@@ -57,7 +57,7 @@ func (this *Font) getTextureSize(str string) (uint32, uint32) {
 	for i := 0; i < len(runeString); i++ {
 		hmetric := this.ttf.HMetric(scale, this.ttf.Index(runeString[i]))
 		if i == 0 {
-			width += uint32(fixed.Int26_6(hmetric.LeftSideBearing))
+			width += uint32(fixed.Int26_6(hmetric.LeftSideBearing)) + uint32(fixed.Int26_6(hmetric.AdvanceWidth))
 		}
 		width += uint32(fixed.Int26_6(hmetric.AdvanceWidth))
 	}

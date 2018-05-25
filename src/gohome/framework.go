@@ -41,6 +41,10 @@ type Framework interface {
 	OnMove(callback func(newPosX, newPosY uint32))
 	OnClose(callback func())
 	OnFocus(callback func(focused bool))
+
+	StartTextInput()
+	GetTextInput() string
+	EndTextInput()
 }
 
 var Framew Framework
