@@ -147,18 +147,6 @@ func (this *Text2D) updateText() {
 		} else if len(this.textures) > 0 && this.textures[0] != nil {
 			width = uint32(this.textures[0].GetWidth())
 			height = uint32(this.textures[0].GetHeight())
-
-			if this.Transform != nil {
-				this.Transform.Size[0] = float32(width)
-				this.Transform.Size[1] = float32(height)
-			}
-			if RenderMgr.CurrentShader != nil {
-				RenderMgr.CurrentShader.Use()
-			}
-			this.transform.SetTransformMatrix(&RenderMgr)
-			if RenderMgr.CurrentShader != nil {
-				RenderMgr.CurrentShader.Unuse()
-			}
 		} else {
 			width = 1000
 			height = 64
@@ -167,6 +155,8 @@ func (this *Text2D) updateText() {
 		if this.Transform != nil {
 			this.Transform.Size = [2]float32{float32(width), float32(height)}
 		}
+
+		this.updateUniforms()
 	}
 
 	this.oldText = this.Text
@@ -215,8 +205,12 @@ func (this *Text2D) renderTexturesToRenderTexture() {
 
 	shader.Unuse()
 	this.renderTexture.UnsetAsTarget()
+}
 
-	shader = RenderMgr.CurrentShader
+func (this *Text2D) updateUniforms() {
+	this.transform.CalculateTransformMatrix(&RenderMgr, this.NotRelativeToCamera)
+
+	shader := RenderMgr.CurrentShader
 	if shader != nil {
 		shader.Use()
 		if RenderMgr.Projection2D != nil {
@@ -236,7 +230,6 @@ func (this *Text2D) renderTexturesToRenderTexture() {
 			shader.SetUniformM3("viewMatrix2D", mgl32.Ident3())
 		}
 	}
-
 }
 
 func (this *Text2D) SetTransformableObject(tobj TransformableObject) {
