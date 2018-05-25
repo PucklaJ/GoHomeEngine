@@ -14,14 +14,16 @@ const (
 )
 
 type Text2D struct {
-	shader        Shader
-	renderType    RenderType
-	font          *Font
-	textures      []Texture
-	renderTexture RenderTexture
-	oldText       string
-	transform     TransformableObject
-	Transform     *TransformableObject2D
+	shader               Shader
+	renderType           RenderType
+	font                 *Font
+	textures             []Texture
+	textureDatabase      map[string]Texture
+	texturesUsedDatabase map[string]bool
+	renderTexture        RenderTexture
+	oldText              string
+	transform            TransformableObject
+	Transform            *TransformableObject2D
 
 	Visible             bool
 	NotRelativeToCamera int
@@ -36,6 +38,9 @@ func (this *Text2D) Init(font string, fontSize uint32, str string) {
 	this.Transform.RotationPoint = [2]float32{0.5, 0.5}
 	this.Transform.Origin = [2]float32{0.0, 0.0}
 	this.transform = this.Transform
+	this.textureDatabase = make(map[string]Texture)
+	this.texturesUsedDatabase = make(map[string]bool)
+	this.renderTexture = Render.CreateRenderTexture("Text2D RenderTexture", 10, 10, 1, false, false, false, false)
 
 	if sprite2DMesh == nil {
 		createSprite2DMesh()
@@ -92,17 +97,30 @@ func (this *Text2D) valuesChanged() bool {
 	return this.Text != this.oldText
 }
 
+func (this *Text2D) deleteUnusedTexturesFromDatabase() {
+	var texturesToDelete []string
+	for k := range this.textureDatabase {
+		if used, ok := this.texturesUsedDatabase[k]; !ok || !used {
+			texturesToDelete = append(texturesToDelete, k)
+		}
+	}
+
+	for i := 0; i < len(texturesToDelete); i++ {
+		this.textureDatabase[texturesToDelete[i]].Terminate()
+		delete(this.textureDatabase, texturesToDelete[i])
+	}
+}
+
 func (this *Text2D) updateText() {
+	this.texturesUsedDatabase = make(map[string]bool)
+
 	if this.font == nil {
 		return
 	}
 
 	if this.valuesChanged() {
-		for i := 0; i < len(this.textures); i++ {
-			if this.textures[i] != nil {
-				this.textures[i].Terminate()
-			}
-		}
+		defer this.deleteUnusedTexturesFromDatabase()
+
 		if this.renderTexture != nil {
 			this.renderTexture.Terminate()
 		}
@@ -112,16 +130,29 @@ func (this *Text2D) updateText() {
 		}
 
 		this.font.FontSize = this.FontSize
+
 		if this.Text == "" {
 			return
 		}
+
 		lines := strings.Split(this.Text, "\n")
 		if len(lines) == 0 {
 			return
 		}
+		var tempTexture Texture
 		for i := 0; i < len(lines); i++ {
 			if lines[i] != "" {
-				this.textures = append(this.textures, this.font.DrawString(lines[i]))
+				texturedb, ok := this.textureDatabase[lines[i]]
+				if ok && texturedb != nil {
+					tempTexture = texturedb
+					this.texturesUsedDatabase[lines[i]] = true
+				} else {
+					tempTexture = this.font.DrawString(lines[i])
+					this.textureDatabase[lines[i]] = tempTexture
+					this.texturesUsedDatabase[lines[i]] = true
+				}
+
+				this.textures = append(this.textures, tempTexture)
 			} else {
 				this.textures = append(this.textures, nil)
 			}
@@ -136,20 +167,20 @@ func (this *Text2D) updateText() {
 					}
 					height += uint32(int32(this.textures[i].GetHeight()) + LINE_PADDING)
 				} else {
-					height += uint32(64 + LINE_PADDING)
-					if 1000 > width {
-						width = 1000
+					height += this.font.GetGlyphMaxHeight() + uint32(LINE_PADDING)
+					if this.font.GetGlyphMaxWidth()*100 > width {
+						width = this.font.GetGlyphMaxWidth() * 100
 					}
 				}
 			}
-			this.renderTexture = Render.CreateRenderTexture("Text2D RenderTexture", width, height, 1, false, false, false, false)
+			this.renderTexture.ChangeSize(width, height)
 			this.renderTexturesToRenderTexture()
 		} else if len(this.textures) > 0 && this.textures[0] != nil {
 			width = uint32(this.textures[0].GetWidth())
 			height = uint32(this.textures[0].GetHeight())
 		} else {
-			width = 1000
-			height = 64
+			width = this.font.GetGlyphMaxWidth() * 100
+			height = this.font.GetGlyphMaxHeight()
 		}
 
 		if this.Transform != nil {
@@ -182,7 +213,7 @@ func (this *Text2D) renderTexturesToRenderTexture() {
 
 	var x, y uint32 = 0, 0
 	for i := 0; i < len(this.textures); i++ {
-		var width, height uint32 = 1000, 64
+		var width, height uint32 = 1000, this.font.GetGlyphMaxHeight()
 		if this.textures[i] != nil {
 			width = uint32(this.textures[i].GetWidth())
 			height = uint32(this.textures[i].GetHeight())
@@ -243,4 +274,12 @@ func (this *Text2D) SetTransformableObject(tobj TransformableObject) {
 
 func (this *Text2D) GetTransformableObject() TransformableObject {
 	return this.transform
+}
+
+func (this *Text2D) Terminate() {
+	this.texturesUsedDatabase = make(map[string]bool)
+	this.deleteUnusedTexturesFromDatabase()
+	if len(this.textures) > 0 {
+		this.textures = this.textures[:0]
+	}
 }

@@ -64,3 +64,13 @@ func (this *Font) getTextureSize(str string) (uint32, uint32) {
 
 	return width, height
 }
+
+func (this *Font) GetGlyphMaxHeight() uint32 {
+	rect := this.ttf.Bounds(fixed.Int26_6(this.FontSize))
+	return uint32(rect.Max.Y - rect.Min.Y)
+}
+
+func (this *Font) GetGlyphMaxWidth() uint32 {
+	rect := this.ttf.Bounds(fixed.Int26_6(this.FontSize))
+	return uint32(rect.Max.X - rect.Min.X)
+}

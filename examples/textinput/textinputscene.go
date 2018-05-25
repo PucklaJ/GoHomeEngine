@@ -14,7 +14,7 @@ func (this *TextInputScene) Init() {
 
 	gohome.ResourceMgr.LoadFont("Font", "FreeMonoBold.ttf")
 
-	this.text.Init("Font", 30, "Write: ")
+	this.text.Init("Font", 30, "Write:")
 	gohome.RenderMgr.AddObject(&this.text)
 
 	gohome.RenderMgr.EnableBackBuffer = false
@@ -38,5 +38,5 @@ func (this *TextInputScene) Update(delta_time float32) {
 }
 
 func (this *TextInputScene) Terminate() {
-
+	this.text.Terminate()
 }

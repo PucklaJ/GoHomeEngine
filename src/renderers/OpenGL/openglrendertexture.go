@@ -205,11 +205,19 @@ func (this *OpenGLRenderTexture) UnbindIndex(index, unit uint32) {
 }
 
 func (this *OpenGLRenderTexture) GetWidth() int {
-	return this.textures[0].GetWidth()
+	if len(this.textures) == 0 {
+		return 0
+	} else {
+		return this.textures[0].GetWidth()
+	}
 }
 
 func (this *OpenGLRenderTexture) GetHeight() int {
-	return this.textures[0].GetHeight()
+	if len(this.textures) == 0 {
+		return 0
+	} else {
+		return this.textures[0].GetHeight()
+	}
 }
 
 func (this *OpenGLRenderTexture) Terminate() {
