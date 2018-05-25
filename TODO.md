@@ -3,11 +3,6 @@
 + Controller Input
 + Browser support
 + Text Input
-+ Add callbacks to window events
-	- onResize
-	- onClose
-	- onMove
-	- etc.
 + Audio
 	- [beep](https://github.com/faiface/beep) or OpenAL
 + Simple Loading Screen
@@ -15,6 +10,7 @@
 + Add delete resource method to resourcemanager
 
 ## Android
+
 
 + Input
 	- Multitouch
