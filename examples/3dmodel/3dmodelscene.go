@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
-	"strconv"
 )
 
 type ModelScene struct {

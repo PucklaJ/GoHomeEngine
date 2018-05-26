@@ -2,7 +2,6 @@
 
 + Controller Input
 + Browser support
-+ Text Input
 + Audio
 	- [beep](https://github.com/faiface/beep) or OpenAL
 + Simple Loading Screen
