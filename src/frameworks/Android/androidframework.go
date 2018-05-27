@@ -111,6 +111,7 @@ func (this *AndroidFramework) onTouch(e touch.Event) {
 	}
 
 	inputTouch := gohome.InputMgr.Touches[uint8(e.Sequence)]
+	inputTouch.ID = uint8(e.Sequence)
 	inputTouch.Pos[0] = int16(e.X)
 	inputTouch.Pos[1] = int16(e.Y)
 	inputTouch.DPos[0] = inputTouch.Pos[0] - inputTouch.PPos[0]
@@ -119,6 +120,7 @@ func (this *AndroidFramework) onTouch(e touch.Event) {
 
 	if e.Type == touch.TypeBegin {
 		gohome.InputMgr.Touch(uint8(e.Sequence))
+		inputTouch.DPos = [2]int16{0,0}
 	} else if e.Type == touch.TypeEnd {
 		inputTouch.DPos = [2]int16{0,0}
 		gohome.InputMgr.ReleaseTouch(uint8(e.Sequence))

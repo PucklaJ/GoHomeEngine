@@ -9,12 +9,6 @@
 + Simple Loading Screen
 + Add Font loading to preloader
 
-## Android
-
-+ Input
-	- Multitouch
-	- Other keys
-
 ## 2D
 
 + Sprite Animations

@@ -24,6 +24,12 @@ func onMousePosChanged(w *glfw.Window, xpos, ypos float64) {
 		framework.prevMousePos[1] = gohome.InputMgr.Mouse.Pos[1]
 	}
 
+	inputTouch := gohome.InputMgr.Touches[0]
+	inputTouch.Pos = gohome.InputMgr.Mouse.Pos
+	inputTouch.DPos = gohome.InputMgr.Mouse.DPos
+	inputTouch.PPos = framework.prevMousePos
+	inputTouch.ID = 0
+	gohome.InputMgr.Touches[0] = inputTouch
 }
 
 func onMouseWheelChanged(w *glfw.Window, xoff, yoff float64) {
@@ -34,8 +40,10 @@ func onMouseWheelChanged(w *glfw.Window, xoff, yoff float64) {
 func onMouseButton(w *glfw.Window, button glfw.MouseButton, action glfw.Action, mod glfw.ModifierKey) {
 	if action == glfw.Press || action == glfw.Repeat {
 		gohome.InputMgr.PressKey(glfwMouseButtonTogohomeKeys(button))
+		gohome.InputMgr.Touch(0)
 	} else if action == glfw.Release {
 		gohome.InputMgr.ReleaseKey(glfwMouseButtonTogohomeKeys(button))
+		gohome.InputMgr.ReleaseTouch(0)
 	}
 }
 
