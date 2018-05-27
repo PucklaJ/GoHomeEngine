@@ -89,7 +89,9 @@ func (this *OpenGLLines3DInterface) Render() {
 	} else {
 		this.attributePointer()
 	}
+	gl.GetError()
 	gl.DrawArrays(gl.LINES,0,int32(this.numVertices))
+	handleOpenGLError("Lines3DInterface",this.Name,"RenderError: ")
 	if this.canUseVaos {
 		gl.BindVertexArray(0)
 	} else {

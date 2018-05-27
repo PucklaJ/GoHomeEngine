@@ -47,6 +47,10 @@ func (this *Lines3D) Init() {
 	this.Transform = &TransformableObject3D{
 		Scale: [3]float32{1.0,1.0,1.0},
 	}
+	this.transform = this.Transform
+	this.Visible = true
+	this.NotRelativeToCamera = -1
+	this.rtype = TYPE_3D_NORMAL
 }
 
 func (this *Lines3D) AddLine(line Line3D) {
