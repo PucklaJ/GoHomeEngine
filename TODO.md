@@ -1,5 +1,7 @@
 ## General
 
++ Add Graphics Renderer
+    - Line, Polygon, etc.
 + Controller Input
 + Browser support
 + Audio
@@ -27,9 +29,10 @@
 
 ## 3D
 
++ Add Debug Renderer
+    - renders AABBs
 + Particle
 + Raycasting
 + Convert screen position to ray
-+ Add AABBs to Mesh and Model
 + Physics
 	- [cubez](https://github.com/tbogdala/cubez) maybe
