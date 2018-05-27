@@ -11,7 +11,6 @@
 
 ## Android
 
-
 + Input
 	- Multitouch
 	- Other keys

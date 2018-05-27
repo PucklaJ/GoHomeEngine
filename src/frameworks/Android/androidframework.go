@@ -25,6 +25,11 @@ type AndroidFramework struct {
 	prevMousePos        [2]int16
 	startOtherThanPaint time.Time
 	endOtherThanPaint   time.Time
+
+	onResizeCallbacks []func(newWidth, newHeight uint32)
+	onMoveCallbacks   []func(newPosX, newPosY uint32)
+	onCloseCallbacks  []func()
+	onFocusCallbacks  []func(focused bool)
 }
 
 func (this *AndroidFramework) Init(ml *gohome.MainLoop) error {
@@ -63,9 +68,21 @@ func androidFrameworkmain(a app.App) {
 func (this *AndroidFramework) onLifecycle(e lifecycle.Event) {
 	msg := "Lifecycle: From: " + e.From.String() + " To: " + e.To.String() + " CrossVisible: " + e.Crosses(lifecycle.StageVisible).String() + " CrossFocused: " + e.Crosses(lifecycle.StageFocused).String()
 	gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_LOG, "Framework", "Android\t", msg)
+	if e.Crosses(lifecycle.StageFocused) == lifecycle.CrossOn {
+		for i:=0;i<len(this.onFocusCallbacks);i++ {
+			this.onFocusCallbacks[i](true)
+		}
+	} else {
+		for i:=0;i<len(this.onFocusCallbacks);i++ {
+			this.onFocusCallbacks[i](false)
+		}
+	}
 	if e.Crosses(lifecycle.StageVisible) == lifecycle.CrossOn {
 		this.initStuff(e)
 	} else if e.Crosses(lifecycle.StageVisible) == lifecycle.CrossOff {
+		for i:=0;i<len(this.onCloseCallbacks);i++ {
+			this.onCloseCallbacks[i]()
+		}
 		this.mainLoop.Quit()
 		this.renderer.SetOpenGLESContex(nil)
 	}
@@ -112,6 +129,10 @@ func (this *AndroidFramework) onPaint(e paint.Event) {
 
 func (this *AndroidFramework) onSize(e size.Event) {
 	gohome.Render.OnResize(uint32(e.WidthPx), uint32(e.HeightPx))
+
+	for i:=0;i<len(this.onResizeCallbacks);i++ {
+		this.onResizeCallbacks[i](uint32(e.WidthPx),uint32(e.HeightPx))
+	}
 }
 
 func (this *AndroidFramework) Update() {
@@ -221,4 +242,29 @@ func Quit() {
 
 func (this *AndroidFramework) ShowYesNoDialog(title, message string) uint8 {
 	return gohome.DIALOG_CANCELLED
+}
+
+func (this *AndroidFramework) OnResize(callback func(newWidth, newHeight uint32)) {
+	this.onResizeCallbacks = append(this.onResizeCallbacks,callback)
+}
+func (this *AndroidFramework) OnMove(callback func(newPosX, newPosY uint32)) {
+	this.onMoveCallbacks = append(this.onMoveCallbacks,callback)
+}
+func (this *AndroidFramework) OnClose(callback func()) {
+	this.onCloseCallbacks = append(this.onCloseCallbacks,callback)
+}
+func (this *AndroidFramework) OnFocus(callback func(focused bool)) {
+	this.onFocusCallbacks = append(this.onFocusCallbacks,callback)
+}
+
+func (this *AndroidFramework) StartTextInput() {
+
+}
+
+func (this *AndroidFramework) EndTextInput() {
+
+}
+
+func (this *AndroidFramework) GetTextInput() string {
+	return ""
 }

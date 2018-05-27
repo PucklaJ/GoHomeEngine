@@ -31,6 +31,8 @@ type OpenGLESMesh3D struct {
 	tangentsCalculated bool
 	gles               *gl.Context
 	isgles3            bool
+
+	aabb gohome.AxisAlignedBoundingBox
 }
 
 func (oglm *OpenGLESMesh3D) CalculateTangentsRoutine(startIndex, maxIndex uint32, wg *sync.WaitGroup) {
@@ -120,6 +122,31 @@ func (oglm *OpenGLESMesh3D) CalculateTangents() {
 func (oglm *OpenGLESMesh3D) AddVertices(vertices []gohome.Mesh3DVertex, indices []uint32) {
 	oglm.vertices = append(oglm.vertices, vertices...)
 	oglm.indices = append(oglm.indices, indices...)
+	oglm.checkAABB()
+}
+
+func (oglm *OpenGLESMesh3D) checkAABB() {
+	var max,min mgl32.Vec3 = [3]float32{oglm.vertices[0][0],oglm.vertices[0][1],oglm.vertices[0][2]}, [3]float32{oglm.vertices[0][0],oglm.vertices[0][1],oglm.vertices[0][2]}
+	var current gohome.Mesh3DVertex
+	for i:=0;i<len(oglm.vertices);i++ {
+		current = oglm.vertices[i]
+		for j:=0;j<3;j++ {
+			if current[j] > max[j] {
+				max[j] = current[j]
+			} else if current[j] < min[j] {
+				min[j] = current[j]
+			}
+		}
+	}
+
+	for i:=0;i<3;i++ {
+		if max[i] > oglm.aabb.Max[i] {
+			oglm.aabb.Max[i] = max[i]
+		}
+		if min[i] < oglm.aabb.Min[i] {
+			oglm.aabb.Min[i] = min[i]
+		}
+	}
 }
 
 func CreateOpenGLESMesh3D(name string) *OpenGLESMesh3D {
@@ -273,4 +300,8 @@ func (oglm *OpenGLESMesh3D) GetIndices() []uint32 {
 
 func (oglm *OpenGLESMesh3D) GetName() string {
 	return oglm.Name
+}
+
+func (oglm *OpenGLESMesh3D) AABB() gohome.AxisAlignedBoundingBox {
+	return oglm.aabb
 }
