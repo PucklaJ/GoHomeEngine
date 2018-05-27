@@ -399,27 +399,33 @@ func (rsmgr *ResourceManager) LoadTextureFunction(name, path string, preloaded b
 		ErrorMgr.Message(ERROR_LEVEL_ERROR, "Texture", name, "Couldn't decode file: "+err.Error())
 		return nil
 	}
-	width := img.Bounds().Size().X
-	height := img.Bounds().Size().Y
 
-	img_data := make([]byte, width*height*4)
+	var img_data []byte
+	var width, height int
 
-	var wg1 sync.WaitGroup
-	var i uint32
-	deltaWidth := uint32(width) / NUM_GO_ROUTINES_TEXTURE_LOADING
-	wg1.Add(int(NUM_GO_ROUTINES_TEXTURE_LOADING + 1))
-	for i = 0; i <= NUM_GO_ROUTINES_TEXTURE_LOADING; i++ {
-		go loadImageData(&img_data, img, i*deltaWidth, (i+1)*deltaWidth, uint32(width), uint32(height), &wg1)
+	tex := Render.CreateTexture(name, false)
+
+	if preloaded {
+		width = img.Bounds().Size().X
+		height = img.Bounds().Size().Y
+		img_data = make([]byte, width*height*4)
+
+		var wg1 sync.WaitGroup
+		var i float32
+		deltaWidth := float32(width) / float32(NUM_GO_ROUTINES_TEXTURE_LOADING)
+		wg1.Add(int(NUM_GO_ROUTINES_TEXTURE_LOADING + 1))
+		for i = 0; i <= float32(NUM_GO_ROUTINES_TEXTURE_LOADING); i++ {
+			go loadImageData(&img_data, img, uint32(i*deltaWidth), uint32((i+1)*deltaWidth), uint32(width), uint32(height), &wg1)
+		}
+		wg1.Wait()
+	} else {
+		tex.LoadFromImage(img)
 	}
-	wg1.Wait()
-	var tex Texture
-	tex = Render.CreateTexture(name, false)
+
 	if tex == nil {
 		return nil
 	}
-	if !preloaded {
-		tex.Load(img_data, width, height, false)
-	} else {
+	if preloaded {
 		rsmgr.preloader.preloadedTextureDataChan <- preloadedTextureData{
 			tex,
 			img_data,

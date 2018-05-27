@@ -146,11 +146,11 @@ func (ogltex *OpenGLTexture) LoadFromImage(img image.Image) error {
 	img_data := make([]byte, width*height*4)
 
 	var wg1 sync.WaitGroup
-	var i uint32
-	deltaWidth := uint32(width) / gohome.NUM_GO_ROUTINES_TEXTURE_LOADING
+	var i float32
+	deltaWidth := float32(width) / float32(gohome.NUM_GO_ROUTINES_TEXTURE_LOADING)
 	wg1.Add(int(gohome.NUM_GO_ROUTINES_TEXTURE_LOADING + 1))
-	for i = 0; i <= gohome.NUM_GO_ROUTINES_TEXTURE_LOADING; i++ {
-		go loadImageData(&img_data, img, i*deltaWidth, (i+1)*deltaWidth, uint32(width), uint32(height), &wg1)
+	for i = 0; i <= float32(gohome.NUM_GO_ROUTINES_TEXTURE_LOADING); i++ {
+		go loadImageData(&img_data, img, uint32(i*deltaWidth), uint32((i+1)*deltaWidth), uint32(width), uint32(height), &wg1)
 	}
 	wg1.Wait()
 

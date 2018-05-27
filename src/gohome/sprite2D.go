@@ -101,7 +101,9 @@ func (spr *Sprite2D) GetType() RenderType {
 
 func (spr *Sprite2D) Render() {
 	if spr.Texture != nil {
-		RenderMgr.CurrentShader.SetUniformI("flip", int32(spr.Flip))
+		if RenderMgr.CurrentShader != nil {
+			RenderMgr.CurrentShader.SetUniformI("flip", int32(spr.Flip))
+		}
 		spr.Texture.Bind(0)
 		sprite2DMesh.Render()
 		spr.Texture.Unbind(0)

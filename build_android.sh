@@ -27,33 +27,34 @@ compileFlags=''
 projectDir=$(pwd)
 projectDir=${projectDir#${GOPATH}"/src/"}
 executableName=${projectDir#*/}
+CMDDIR=${GOHOMEENGINE_ROOT}/src/cmd
 for i in {1..20}
 do
 executableName=${executableName#*/}
 done
 
-if [ ! -f $GOHOMEENGINE_ROOT/cmd/fcbreplacer/fcbreplacer -a ! -f $GOHOMEENGINE_ROOT/cmd/fcbreplacer/fcbreplacer.exe ]
+if [ ! -f $CMDDIR/fcbreplacer/fcbreplacer -a ! -f $CMDDIR/fcbreplacer/fcbreplacer.exe ]
 then
 	echo Compiling first character big replacer ...
 	workingDir=$(pwd)
-	cd $GOHOMEENGINE_ROOT/cmd/fcbreplacer
+	cd $CMDDIR/fcbreplacer
 	$GOROOT/bin/go build
 	cd $workingDir
 fi
 
-appName=$($GOHOMEENGINE_ROOT/cmd/fcbreplacer/fcbreplacer $executableName)
+appName=$($CMDDIR/fcbreplacer/fcbreplacer $executableName)
 packageName=${executableName}p
 
-if [ ! -f $GOHOMEENGINE_ROOT/cmd/fcnreplacer/fcnreplacer -a ! -f $GOHOMEENGINE_ROOT/cmd/fcnreplacer/fcnreplacer.exe ]
+if [ ! -f $CMDDIR/fcnreplacer/fcnreplacer -a ! -f $CMDDIR/fcnreplacer/fcnreplacer.exe ]
 then
 	echo Compiling first char number replacer ...
 	workingDir=$(pwd)
-	cd $GOHOMEENGINE_ROOT/cmd/fcnreplacer
+	cd $CMDDIR/fcnreplacer
 	$GOROOT/bin/go build
 	cd $workingDir
 fi
 
-packageName=$($GOHOMEENGINE_ROOT/cmd/fcnreplacer/fcnreplacer $packageName)
+packageName=$($CMDDIR/fcnreplacer/fcnreplacer $packageName)
 
 for arg in "$@"
 do
@@ -100,19 +101,19 @@ fi
 copiedManifest=0
 if [ ! -f $(pwd)/AndroidMainfest.xml ]
 then
-	if [ ! -f $GOHOMEENGINE_ROOT/cmd/fsreplacer/fsreplacer -a ! -f $GOHOMEENGINE_ROOT/cmd/fsreplacer/fsreplacer.exe ]
+	if [ ! -f $CMDDIR/fsreplacer/fsreplacer -a ! -f $CMDDIR/fsreplacer/fsreplacer.exe ]
 	then
 		echo Compiling string in file replacer ...
 		workingDir=$(pwd)
-		cd $GOHOMEENGINE_ROOT/cmd/fsreplacer
+		cd $CMDDIR/fsreplacer
 		$GOROOT/bin/go build
 		cd $workingDir
 	fi
 # Copy default AndroidManifest.xml
 	cp $GOHOMEENGINE_ROOT/AndroidManifest.xml $(pwd)/AndroidManifest.xml
 	copiedManifest=1
-	$GOHOMEENGINE_ROOT/cmd/fsreplacer/fsreplacer $(pwd)/AndroidManifest.xml '%APPNAME%' $appName
-	$GOHOMEENGINE_ROOT/cmd/fsreplacer/fsreplacer $(pwd)/AndroidManifest.xml '%PACKAGENAME%' $packageName
+	$CMDDIR/fsreplacer/fsreplacer $(pwd)/AndroidManifest.xml '%APPNAME%' $appName
+	$CMDDIR/fsreplacer/fsreplacer $(pwd)/AndroidManifest.xml '%PACKAGENAME%' $packageName
 fi
 
 echo "Compiling $executableName ..."

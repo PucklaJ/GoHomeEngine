@@ -4,3 +4,7 @@
 *gohomeengine.sublime-project*
 *.exe
 .*
+*bsreplacer
+*fcbreplacer
+*fcnreplacer
+*fsreplacer
