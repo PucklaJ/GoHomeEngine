@@ -8,6 +8,7 @@ import (
 const (
 	MESH2DVERTEX_SIZE uint32 = 2 * 2 * 4 // 2*2*sizeof(float32)
 	INDEX_SIZE        uint32 = 4         // sizeof(uint32)
+	LINE3D_VERTEX_SIZE uint32 = 3 * 4 + 4 * 4
 )
 
 type Mesh2DVertex [4]float32
@@ -52,3 +53,5 @@ func (this *AxisAlignedBoundingBox) String() string {
 
 	return "(Max: " + maxX + "; " + maxY + "; " + maxZ + " | Min: " + minX + "; " + minY + "; " + minZ + ")"
 }
+
+type Line3DVertex [3 + 4]float32 // Position + Color

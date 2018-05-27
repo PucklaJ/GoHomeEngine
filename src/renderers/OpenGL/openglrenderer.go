@@ -148,6 +148,12 @@ func (*OpenGLRenderer) CreateInstancedMesh3D(name string) gohome.InstancedMesh3D
 	return CreateOpenGLInstancedMesh3D(name)
 }
 
+func (*OpenGLRenderer) CreateLines3DInterface(name string) gohome.Lines3DInterface {
+	return &OpenGLLines3DInterface{
+		Name: name,
+	}
+}
+
 func (this *OpenGLRenderer) LoadShader(name, vertex_contents, fragment_contents, geometry_contents, tesselletion_control_contents, eveluation_contents, compute_contents string) (gohome.Shader, error) {
 	var shader *OpenGLShader
 	var err error

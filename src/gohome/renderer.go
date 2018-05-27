@@ -15,6 +15,7 @@ type Renderer interface {
 	CreateRenderTexture(name string, width, height, textures uint32, depthBuffer, multiSampled, shadowMap, cubeMap bool) RenderTexture
 	CreateCubeMap(name string) CubeMap
 	CreateInstancedMesh3D(name string) InstancedMesh3D
+	CreateLines3DInterface(name string) Lines3DInterface
 	SetWireFrame(b bool)
 	SetViewport(viewport Viewport)
 	GetViewport() Viewport
