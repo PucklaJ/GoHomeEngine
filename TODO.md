@@ -6,7 +6,6 @@
 	- [beep](https://github.com/faiface/beep) or OpenAL
 + Simple Loading Screen
 + Add Font loading to preloader
-+ Add delete resource method to resourcemanager
 
 ## Android
 

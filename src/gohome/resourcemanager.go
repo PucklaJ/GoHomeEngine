@@ -533,4 +533,69 @@ func (rsmgr *ResourceManager) checkPreloadedShader(shader *preloadedShader) bool
 	return true
 }
 
+func (rsmgr *ResourceManager) DeleteTexture(name string) {
+	if _,ok := rsmgr.textures[name]; ok {
+		rsmgr.textures[name].Terminate()
+		delete(rsmgr.textures,name)
+		rsmgr.deleteResourceFileName(name)
+		ErrorMgr.Log("Texture",name,"Deleted!")
+	} else {
+		ErrorMgr.Warning("Texture",name,"Couldn't delete! It hasn't been loaded!")
+	}
+}
+
+
+func (rsmgr *ResourceManager) DeleteModel(name string) {
+	if _,ok := rsmgr.Models[name]; ok {
+		rsmgr.Models[name].Terminate()
+		delete(rsmgr.Models,name)
+		rsmgr.deleteResourceFileName(name)
+		ErrorMgr.Log("Model",name,"Deleted!")
+	} else {
+		ErrorMgr.Warning("Model",name,"Couldn't delete! It hasn't been loaded!")
+	}
+}
+
+
+func (rsmgr *ResourceManager) DeleteLevel(name string) {
+	if _,ok := rsmgr.Levels[name]; ok {
+		delete(rsmgr.Levels,name)
+		rsmgr.deleteResourceFileName(name)
+		ErrorMgr.Log("Level",name,"Deleted!")
+	} else {
+		ErrorMgr.Warning("Level",name,"Couldn't delete! It hasn't been loaded!")
+	}
+}
+
+
+func (rsmgr *ResourceManager) DeleteFont(name string) {
+	if _,ok := rsmgr.fonts[name]; ok {
+		delete(rsmgr.fonts,name)
+		rsmgr.deleteResourceFileName(name)
+		ErrorMgr.Log("Font",name,"Deleted!")
+	} else {
+		ErrorMgr.Warning("Font",name,"Couldn't delete! It hasn't been loaded!")
+	}
+}
+
+func (rsmgr *ResourceManager) DeleteShader(name string) {
+	if _,ok := rsmgr.shaders[name]; ok {
+		rsmgr.shaders[name].Terminate()
+		delete(rsmgr.shaders,name)
+		rsmgr.deleteResourceFileName(name)
+		ErrorMgr.Log("Shader",name,"Deleted!")
+	} else {
+		ErrorMgr.Warning("Shader",name,"Couldn't delete! It hasn't been loaded!")
+	}
+}
+
+func (rsmgr *ResourceManager) deleteResourceFileName(name string) {
+	for k := range rsmgr.resourceFileNames {
+		if rsmgr.resourceFileNames[k] == name {
+			delete(rsmgr.resourceFileNames,k)
+			return
+		}
+	}
+}
+
 var ResourceMgr ResourceManager

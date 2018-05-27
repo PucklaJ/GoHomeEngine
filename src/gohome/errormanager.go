@@ -116,4 +116,20 @@ func (this *ErrorManager) Terminate() {
 	this.Reset()
 }
 
+func (this *ErrorManager) Log(tag,objectName,message string) {
+	this.Message(ERROR_LEVEL_LOG,tag,objectName,message)
+}
+
+func (this *ErrorManager) Error(tag,objectName,message string) {
+	this.Message(ERROR_LEVEL_ERROR,tag,objectName,message)
+}
+
+func (this *ErrorManager) Warning(tag,objectName,message string) {
+	this.Message(ERROR_LEVEL_WARNING,tag,objectName,message)
+}
+
+func (this *ErrorManager) Fatal(tag,objectName,message string) {
+	this.Message(ERROR_LEVEL_FATAL,tag,objectName,message)
+}
+
 var ErrorMgr ErrorManager
