@@ -3,10 +3,12 @@ package gohome
 type Model3D struct {
 	Name   string
 	meshes []Mesh3D
+	AABB AxisAlignedBoundingBox
 }
 
 func (this *Model3D) AddMesh3D(m Mesh3D) {
 	this.meshes = append(this.meshes, m)
+	this.checkAABB(m)
 }
 
 func (this *Model3D) Render() {
@@ -38,5 +40,16 @@ func (this *Model3D) GetMeshIndex(index uint32) Mesh3D {
 		return nil
 	} else {
 		return this.meshes[index]
+	}
+}
+
+func (this *Model3D) checkAABB(m Mesh3D) {
+	for i:=0;i<3;i++ {
+		if m.AABB().Max[i] > this.AABB.Max[i] {
+			this.AABB.Max[i] = m.AABB().Max[i]
+		}
+		if m.AABB().Min[i] < this.AABB.Min[i] {
+			this.AABB.Min[i] = m.AABB().Min[i]
+		}
 	}
 }

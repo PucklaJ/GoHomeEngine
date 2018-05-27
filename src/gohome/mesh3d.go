@@ -4,8 +4,6 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 )
 
-type Mesh3DVertex [3 + 3 + 2 + 3]float32
-
 type Mesh3D interface {
 	AddVertices(vertices []Mesh3DVertex, indices []uint32)
 	Load()
@@ -19,18 +17,7 @@ type Mesh3D interface {
 	GetVertices() []Mesh3DVertex
 	GetIndices() []uint32
 	CalculateTangents()
-}
-
-func VertexPosIndex(which int) int {
-	return which
-}
-
-func VertexNormalIndex(which int) int {
-	return 3 + which
-}
-
-func VertexTexCoordIndex(which int) int {
-	return 2*3 + which
+	AABB() AxisAlignedBoundingBox
 }
 
 func Box(name string, size mgl32.Vec3) Mesh3D {
