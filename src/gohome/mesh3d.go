@@ -274,13 +274,13 @@ func Box(name string, size mgl32.Vec3) Mesh3D {
 	return boxMesh
 }
 
-func Plane(name string, size mgl32.Vec2, textures uint32) Mesh3D {
+func Plane(name string, size mgl32.Vec2, textures float32) Mesh3D {
 	// xAxis := up.Cross([3]float32{0.0, 0.0, 1.0})
 	// yAxis := up
 	// zAxis := up.Cross([3]float32{1.0, 0.0, 0.0}).Mul(-1.0)
 
-	if textures == 0 {
-		textures = 1
+	if textures == 0.0 {
+		textures = 1.0
 	}
 
 	mesh := Render.CreateMesh3D(name)
@@ -324,7 +324,7 @@ func Plane(name string, size mgl32.Vec2, textures uint32) Mesh3D {
 
 	// TexCoords
 
-	one := float32(textures)
+	one := textures
 
 	vertices[0][VertexTexCoordIndex(0)] = 0.0
 	vertices[0][VertexTexCoordIndex(1)] = one

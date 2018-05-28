@@ -174,6 +174,9 @@ func (this *OpenGLESRenderer) CreateCubeMap(name string) gohome.CubeMap {
 func (this *OpenGLESRenderer) CreateInstancedMesh3D(name string) gohome.InstancedMesh3D {
 	return CreateOpenGLESInstancedMesh3D(name)
 }
+func (this *OpenGLESRenderer) CreateLines3DInterface(name string) gohome.Lines3DInterface {
+	return nil
+}
 func (this *OpenGLESRenderer) SetWireFrame(b bool) {
 
 }

@@ -110,3 +110,7 @@ func (this *Lines3D) SetTransformableObject(tobj TransformableObject) {
 func (this *Lines3D) GetTransformableObject() TransformableObject {
 	return this.transform
 }
+
+func (this *Lines3D) Terminate() {
+	this.linesInterface.Terminate()
+}

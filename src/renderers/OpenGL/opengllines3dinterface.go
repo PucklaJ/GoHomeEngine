@@ -109,4 +109,5 @@ func (this *OpenGLLines3DInterface) Terminate() {
 	}
 	this.numVertices = 0
 	this.loaded = false
+	this.lines = this.lines[:0]
 }
