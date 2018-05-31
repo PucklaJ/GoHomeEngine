@@ -66,6 +66,8 @@ type ResourceManager struct {
 	resourceFileNames map[string]string
 
 	preloader
+
+	LoadModelsWithSameName bool
 }
 
 func (rsmgr *ResourceManager) Init() {
@@ -79,6 +81,8 @@ func (rsmgr *ResourceManager) Init() {
 	rsmgr.preloader.Init()
 
 	tga.RegisterFormat()
+
+	rsmgr.LoadModelsWithSameName = false
 }
 
 func GetFileFromPath(path string) string {

@@ -41,7 +41,7 @@ func loadFileWithPaths(path string, paths []string, objLoader *OBJLoader) error 
 }
 
 func processModel(rsmgr *gohome.ResourceManager, level *gohome.Level, model *OBJModel, preloaded, loadToGPU bool) {
-	if _, ok := rsmgr.Models[model.Name]; ok {
+	if _, ok := rsmgr.Models[model.Name]; !rsmgr.LoadModelsWithSameName && ok {
 		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_LOG, "Model", model.Name, "It has already been loaded!")
 		return
 	}
@@ -61,7 +61,7 @@ func processModel(rsmgr *gohome.ResourceManager, level *gohome.Level, model *OBJ
 		processMesh(mesh3d, &model.Meshes[i], preloaded, loadToGPU)
 		model3d.AddMesh3D(mesh3d)
 	}
-	lvlObj.Entity3D.InitModel(&model3d)
+	lvlObj.Model3D = &model3d
 	rsmgr.Models[model3d.Name] = &model3d
 	gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_LOG, "Model", model.Name, "Finished loading!")
 }

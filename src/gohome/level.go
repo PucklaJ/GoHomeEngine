@@ -19,40 +19,38 @@ func (this *LevelTransformableObject) SetTransformMatrix(rmgr *RenderManager) {
 type LevelObject struct {
 	Name      string
 	Transform LevelTransformableObject
-	Entity3D
+	*Model3D
 }
 
 type Level struct {
 	Name         string
 	LevelObjects []LevelObject
+	entities 	 []*Entity3D
 }
 
 func (this *Level) AddToScene() {
 	for i := 0; i < len(this.LevelObjects); i++ {
-		m := ResourceMgr.GetModel(this.LevelObjects[i].Name)
+		var entity Entity3D
+		m := this.LevelObjects[i].Model3D
 		if m != nil {
-			if this.LevelObjects[i].Entity3D.Model3D == nil {
-				this.LevelObjects[i].Entity3D.InitModel(m)
-				this.LevelObjects[i].Entity3D.SetTransformableObject(&this.LevelObjects[i].Transform)
-			}
-			RenderMgr.AddObject(&this.LevelObjects[i].Entity3D)
+			entity.InitModel(m)
+			entity.SetTransformableObject(&this.LevelObjects[i].Transform)
+			RenderMgr.AddObject(&entity)
+			this.entities = append(this.entities,&entity)
 		}
 	}
 }
 
 func (this *Level) RemoveFromScene() {
-	for i := 0; i < len(this.LevelObjects); i++ {
-		m := ResourceMgr.GetModel(this.LevelObjects[i].Name)
-		if m != nil {
-			RenderMgr.RemoveObject(&this.LevelObjects[i].Entity3D)
-		}
+	for i := 0; i < len(this.entities); i++ {
+		RenderMgr.RemoveObject(this.entities[i])
 	}
 }
 
 func (this *Level) GetModel(name string) *Model3D {
 	for i := 0; i < len(this.LevelObjects); i++ {
 		if this.LevelObjects[i].Name == name {
-			return ResourceMgr.GetModel(name)
+			return this.LevelObjects[i].Model3D
 		}
 	}
 	return nil

@@ -28,6 +28,7 @@ type OpenGLMesh3D struct {
 
 	tangentsCalculated bool
 	canUseVAOs         bool
+	hasUV 			   bool
 
 	aabb gohome.AxisAlignedBoundingBox
 }
@@ -60,6 +61,11 @@ func (oglm *OpenGLMesh3D) CalculateTangentsRoutine(startIndex, maxIndex uint32, 
 		t0 = mgl32.Vec2{(*vertices)[indices[i]][6], (*vertices)[indices[i]][7]}
 		t1 = mgl32.Vec2{(*vertices)[indices[i+1]][6], (*vertices)[indices[i+1]][7]}
 		t2 = mgl32.Vec2{(*vertices)[indices[i+2]][6], (*vertices)[indices[i+2]][7]}
+
+		if t0.X() == 0.0 && t0.Y() == 0.0 && t1.X() == 0.0 && t1.Y() == 0.0 && t2.X() == 0.0 && t2.Y() == 0.0 {
+			oglm.hasUV = false
+			continue
+		}
 
 		normal = mgl32.Vec3{(*vertices)[indices[i]][3], (*vertices)[indices[i]][4], (*vertices)[indices[i]][5]}
 
@@ -101,7 +107,7 @@ func (oglm *OpenGLMesh3D) CalculateTangents() {
 	} else {
 		deltaIndex = 3
 	}
-
+	oglm.hasUV = true
 	var i uint32
 	for i = 0; i < NUM_GO_ROUTINES_TANGENTS_CALCULATING*2; i++ {
 		wg.Add(1)
@@ -278,5 +284,9 @@ func (oglm *OpenGLMesh3D) GetName() string {
 
 func (oglm *OpenGLMesh3D) AABB() gohome.AxisAlignedBoundingBox {
 	return oglm.aabb
+}
+
+func (oglm *OpenGLMesh3D) HasUV() bool {
+	return oglm.hasUV
 }
 

@@ -117,6 +117,7 @@ func initModel(model *gohome.Model3D, node *assimp.Node, scene *assimp.Scene, le
 			}
 		}
 	}
+	level.LevelObjects[len(level.LevelObjects)-1].Model3D = model
 }
 
 func loadVertices(vertices *[]gohome.Mesh3DVertex, mesh *assimp.Mesh, start_index, end_index, max_index uint32, wg *sync.WaitGroup) {

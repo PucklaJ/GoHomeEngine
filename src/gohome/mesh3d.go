@@ -17,6 +17,7 @@ type Mesh3D interface {
 	GetVertices() []Mesh3DVertex
 	GetIndices() []uint32
 	CalculateTangents()
+	HasUV() bool
 	AABB() AxisAlignedBoundingBox
 }
 
