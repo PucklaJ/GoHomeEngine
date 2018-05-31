@@ -146,8 +146,6 @@ func Init2DShaders() {
 func InitDefaultValues() {
 	Init3DShaders()
 	Init2DShaders()
-
-	Render.SetBackgroundColor(Color{0, 0, 0, 255})
 }
 
 var MainLop MainLoop

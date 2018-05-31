@@ -54,4 +54,15 @@ func (this *AxisAlignedBoundingBox) String() string {
 	return "(Max: " + maxX + "; " + maxY + "; " + maxZ + " | Min: " + minX + "; " + minY + "; " + minZ + ")"
 }
 
+func (this *AxisAlignedBoundingBox) Intersects(thisPos mgl32.Vec3,other AxisAlignedBoundingBox,otherPos mgl32.Vec3) bool {
+	newThisMax := this.Max.Add(thisPos)
+	newThisMin := this.Min.Add(thisPos)
+
+	newOtherMax := other.Max.Add(otherPos)
+	newOtherMin := other.Min.Add(otherPos)
+
+	return newThisMax.X() > newOtherMin.X() && newThisMax.Y() > newOtherMin.Y() && newThisMax.Z() > newOtherMin.Z() &&
+		   newThisMin.X() < newOtherMax.X() && newThisMin.Y() < newOtherMax.Y() && newThisMin.Z() < newOtherMax.Z()
+}
+
 type Line3DVertex [3 + 4]float32 // Position + Color

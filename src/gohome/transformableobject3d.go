@@ -59,3 +59,11 @@ func (tobj *TransformableObject3D) GetTransformMatrix() mgl32.Mat4 {
 func (tobj *TransformableObject3D) SetTransformMatrix(rmgr *RenderManager) {
 	rmgr.setTransformMatrix3D(tobj.GetTransformMatrix())
 }
+
+func DefaultTransformableObject3D() *TransformableObject3D {
+	transform := TransformableObject3D{
+		Scale: [3]float32{1.0,1.0,1.0},
+	}
+
+	return &transform
+}
