@@ -17,6 +17,7 @@ type Sprite2D struct {
 	RenderType
 	transform TransformableObject
 	Transform *TransformableObject2D
+	tweenSet Tweenset
 }
 
 func createSprite2DMesh() {
@@ -112,6 +113,7 @@ func (spr *Sprite2D) Render() {
 
 func (spr *Sprite2D) Terminate() {
 	spr.Texture.Terminate()
+	UpdateMgr.RemoveObject(&spr.tweenSet)
 }
 
 func (spr *Sprite2D) IsVisible() bool {
@@ -133,4 +135,32 @@ func (spr *Sprite2D) SetTransformableObject(tobj TransformableObject) {
 
 func (spr *Sprite2D) GetTransformableObject() TransformableObject {
 	return spr.transform
+}
+
+func (spr *Sprite2D) GetTransform2D() *TransformableObject2D {
+	return spr.Transform
+}
+
+func (spr *Sprite2D) SetTweenset(ts Tweenset) {
+	UpdateMgr.RemoveObject(&spr.tweenSet)
+	spr.tweenSet = ts
+	spr.tweenSet.SetParent(spr)
+	spr.tweenSet.Reset()
+	UpdateMgr.AddObject(&spr.tweenSet)
+}
+
+func (spr *Sprite2D) StartTweens() {
+	spr.tweenSet.Start()
+}
+
+func (spr *Sprite2D) PauseTweens() {
+	spr.tweenSet.Pause()
+}
+
+func (spr *Sprite2D) ResumeTweens() {
+	spr.tweenSet.Resume()
+}
+
+func (spr *Sprite2D) StopTweens() {
+	spr.tweenSet.Stop()
 }

@@ -10,10 +10,10 @@ type Tweenset struct {
 	currentStoppedTween uint32
 	paused bool
 	allTweensAdded bool
-	parent TweenableObject
+	parent interface{}
 }
 
-func (this *Tweenset) SetParent(twobj TweenableObject) {
+func (this *Tweenset) SetParent(twobj interface{}) {
 	this.parent = twobj
 }
 
@@ -62,6 +62,7 @@ func (this *Tweenset) shouldAddNewTweens() bool {
 	} else if len(this.currentTweens) == 0 && this.allTweensAdded {
 		if this.Loop {
 			this.Reset()
+			this.paused = false
 			return true
 		}
 		return false
@@ -94,7 +95,7 @@ func (this *Tweenset) Reset() {
 	this.paused = true
 	this.allTweensAdded = false
 
-	for i:=0;i<len(this.Tweens);i++ {
+	for i:=len(this.Tweens)-1;i>=0;i-- {
 		this.Tweens[i].Reset()
 	}
 }
@@ -111,10 +112,10 @@ func (this *Tweenset) checkTweensToStart() {
 					this.addTweenToCurrent(i)
 				} else {
 					startThisTween := false
-					notAlwaysFound := -1
+					notAlwaysFound := int(i)-1
 					if this.Tweens[i-1].GetType() == TWEEN_TYPE_ALWAYS {
 						notAlwaysFound = this.searchNextTweenNotAlways(int(i)-2,this.currentStoppedTween)
-						if notAlwaysFound != -1 {
+						if notAlwaysFound > 0 {
 							startThisTween = false
 						} else {
 							startThisTween = true

@@ -7,19 +7,11 @@ const (
 )
 
 type Tween interface {
-	Start(parent TweenableObject)
+	Start(parent interface{})
 	Update(delta_time float32) bool
 	GetType() uint8
 	End()
 	Reset()
-}
-
-type TweenableObject interface {
-	SetTweenset(set Tweenset)
-	StartTweens()
-	StopTweens()
-	PauseTweens()
-	ResumeTweens()
 }
 
 type TweenableObject2D interface {
