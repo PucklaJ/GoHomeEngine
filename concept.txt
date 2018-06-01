@@ -56,3 +56,21 @@ Camera2D
 	Zoom
 	Rotation
 	ViewMatrix
+
+TweenSystem:
+    TweenableObject
+        SetTweenset()
+        StartTweens()
+        StopTweens()
+        PauseTweens()
+        ResumeTweens()
+    TweenableObject2D
+        GetTransform2D() *TransformableObject2D
+    TweenableObject3D
+        GetTransform3D() *TransformableObject3D
+    Tweenset:
+        Tweens (get executed instantly or after previous has finished)
+        - Parent (TweenableObject)
+        - Start()
+        - Update(delta_time) finished
+        - End()
