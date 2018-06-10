@@ -12,26 +12,28 @@ then
 	exit 1
 fi
 
-if [ ! -f $GOPATH/src/github.com/PucklaMotzer09/gohomeengine/cmd/fsreplacer/fsreplacer.exe ]
+CMDPATH=${GOPATH}/src/github.com/PucklaMotzer09/gohomeengine/src/cmd
+
+if [ ! -f $CMDPATH/fsreplacer/fsreplacer.exe ]
 then
 	echo Compiling string in file replacer ...
 	workingDir=$(pwd)
-	cd $GOPATH/src/github.com/PucklaMotzer09/gohomeengine/cmd/fsreplacer
+	cd $CMDPATH/fsreplacer
 	$GOROOT/bin/go build
 	cd $workingDir
 fi
 
-if [ ! -f $GOPATH/src/github.com/PucklaMotzer09/gohomeengine/cmd/bsreplacer/bsreplacer.exe ]
+if [ ! -f $CMDPATH/bsreplacer/bsreplacer.exe ]
 then
 	echo Compiling backslash replacer ...
 	workingDir=$(pwd)
-	cd $GOPATH/src/github.com/PucklaMotzer09/gohomeengine/cmd/bsreplacer
+	cd $CMDPATH/bsreplacer
 	$GOROOT/bin/go build
 	cd $workingDir
 fi
 
 PKG_CONFIG_PATH=${GOPATH}/src/github.com/PucklaMotzer09/gohomeengine/deps/pkg/windows
-$GOPATH/src/github.com/PucklaMotzer09/gohomeengine/cmd/fsreplacer/fsreplacer $PKG_CONFIG_PATH/assimp.pc '%GOPATH%' $($GOPATH/src/github.com/PucklaMotzer09/gohomeengine/cmd/bsreplacer/bsreplacer.exe $GOPATH)
+$CMDPATH/fsreplacer/fsreplacer $PKG_CONFIG_PATH/assimp.pc '%GOPATH%' $($CMDPATH/bsreplacer/bsreplacer.exe $GOPATH)
 
 wantInstall=0
 wantRun=0
@@ -108,7 +110,7 @@ then
 	strip -s $placedPath/$executableName.exe
 fi
 
-$GOPATH/src/github.com/PucklaMotzer09/gohomeengine/cmd/fsreplacer/fsreplacer $PKG_CONFIG_PATH/assimp.pc $($GOPATH/src/github.com/PucklaMotzer09/gohomeengine/cmd/bsreplacer/bsreplacer.exe $GOPATH) '%GOPATH%'
+$CMDPATH/fsreplacer/fsreplacer $PKG_CONFIG_PATH/assimp.pc $($CMDPATH/bsreplacer/bsreplacer.exe $GOPATH) '%GOPATH%'
 
 echo Placed executable in $placedPath
 
