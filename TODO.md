@@ -13,6 +13,10 @@
 	- Scaling
 	- Blinking
 + Fix SetBackgroundColor (nothing is render when called)
++ Add SDLFramework
++ Add DirectXRenderer
++ WorldEditor (3D, 2D)
+	- Add GtkFramwork
 
 ## 2D
 
