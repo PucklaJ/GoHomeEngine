@@ -59,7 +59,7 @@ A game engine for 2D and 3D games written in go
 1. Install the c-Dependencies:<br>
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// For Desktop (The windows assimp library is provided with this repository)
-	sudo apt-get install libassimp
+	sudo apt-get install libassimp-dev libGL-dev libX11-dev libXrandr-dev libXcursor-dev libXinerama-dev libpthread-dev libz-dev libglfw3-dev
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 2. Install the go-Dependencies:<br>
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
