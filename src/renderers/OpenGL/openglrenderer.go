@@ -58,16 +58,6 @@ func (this *OpenGLRenderer) Init() error {
 		return &OpenGLError{errorString: "You don't have a graphics card or your graphics card is not supported! Minimum: OpenGL 2.1"}
 	}
 
-	gl.Enable(gl.MULTISAMPLE)
-	gl.DepthFunc(gl.LESS)
-	gl.Enable(gl.DEPTH_CLAMP)
-	gl.ClearDepth(1.0)
-	gl.Enable(gl.BLEND)
-	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
-
-	gl.FrontFace(gl.CCW)
-	gl.Enable(gl.CULL_FACE)
-
 	gl.GenVertexArrays(1, &this.BackBufferVao)
 
 	this.CurrentTextureUnit = 0
@@ -82,8 +72,17 @@ func (this *OpenGLRenderer) Init() error {
 	return nil
 }
 
-
 func (this *OpenGLRenderer) AfterInit() {
+	gl.Enable(gl.MULTISAMPLE)
+	gl.DepthFunc(gl.LESS)
+	gl.Enable(gl.DEPTH_CLAMP)
+	gl.ClearDepth(1.0)
+	gl.Enable(gl.BLEND)
+	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
+
+	gl.FrontFace(gl.CCW)
+	gl.Enable(gl.CULL_FACE)
+
 	gl.Enable(gl.DEPTH_TEST)
 }
 
@@ -115,8 +114,8 @@ func (this *OpenGLRenderer) Terminate() {
 }
 
 func (*OpenGLRenderer) ClearScreen(c color.Color) {
-	clearColor := gohome.ColorToVec4(c)
-	gl.ClearColor(clearColor[0], clearColor[1], clearColor[2], clearColor[3])
+	clearColor := gohome.ColorToVec3(c)
+	gl.ClearColor(clearColor[0], clearColor[1], clearColor[2], 0.0)
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT)
 }
 

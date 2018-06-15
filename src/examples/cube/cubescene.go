@@ -4,7 +4,6 @@ import (
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
 )
 
-
 type CubeScene struct {
 	cube gohome.Entity3D
 }
@@ -21,7 +20,6 @@ func (this *CubeScene) Init() {
 	gohome.RenderMgr.AddObject(&this.cube)
 	gohome.LightMgr.CurrentLightCollection = -1
 	gohome.RenderMgr.EnableBackBuffer = false
-	gohome.Render.SetBackgroundColor(gohome.Color{0,0,255,255})
 }
 
 func (this *CubeScene) Update(delta_time float32) {

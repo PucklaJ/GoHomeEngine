@@ -58,7 +58,7 @@ fi
 
 if [ $wantRelease -eq 1 ]
 then
-	compileFlags='-ldflags "-s"'
+	compileFlags='-ldflags -s'
 fi
 
 echo "Compiling $executableName ..."

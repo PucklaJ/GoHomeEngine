@@ -41,8 +41,8 @@ func createSprite2DMesh() {
 	}
 
 	indices := []uint32{
-		0, 1, 2, // LEFT-TRI
-		2, 3, 0, // RIGHT-TRI
+		0, 3, 2, // LEFT-TRI
+		2, 1, 0, // RIGHT-TRI
 	}
 
 	sprite2DMesh.AddVertices(vertices, indices)

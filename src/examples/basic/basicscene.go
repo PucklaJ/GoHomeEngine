@@ -20,7 +20,7 @@ func (this *BasicScene) Init() {
 
 	gohome.RenderMgr.AddObject(&gopher)
 
-	gohome.RenderMgr.EnableBackBuffer = false
+	gohome.RenderMgr.EnableBackBuffer = true
 }
 
 func (this *BasicScene) Update(delta_time float32) {

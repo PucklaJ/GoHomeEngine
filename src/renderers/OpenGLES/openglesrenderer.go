@@ -82,13 +82,17 @@ func (this *OpenGLESRenderer) Init() error {
 
 	version := this.gles.GetString(gl.VERSION)
 	gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_LOG, "Renderer", "OpenGLES\t", "Version: "+version+" "+gl.Version())
-	this.gles.Enable(gl.DEPTH_TEST)
-	this.gles.Enable(gl.CULL_FACE)
 
 	this.createBackBufferMesh()
 
 	return nil
 }
+
+func (this *OpenGLESRenderer) AfterInit() {
+	this.gles.Enable(gl.DEPTH_TEST)
+	this.gles.Enable(gl.CULL_FACE)
+}
+
 func (this *OpenGLESRenderer) Terminate() {
 	if this.backBufferMesh != nil {
 		this.backBufferMesh.Terminate()
