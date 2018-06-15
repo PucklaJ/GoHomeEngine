@@ -2,13 +2,17 @@ package main
 
 import (
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
+	//"github.com/go-gl/gl/all-core/gl"
 )
+
 
 type CubeScene struct {
 	cube gohome.Entity3D
+	spr gohome.Sprite2D
 }
 
 func (this *CubeScene) Init() {
+	//gl.Enable(gl.DEPTH_TEST)
 	gohome.Init3DShaders()
 	gohome.ResourceMgr.LoadTexture("CubeImage", "cube.png")
 
@@ -19,6 +23,13 @@ func (this *CubeScene) Init() {
 
 	gohome.RenderMgr.AddObject(&this.cube)
 	gohome.LightMgr.CurrentLightCollection = -1
+	gohome.RenderMgr.EnableBackBuffer = false
+
+	gohome.Render.SetBackgroundColor(gohome.Color{0,0,255,255})
+
+	this.spr.InitTexture(gohome.RenderMgr.BackBuffer3D)
+	// gohome.RenderMgr.AddObject(&this.spr)
+	this.spr.Transform.Scale = [2]float32{0.5,0.5}
 }
 
 func (this *CubeScene) Update(delta_time float32) {

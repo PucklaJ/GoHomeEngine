@@ -6,6 +6,7 @@ import (
 
 type Renderer interface {
 	Init() error
+	AfterInit()
 	Terminate()
 	ClearScreen(c color.Color)
 	LoadShader(name, vertex_contents, fragment_contents, geometry_contents, tesselletion_control_contents, eveluation_contents, compute_contents string) (Shader, error)

@@ -26,17 +26,17 @@ func createSprite2DMesh() {
 		/*X,Y
 		  U,V
 		*/
-		Mesh2DVertex{-0.5, 0.5, // LEFT-DOWN
-			0.0, 1.0},
+		Mesh2DVertex{-0.5, -0.5, // LEFT-DOWN
+			0.0, 0.0},
 
-		Mesh2DVertex{0.5, 0.5, // RIGHT-DOWN
-			1.0, 1.0},
-
-		Mesh2DVertex{0.5, -0.5, // RIGHT-UP
+		Mesh2DVertex{0.5, -0.5, // RIGHT-DOWN
 			1.0, 0.0},
 
-		Mesh2DVertex{-0.5, -0.5, // LEFT-UP
-			0.0, 0.0},
+		Mesh2DVertex{0.5, 0.5, // RIGHT-UP
+			1.0, 1.0},
+
+		Mesh2DVertex{-0.5, 0.5, // LEFT-UP
+			0.0, 1.0},
 	}
 
 	indices := []uint32{

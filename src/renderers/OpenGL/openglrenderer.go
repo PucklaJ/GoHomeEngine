@@ -59,7 +59,6 @@ func (this *OpenGLRenderer) Init() error {
 	}
 
 	gl.Enable(gl.MULTISAMPLE)
-	gl.Enable(gl.DEPTH_TEST)
 	gl.DepthFunc(gl.LESS)
 	gl.Enable(gl.DEPTH_CLAMP)
 	gl.ClearDepth(1.0)
@@ -81,6 +80,10 @@ func (this *OpenGLRenderer) Init() error {
 	}
 
 	return nil
+}
+
+func (this *OpenGLRenderer) AfterInit() {
+	gl.Enable(gl.DEPTH_TEST)
 }
 
 func (this *OpenGLRenderer) HasExtension(name string) bool {

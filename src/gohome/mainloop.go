@@ -1,8 +1,6 @@
 package gohome
 
 import (
-	// "fmt"
-	// "golang.org/x/image/colornames"
 	"runtime"
 )
 
@@ -40,6 +38,7 @@ func (this *MainLoop) Init(fw Framework, r Renderer, ww, wh uint32, wt string, s
 
 func (this *MainLoop) DoStuff() {
 	this.InitWindowAndRenderer()
+	Render.AfterInit()
 	this.InitManagers()
 	this.SetupStartScene()
 	this.Loop()
