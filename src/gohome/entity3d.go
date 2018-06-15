@@ -2,6 +2,7 @@ package gohome
 
 const (
 	ENTITY3D_SHADER_NAME string = "3D"
+	ENTITY3D_NO_UV_SHADER_NAME string = "3D NoUV"
 )
 
 type Entity3D struct {
@@ -27,29 +28,36 @@ func (this *Entity3D) commonInit() {
 	this.NotRelativeToCamera = -1
 	this.RenderType = TYPE_3D_NORMAL
 	this.Shader = ResourceMgr.GetShader(ENTITY3D_SHADER_NAME)
+	if this.Model3D != nil && !this.Model3D.HasUV() {
+		this.Shader = ResourceMgr.GetShader(ENTITY3D_NO_UV_SHADER_NAME)
+		if this.Shader == nil {
+			ResourceMgr.LoadShader(ENTITY3D_NO_UV_SHADER_NAME,"vertex3dNoUV.glsl","fragment3dNoUV.glsl","","","","")
+			this.Shader = ResourceMgr.GetShader(ENTITY3D_NO_UV_SHADER_NAME)
+		}
+	}
 }
 
 func (this *Entity3D) InitName(name string) {
-	this.commonInit()
 	this.Model3D = ResourceMgr.GetModel(name)
 	this.Name = name
+	this.commonInit()
 }
 
 func (this *Entity3D) InitMesh(mesh Mesh3D) {
-	this.commonInit()
 	this.Model3D = &Model3D{
 		Name: mesh.GetName(),
 	}
 	this.Model3D.AddMesh3D(mesh)
 	this.Name = mesh.GetName()
+	this.commonInit()
 }
 
 func (this *Entity3D) InitModel(model *Model3D) {
-	this.commonInit()
 	this.Model3D = model
 	if model != nil {
 		this.Name = model.Name
 	}
+	this.commonInit()
 }
 
 func (this *Entity3D) GetShader() Shader {

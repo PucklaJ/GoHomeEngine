@@ -53,3 +53,12 @@ func (this *Model3D) checkAABB(m Mesh3D) {
 		}
 	}
 }
+
+func (this *Model3D) HasUV() bool {
+	for i:=0;i<len(this.meshes);i++ {
+		if !this.meshes[i].HasUV() {
+			return false
+		}
+	}
+	return true
+}

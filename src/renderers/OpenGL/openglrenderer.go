@@ -82,6 +82,7 @@ func (this *OpenGLRenderer) Init() error {
 	return nil
 }
 
+
 func (this *OpenGLRenderer) AfterInit() {
 	gl.Enable(gl.DEPTH_TEST)
 }
