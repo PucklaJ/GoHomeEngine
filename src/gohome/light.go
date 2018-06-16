@@ -610,4 +610,12 @@ func (this *LightManager) AddSpotLight(pl *SpotLight, lightCollectionIndex uint3
 	this.LightCollections[lightCollectionIndex].AddSpotLight(pl)
 }
 
+func (this *LightManager) DisableLighting() {
+	this.CurrentLightCollection = -1
+}
+
+func (this *LightManager) EnableLighting() {
+	this.CurrentLightCollection = 0
+}
+
 var LightMgr LightManager

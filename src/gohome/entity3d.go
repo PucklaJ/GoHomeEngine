@@ -60,6 +60,18 @@ func (this *Entity3D) InitModel(model *Model3D) {
 	this.commonInit()
 }
 
+func (this *Entity3D) InitLevel(level *Level) {
+	if level != nil {
+		if len(level.LevelObjects) != 0 {
+			this.Model3D = level.LevelObjects[0].Model3D
+			if this.Model3D != nil {
+				this.Name = this.Model3D.Name
+			}
+		}
+	}
+	this.commonInit()
+}
+
 func (this *Entity3D) GetShader() Shader {
 	return this.Shader
 }
@@ -92,6 +104,14 @@ func (this *Entity3D) IsVisible() bool {
 	return this.Visible
 }
 
+func (this *Entity3D) SetVisible() {
+	this.Visible = true
+}
+
+func (this *Entity3D) SetInvisible() {
+	this.Visible = false
+}
+
 func (this *Entity3D) NotRelativeCamera() int {
 	return this.NotRelativeToCamera
 }
@@ -107,4 +127,8 @@ func (this *Entity3D) SetTransformableObject(tobj TransformableObject) {
 
 func (this *Entity3D) GetTransformableObject() TransformableObject {
 	return this.transform
+}
+
+func (this *Entity3D) GetTransform3D() *TransformableObject3D {
+	return this.Transform
 }

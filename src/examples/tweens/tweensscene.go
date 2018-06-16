@@ -24,10 +24,12 @@ func (this *TweensScene) Init() {
 		Tweens: []gohome.Tween{
 			&gohome.TweenBlink{Amount:80,Time:20.0,TweenType:gohome.TWEEN_TYPE_ALWAYS},
 			&gohome.TweenPosition2D{Destination:[2]float32{float32(nw),0.0},Time:5.0,TweenType:gohome.TWEEN_TYPE_AFTER_PREVIOUS},
+			&gohome.TweenScale2D{Destination:[2]float32{0.8*2.0,0.8*2.0},Time:5.0,TweenType:gohome.TWEEN_TYPE_WITH_PREVIOUS},
 			&gohome.TweenPosition2D{Destination:[2]float32{float32(nw),float32(nh)},Time:5.0,TweenType:gohome.TWEEN_TYPE_AFTER_PREVIOUS,},
 			&gohome.TweenRotation2D{Destination:180.0,Time:5.0,TweenType:gohome.TWEEN_TYPE_WITH_PREVIOUS},
 			&gohome.TweenPosition2D{Destination:[2]float32{0.0,float32(nh)},Time:5.0,TweenType:gohome.TWEEN_TYPE_AFTER_PREVIOUS,},
 			&gohome.TweenPosition2D{Destination:[2]float32{0.0,0.0},Time:5.0,TweenType:gohome.TWEEN_TYPE_AFTER_PREVIOUS,},
+			&gohome.TweenScale2D{Destination:[2]float32{0.8,0.8},Time:5.0,TweenType:gohome.TWEEN_TYPE_WITH_PREVIOUS},
 			&gohome.TweenRotation2D{Destination:360.0,Time:5.0,TweenType:gohome.TWEEN_TYPE_WITH_PREVIOUS},
 		},
 		Loop: true,
