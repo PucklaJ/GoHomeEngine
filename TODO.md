@@ -14,6 +14,7 @@
 	- Add GtkFramwork
 + Add Default Shaders to source code
 + Add LoadShader Function with code instead of file
++ Change Build scripts to programs
 
 ## 2D
 
