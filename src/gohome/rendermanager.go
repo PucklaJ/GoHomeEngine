@@ -283,6 +283,7 @@ func (rmgr *RenderManager) GetBackBuffer() RenderTexture {
 func (rmgr *RenderManager) render3D() {
 	if rmgr.BackBuffer3D != nil && rmgr.EnableBackBuffer {
 		rmgr.BackBuffer3D.SetAsTarget()
+		Render.ClearScreen(Color{0,0,0,0})
 	}
 	for i := 0; i < len(rmgr.viewport3Ds); i++ {
 		rmgr.Render(TYPE_3D, rmgr.viewport3Ds[i].CameraIndex, int32(i), LightMgr.CurrentLightCollection)
@@ -295,6 +296,7 @@ func (rmgr *RenderManager) render3D() {
 func (rmgr *RenderManager) render2D() {
 	if rmgr.BackBuffer2D != nil && rmgr.EnableBackBuffer {
 		rmgr.BackBuffer2D.SetAsTarget()
+		Render.ClearScreen(Color{0,0,0,0})
 	}
 	for i := 0; i < len(rmgr.viewport2Ds); i++ {
 		rmgr.Render(TYPE_2D, rmgr.viewport2Ds[i].CameraIndex, int32(i), LightMgr.CurrentLightCollection)
@@ -311,6 +313,7 @@ func (rmgr *RenderManager) renderBackBuffers() {
 
 	if rmgr.BackBufferMS != nil {
 		rmgr.BackBufferMS.SetAsTarget()
+		rmgr.clearToBackgroundColor()
 	}
 
 	if rmgr.BackBufferShader != nil {
@@ -349,6 +352,7 @@ func (rmgr *RenderManager) renderPostProcessing() {
 
 	if rmgr.BackBuffer != nil {
 		rmgr.BackBuffer.SetAsTarget()
+		Render.ClearScreen(Color{0,0,0,0})
 	}
 
 	if rmgr.PostProcessingShader != nil {
@@ -617,6 +621,23 @@ func (rmgr *RenderManager) UpdateViewports(current Viewport, previous Viewport) 
 		rmgr.viewport3Ds[i].Width = int(widthRel * float32(current.Width))
 		rmgr.viewport3Ds[i].Height = int(heightRel * float32(current.Height))
 	}
+}
+
+func (rmgr *RenderManager) clearToBackgroundColor() {
+	backg := Render.GetBackgroundColor()
+	var r,g,b uint32
+	if backg != nil {
+		r,g,b,_ = backg.RGBA()
+	} else {
+		r,g,b = 0,0,0
+	}
+
+	newCol := Color{uint8(float32(r)/float32(0xffff)*255.0),
+	                uint8(float32(g)/float32(0xffff)*255.0),
+	                uint8(float32(b)/float32(0xffff)*255.0),
+	                0}
+
+	Render.ClearScreen(newCol)
 }
 
 var RenderMgr RenderManager

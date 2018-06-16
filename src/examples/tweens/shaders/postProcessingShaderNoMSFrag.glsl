@@ -55,4 +55,6 @@ void main()
 {
     setValues();
 	gl_FragColor = caclulateKernel(normalKernel);
+	if(gl_FragColor.a < 0.1)
+	    discard;
 }

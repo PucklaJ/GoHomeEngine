@@ -112,10 +112,10 @@ func (this *Tweenset) checkTweensToStart() {
 					this.addTweenToCurrent(i)
 				} else {
 					startThisTween := false
-					notAlwaysFound := int(i)-1
-					if this.Tweens[i-1].GetType() == TWEEN_TYPE_ALWAYS {
-						notAlwaysFound = this.searchNextTweenNotAlways(int(i)-2,this.currentStoppedTween)
-						if notAlwaysFound > 0 {
+					afterPreviousFoundIndex := int(i)-1
+					if this.Tweens[i-1].GetType() != TWEEN_TYPE_AFTER_PREVIOUS {
+						afterPreviousFoundIndex = this.searchNextAfterPreviousTween(int(i)-2,this.currentStoppedTween)
+						if afterPreviousFoundIndex >= 0 {
 							startThisTween = false
 						} else {
 							startThisTween = true
@@ -124,7 +124,7 @@ func (this *Tweenset) checkTweensToStart() {
 
 					if !startThisTween {
 						afterPreviousFound = true
-						this.tweenBeforeNextTween = this.Tweens[notAlwaysFound]
+						this.tweenBeforeNextTween = this.Tweens[afterPreviousFoundIndex]
 						this.currentStoppedTween = i
 					} else {
 						this.addTweenToCurrent(i)
@@ -144,9 +144,9 @@ func (this *Tweenset) checkTweensToStart() {
 	}
 }
 
-func (this *Tweenset) searchNextTweenNotAlways(start int,end uint32) int {
+func (this *Tweenset) searchNextAfterPreviousTween(start int,end uint32) int {
 	for j:=start;j>=int(end);j-- {
-		if this.Tweens[j].GetType() != TWEEN_TYPE_ALWAYS {
+		if this.Tweens[j].GetType() == TWEEN_TYPE_AFTER_PREVIOUS {
 			return j
 		}
 	}

@@ -130,6 +130,10 @@ func (this *OpenGLRenderTexture) Create(name string, width, height, textures uin
 		0, 0,
 		int(width), int(height),
 	}
+
+	this.SetAsTarget()
+	gohome.Render.ClearScreen(gohome.Color{0,0,0,0})
+	this.UnsetAsTarget()
 }
 
 func (this *OpenGLRenderTexture) Load(data []byte, width, height int, shadowMap bool) error {
@@ -146,7 +150,6 @@ func (this *OpenGLRenderTexture) GetName() string {
 
 func (this *OpenGLRenderTexture) SetAsTarget() {
 	gl.BindFramebuffer(gl.FRAMEBUFFER, this.fbo)
-	gohome.Render.ClearScreen(gohome.Render.GetBackgroundColor())
 	this.prevViewport = gohome.Render.GetViewport()
 	gohome.Render.SetViewport(this.viewport)
 }

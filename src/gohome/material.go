@@ -120,7 +120,6 @@ func ColorToVec3(c color.Color) mgl32.Vec3 {
 
 func ColorToVec4(c color.Color) mgl32.Vec4 {
 	if c == nil {
-		ErrorMgr.Log("ColorToVec4", "Color", "Is nil")
 		return [4]float32{0.0, 0.0, 0.0, 0.0}
 	}
 	r, g, b, a := c.RGBA()

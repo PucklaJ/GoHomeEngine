@@ -18,4 +18,6 @@ vec4 fetchColor()
 void main()
 {
 	fragColor = fetchColor();
+	if(fragColor.a < 0.1)
+	    discard;
 }

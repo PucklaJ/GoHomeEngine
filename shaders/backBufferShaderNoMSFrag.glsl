@@ -13,7 +13,5 @@ void main()
 {
 	gl_FragColor = fetchColor();
 	if(gl_FragColor.a < 0.1)
-	{
 		discard;
-	}
 }

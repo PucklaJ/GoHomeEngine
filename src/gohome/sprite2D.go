@@ -17,7 +17,6 @@ type Sprite2D struct {
 	RenderType
 	transform TransformableObject
 	Transform *TransformableObject2D
-	tweenSet Tweenset
 }
 
 func createSprite2DMesh() {
@@ -27,16 +26,16 @@ func createSprite2DMesh() {
 		/*X,Y
 		  U,V
 		*/
-		Mesh2DVertex{-0.5, -0.5, // LEFT-DOWN
+		  {-0.5, -0.5, // LEFT-DOWN
 			0.0, 0.0},
 
-		Mesh2DVertex{0.5, -0.5, // RIGHT-DOWN
+		   {0.5, -0.5, // RIGHT-DOWN
 			1.0, 0.0},
 
-		Mesh2DVertex{0.5, 0.5, // RIGHT-UP
+		   {0.5, 0.5, // RIGHT-UP
 			1.0, 1.0},
 
-		Mesh2DVertex{-0.5, 0.5, // LEFT-UP
+		   {-0.5, 0.5, // LEFT-UP
 			0.0, 1.0},
 	}
 
@@ -113,11 +112,18 @@ func (spr *Sprite2D) Render() {
 
 func (spr *Sprite2D) Terminate() {
 	spr.Texture.Terminate()
-	UpdateMgr.RemoveObject(&spr.tweenSet)
 }
 
 func (spr *Sprite2D) IsVisible() bool {
 	return spr.Visible
+}
+
+func (spr *Sprite2D) SetVisible() {
+	spr.Visible = true
+}
+
+func (spr *Sprite2D) SetInvisible() {
+	spr.Visible = false
 }
 
 func (spr *Sprite2D) NotRelativeCamera() int {
@@ -139,28 +145,4 @@ func (spr *Sprite2D) GetTransformableObject() TransformableObject {
 
 func (spr *Sprite2D) GetTransform2D() *TransformableObject2D {
 	return spr.Transform
-}
-
-func (spr *Sprite2D) SetTweenset(ts Tweenset) {
-	UpdateMgr.RemoveObject(&spr.tweenSet)
-	spr.tweenSet = ts
-	spr.tweenSet.SetParent(spr)
-	spr.tweenSet.Reset()
-	UpdateMgr.AddObject(&spr.tweenSet)
-}
-
-func (spr *Sprite2D) StartTweens() {
-	spr.tweenSet.Start()
-}
-
-func (spr *Sprite2D) PauseTweens() {
-	spr.tweenSet.Pause()
-}
-
-func (spr *Sprite2D) ResumeTweens() {
-	spr.tweenSet.Resume()
-}
-
-func (spr *Sprite2D) StopTweens() {
-	spr.tweenSet.Stop()
 }
