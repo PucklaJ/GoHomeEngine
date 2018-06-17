@@ -5,6 +5,7 @@ const (
 	SPRITE2D_MESH_NAME   string = "SPRITE2D_MESH"
 	FLIP_UNIFORM_NAME string = "flip"
 	TEXTURE_REGION_UNIFORM_NAME string = "textureRegion"
+	DEPTH_UNIFORM_NAME string = "depth"
 )
 
 var sprite2DMesh Mesh2D = nil
@@ -20,6 +21,7 @@ type Sprite2D struct {
 	transform TransformableObject
 	Transform *TransformableObject2D
 	TextureRegion TextureRegion
+	Depth uint8
 }
 
 func createSprite2DMesh() {
@@ -110,6 +112,7 @@ func (spr *Sprite2D) setUniforms() {
 	if shader != nil {
 		shader.SetUniformI(FLIP_UNIFORM_NAME, int32(spr.Flip))
 		shader.SetUniformV4(TEXTURE_REGION_UNIFORM_NAME,spr.TextureRegion.Normalize(spr.Texture).Vec4())
+		shader.SetUniformF(DEPTH_UNIFORM_NAME,1.0-float32(spr.Depth)/255.0-1.0)
 	}
 }
 

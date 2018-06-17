@@ -54,7 +54,7 @@ func (this *AxisAlignedBoundingBox) String() string {
 	return "(Max: " + maxX + "; " + maxY + "; " + maxZ + " | Min: " + minX + "; " + minY + "; " + minZ + ")"
 }
 
-func (this *AxisAlignedBoundingBox) Intersects(thisPos mgl32.Vec3,other AxisAlignedBoundingBox,otherPos mgl32.Vec3) bool {
+func (this AxisAlignedBoundingBox) Intersects(thisPos mgl32.Vec3,other AxisAlignedBoundingBox,otherPos mgl32.Vec3) bool {
 	newThisMax := this.Max.Add(thisPos)
 	newThisMin := this.Min.Add(thisPos)
 

@@ -76,7 +76,7 @@ func (this *OpenGLRenderer) AfterInit() {
 	gl.Enable(gl.MULTISAMPLE)
 	gl.DepthFunc(gl.LESS)
 	gl.Enable(gl.DEPTH_CLAMP)
-	gl.ClearDepth(1.0)
+	gl.ClearDepth(2.0)
 	gl.Enable(gl.BLEND)
 	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
 

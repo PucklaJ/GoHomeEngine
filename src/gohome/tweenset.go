@@ -10,6 +10,7 @@ type Tweenset struct {
 	currentStoppedTween uint32
 	paused bool
 	allTweensAdded bool
+	ElapsedTime float32
 	parent interface{}
 }
 
@@ -34,6 +35,10 @@ func (this *Tweenset) Start() {
 	this.paused = false
 }
 
+func (this *Tweenset) Done() bool {
+	return this.allTweensAdded && !this.Loop && len(this.currentTweens) == 0
+}
+
 func (this *Tweenset) Update(delta_time float32) {
 	if this.paused {
 		return
@@ -42,6 +47,8 @@ func (this *Tweenset) Update(delta_time float32) {
 	if this.shouldAddNewTweens() {
 		this.checkTweensToStart()
 	}
+
+	this.ElapsedTime += delta_time
 
 	for i:=0;i<len(this.currentTweens);i++ {
 		if this.currentTweens[i].Update(delta_time) {
@@ -94,6 +101,7 @@ func (this *Tweenset) Reset() {
 	this.currentStoppedTween = 0
 	this.paused = true
 	this.allTweensAdded = false
+	this.ElapsedTime = 0.0
 
 	for i:=len(this.Tweens)-1;i>=0;i-- {
 		this.Tweens[i].Reset()
