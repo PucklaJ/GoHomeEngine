@@ -62,4 +62,6 @@ vec4 caclulateKernel(float _kernel[9])
 void main()
 {
 	fragColor = caclulateKernel(normalKernel);
+	if(fragColor.a < 0.1)
+	    discard;
 }

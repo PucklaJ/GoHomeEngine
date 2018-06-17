@@ -66,3 +66,39 @@ func (this *AxisAlignedBoundingBox) Intersects(thisPos mgl32.Vec3,other AxisAlig
 }
 
 type Line3DVertex [3 + 4]float32 // Position + Color
+
+type TextureRegion struct {
+	Min [2]float32
+	Max [2]float32
+}
+
+func (this TextureRegion) Vec4() mgl32.Vec4 {
+	return [4]float32{this.Min[0],this.Min[1],this.Max[0],this.Max[1]}
+}
+
+func (this *TextureRegion) FromVec4(v mgl32.Vec4) {
+	this.Min = [2]float32{v[0],v[1]}
+	this.Max = [2]float32{v[2],v[3]}
+}
+
+func (this TextureRegion) Normalize(tex Texture) TextureRegion {
+	width := float32(tex.GetWidth())
+	height := float32(tex.GetHeight())
+
+	this.Min[0] = this.Min[0] / width + 0.5/width
+	this.Min[1] = this.Min[1] / height + 0.5/height
+	this.Max[0] = this.Max[0] / width - 0.5/width
+	this.Max[1] = this.Max[1] / height - 0.5/height
+
+	return this
+}
+
+func (this TextureRegion) String() string {
+	return "(" +
+			strconv.FormatFloat(float64(this.Min[0]),'f',2,32) + ";" +
+			strconv.FormatFloat(float64(this.Min[1]),'f',2,32) + ";" +
+			strconv.FormatFloat(float64(this.Max[0]),'f',2,32) + ";" +
+			strconv.FormatFloat(float64(this.Max[1]),'f',2,32) +
+
+		   ")"
+}

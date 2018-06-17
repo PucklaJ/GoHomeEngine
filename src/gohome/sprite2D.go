@@ -3,20 +3,23 @@ package gohome
 const (
 	SPRITE2D_SHADER_NAME string = "2D"
 	SPRITE2D_MESH_NAME   string = "SPRITE2D_MESH"
+	FLIP_UNIFORM_NAME string = "flip"
+	TEXTURE_REGION_UNIFORM_NAME string = "textureRegion"
 )
 
 var sprite2DMesh Mesh2D = nil
 
 type Sprite2D struct {
-	Texture
+	Texture Texture
 	Visible             bool
 	NotRelativeToCamera int
 	Flip                uint8
 
-	Shader
-	RenderType
+	Shader Shader
+	RenderType RenderType
 	transform TransformableObject
 	Transform *TransformableObject2D
+	TextureRegion TextureRegion
 }
 
 func createSprite2DMesh() {
@@ -54,6 +57,8 @@ func (spr *Sprite2D) commonInit() {
 	spr.Transform.Scale = [2]float32{1.0, 1.0}
 	if spr.Texture != nil {
 		spr.Transform.Size = [2]float32{float32(spr.Texture.GetWidth()), float32(spr.Texture.GetHeight())}
+		spr.TextureRegion.Min = [2]float32{0.0,0.0}
+		spr.TextureRegion.Max = spr.Transform.Size
 	}
 	spr.Transform.RotationPoint = [2]float32{0.5, 0.5}
 	spr.Transform.Origin = [2]float32{0.0, 0.0}
@@ -99,11 +104,18 @@ func (spr *Sprite2D) GetType() RenderType {
 	return spr.RenderType
 }
 
+func (spr *Sprite2D) setUniforms() {
+	shader := RenderMgr.CurrentShader
+
+	if shader != nil {
+		shader.SetUniformI(FLIP_UNIFORM_NAME, int32(spr.Flip))
+		shader.SetUniformV4(TEXTURE_REGION_UNIFORM_NAME,spr.TextureRegion.Normalize(spr.Texture).Vec4())
+	}
+}
+
 func (spr *Sprite2D) Render() {
 	if spr.Texture != nil {
-		if RenderMgr.CurrentShader != nil {
-			RenderMgr.CurrentShader.SetUniformI("flip", int32(spr.Flip))
-		}
+		spr.setUniforms()
 		spr.Texture.Bind(0)
 		sprite2DMesh.Render()
 		spr.Texture.Unbind(0)

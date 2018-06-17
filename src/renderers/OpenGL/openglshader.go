@@ -428,6 +428,10 @@ func (s *OpenGLShader) SetUniformMaterial(mat gohome.Material) {
 	s.SetUniformI(gohome.MATERIAL_UNIFORM_NAME+gohome.MATERIAL_DIFFUSE_TEXTURE_UNIFORM_NAME, diffBind)
 	s.SetUniformI(gohome.MATERIAL_UNIFORM_NAME+gohome.MATERIAL_SPECULAR_TEXTURE_UNIFORM_NAME, specBind)
 	s.SetUniformI(gohome.MATERIAL_UNIFORM_NAME+gohome.MATERIAL_NORMALMAP_UNIFORM_NAME, normBind)
+
+	if mat.DiffuseTextureLoaded == 1 {
+
+	}
 }
 
 func (s *OpenGLShader) SetUniformLights(lightCollectionIndex int32) {
