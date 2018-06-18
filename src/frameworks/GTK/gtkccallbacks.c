@@ -1,0 +1,47 @@
+#include "gtkccallbacksheader.h"
+#include "_cgo_export.h"
+#include "includes.h"
+
+void gtkgo_quit_c()
+{
+	gtkgo_quit();
+}
+
+gboolean gtkgo_gl_area_render_c(GtkGLArea *area, GdkGLContext *context)
+{
+	gtkgo_gl_area_render(area,context);
+	return TRUE;
+}
+
+void gtkgo_gl_area_realize_c(GtkGLArea *area)
+{
+	int err = 0;
+
+	gtk_gl_area_make_current(area);
+
+	if(gtk_gl_area_get_error(area) != NULL)
+	{
+		ErrorString = "Couldn't make context current";
+		err = 1;
+	}
+	else
+	{
+		gtk_gl_area_set_auto_render(area,FALSE);
+	}
+
+	gtkgo_gl_area_realize(area,err);
+
+	if(err != 0)
+	{
+		// gtk_gl_area_queue_render(area);
+	}
+}
+
+gboolean queue_render_idle(gpointer user_data)
+{
+	GtkGLArea* area = user_data;
+	gtk_widget_queue_draw(GTK_WIDGET(area));
+	gtk_gl_area_queue_render(area);
+
+	return TRUE;
+}

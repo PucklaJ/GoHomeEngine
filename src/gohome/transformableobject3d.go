@@ -62,7 +62,7 @@ func (tobj *TransformableObject3D) SetTransformMatrix(rmgr *RenderManager) {
 
 func DefaultTransformableObject3D() *TransformableObject3D {
 	transform := TransformableObject3D{
-		Scale: [3]float32{1.0,1.0,1.0},
+		Scale: [3]float32{1.0, 1.0, 1.0},
 	}
 
 	return &transform

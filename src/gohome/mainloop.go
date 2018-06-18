@@ -84,14 +84,18 @@ func (MainLoop) InitManagers() {
 	ErrorMgr.Init()
 }
 
+func (this *MainLoop) LoopOnce() {
+	FPSLimit.StartMeasurement()
+
+	this.InnerLoop()
+
+	FPSLimit.EndMeasurement()
+	FPSLimit.LimitFPS()
+}
+
 func (this *MainLoop) Loop() {
 	for !Framew.WindowClosed() {
-		FPSLimit.StartMeasurement()
-
-		this.InnerLoop()
-
-		FPSLimit.EndMeasurement()
-		FPSLimit.LimitFPS()
+		this.LoopOnce()
 	}
 }
 

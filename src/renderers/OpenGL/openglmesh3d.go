@@ -28,7 +28,7 @@ type OpenGLMesh3D struct {
 
 	tangentsCalculated bool
 	canUseVAOs         bool
-	hasUV 			   bool
+	hasUV              bool
 
 	aabb gohome.AxisAlignedBoundingBox
 }
@@ -129,11 +129,11 @@ func (oglm *OpenGLMesh3D) AddVertices(vertices []gohome.Mesh3DVertex, indices []
 }
 
 func (oglm *OpenGLMesh3D) checkAABB() {
-	var max,min mgl32.Vec3 = [3]float32{oglm.vertices[0][0],oglm.vertices[0][1],oglm.vertices[0][2]}, [3]float32{oglm.vertices[0][0],oglm.vertices[0][1],oglm.vertices[0][2]}
+	var max, min mgl32.Vec3 = [3]float32{oglm.vertices[0][0], oglm.vertices[0][1], oglm.vertices[0][2]}, [3]float32{oglm.vertices[0][0], oglm.vertices[0][1], oglm.vertices[0][2]}
 	var current gohome.Mesh3DVertex
-	for i:=0;i<len(oglm.vertices);i++ {
+	for i := 0; i < len(oglm.vertices); i++ {
 		current = oglm.vertices[i]
-		for j:=0;j<3;j++ {
+		for j := 0; j < 3; j++ {
 			if current[j] > max[j] {
 				max[j] = current[j]
 			} else if current[j] < min[j] {
@@ -142,7 +142,7 @@ func (oglm *OpenGLMesh3D) checkAABB() {
 		}
 	}
 
-	for i:=0;i<3;i++ {
+	for i := 0; i < 3; i++ {
 		if max[i] > oglm.aabb.Max[i] {
 			oglm.aabb.Max[i] = max[i]
 		}
