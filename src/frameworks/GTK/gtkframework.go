@@ -73,6 +73,11 @@ func (this *GTKFramework) WindowClosed() bool {
 func (this *GTKFramework) WindowSwap() {
 
 }
+
+func (this *GTKFramework) WindowSetSize(size mgl32.Vec2) {
+	C.windowSetSize(C.float(size.X()), C.float(size.Y()))
+}
+
 func (this *GTKFramework) WindowGetSize() mgl32.Vec2 {
 	var v [2]C.float
 	var v1 mgl32.Vec2

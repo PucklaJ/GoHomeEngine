@@ -11,6 +11,7 @@ extern char* ErrorString;
 extern void initialise(int args,char** argv);
 
 extern int createWindow(unsigned int width, unsigned int height, const char* title);
+extern void windowSetSize(float width, float height);
 extern void windowGetSize(float* width, float* height);
 extern void windowHideCursor();
 extern void windowShowCursor();

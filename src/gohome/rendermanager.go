@@ -98,6 +98,7 @@ type RenderObject interface {
 type Viewport struct {
 	CameraIndex         int32
 	X, Y, Width, Height int
+	StrapToWindow       bool
 }
 
 type RenderManager struct {
@@ -114,7 +115,6 @@ type RenderManager struct {
 
 	BackBufferMS RenderTexture
 	BackBuffer   RenderTexture
-	BackBuffer2  RenderTexture
 	BackBuffer2D RenderTexture
 	BackBuffer3D RenderTexture
 
@@ -122,20 +122,19 @@ type RenderManager struct {
 	PostProcessingShader Shader
 	renderScreenShader   Shader
 
-	WireFrameMode bool
-
 	currentCamera2D *Camera2D
 	currentCamera3D *Camera3D
 	currentViewport *Viewport
 
-	EnableBackBuffer bool
+	EnableBackBuffer             bool
+	WireFrameMode                bool
+	UpdateProjectionWithViewport bool
 }
 
 func (rmgr *RenderManager) Init() {
 	rmgr.CurrentShader = nil
 	rmgr.BackBufferMS = Render.CreateRenderTexture("BackBufferMS", uint32(Framew.WindowGetSize()[0]), uint32(Framew.WindowGetSize()[1]), 1, true, true, false, false)
 	rmgr.BackBuffer = Render.CreateRenderTexture("BackBuffer", uint32(Framew.WindowGetSize()[0]), uint32(Framew.WindowGetSize()[1]), 1, true, false, false, false)
-	rmgr.BackBuffer2 = Render.CreateRenderTexture("BackBuffer2", uint32(Framew.WindowGetSize()[0]), uint32(Framew.WindowGetSize()[1]), 1, true, false, false, false)
 	rmgr.BackBuffer2D = Render.CreateRenderTexture("BackBuffer2D", uint32(Framew.WindowGetSize()[0]), uint32(Framew.WindowGetSize()[1]), 1, true, true, false, false)
 	rmgr.BackBuffer3D = Render.CreateRenderTexture("BackBuffer3D", uint32(Framew.WindowGetSize()[0]), uint32(Framew.WindowGetSize()[1]), 1, true, true, false, false)
 	ResourceMgr.LoadShader("BackBufferShader", "backBufferShaderVert.glsl", "backBufferShaderFrag.glsl", "", "", "", "")
@@ -150,12 +149,14 @@ func (rmgr *RenderManager) Init() {
 		0, 0,
 		int(Framew.WindowGetSize()[0]),
 		int(Framew.WindowGetSize()[1]),
+		true,
 	})
 	rmgr.AddViewport3D(&Viewport{
 		0,
 		0, 0,
 		int(Framew.WindowGetSize()[0]),
 		int(Framew.WindowGetSize()[1]),
+		true,
 	})
 	rmgr.SetProjection2D(&Ortho2DProjection{
 		Left:   0.0,
@@ -172,6 +173,7 @@ func (rmgr *RenderManager) Init() {
 	})
 
 	rmgr.EnableBackBuffer = true
+	rmgr.UpdateProjectionWithViewport = false
 }
 
 func (rmgr *RenderManager) AddObject(robj RenderObject) {
@@ -382,10 +384,6 @@ func (rmgr *RenderManager) renderToScreen() {
 		return
 	}
 
-	temp := rmgr.BackBuffer
-	rmgr.BackBuffer = rmgr.BackBuffer2
-	rmgr.BackBuffer2 = temp
-
 	if rmgr.renderScreenShader != nil {
 		rmgr.renderScreenShader.Use()
 		rmgr.renderScreenShader.SetUniformI("BackBuffer", 0)
@@ -438,15 +436,28 @@ func (rmgr *RenderManager) handleCurrentCameraAndViewport(rtype RenderType, came
 	}
 
 	if rmgr.currentViewport != nil {
-		Render.SetViewport(*rmgr.currentViewport)
-		if TYPE_2D.Compatible(rtype) {
-			if rmgr.Projection2D != nil {
-				rmgr.Projection2D.Update(*rmgr.currentViewport)
+		if rmgr.currentViewport.StrapToWindow {
+			var wSize mgl32.Vec2
+			if !rmgr.EnableBackBuffer {
+				wSize = Framew.WindowGetSize()
+			} else {
+				nw, nh := Render.GetNativeResolution()
+				wSize = [2]float32{float32(nw), float32(nh)}
 			}
+			rmgr.currentViewport.Width = int(wSize.X())
+			rmgr.currentViewport.Height = int(wSize.Y())
 		}
-		if TYPE_3D.Compatible(rtype) {
-			if rmgr.Projection3D != nil {
-				rmgr.Projection3D.Update(*rmgr.currentViewport)
+		Render.SetViewport(*rmgr.currentViewport)
+		if rmgr.UpdateProjectionWithViewport {
+			if TYPE_2D.Compatible(rtype) {
+				if rmgr.Projection2D != nil {
+					rmgr.Projection2D.Update(*rmgr.currentViewport)
+				}
+			}
+			if TYPE_3D.Compatible(rtype) {
+				if rmgr.Projection3D != nil {
+					rmgr.Projection3D.Update(*rmgr.currentViewport)
+				}
 			}
 		}
 	}

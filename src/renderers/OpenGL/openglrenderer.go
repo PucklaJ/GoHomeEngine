@@ -19,6 +19,7 @@ type OpenGLRenderer struct {
 	availableFunctions map[string]bool
 	backBufferMesh     *OpenGLMesh2D
 	backgroundColor    color.Color
+	version            uint8
 }
 
 func (this *OpenGLRenderer) createBackBufferMesh() {
@@ -73,6 +74,10 @@ func (this *OpenGLRenderer) Init() error {
 }
 
 func (this *OpenGLRenderer) AfterInit() {
+	if this.version < 30 {
+		gohome.RenderMgr.EnableBackBuffer = false
+	}
+
 	gl.Enable(gl.MULTISAMPLE)
 	gl.DepthFunc(gl.LESS)
 	gl.Enable(gl.DEPTH_CLAMP)
@@ -241,6 +246,7 @@ func (this *OpenGLRenderer) GetViewport() gohome.Viewport {
 		0,
 		int(data[0]), int(data[1]),
 		int(data[2]), int(data[3]),
+		false,
 	}
 }
 
@@ -321,7 +327,7 @@ func (this *OpenGLRenderer) GetVersioni() uint8 {
 
 func (this *OpenGLRenderer) gatherAvailableFunctions() {
 	combined := this.GetVersioni()
-
+	this.version = uint8(combined)
 	if combined >= 30 {
 		this.availableFunctions["VERTEX_ID"] = true
 		this.availableFunctions["VERTEX_ARRAY"] = true

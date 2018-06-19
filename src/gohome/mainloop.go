@@ -38,8 +38,8 @@ func (this *MainLoop) Init(fw Framework, r Renderer, ww, wh uint32, wt string, s
 
 func (this *MainLoop) DoStuff() {
 	this.InitWindowAndRenderer()
-	Render.AfterInit()
 	this.InitManagers()
+	Render.AfterInit()
 	this.SetupStartScene()
 	this.Loop()
 	this.Quit()
