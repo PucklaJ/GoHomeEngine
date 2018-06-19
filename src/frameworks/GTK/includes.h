@@ -3,8 +3,8 @@
 
 #include <gtk/gtk.h>
 
-extern GtkWindow* window;
-extern GtkGLArea* glarea;
+extern GtkWindow* Window;
+extern GtkGLArea* GLarea;
 
 extern char* ErrorString;
 

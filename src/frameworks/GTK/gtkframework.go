@@ -21,6 +21,8 @@ type GTKFramework struct {
 	endOtherThanPaint   time.Time
 
 	prevMousePos [2]int16
+
+	isFullscreen bool
 }
 
 func (this *GTKFramework) Init(ml *gohome.MainLoop) error {
@@ -32,7 +34,7 @@ func (this *GTKFramework) Init(ml *gohome.MainLoop) error {
 		argvCString = append(argvCString, C.CString(argv[i]))
 		defer C.free(unsafe.Pointer(argvCString[i]))
 	}
-
+	this.isFullscreen = false
 	C.initialise(C.int(args), &argvCString[0])
 
 	ml.InitWindowAndRenderer()
@@ -82,10 +84,15 @@ func (this *GTKFramework) WindowGetSize() mgl32.Vec2 {
 	return v1
 }
 func (this *GTKFramework) WindowSetFullscreen(b bool) {
-
+	if b {
+		C.gtk_window_fullscreen(C.Window)
+	} else {
+		C.gtk_window_unfullscreen(C.Window)
+	}
+	this.isFullscreen = b
 }
 func (this *GTKFramework) WindowIsFullscreen() bool {
-	return false
+	return this.isFullscreen
 }
 
 func (this *GTKFramework) CurserShow() {
