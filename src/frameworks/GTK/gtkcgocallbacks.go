@@ -169,6 +169,56 @@ func gdkkeysymTogohomekey(key C.guint) gohome.Key {
 		return gohome.KeyCapsLock
 	case C.GDK_KEY_Tab:
 		return gohome.KeyTab
+	case C.GDK_KEY_F1:
+		return gohome.KeyF1
+	case C.GDK_KEY_F2:
+		return gohome.KeyF2
+	case C.GDK_KEY_F3:
+		return gohome.KeyF3
+	case C.GDK_KEY_F4:
+		return gohome.KeyF4
+	case C.GDK_KEY_F5:
+		return gohome.KeyF5
+	case C.GDK_KEY_F6:
+		return gohome.KeyF6
+	case C.GDK_KEY_F7:
+		return gohome.KeyF7
+	case C.GDK_KEY_F8:
+		return gohome.KeyF8
+	case C.GDK_KEY_F9:
+		return gohome.KeyF9
+	case C.GDK_KEY_F10:
+		return gohome.KeyF10
+	case C.GDK_KEY_F11:
+		return gohome.KeyF11
+	case C.GDK_KEY_F13:
+		return gohome.KeyF13
+	case C.GDK_KEY_F14:
+		return gohome.KeyF14
+	case C.GDK_KEY_F15:
+		return gohome.KeyF15
+	case C.GDK_KEY_F16:
+		return gohome.KeyF16
+	case C.GDK_KEY_F17:
+		return gohome.KeyF17
+	case C.GDK_KEY_F18:
+		return gohome.KeyF18
+	case C.GDK_KEY_F19:
+		return gohome.KeyF19
+	case C.GDK_KEY_F20:
+		return gohome.KeyF20
+	case C.GDK_KEY_F21:
+		return gohome.KeyF21
+	case C.GDK_KEY_F22:
+		return gohome.KeyF22
+	case C.GDK_KEY_F23:
+		return gohome.KeyF23
+	case C.GDK_KEY_F24:
+		return gohome.KeyF24
+	case C.GDK_KEY_F25:
+		return gohome.KeyF25
+	case C.GDK_KEY_Escape:
+		return gohome.KeyEscape
 	default:
 		return gohome.KeyUnknown
 		break

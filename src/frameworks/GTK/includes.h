@@ -12,6 +12,12 @@ extern void initialise(int args,char** argv);
 
 extern int createWindow(unsigned int width, unsigned int height, const char* title);
 extern void windowGetSize(float* width, float* height);
+extern void windowHideCursor();
+extern void windowShowCursor();
+extern void windowDisableCursor();
+extern int windowCursorShown();
+extern int windowCursorHidden();
+extern int windowCursorDisabled();
 
 extern void loop();
 

@@ -96,22 +96,22 @@ func (this *GTKFramework) WindowIsFullscreen() bool {
 }
 
 func (this *GTKFramework) CurserShow() {
-
+	C.windowShowCursor()
 }
 func (this *GTKFramework) CursorHide() {
-
+	C.windowHideCursor()
 }
 func (this *GTKFramework) CursorDisable() {
-
+	C.windowDisableCursor()
 }
 func (this *GTKFramework) CursorShown() bool {
-	return true
+	return int(C.windowCursorShown()) == 1
 }
 func (this *GTKFramework) CursorHidden() bool {
-	return false
+	return int(C.windowCursorHidden()) == 1
 }
 func (this *GTKFramework) CursorDisabled() bool {
-	return false
+	return int(C.windowCursorDisabled()) == 1
 }
 
 func (this *GTKFramework) OpenFile(file string) (io.ReadCloser, error) {
