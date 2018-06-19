@@ -18,8 +18,7 @@ func (this *CubeScene) Init() {
 	this.cube.Transform.Position = [3]float32{0.0, 0.0, -3.0}
 
 	gohome.RenderMgr.AddObject(&this.cube)
-	gohome.LightMgr.CurrentLightCollection = -1
-	gohome.RenderMgr.EnableBackBuffer = true
+	gohome.LightMgr.DisableLighting()
 }
 
 func (this *CubeScene) Update(delta_time float32) {
