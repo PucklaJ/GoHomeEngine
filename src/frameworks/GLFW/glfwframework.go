@@ -118,6 +118,10 @@ func (gfw *GLFWFramework) WindowSwap() {
 	gfw.window.SwapBuffers()
 }
 
+func (gfw *GLFWFramework) WindowSetSize(size mgl32.Vec2) {
+	gfw.window.SetSize(int(size.X()), int(size.Y()))
+}
+
 func (gfw *GLFWFramework) WindowGetSize() mgl32.Vec2 {
 	var size mgl32.Vec2
 	x, y := gfw.window.GetSize()

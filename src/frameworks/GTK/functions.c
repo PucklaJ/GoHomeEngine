@@ -14,7 +14,8 @@ void initialise(int args,char** argv)
 int createWindow(unsigned int width, unsigned int height, const char* title)
 {
 	Window = (GtkWindow*)gtk_window_new(GTK_WINDOW_TOPLEVEL);
-	gtk_widget_set_size_request(GTK_WIDGET(Window),width,height);
+	gtk_widget_set_size_request(GTK_WIDGET(Window),1,1);
+	gtk_window_resize(Window,width,height);
 	gtk_window_set_title(Window,title);
 	gtk_widget_set_events(GTK_WIDGET(Window), GDK_POINTER_MOTION_MASK|GDK_SCROLL_MASK);
 
@@ -36,6 +37,11 @@ int createWindow(unsigned int width, unsigned int height, const char* title)
 
 	gtk_widget_show_all(GTK_WIDGET(Window));
 	return 1;
+}
+
+void windowSetSize(float width, float height)
+{
+	gtk_window_resize(Window,width,height);
 }
 
 void windowGetSize(float* width, float* height)

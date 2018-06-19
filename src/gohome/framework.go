@@ -21,6 +21,7 @@ type Framework interface {
 	CreateWindow(windowWidth, windowHeight uint32, title string) error
 	WindowClosed() bool
 	WindowSwap()
+	WindowSetSize(size mgl32.Vec2)
 	WindowGetSize() mgl32.Vec2
 	WindowSetFullscreen(b bool)
 	WindowIsFullscreen() bool
