@@ -160,35 +160,24 @@ func (ogltex *OpenGLTexture) LoadFromImage(img image.Image) error {
 }
 
 func toTextureUnit(unit uint32) uint32 {
-	switch unit {
-	case 0:
-		return gl.TEXTURE0
-	case 1:
-		return gl.TEXTURE1
-	case 2:
-		return gl.TEXTURE2
-	case 3:
-		return gl.TEXTURE3
-	case 4:
-		return gl.TEXTURE4
-	case 5:
-		return gl.TEXTURE5
-	case 6:
-		return gl.TEXTURE6
-	default:
-		return gl.TEXTURE0 + unit
-	}
+	return gl.TEXTURE0 + unit
 }
 
 func (ogltex *OpenGLTexture) Bind(unit uint32) {
 	newUnit := toTextureUnit(unit)
+	gl.GetError()
 	gl.ActiveTexture(newUnit)
+	handleOpenGLError("Texture", ogltex.name, "glActiveTexture in Bind with "+strconv.Itoa(int(unit)))
 	gl.BindTexture(ogltex.bindingPoint(), ogltex.oglName)
+	handleOpenGLError("Texture", ogltex.name, "glBindTexture in Bind")
 }
 func (ogltex *OpenGLTexture) Unbind(unit uint32) {
 	newUnit := toTextureUnit(unit)
+	gl.GetError()
 	gl.ActiveTexture(newUnit)
+	handleOpenGLError("Texture", ogltex.name, "glActiveTexture in Unbind with "+strconv.Itoa(int(unit)))
 	gl.BindTexture(ogltex.bindingPoint(), 0)
+	handleOpenGLError("Texture", ogltex.name, "glBindTexture in Unbind")
 }
 func (ogltex *OpenGLTexture) GetWidth() int {
 	return ogltex.width

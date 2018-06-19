@@ -19,8 +19,7 @@ func (this *CubeScene) Init() {
 
 	gohome.RenderMgr.AddObject(&this.cube)
 	gohome.LightMgr.CurrentLightCollection = -1
-	gohome.RenderMgr.EnableBackBuffer = false
-	gohome.FPSLimit.MaxFPS = 100
+	gohome.RenderMgr.EnableBackBuffer = true
 }
 
 func (this *CubeScene) Update(delta_time float32) {

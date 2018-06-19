@@ -259,11 +259,15 @@ func (s *OpenGLShader) Link() error {
 }
 
 func (s *OpenGLShader) Use() {
+	gl.GetError()
 	gl.UseProgram(s.program)
+	handleOpenGLError("Shader", s.name, "glUseProgram")
 }
 
 func (s *OpenGLShader) Unuse() {
+	gl.GetError()
 	gl.UseProgram(0)
+	handleOpenGLError("Shader", s.name, "glUseProgram with 0")
 }
 
 func (s *OpenGLShader) Setup() error {
@@ -278,7 +282,9 @@ func (s *OpenGLShader) getUniformLocation(name string) int32 {
 	var loc int32
 	var ok bool
 	if loc, ok = s.uniform_locations[name]; !ok {
+		gl.GetError()
 		loc = gl.GetUniformLocation(s.program, gl.Str(name+"\x00"))
+		handleOpenGLError("Shader", s.name, "glGetUniformLocation")
 		s.uniform_locations[name] = loc
 	}
 	if loc == -1 {
@@ -290,55 +296,73 @@ func (s *OpenGLShader) getUniformLocation(name string) int32 {
 func (s *OpenGLShader) SetUniformV2(name string, value mgl32.Vec2) {
 	loc := s.getUniformLocation(name)
 	if loc != -1 {
+		gl.GetError()
 		gl.Uniform2f(loc, value[0], value[1])
+		handleOpenGLError("Shader", s.name, "glUniform2f")
 	}
 }
 func (s *OpenGLShader) SetUniformV3(name string, value mgl32.Vec3) {
 	loc := s.getUniformLocation(name)
 	if loc != -1 {
+		gl.GetError()
 		gl.Uniform3f(loc, value[0], value[1], value[2])
+		handleOpenGLError("Shader", s.name, "glUniform3f")
 	}
 }
 func (s *OpenGLShader) SetUniformV4(name string, value mgl32.Vec4) {
 	loc := s.getUniformLocation(name)
 	if loc != -1 {
+		gl.GetError()
 		gl.Uniform4f(loc, value[0], value[1], value[2], value[3])
+		handleOpenGLError("Shader", s.name, "glUniform4f")
 	}
 }
 func (s *OpenGLShader) SetUniformIV2(name string, value []int32) {
 	loc := s.getUniformLocation(name)
 	if loc != -1 {
+		gl.GetError()
 		gl.Uniform2i(loc, value[0], value[1])
+		handleOpenGLError("Shader", s.name, "glUniform2i")
 	}
 }
 func (s *OpenGLShader) SetUniformIV3(name string, value []int32) {
 	loc := s.getUniformLocation(name)
 	if loc != -1 {
+		gl.GetError()
 		gl.Uniform3i(loc, value[0], value[1], value[2])
+		handleOpenGLError("Shader", s.name, "glUniform3i")
 	}
 }
 func (s *OpenGLShader) SetUniformIV4(name string, value []int32) {
 	loc := s.getUniformLocation(name)
 	if loc != -1 {
+		gl.GetError()
 		gl.Uniform4i(loc, value[0], value[1], value[2], value[3])
+		handleOpenGLError("Shader", s.name, "glUniform4i")
 	}
 }
 func (s *OpenGLShader) SetUniformF(name string, value float32) {
 	loc := s.getUniformLocation(name)
 	if loc != -1 {
+		gl.GetError()
 		gl.Uniform1f(loc, value)
+		handleOpenGLError("Shader", s.name, "glUniform1f")
 	}
 }
 func (s *OpenGLShader) SetUniformI(name string, value int32) {
 	loc := s.getUniformLocation(name)
 	if loc != -1 {
+		gl.GetError()
 		gl.Uniform1i(loc, value)
+		handleOpenGLError("Shader", s.name, "glUniform1i")
 	}
 }
 func (s *OpenGLShader) SetUniformUI(name string, value uint32) {
 	loc := s.getUniformLocation(name)
 	if loc != -1 {
+		gl.GetError()
 		gl.Uniform1ui(loc, value)
+		handleOpenGLError("Shader", s.name, "glUniform1ui")
 	}
 }
 func (s *OpenGLShader) SetUniformB(name string, value uint8) {
@@ -347,19 +371,25 @@ func (s *OpenGLShader) SetUniformB(name string, value uint8) {
 func (s *OpenGLShader) SetUniformM2(name string, value mgl32.Mat2) {
 	loc := s.getUniformLocation(name)
 	if loc != -1 {
+		gl.GetError()
 		gl.UniformMatrix2fv(loc, 1, false, &value[0])
+		handleOpenGLError("Shader", s.name, "glUniformMatrix2fv")
 	}
 }
 func (s *OpenGLShader) SetUniformM3(name string, value mgl32.Mat3) {
 	loc := s.getUniformLocation(name)
 	if loc != -1 {
+		gl.GetError()
 		gl.UniformMatrix3fv(loc, 1, false, &value[0])
+		handleOpenGLError("Shader", s.name, "glUniformMatrix3fv")
 	}
 }
 func (s *OpenGLShader) SetUniformM4(name string, value mgl32.Mat4) {
 	loc := s.getUniformLocation(name)
 	if loc != -1 {
+		gl.GetError()
 		gl.UniformMatrix4fv(loc, 1, false, &value[0])
+		handleOpenGLError("Shader", s.name, "glUniformMatrix4fv")
 	}
 }
 

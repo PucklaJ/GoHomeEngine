@@ -112,12 +112,13 @@ type RenderManager struct {
 	ForceShader3D Shader
 	ForceShader2D Shader
 
-	BackBufferMS     RenderTexture
-	BackBuffer       RenderTexture
-	BackBuffer2D     RenderTexture
-	BackBuffer3D     RenderTexture
-	BackBufferShader Shader
+	BackBufferMS RenderTexture
+	BackBuffer   RenderTexture
+	BackBuffer2  RenderTexture
+	BackBuffer2D RenderTexture
+	BackBuffer3D RenderTexture
 
+	BackBufferShader     Shader
 	PostProcessingShader Shader
 	renderScreenShader   Shader
 
@@ -134,6 +135,7 @@ func (rmgr *RenderManager) Init() {
 	rmgr.CurrentShader = nil
 	rmgr.BackBufferMS = Render.CreateRenderTexture("BackBufferMS", uint32(Framew.WindowGetSize()[0]), uint32(Framew.WindowGetSize()[1]), 1, true, true, false, false)
 	rmgr.BackBuffer = Render.CreateRenderTexture("BackBuffer", uint32(Framew.WindowGetSize()[0]), uint32(Framew.WindowGetSize()[1]), 1, true, false, false, false)
+	rmgr.BackBuffer2 = Render.CreateRenderTexture("BackBuffer2", uint32(Framew.WindowGetSize()[0]), uint32(Framew.WindowGetSize()[1]), 1, true, false, false, false)
 	rmgr.BackBuffer2D = Render.CreateRenderTexture("BackBuffer2D", uint32(Framew.WindowGetSize()[0]), uint32(Framew.WindowGetSize()[1]), 1, true, true, false, false)
 	rmgr.BackBuffer3D = Render.CreateRenderTexture("BackBuffer3D", uint32(Framew.WindowGetSize()[0]), uint32(Framew.WindowGetSize()[1]), 1, true, true, false, false)
 	ResourceMgr.LoadShader("BackBufferShader", "backBufferShaderVert.glsl", "backBufferShaderFrag.glsl", "", "", "", "")
@@ -379,6 +381,11 @@ func (rmgr *RenderManager) renderToScreen() {
 	if !rmgr.EnableBackBuffer {
 		return
 	}
+
+	temp := rmgr.BackBuffer
+	rmgr.BackBuffer = rmgr.BackBuffer2
+	rmgr.BackBuffer2 = temp
+
 	if rmgr.renderScreenShader != nil {
 		rmgr.renderScreenShader.Use()
 		rmgr.renderScreenShader.SetUniformI("BackBuffer", 0)

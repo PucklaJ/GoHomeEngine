@@ -40,6 +40,7 @@ func (this *GTKFramework) Init(ml *gohome.MainLoop) error {
 	ml.InitWindowAndRenderer()
 	gohome.Render.AfterInit()
 	ml.InitManagers()
+	gohome.RenderMgr.EnableBackBuffer = false
 	ml.SetupStartScene()
 
 	C.loop()

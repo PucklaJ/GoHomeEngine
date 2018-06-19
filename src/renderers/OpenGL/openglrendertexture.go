@@ -45,38 +45,58 @@ func (this *OpenGLRenderTexture) loadTextures(width, height, textures uint32, cu
 		}
 		texture.Load(nil, int(width), int(height), this.shadowMap)
 		if cubeMap {
+			gl.GetError()
 			gl.BindTexture(gl.TEXTURE_CUBE_MAP, oglcubemap.oglName)
+			handleOpenGLError("RenderTexture", this.Name, "Binding cubemap")
 		} else {
+			gl.GetError()
 			gl.BindTexture(ogltex.bindingPoint(), ogltex.oglName)
+			handleOpenGLError("RenderTexture", this.Name, "Binding texture 2d")
 		}
 		if this.shadowMap {
 			if cubeMap {
 				if render.hasFunctionAvailable("FRAMEBUFFER_TEXTURE") {
+					gl.GetError()
 					gl.FramebufferTexture(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, oglcubemap.oglName, 0)
+					handleOpenGLError("RenderTexture", this.Name, "glFramebufferTexture with depthBuffer and CubeMap")
 				} else {
+					gl.GetError()
 					gl.FramebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.TEXTURE_CUBE_MAP_POSITIVE_X, oglcubemap.oglName, 0)
+					handleOpenGLError("RenderTexture", this.Name, "glFramebufferTexture2D with depthBuffer and CubeMap")
 				}
 			} else {
+				gl.GetError()
 				gl.FramebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, ogltex.bindingPoint(), ogltex.oglName, 0)
+				handleOpenGLError("RenderTexture", this.Name, "glFramebufferTexture2D with depthBuffer and TEXTURE2D")
 			}
 		} else {
 			if cubeMap {
 				if render.hasFunctionAvailable("FRAMEBUFFER_TEXTURE") {
+					gl.GetError()
 					gl.FramebufferTexture(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0+i, oglcubemap.oglName, 0)
+					handleOpenGLError("RenderTexture", this.Name, "glFramebufferTexture with CubeMap")
 				} else {
+					gl.GetError()
 					gl.FramebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0+i, gl.TEXTURE_CUBE_MAP_POSITIVE_X, oglcubemap.oglName, 0)
+					handleOpenGLError("RenderTexture", this.Name, "glFramebufferTexture2D with CubeMap")
 				}
 			} else {
+				gl.GetError()
 				gl.FramebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0+i, ogltex.bindingPoint(), ogltex.oglName, 0)
+				handleOpenGLError("RenderTexture", this.Name, "glFramebufferTexture2D with TEXTURE2D")
 			}
 		}
 		if !cubeMap {
 			texture.SetFiltering(gohome.FILTERING_LINEAR)
 		}
 		if cubeMap {
+			gl.GetError()
 			gl.BindTexture(gl.TEXTURE_CUBE_MAP, 0)
+			handleOpenGLError("RenderTexture", this.Name, "glBindTexture with CubeMap")
 		} else {
+			gl.GetError()
 			gl.BindTexture(ogltex.bindingPoint(), 0)
+			handleOpenGLError("RenderTexture", this.Name, "glBindTexture with TEXTURE2D")
 		}
 		this.textures = append(this.textures, texture)
 	}
@@ -84,15 +104,22 @@ func (this *OpenGLRenderTexture) loadTextures(width, height, textures uint32, cu
 
 func (this *OpenGLRenderTexture) loadRenderBuffer(width, height uint32) {
 	if this.depthBuffer {
+		gl.GetError()
 		gl.GenRenderbuffers(1, &this.rbo)
+		handleOpenGLError("RenderTexture", this.Name, "glGenRenderbuffers")
 		gl.BindRenderbuffer(gl.RENDERBUFFER, this.rbo)
+		handleOpenGLError("RenderTexture", this.Name, "glBindRenderbuffer")
 		if this.multiSampled {
 			gl.RenderbufferStorageMultisample(gl.RENDERBUFFER, 8, gl.DEPTH24_STENCIL8, int32(width), int32(height))
+			handleOpenGLError("RenderTexture", this.Name, "glRenderbufferStorageMultisample")
 		} else {
 			gl.RenderbufferStorage(gl.RENDERBUFFER, gl.DEPTH24_STENCIL8, int32(width), int32(height))
+			handleOpenGLError("RenderTexture", this.Name, "glRenderbufferStorage")
 		}
 		gl.FramebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, this.rbo)
+		handleOpenGLError("RenderTexture", this.Name, "glFramebufferRenderbuffer")
 		gl.BindRenderbuffer(gl.RENDERBUFFER, 0)
+		handleOpenGLError("RenderTexture", this.Name, "glBindRenderbuffer with 0")
 	}
 }
 
@@ -109,21 +136,28 @@ func (this *OpenGLRenderTexture) Create(name string, width, height, textures uin
 	this.depthBuffer = depthBuffer && !shadowMap
 	this.cubeMap = cubeMap
 
+	gl.GetError()
 	gl.GenFramebuffers(1, &this.fbo)
+	handleOpenGLError("RenderTexture", this.Name, "glGenFramebuffers")
 
 	gl.BindFramebuffer(gl.FRAMEBUFFER, this.fbo)
+	handleOpenGLError("RenderTexture", this.Name, "glBindFramebuffer")
 
 	this.loadRenderBuffer(width, height)
 	this.loadTextures(width, height, textures, cubeMap)
 	if shadowMap {
 		gl.DrawBuffer(gl.NONE)
+		handleOpenGLError("RenderTexture", this.Name, "glDrawBuffer")
 		gl.ReadBuffer(gl.NONE)
+		handleOpenGLError("RenderTexture", this.Name, "glReadBuffer")
 	}
 	if gl.CheckFramebufferStatus(gl.FRAMEBUFFER) != gl.FRAMEBUFFER_COMPLETE {
+		handleOpenGLError("RenderTexture", this.Name, "glCheckFramebufferStatus")
 		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "RenderTexture", this.Name, "Framebuffer is not complete")
 		return
 	}
 	gl.BindFramebuffer(gl.FRAMEBUFFER, 0)
+	handleOpenGLError("RenderTexture", this.Name, "glBindFramebuffer with 0")
 
 	this.viewport = gohome.Viewport{
 		0,
@@ -132,7 +166,7 @@ func (this *OpenGLRenderTexture) Create(name string, width, height, textures uin
 	}
 
 	this.SetAsTarget()
-	gohome.Render.ClearScreen(gohome.Color{0,0,0,0})
+	gohome.Render.ClearScreen(gohome.Color{0, 0, 0, 0})
 	this.UnsetAsTarget()
 }
 
@@ -150,12 +184,14 @@ func (this *OpenGLRenderTexture) GetName() string {
 
 func (this *OpenGLRenderTexture) SetAsTarget() {
 	gl.BindFramebuffer(gl.FRAMEBUFFER, this.fbo)
+	handleOpenGLError("RenderTexture", this.Name, "glBindFramebuffer in SetAsTarget")
 	this.prevViewport = gohome.Render.GetViewport()
 	gohome.Render.SetViewport(this.viewport)
 }
 
 func (this *OpenGLRenderTexture) UnsetAsTarget() {
 	gl.BindFramebuffer(gl.FRAMEBUFFER, 0)
+	handleOpenGLError("RenderTexture", this.Name, "glBindFramebuffer in UnsetAsTarget")
 	gohome.Render.SetViewport(this.prevViewport)
 }
 
@@ -172,18 +208,23 @@ func (this *OpenGLRenderTexture) Blit(rtex gohome.RenderTexture) {
 		y = 0
 	} else {
 		gl.BindFramebuffer(gl.DRAW_FRAMEBUFFER, 0)
+		handleOpenGLError("RenderTexture", this.Name, "glBindFramebuffer with GL_DRAW_FRAMEBUFFER in Blit")
 		width = int32(this.prevViewport.Width)
 		height = int32(this.prevViewport.Height)
 		x = int32(this.prevViewport.X)
 		y = int32(this.prevViewport.Y)
 	}
 	gl.BindFramebuffer(gl.READ_FRAMEBUFFER, this.fbo)
+	handleOpenGLError("RenderTexture", this.Name, "glBindFramebuffer with GL_READ_FRAMEBUFFER in Blit")
 	gl.BlitFramebuffer(0, 0, int32(this.GetWidth()), int32(this.GetHeight()), x, y, width, height, gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT|gl.STENCIL_BUFFER_BIT, gl.NEAREST)
+	handleOpenGLError("RenderTexture", this.Name, "glBlitFramebuffer")
 	if rtex != nil {
 		rtex.UnsetAsTarget()
 	} else {
 		gl.BindFramebuffer(gl.READ_FRAMEBUFFER, 0)
+		handleOpenGLError("RenderTexture", this.Name, "glBindFramebuffer with GL_READ_FRAMEBUFFER and 0 in Blit")
 		gl.BindFramebuffer(gl.DRAW_FRAMEBUFFER, 0)
+		handleOpenGLError("RenderTexture", this.Name, "glBindFramebuffer with GL_DRAW_FRAMEBUFFER and 0 in Blit")
 	}
 }
 

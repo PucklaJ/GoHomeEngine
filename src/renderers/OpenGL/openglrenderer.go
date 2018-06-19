@@ -219,9 +219,13 @@ func (this *OpenGLRenderer) RenderBackBuffer() {
 	if this.backBufferMesh != nil {
 		this.backBufferMesh.Render()
 	} else {
+		gl.GetError()
 		gl.BindVertexArray(this.BackBufferVao)
+		handleOpenGLError("Renderer", "OpenGL", "glBindVertexArray in RenderBackBuffer")
 		gl.DrawArrays(gl.TRIANGLES, 0, 6)
+		handleOpenGLError("Renderer", "OpenGL", "RenderError in RenderBackBuffer")
 		gl.BindVertexArray(0)
+		handleOpenGLError("Renderer", "OpenGL", "glBindVertexArray with 0 in RenderBackBuffer")
 	}
 }
 
