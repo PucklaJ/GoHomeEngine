@@ -16,12 +16,19 @@ int createWindow(unsigned int width, unsigned int height, const char* title)
 	window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 	gtk_widget_set_size_request(GTK_WIDGET(window),width,height);
 	gtk_window_set_title(window,title);
+	gtk_widget_set_events(GTK_WIDGET(window), GDK_POINTER_MOTION_MASK|GDK_SCROLL_MASK);
 
 	g_signal_connect(GTK_WIDGET(window),"delete-event",G_CALLBACK(gtkgo_quit_c),NULL);
 
 	glarea = gtk_gl_area_new();
 	g_signal_connect(GTK_WIDGET(glarea),"render",G_CALLBACK(gtkgo_gl_area_render_c),NULL);
 	g_signal_connect(GTK_WIDGET(glarea),"realize",G_CALLBACK(gtkgo_gl_area_realize_c),NULL);
+	g_signal_connect(GTK_WIDGET(window),"key-press-event",G_CALLBACK(gtkgo_gl_area_key_press_c),NULL);
+	g_signal_connect(GTK_WIDGET(window),"key-release-event",G_CALLBACK(gtkgo_gl_area_key_release_c),NULL);
+	g_signal_connect(GTK_WIDGET(window),"button-press-event",G_CALLBACK(gtkgo_gl_area_button_press_c),NULL);
+	g_signal_connect(GTK_WIDGET(window),"button-release-event",G_CALLBACK(gtkgo_gl_area_button_release_c),NULL);
+	g_signal_connect(GTK_WIDGET(window),"motion-notify-event",G_CALLBACK(gtkgo_gl_area_motion_notify_c),NULL);
+	g_signal_connect(GTK_WIDGET(window),"scroll-event",G_CALLBACK(gtkgo_gl_area_scroll_c),NULL);
 	gtk_gl_area_set_has_depth_buffer(glarea,TRUE);
 	gtk_container_add(GTK_CONTAINER(window),GTK_WIDGET(glarea));
 

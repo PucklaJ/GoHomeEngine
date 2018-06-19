@@ -45,3 +45,39 @@ gboolean queue_render_idle(gpointer user_data)
 
 	return TRUE;
 }
+
+gboolean gtkgo_gl_area_key_press_c(GtkWidget* widget,GdkEvent* event,gpointer user_data)
+{
+	gtkgo_gl_area_key_press(widget,(GdkEventKey*)event);
+	return TRUE;
+}
+
+gboolean gtkgo_gl_area_key_release_c(GtkWidget* widget, GdkEvent* event,gpointer user_data)
+{
+	gtkgo_gl_area_key_release(widget,(GdkEventKey*)event);
+	return TRUE;
+}
+
+gboolean gtkgo_gl_area_button_press_c(GtkWidget *widget, GdkEvent *event, gpointer user_data)
+{
+	gtkgo_gl_area_button_press(widget,(GdkEventButton*)event);
+	return TRUE;
+}
+
+gboolean gtkgo_gl_area_button_release_c(GtkWidget *widget, GdkEvent *event, gpointer user_data)
+{
+	gtkgo_gl_area_button_release(widget,(GdkEventButton*)event);
+	return TRUE;
+}
+
+gboolean gtkgo_gl_area_motion_notify_c(GtkWidget *widget, GdkEvent *event, gpointer user_data)
+{
+	gtkgo_gl_area_motion_notify(widget,(GdkEventMotion*)event);
+	return TRUE;
+}
+
+gboolean gtkgo_gl_area_scroll_c(GtkWidget *widget, GdkEvent *event, gpointer user_data)
+{
+	gtkgo_gl_area_scroll(widget,(GdkEventScroll*)event,event);
+	return TRUE;
+}
