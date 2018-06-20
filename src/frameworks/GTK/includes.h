@@ -2,6 +2,7 @@
 #define GTK_GO_INCLUDES
 
 #include <gtk/gtk.h>
+#include <stdlib.h>
 
 extern GtkWindow* Window;
 extern GtkGLArea* GLarea;

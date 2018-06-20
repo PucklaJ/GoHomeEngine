@@ -9,5 +9,6 @@ import (
 )
 
 func main() {
-	gohome.MainLop.Run(&framework.GTKFramework{}, &renderer.OpenGLRenderer{}, 640, 480, "Basic", &BasicScene{})
+	gohome.MainLop.Run(&framework.GTKFramework{}, 
+&renderer.OpenGLRenderer{}, 640, 480, "Basic", &BasicScene{})
 }
