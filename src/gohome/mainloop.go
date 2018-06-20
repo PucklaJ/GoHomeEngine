@@ -86,9 +86,7 @@ func (MainLoop) InitManagers() {
 
 func (this *MainLoop) LoopOnce() {
 	FPSLimit.StartMeasurement()
-
 	this.InnerLoop()
-
 	FPSLimit.EndMeasurement()
 	FPSLimit.LimitFPS()
 }

@@ -1,19 +1,13 @@
 package framework
 
-/*
-	#cgo pkg-config: gtk+-3.0
-	#include "includes.h"
-*/
-import "C"
 import (
+	"github.com/PucklaMotzer09/gohomeengine/src/frameworks/GTK/gtk"
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
-	"github.com/PucklaMotzer09/gohomeengine/src/loaders/assimp"
 	"github.com/go-gl/mathgl/mgl32"
 	"io"
 	"os"
 	"strings"
 	"time"
-	"unsafe"
 )
 
 type GTKFramework struct {
@@ -23,27 +17,24 @@ type GTKFramework struct {
 	prevMousePos [2]int16
 
 	isFullscreen bool
+
+	UseWholeWindowAsGLArea bool
 }
 
 func (this *GTKFramework) Init(ml *gohome.MainLoop) error {
-	argv := os.Args
-	args := len(argv)
-	var argvCString []*C.char
 
-	for i := 0; i < args; i++ {
-		argvCString = append(argvCString, C.CString(argv[i]))
-		defer C.free(unsafe.Pointer(argvCString[i]))
-	}
 	this.isFullscreen = false
-	C.initialise(C.int(args), &argvCString[0])
-
+	gtk.OnRender = gtkgo_gl_area_render
+	gtk.OnMotion = gtkgo_gl_area_motion_notify
+	gtk.OnUseWholeScreen = useWholeWindowAsGLArea
+	gtk.Init()
 	ml.InitWindowAndRenderer()
 	gohome.Render.AfterInit()
 	ml.InitManagers()
 	gohome.RenderMgr.EnableBackBuffer = false
 	ml.SetupStartScene()
 
-	C.loop()
+	gtk.Main()
 
 	return nil
 }
@@ -60,12 +51,7 @@ func (this *GTKFramework) PollEvents() {
 
 }
 func (this *GTKFramework) CreateWindow(windowWidth, windowHeight uint32, title string) error {
-	titleCS := C.CString(title)
-	defer C.free(unsafe.Pointer(titleCS))
-	if int(C.createWindow(C.uint(windowWidth), C.uint(windowHeight), titleCS)) == 0 {
-		return nil
-	}
-	return nil
+	return gtk.CreateWindow(windowWidth, windowHeight, title)
 }
 func (this *GTKFramework) WindowClosed() bool {
 	return false
@@ -75,26 +61,14 @@ func (this *GTKFramework) WindowSwap() {
 }
 
 func (this *GTKFramework) WindowSetSize(size mgl32.Vec2) {
-	C.windowSetSize(C.float(size.X()), C.float(size.Y()))
+	gtk.WindowSetSize(size)
 }
 
 func (this *GTKFramework) WindowGetSize() mgl32.Vec2 {
-	var v [2]C.float
-	var v1 mgl32.Vec2
-
-	C.windowGetSize(&v[0], &v[1])
-
-	v1[0] = float32(v[0])
-	v1[1] = float32(v[1])
-
-	return v1
+	return gtk.WindowGetSize()
 }
 func (this *GTKFramework) WindowSetFullscreen(b bool) {
-	if b {
-		C.gtk_window_fullscreen(C.Window)
-	} else {
-		C.gtk_window_unfullscreen(C.Window)
-	}
+	gtk.WindowSetFullscreen(b)
 	this.isFullscreen = b
 }
 func (this *GTKFramework) WindowIsFullscreen() bool {
@@ -102,22 +76,22 @@ func (this *GTKFramework) WindowIsFullscreen() bool {
 }
 
 func (this *GTKFramework) CurserShow() {
-	C.windowShowCursor()
+	gtk.CursorShow()
 }
 func (this *GTKFramework) CursorHide() {
-	C.windowHideCursor()
+	gtk.CursorHide()
 }
 func (this *GTKFramework) CursorDisable() {
-	C.windowDisableCursor()
+	gtk.CursorDisable()
 }
 func (this *GTKFramework) CursorShown() bool {
-	return int(C.windowCursorShown()) == 1
+	return gtk.CursorShown()
 }
 func (this *GTKFramework) CursorHidden() bool {
-	return int(C.windowCursorHidden()) == 1
+	return gtk.CursorHidden()
 }
 func (this *GTKFramework) CursorDisabled() bool {
-	return int(C.windowCursorDisabled()) == 1
+	return gtk.CursorDisabled()
 }
 
 func (this *GTKFramework) OpenFile(file string) (io.ReadCloser, error) {
@@ -164,11 +138,12 @@ func equalIgnoreCase(str1, str string) bool {
 }
 
 func (this *GTKFramework) LoadLevel(rsmgr *gohome.ResourceManager, name, path string, preloaded, loadToGPU bool) *gohome.Level {
-	extension := getFileExtension(path)
-	if equalIgnoreCase(extension, "obj") {
-		return loadLevelOBJ(rsmgr, name, path, preloaded, loadToGPU)
-	}
-	return loader.LoadLevelAssimp(rsmgr, name, path, preloaded, loadToGPU)
+	// extension := getFileExtension(path)
+	// if equalIgnoreCase(extension, "obj") {
+	// 	return loadLevelOBJ(rsmgr, name, path, preloaded, loadToGPU)
+	// }
+	// return loader.LoadLevelAssimp(rsmgr, name, path, preloaded, loadToGPU)
+	return loadLevelOBJ(rsmgr, name, path, preloaded, loadToGPU)
 }
 
 func (this *GTKFramework) ShowYesNoDialog(title, message string) uint8 {
@@ -196,4 +171,7 @@ func (this *GTKFramework) GetTextInput() string {
 }
 func (this *GTKFramework) EndTextInput() {
 
+}
+func (this *GTKFramework) GetGtkWindow() gtk.Window {
+	return gtk.GetWindow()
 }

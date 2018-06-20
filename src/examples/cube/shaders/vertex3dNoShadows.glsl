@@ -20,7 +20,6 @@ void main()
 	gl_Position = projectionMatrix3D*viewMatrix3D*transformMatrix3D*vec4(vertex,1.0);
 	fragTexCoord = texCoord;
 	fragPos =  (viewMatrix3D*transformMatrix3D*vec4(vertex,1.0)).xyz;
-	// fragNormal =  (viewMatrix3D*vec4(mat3(transpose(inverseMat3(transformMatrix3D))) * normal,1.0)).xyz;
 	fragNormal =  (viewMatrix3D*transformMatrix3D*vec4(normal,0.0)).xyz;
 
 	vec3 norm = normalize(fragNormal);

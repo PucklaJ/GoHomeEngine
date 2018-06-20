@@ -1,8 +1,9 @@
 package gohome
 
 const (
-	ENTITY3D_SHADER_NAME string = "3D"
-	ENTITY3D_NO_UV_SHADER_NAME string = "3D NoUV"
+	ENTITY3D_SHADER_NAME                  string = "3D"
+	ENTITY3D_NO_UV_SHADER_NAME            string = "3D NoUV"
+	ENTITY3D_NO_UV_NO_SHADOWS_SHADER_NAME string = "3D NoUV NoShadows"
 )
 
 type Entity3D struct {
@@ -31,8 +32,15 @@ func (this *Entity3D) commonInit() {
 	if this.Model3D != nil && !this.Model3D.HasUV() {
 		this.Shader = ResourceMgr.GetShader(ENTITY3D_NO_UV_SHADER_NAME)
 		if this.Shader == nil {
-			ResourceMgr.LoadShader(ENTITY3D_NO_UV_SHADER_NAME,"vertex3dNoUV.glsl","fragment3dNoUV.glsl","","","","")
+			ResourceMgr.LoadShader(ENTITY3D_NO_UV_SHADER_NAME, "vertex3dNoUV.glsl", "fragment3dNoUV.glsl", "", "", "", "")
 			this.Shader = ResourceMgr.GetShader(ENTITY3D_NO_UV_SHADER_NAME)
+			if this.Shader == nil {
+				ResourceMgr.LoadShader(ENTITY3D_NO_UV_NO_SHADOWS_SHADER_NAME, "vertex3dNoUV.glsl", "fragment3dNoUVNoShadows.glsl", "", "", "", "")
+				this.Shader = ResourceMgr.GetShader(ENTITY3D_NO_UV_NO_SHADOWS_SHADER_NAME)
+				if this.Shader != nil {
+					ResourceMgr.SetShader(ENTITY3D_NO_UV_SHADER_NAME, ENTITY3D_NO_UV_NO_SHADOWS_SHADER_NAME)
+				}
+			}
 		}
 	}
 }

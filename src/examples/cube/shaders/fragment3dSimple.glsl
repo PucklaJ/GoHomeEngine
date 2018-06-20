@@ -107,14 +107,7 @@ void calculateAllLights()
 
 vec4 getDiffuseTexture()
 {
-	if(material.DiffuseTextureLoaded)
-	{
-		return texture2D(materialdiffuseTexture,fragTexCoord);
-	}
-	else
-	{
-		return vec4(1.0,1.0,1.0,1.0);
-	}
+	return mix(vec4(1.0,1.0,1.0,1.0),texture2D(materialdiffuseTexture,fragTexCoord),material.DiffuseTextureLoaded ? 1.0 : 0.0);
 }
 
 vec4 getSpecularTexture()
