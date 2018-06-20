@@ -19,6 +19,7 @@ func (this *CubeScene) Init() {
 
 	gohome.RenderMgr.AddObject(&this.cube)
 	gohome.LightMgr.DisableLighting()
+
 }
 
 func (this *CubeScene) Update(delta_time float32) {

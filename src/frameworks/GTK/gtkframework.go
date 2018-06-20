@@ -7,7 +7,6 @@ package framework
 import "C"
 import (
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
-	"github.com/PucklaMotzer09/gohomeengine/src/loaders/assimp"
 	"github.com/go-gl/mathgl/mgl32"
 	"io"
 	"os"
@@ -164,11 +163,12 @@ func equalIgnoreCase(str1, str string) bool {
 }
 
 func (this *GTKFramework) LoadLevel(rsmgr *gohome.ResourceManager, name, path string, preloaded, loadToGPU bool) *gohome.Level {
-	extension := getFileExtension(path)
-	if equalIgnoreCase(extension, "obj") {
-		return loadLevelOBJ(rsmgr, name, path, preloaded, loadToGPU)
-	}
-	return loader.LoadLevelAssimp(rsmgr, name, path, preloaded, loadToGPU)
+	// extension := getFileExtension(path)
+	// if equalIgnoreCase(extension, "obj") {
+	// 	return loadLevelOBJ(rsmgr, name, path, preloaded, loadToGPU)
+	// }
+	// return loader.LoadLevelAssimp(rsmgr, name, path, preloaded, loadToGPU)
+	return loadLevelOBJ(rsmgr, name, path, preloaded, loadToGPU)
 }
 
 func (this *GTKFramework) ShowYesNoDialog(title, message string) uint8 {
