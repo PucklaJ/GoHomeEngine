@@ -45,6 +45,10 @@ type GLArea struct {
 	Handle *C.GtkGLArea
 }
 
+type Button struct {
+	Handle *C.GtkButton
+}
+
 func Init() {
 	argv := os.Args
 	args := len(argv)
@@ -128,6 +132,16 @@ func BoxNew(orient Orientation, spacing int) Box {
 	return this
 }
 
+func ButtonNew() Button {
+	return Button{C.widgetToButton(C.gtk_button_new())}
+}
+
+func ButtonNewWithLabel(label string) Button {
+	cs := C.CString(label)
+	defer C.free(unsafe.Pointer(cs))
+	return Button{C.widgetToButton(C.gtk_button_new_with_label(cs))}
+}
+
 func CreateGLAreaAndAddToWindow() {
 	C.createGLArea()
 	C.addGLAreaToWindow()
@@ -147,8 +161,16 @@ func (this Container) Add(widget Widget) {
 	C.gtk_widget_show(widget.Handle)
 }
 
+func (this Container) Remove(widget Widget) {
+	C.gtk_container_remove(this.Handle,widget.Handle)
+}
+
 func (this Box) ToContainer() Container {
 	return Container{C.boxToContainer(this.Handle)}
+}
+
+func (this Button) ToContainer() Container {
+	return Container{C.buttonToContainer(this.Handle)}
 }
 
 func (this Box) ToWidget() Widget {
@@ -157,6 +179,10 @@ func (this Box) ToWidget() Widget {
 
 func (this GLArea) ToWidget() Widget {
 	return Widget{C.glareaToWidget(this.Handle)}
+}
+
+func (this Button) ToWidget() Widget {
+	return Widget{C.buttonToWidget(this.Handle)}
 }
 
 func (this Widget) ToBox() Box {

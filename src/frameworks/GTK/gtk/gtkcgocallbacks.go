@@ -24,6 +24,7 @@ func gtkgo_gl_area_render(area *C.GtkGLArea, context *C.GdkGLContext) {
 
 //export gtkgo_gl_area_realize
 func gtkgo_gl_area_realize(area *C.GtkGLArea, err int) {
+	log.Println("Relealize")
 	if err == 1 {
 		log.Println("Error:", C.GoString(C.ErrorString))
 		return

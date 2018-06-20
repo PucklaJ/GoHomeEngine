@@ -7,7 +7,6 @@ import (
 )
 
 func main() {
-
 	gohome.MainLop.Run(&framework.GTKFramework{UseWholeWindowAsGLArea: false},
-		&renderer.OpenGLRenderer{}, 640, 480, "GTKGUI", &CubeScene{})
+		&renderer.OpenGLRenderer{}, 640, 480, "GTKGUI", &GTKGUIScene{})
 }

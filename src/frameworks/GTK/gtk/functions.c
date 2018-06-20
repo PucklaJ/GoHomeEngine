@@ -29,11 +29,7 @@ int createWindow(unsigned int width, unsigned int height, const char* title)
 	g_signal_connect(GTK_WIDGET(Window),"motion-notify-event",G_CALLBACK(gtkgo_gl_area_motion_notify_c),NULL);
 	g_signal_connect(GTK_WIDGET(Window),"scroll-event",G_CALLBACK(gtkgo_gl_area_scroll_c),NULL);
 
-	if(useWholeWindowAsGLArea() == 1)
-	{
-		createGLArea();
-		addGLAreaToWindow();
-	}
+    createGLArea();
 
 	gtk_widget_show_all(GTK_WIDGET(Window));
 	return 1;
@@ -170,4 +166,19 @@ GtkBox* widgetToBox(GtkWidget* widget)
 GtkWidget* glareaToWidget(GtkGLArea* area)
 {
 	return GTK_WIDGET(area);
+}
+
+GtkWidget* buttonToWidget(GtkButton* button)
+{
+    return GTK_WIDGET(button);
+}
+
+GtkContainer* buttonToContainer(GtkButton* button)
+{
+    return GTK_CONTAINER(button);
+}
+
+GtkButton* widgetToButton(GtkWidget* widget)
+{
+    return GTK_BUTTON(widget);
 }

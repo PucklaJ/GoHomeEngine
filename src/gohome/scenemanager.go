@@ -11,7 +11,7 @@ type SceneManager struct {
 }
 
 func (scmgr *SceneManager) Init() {
-	scmgr.currentScene = nil
+
 }
 
 func (scmgr *SceneManager) SwitchScene(scn Scene) {
@@ -19,9 +19,11 @@ func (scmgr *SceneManager) SwitchScene(scn Scene) {
 		UpdateMgr.RemoveObject(scmgr.currentScene)
 		scmgr.currentScene.Terminate()
 	}
-	scmgr.currentScene = scn
-	scmgr.currentScene.Init()
-	UpdateMgr.AddObject(scmgr.currentScene)
+	if scn != nil {
+		scmgr.currentScene = scn
+		scmgr.currentScene.Init()
+		UpdateMgr.AddObject(scmgr.currentScene)
+	}
 }
 
 func (scmgr *SceneManager) GetCurrentScene() Scene {

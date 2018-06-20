@@ -1,5 +1,7 @@
 package gohome
 
+import "strconv"
+
 type UpdateObject interface {
 	Update(delta_time float32)
 }
@@ -25,8 +27,14 @@ func (upmgr *UpdateManager) RemoveObject(upobj UpdateObject) {
 }
 
 func (upmgr *UpdateManager) Update(delta_time float32) {
+	var obj UpdateObject
 	for i := 0; i < len(upmgr.updateObjects); i++ {
-		upmgr.updateObjects[i].Update(delta_time)
+		obj = upmgr.updateObjects[i]
+		if obj == nil {
+			ErrorMgr.Error("UpdateManager",strconv.Itoa(i),"UpdateObject is nil")
+		} else {
+			upmgr.updateObjects[i].Update(delta_time)
+		}
 	}
 }
 

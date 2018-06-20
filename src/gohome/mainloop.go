@@ -11,7 +11,7 @@ type MainLoop struct {
 	startScene   Scene
 }
 
-func (ml MainLoop) Run(fw Framework, r Renderer, ww, wh uint32, wt string, start_scene Scene) {
+func (ml *MainLoop) Run(fw Framework, r Renderer, ww, wh uint32, wt string, start_scene Scene) {
 	runtime.LockOSThread()
 	if !ml.Init(fw, r, ww, wh, wt, start_scene) {
 		ml.Quit()
@@ -53,24 +53,34 @@ func (this *MainLoop) SetupStartScene() {
 	}
 }
 
-func (this *MainLoop) InitWindowAndRenderer() {
+func (this *MainLoop) InitWindow() bool {
 	var err error
 	if Framew != nil {
 		if err = Framew.CreateWindow(this.windowWidth, this.windowHeight, this.windowTitle); err != nil {
 			ErrorMgr.MessageError(ERROR_LEVEL_FATAL, "WindowCreation", "", err)
-			return
+			return false
 		}
 	} else {
 		ErrorMgr.Message(ERROR_LEVEL_FATAL, "WindowCreation", "", "Framework is nil!")
+		return false
 	}
+	return true
+}
 
+func (this *MainLoop) InitRenderer() {
+	var err error
 	if Render != nil {
 		if err = Render.Init(); err != nil {
 			ErrorMgr.MessageError(ERROR_LEVEL_FATAL, "RendererInitialisation", "", err)
 			return
 		}
 	}
+}
 
+func (this *MainLoop) InitWindowAndRenderer() {
+	if this.InitWindow() {
+		this.InitRenderer()
+	}
 }
 
 func (MainLoop) InitManagers() {

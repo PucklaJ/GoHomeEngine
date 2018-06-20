@@ -21,6 +21,16 @@ type GTKFramework struct {
 	UseWholeWindowAsGLArea bool
 }
 
+func (this *GTKFramework) InitStuff(ml *gohome.MainLoop) {
+	ml.InitWindow()
+	gtk.GetWindow().ToContainer().Add(gtk.GetGLArea().ToWidget())
+	ml.InitRenderer()
+	ml.InitManagers()
+	gohome.Render.AfterInit()
+	gohome.RenderMgr.EnableBackBuffer = false
+	gohome.RenderMgr.RenderToScreenFirst = true
+}
+
 func (this *GTKFramework) Init(ml *gohome.MainLoop) error {
 
 	this.isFullscreen = false
@@ -28,9 +38,9 @@ func (this *GTKFramework) Init(ml *gohome.MainLoop) error {
 	gtk.OnMotion = gtkgo_gl_area_motion_notify
 	gtk.OnUseWholeScreen = useWholeWindowAsGLArea
 	gtk.Init()
-	ml.InitWindowAndRenderer()
-	gohome.Render.AfterInit()
-	ml.InitManagers()
+	if this.UseWholeWindowAsGLArea {
+		this.InitStuff(ml)
+	}
 	gohome.RenderMgr.EnableBackBuffer = false
 	ml.SetupStartScene()
 

@@ -129,6 +129,7 @@ type RenderManager struct {
 	EnableBackBuffer             bool
 	WireFrameMode                bool
 	UpdateProjectionWithViewport bool
+	RenderToScreenFirst			 bool
 }
 
 func (rmgr *RenderManager) Init() {
@@ -174,6 +175,7 @@ func (rmgr *RenderManager) Init() {
 
 	rmgr.EnableBackBuffer = true
 	rmgr.UpdateProjectionWithViewport = false
+	rmgr.RenderToScreenFirst = false
 }
 
 func (rmgr *RenderManager) AddObject(robj RenderObject) {
@@ -402,11 +404,16 @@ func (rmgr *RenderManager) renderToScreen() {
 
 func (rmgr *RenderManager) Update() {
 	Render.ClearScreen(Render.GetBackgroundColor())
+	if rmgr.RenderToScreenFirst {
+		rmgr.renderToScreen()
+	}
 	rmgr.render3D()
 	rmgr.render2D()
 	rmgr.renderBackBuffers()
 	rmgr.renderPostProcessing()
-	rmgr.renderToScreen()
+	if !rmgr.RenderToScreenFirst {
+		rmgr.renderToScreen()
+	}
 }
 
 func (rmgr *RenderManager) handleCurrentCameraAndViewport(rtype RenderType, cameraIndex int32, viewportIndex int32) {

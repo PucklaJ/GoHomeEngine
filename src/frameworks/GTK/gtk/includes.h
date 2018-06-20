@@ -28,9 +28,12 @@ extern void loop();
 
 
 extern GtkContainer* boxToContainer(GtkBox* box);
+extern GtkContainer* buttonToContainer(GtkButton* button);
 extern GtkWidget* boxToWidget(GtkBox* box);
 extern GtkWidget* glareaToWidget(GtkGLArea* area);
+extern GtkWidget* buttonToWidget(GtkButton* button);
 extern GtkContainer* windowToContainer(GtkWindow* window);
 extern GtkBox* widgetToBox(GtkWidget* widget);
+extern GtkButton* widgetToButton(GtkWidget* widget);
 
 #endif
