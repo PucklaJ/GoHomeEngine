@@ -12,6 +12,7 @@ extern gboolean gtkgo_gl_area_button_press_c(GtkWidget *widget, GdkEvent *event,
 extern gboolean gtkgo_gl_area_button_release_c(GtkWidget *widget, GdkEvent *event, gpointer user_data);
 extern gboolean gtkgo_gl_area_motion_notify_c(GtkWidget *widget, GdkEvent *event, gpointer user_data);
 extern gboolean gtkgo_gl_area_scroll_c(GtkWidget *widget, GdkEvent *event, gpointer user_data);
+extern void gtkgo_button_signal_c(GtkButton *button, gpointer user_data);
 
 extern gboolean queue_render_idle(gpointer user_data); 
 

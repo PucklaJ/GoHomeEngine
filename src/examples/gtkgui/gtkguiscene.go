@@ -4,6 +4,7 @@ import (
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
 	"github.com/PucklaMotzer09/gohomeengine/src/frameworks/GTK"
 	"github.com/PucklaMotzer09/gohomeengine/src/frameworks/GTK/gtk"
+	"log"
 )
 
 var gtkf *framework.GTKFramework
@@ -15,12 +16,21 @@ type GTKGUIScene struct {
 func (this *GTKGUIScene) InitGUI() {
 	var box gtk.Box
 	var button gtk.Button
+	var button2 gtk.Button
 	box = gtk.BoxNew(gtk.ORIENTATION_HORIZONTAL,0)
-	button = gtk.ButtonNewWithLabel("Click Me")
+	button = gtk.ButtonNewWithLabel("Enter Me")
+	button2 = gtk.ButtonNewWithLabel("Click Me")
+	button.SignalConnect("enter",func(button gtk.Button) {
+		log.Println("Entered Button")
+	})
+	button2.SignalConnect("clicked",func(button gtk.Button) {
+		log.Println("Clicked Button2")
+	})
 	gtk.GetWindow().ToContainer().Add(box.ToWidget())
 
 	box.ToContainer().Add(gtk.GetGLArea().ToWidget())
 	box.ToContainer().Add(button.ToWidget())
+	box.ToContainer().Add(button2.ToWidget())
 
 	gtk.GetGLArea().ToWidget().SetSizeRequest(640/2,480/2)
 }

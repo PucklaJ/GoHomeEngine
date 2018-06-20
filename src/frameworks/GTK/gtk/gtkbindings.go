@@ -16,9 +16,13 @@ type RenderCallback func()
 type MotionNotifyCallback func(x, y int16)
 type UseWholeWindowCallback func() bool
 
+type ButtonSignalCallback func(button Button)
+
 var OnMotion MotionNotifyCallback
 var OnRender RenderCallback
 var OnUseWholeScreen UseWholeWindowCallback
+
+var buttonSignalCallbacks map[int]map[string]ButtonSignalCallback
 
 const (
 	ORIENTATION_HORIZONTAL Orientation = iota
@@ -47,6 +51,7 @@ type GLArea struct {
 
 type Button struct {
 	Handle *C.GtkButton
+	ID int
 }
 
 func Init() {
@@ -132,14 +137,22 @@ func BoxNew(orient Orientation, spacing int) Box {
 	return this
 }
 
+var buttonID int = 0
+
 func ButtonNew() Button {
-	return Button{C.widgetToButton(C.gtk_button_new())}
+	defer func() {
+		buttonID++
+	}()
+	return Button{C.widgetToButton(C.gtk_button_new()),buttonID}
 }
 
 func ButtonNewWithLabel(label string) Button {
+	defer func() {
+		buttonID++
+	}()
 	cs := C.CString(label)
 	defer C.free(unsafe.Pointer(cs))
-	return Button{C.widgetToButton(C.gtk_button_new_with_label(cs))}
+	return Button{C.widgetToButton(C.gtk_button_new_with_label(cs)),buttonID}
 }
 
 func CreateGLAreaAndAddToWindow() {
@@ -199,4 +212,26 @@ func GetGLArea() GLArea {
 
 func (this Widget) SetSizeRequest(width, height int) {
 	C.gtk_widget_set_size_request(this.Handle, C.gint(width), C.gint(height))
+}
+
+func (this Button) SignalConnect(signal string,callback ButtonSignalCallback) {
+
+	if buttonSignalCallbacks == nil {
+		buttonSignalCallbacks = make(map[int]map[string]ButtonSignalCallback)
+	}
+	if buttonSignalCallbacks[this.ID] == nil {
+		buttonSignalCallbacks[this.ID] = make(map[string]ButtonSignalCallback)
+	}
+	var alreadyConnected bool = false
+	if _,ok := buttonSignalCallbacks[this.ID];ok {
+		if _,ok1 := buttonSignalCallbacks[this.ID][signal];ok1 {
+			alreadyConnected = true
+		}
+	}
+	if !alreadyConnected {
+		signalcs := C.CString(signal)
+		C.signalConnectButton(this.Handle,signalcs,C.int(this.ID))
+	}
+
+	buttonSignalCallbacks[this.ID][signal] = callback
 }

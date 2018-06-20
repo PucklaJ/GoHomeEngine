@@ -4,6 +4,11 @@
 #include <gtk/gtk.h>
 #include <stdlib.h>
 
+typedef struct {
+    int id;
+    char* signal;
+} ButtonSignalUserData;
+
 extern GtkWindow* Window;
 extern GtkGLArea* GLarea;
 
@@ -35,5 +40,7 @@ extern GtkWidget* buttonToWidget(GtkButton* button);
 extern GtkContainer* windowToContainer(GtkWindow* window);
 extern GtkBox* widgetToBox(GtkWidget* widget);
 extern GtkButton* widgetToButton(GtkWidget* widget);
+
+extern void signalConnectButton(GtkButton* button,char* signal, int id);
 
 #endif

@@ -24,7 +24,6 @@ func gtkgo_gl_area_render(area *C.GtkGLArea, context *C.GdkGLContext) {
 
 //export gtkgo_gl_area_realize
 func gtkgo_gl_area_realize(area *C.GtkGLArea, err int) {
-	log.Println("Relealize")
 	if err == 1 {
 		log.Println("Error:", C.GoString(C.ErrorString))
 		return
@@ -304,4 +303,20 @@ func useWholeWindowAsGLArea() int {
 	}
 
 	return 0
+}
+
+//export gtkgo_button_signal
+func gtkgo_button_signal(button *C.GtkButton,id int, signal *C.char) {
+	signalstr := C.GoString(signal)
+	buttonSignalMap := buttonSignalCallbacks[id]
+	if buttonSignalMap != nil {
+		for signalname,callback := range(buttonSignalMap) {
+			if signalname == signalstr {
+				if callback != nil {
+					callback(Button{button,id})
+				}
+				return
+			}
+		}
+	}
 }

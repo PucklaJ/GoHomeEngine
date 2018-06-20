@@ -81,3 +81,10 @@ gboolean gtkgo_gl_area_scroll_c(GtkWidget *widget, GdkEvent *event, gpointer use
 	gtkgo_gl_area_scroll(widget,(GdkEventScroll*)event,event);
 	return TRUE;
 }
+
+void gtkgo_button_signal_c(GtkButton *button, gpointer user_data)
+{
+    ButtonSignalUserData* bsud = (ButtonSignalUserData*)user_data;
+    gtkgo_button_signal(button,bsud->id,bsud->signal);
+}
+

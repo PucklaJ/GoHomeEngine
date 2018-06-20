@@ -182,3 +182,11 @@ GtkButton* widgetToButton(GtkWidget* widget)
 {
     return GTK_BUTTON(widget);
 }
+
+void signalConnectButton(GtkButton* button,char* signal, int id)
+{
+    ButtonSignalUserData* bsud = (ButtonSignalUserData*)malloc(sizeof(ButtonSignalUserData));
+    bsud->id = id;
+    bsud->signal = signal;
+    g_signal_connect(GTK_WIDGET(button),signal,G_CALLBACK(gtkgo_button_signal_c),bsud);
+}
