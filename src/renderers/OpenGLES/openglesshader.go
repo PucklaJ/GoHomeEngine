@@ -72,7 +72,7 @@ func bindAttributesFromFile(program gl.Program, src string, gles gl.Context) {
 	var readWord bool = false
 
 	for curIndex < uint32(len(src)) {
-		for curChar = ' '; curChar != '\n'; curChar = src[curIndex] {
+		for curChar = ' '; curChar != '\n' && curChar != 13; curChar = src[curIndex] {
 			line.WriteByte(curChar)
 			curIndex++
 			if curIndex == uint32(len(src)) {

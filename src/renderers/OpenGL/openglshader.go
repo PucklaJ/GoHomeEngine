@@ -79,8 +79,7 @@ func toShaderTypeName(shader_type uint32) string {
 	return getShaderTypeName(toGohomeShaderType(shader_type))
 }
 
-func bindAttributesFromFile(program uint32, src string) {
-
+func getAttributeNames(program uint32, src string) []string {
 	var line bytes.Buffer
 	var lineString string
 	var attributeNames []string
@@ -94,7 +93,7 @@ func bindAttributesFromFile(program uint32, src string) {
 	var version uint32 = 0
 
 	for curIndex < uint32(len(src)) {
-		for curChar = ' '; curChar != '\n'; curChar = src[curIndex] {
+		for curChar = ' '; curChar != '\n' && curChar != 13; curChar = src[curIndex] {
 			line.WriteByte(curChar)
 			curIndex++
 			if curIndex == uint32(len(src)) {
@@ -136,13 +135,19 @@ func bindAttributesFromFile(program uint32, src string) {
 		} else if len(wordsString) >= 3 {
 			if (version >= 130 && wordsString[0] == "in") || (version <= 120 && wordsString[0] == "attribute") {
 				if wordsString[2][len(wordsString[2])-1] == ';' {
-					wordsString[2] = wordsString[2][0 : len(wordsString[2])-1]
+					wordsString[2] = wordsString[2][:len(wordsString[2])-1]
 				}
 				attributeNames = append(attributeNames, wordsString[2])
 			}
 		}
 		wordsString = append(wordsString[len(wordsString):], wordsString[:0]...)
 	}
+
+	return attributeNames
+}
+
+func bindAttributesFromFile(program uint32, src string) {
+	attributeNames := getAttributeNames(program, src)
 
 	for i := 0; i < len(attributeNames); i++ {
 		gl.BindAttribLocation(program, uint32(i), gl.Str(attributeNames[i]+"\x00"))
