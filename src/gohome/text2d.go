@@ -120,6 +120,9 @@ func (this *Text2D) updateText() {
 
 	if this.valuesChanged() {
 		defer this.deleteUnusedTexturesFromDatabase()
+		defer func() {
+			this.oldText = this.Text
+		}()
 
 		if this.renderTexture != nil {
 			this.renderTexture.Terminate()
@@ -189,8 +192,6 @@ func (this *Text2D) updateText() {
 
 		this.updateUniforms()
 	}
-
-	this.oldText = this.Text
 }
 
 func (this *Text2D) renderTexturesToRenderTexture() {

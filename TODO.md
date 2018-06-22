@@ -25,7 +25,6 @@
 + Physics
 	- [Box2D](https://github.com/ByteArena/box2d)
 + [TiledMaps](https://github.com/pikkpoiss/tmxgo)
-+ Fix Text2D (Sometimes Texts diappears at example/textinput)
 + Add TextureRenderer
 
 ## 3D
