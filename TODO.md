@@ -7,11 +7,9 @@
 + Audio
 	- [beep](https://github.com/faiface/beep) or OpenAL
 + Simple Loading Screen
-+ Add Font loading to preloader
 + Add SDLFramework
 + Add DirectXRenderer
 + WorldEditor (3D, 2D)
-	- Add GtkFramwork
 + Add Default Shaders to source code
 + Add LoadShader Function with code instead of file
 + Change Build scripts to programs
@@ -27,7 +25,6 @@
 + Physics
 	- [Box2D](https://github.com/ByteArena/box2d)
 + [TiledMaps](https://github.com/pikkpoiss/tmxgo)
-+ Tweens
 + Fix Text2D (Sometimes Texts diappears at example/textinput)
 + Add TextureRenderer
 

@@ -36,6 +36,17 @@ type preloadedTextureData struct {
 	path     string
 }
 
+type preloadedFont struct {
+	Name string
+	Path string
+}
+
+type preloadedFontData struct {
+	Name string
+	Path string
+	font Font
+}
+
 type preloadedLevelData struct {
 	Lvl  *Level
 	path string
@@ -65,18 +76,21 @@ type preloader struct {
 	preloadedTextures []preloadedTexture
 	preloadedShaders  []preloadedShader
 	preloadedLevels   []preloadedLevel
+	preloadedFonts    []preloadedFont
 
 	preloadedShaderDataChan     chan preloadedShaderData
 	preloadedLevelsChan         chan preloadedLevelData
 	PreloadedModelsChan         chan *Model3D
 	PreloadedMeshesChan         chan PreloadedMesh
 	preloadedTextureDataChan    chan preloadedTextureData
+	preloadedFontChan           chan preloadedFontData
 	alreadyPreloadedTextureChan chan alreadyPreloadedResource
 	alreadyPreloadedLevelChan   chan alreadyPreloadedResource
 	exitChan                    chan bool
 	exitLevelsChan              chan bool
 	exitTexturesChan            chan bool
 	exitShadersChan             chan bool
+	exitFontsChan               chan bool
 
 	preloadedTexturesToFinish []preloadedTextureData
 	preloadedShadersToFinish  []preloadedShaderData
@@ -192,6 +206,29 @@ func (this *preloader) loadPreloadedTextures() {
 	}()
 }
 
+func (this *preloader) loadPreloadedFonts() {
+	if len(this.preloadedFonts) == 0 {
+
+	} else {
+		var wg1 sync.WaitGroup
+		wg1.Add(len(this.preloadedFonts))
+		for i := 0; i < len(this.preloadedFonts); i++ {
+			go this.loadPreloadedFont(this.preloadedFonts[i], &wg1)
+		}
+		wg1.Wait()
+	}
+
+	go func() {
+		this.exitFontsChan <- true
+	}()
+}
+
+func (this *preloader) loadPreloadedFont(f preloadedFont, wg *sync.WaitGroup) {
+	defer wg.Done()
+
+	ResourceMgr.loadFont(f.Name, f.Path, true)
+}
+
 func (this *preloader) finish(wg *sync.WaitGroup) {
 	defer wg.Done()
 
@@ -216,6 +253,10 @@ func (this *preloader) finish(wg *sync.WaitGroup) {
 		case model := <-this.PreloadedModelsChan:
 			ResourceMgr.Models[model.Name] = model
 			ErrorMgr.Message(ERROR_LEVEL_LOG, "Model", model.Name, "Finished loading!")
+		case font := <-this.preloadedFontChan:
+			ResourceMgr.fonts[font.Name] = &font.font
+			ResourceMgr.resourceFileNames[font.Path] = font.Name
+			ErrorMgr.Log("Font", font.Name, "Finished Loading!")
 		case <-this.exitChan:
 			done = true
 		default:
@@ -229,7 +270,7 @@ func (this *preloader) finish(wg *sync.WaitGroup) {
 func (this *preloader) checkExit(wg *sync.WaitGroup) {
 	defer wg.Done()
 
-	var LevelsExit, texturesExit, shadersExit bool = false, false, false
+	var LevelsExit, texturesExit, shadersExit, fontsExit bool = false, false, false, false
 	var done bool = false
 
 	for true {
@@ -240,8 +281,10 @@ func (this *preloader) checkExit(wg *sync.WaitGroup) {
 			texturesExit = true
 		case <-this.exitShadersChan:
 			shadersExit = true
+		case <-this.exitFontsChan:
+			fontsExit = true
 		default:
-			if LevelsExit && texturesExit && shadersExit {
+			if LevelsExit && texturesExit && shadersExit && fontsExit {
 				this.exitChan <- true
 				done = true
 			}
@@ -311,10 +354,12 @@ func (this *preloader) openChannels() {
 	this.alreadyPreloadedTextureChan = make(chan alreadyPreloadedResource)
 	this.alreadyPreloadedLevelChan = make(chan alreadyPreloadedResource)
 	this.preloadedTextureDataChan = make(chan preloadedTextureData)
+	this.preloadedFontChan = make(chan preloadedFontData)
 	this.exitChan = make(chan bool)
 	this.exitLevelsChan = make(chan bool)
 	this.exitTexturesChan = make(chan bool)
 	this.exitShadersChan = make(chan bool)
+	this.exitFontsChan = make(chan bool)
 }
 
 func (this *preloader) closeChannels() {
@@ -325,10 +370,12 @@ func (this *preloader) closeChannels() {
 	close(this.preloadedTextureDataChan)
 	close(this.alreadyPreloadedTextureChan)
 	close(this.alreadyPreloadedLevelChan)
+	close(this.preloadedFontChan)
 	close(this.exitChan)
 	close(this.exitLevelsChan)
 	close(this.exitTexturesChan)
 	close(this.exitShadersChan)
+	close(this.exitFontsChan)
 }
 
 func (this *preloader) clearSlices() {
@@ -340,6 +387,7 @@ func (this *preloader) clearSlices() {
 	this.PreloadedMeshesToFinish = this.PreloadedMeshesToFinish[:0]
 	this.alreadyPreloadedTexturePathsToSet = this.alreadyPreloadedTexturePathsToSet[:0]
 	this.alreadyPreloadedLevelPathsToSet = this.alreadyPreloadedLevelPathsToSet[:0]
+	this.preloadedFonts = this.preloadedFonts[:0]
 }
 
 func (this *preloader) loadPreloadedResources() {
@@ -353,6 +401,7 @@ func (this *preloader) loadPreloadedResources() {
 	go this.loadPreloadedLevels()
 	go this.loadPreloadedShaders()
 	go this.loadPreloadedTextures()
+	go this.loadPreloadedFonts()
 
 	wg.Wait()
 
