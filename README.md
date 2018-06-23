@@ -107,7 +107,7 @@ func (*StartScene) Terminate() {
 }
 
 func main() {
-	gohome.MainLop(&framework.GLFWFramework{},&renderer.OpenGLRenderer{},1280,720,"Example",&StartScene{})
+	gohome.MainLop.Run(&framework.GLFWFramework{},&renderer.OpenGLRenderer{},1280,720,"Example",&StartScene{})
 }
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
