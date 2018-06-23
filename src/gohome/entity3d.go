@@ -22,6 +22,8 @@ type Entity3D struct {
 func (this *Entity3D) commonInit() {
 	this.Transform = &TransformableObject3D{}
 	this.Transform.Scale = [3]float32{1.0, 1.0, 1.0}
+	// this.Transform.Rotation.V = [3]float32{0.0,0.0,1.0}
+	// this.Transform.Rotation.W = 0.0
 
 	this.transform = this.Transform
 

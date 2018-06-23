@@ -336,12 +336,12 @@ func (this *TweenPosition3D) Reset() {
 }
 
 type TweenRotation3D struct {
-	Destination mgl32.Vec3
+	Destination mgl32.Quat
 	Time float32
 	TweenType uint8
 
 	transform *TransformableObject3D
-	velocity mgl32.Vec3
+	start mgl32.Quat
 	elapsedTime float32
 }
 
@@ -353,10 +353,10 @@ func (this *TweenRotation3D) Start(parent interface{}) {
 		this.transform = nil
 	}
 
-	if this.transform != nil {
-		this.velocity = this.Destination.Sub(this.transform.Rotation).Mul(1.0/this.Time)
-	}
 	this.elapsedTime = 0.0
+	if this.transform != nil {
+		this.start = this.transform.Rotation
+	}
 }
 func (this *TweenRotation3D) Update(delta_time float32) bool {
 	if this.transform == nil {
@@ -364,7 +364,7 @@ func (this *TweenRotation3D) Update(delta_time float32) bool {
 	}
 	this.elapsedTime += delta_time
 
-	this.transform.Rotation = this.transform.Rotation.Add(this.velocity.Mul(delta_time))
+	this.transform.Rotation = mgl32.QuatSlerp(this.start,this.Destination,this.elapsedTime/this.Time)
 
 	if this.elapsedTime >= this.Time {
 		return true
@@ -383,9 +383,9 @@ func (this *TweenRotation3D) End() {
 }
 func (this *TweenRotation3D) Reset() {
 	if this.transform != nil {
-		this.transform.Rotation = this.Destination.Sub(this.velocity.Mul(this.Time))
-		this.elapsedTime = 0.0
+		this.transform.Rotation = this.start
 	}
+	this.elapsedTime = 0.0
 }
 
 type TweenScale3D struct {

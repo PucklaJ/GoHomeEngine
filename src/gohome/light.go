@@ -100,10 +100,10 @@ func (this *PointLight) InitShadowmap(width, height uint32) {
 		return
 	}
 	if ResourceMgr.GetShader(POINT_LIGHT_SHADOWMAP_SHADER_NAME) == nil {
-		ResourceMgr.LoadShader(POINT_LIGHT_SHADOWMAP_SHADER_NAME, "pointLightShadowMapVert.glsl", "pointLightShadowMapFrag.glsl", "", "", "", "")
+		ResourceMgr.LoadShader(POINT_LIGHT_SHADOWMAP_SHADER_NAME, "pointLightShadowMapVert.glsl", "pointLightShadowMapFrag.glsl", "pointLightShadowMapGeo.glsl", "", "", "")
 	}
 	if ResourceMgr.GetShader(POINT_LIGHT_SHADOWMAP_INSTANCED_SHADER_NAME) == nil {
-		ResourceMgr.LoadShader(POINT_LIGHT_SHADOWMAP_INSTANCED_SHADER_NAME, "pointLightShadowMapInstancedVert.glsl", "pointLightShadowMapFrag.glsl", "", "", "", "")
+		ResourceMgr.LoadShader(POINT_LIGHT_SHADOWMAP_INSTANCED_SHADER_NAME, "pointLightShadowMapInstancedVert.glsl", "pointLightShadowMapFrag.glsl", "pointLightShadowMapGeo.glsl", "", "", "")
 	}
 	if this.ShadowMap != nil {
 		this.ShadowMap.Terminate()

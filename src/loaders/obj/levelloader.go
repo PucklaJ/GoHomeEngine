@@ -50,7 +50,8 @@ func processModel(rsmgr *gohome.ResourceManager, level *gohome.Level, model *OBJ
 	var lvlObjTobj gohome.TransformableObject3D
 	lvlObjTobj.Position = [3]float32{0.0, 0.0, 0.0}
 	lvlObjTobj.Scale = [3]float32{1.0, 1.0, 1.0}
-	lvlObjTobj.Rotation = [3]float32{0.0, 0.0, 0.0}
+	lvlObjTobj.Rotation.V = [3]float32{0.0,0.0,-1.0}
+	lvlObjTobj.Rotation.W = 0.0
 	lvlObjTobj.CalculateTransformMatrix(nil, -1)
 	lvlObj.Name = model.Name
 	lvlObj.Transform.TransformMatrix = lvlObjTobj.GetTransformMatrix()
