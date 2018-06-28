@@ -84,6 +84,7 @@ func (this *MainLoop) InitWindowAndRenderer() {
 }
 
 func (MainLoop) InitManagers() {
+	ErrorMgr.Init()
 	ResourceMgr.Init()
 	UpdateMgr.Init()
 	RenderMgr.Init()
@@ -91,7 +92,6 @@ func (MainLoop) InitManagers() {
 	SceneMgr.Init()
 	InputMgr.Init()
 	FPSLimit.Init()
-	ErrorMgr.Init()
 }
 
 func (this *MainLoop) LoopOnce() {

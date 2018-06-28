@@ -26,6 +26,7 @@ func (this *ModelScene) Init() {
 
 	gohome.LightMgr.CurrentLightCollection = -1
 	gohome.RenderMgr.EnableBackBuffer = false
+
 }
 
 func (this *ModelScene) Update(delta_time float32) {

@@ -92,6 +92,7 @@ func (this *AndroidFramework) initStuff(e lifecycle.Event) {
 	this.renderer.SetOpenGLESContex(context)
 	this.mainLoop.InitWindowAndRenderer()
 	this.mainLoop.InitManagers()
+	gohome.Render.AfterInit()
 	this.mainLoop.SetupStartScene()
 	this.appl.Send(paint.Event{})
 }
@@ -170,6 +171,9 @@ func (this *AndroidFramework) WindowClosed() bool {
 }
 func (this *AndroidFramework) WindowSwap() {
 	this.appl.Publish()
+}
+func (this *AndroidFramework) WindowSetSize(size mgl32.Vec2) {
+
 }
 func (this *AndroidFramework) WindowGetSize() mgl32.Vec2 {
 	viewport := gohome.Render.GetViewport()

@@ -10,7 +10,6 @@
 + Add SDLFramework
 + Add DirectXRenderer
 + WorldEditor (3D, 2D)
-+ Add Default Shaders to source code
 + Change Build scripts to programs
 + Add Tween interpreter language
 

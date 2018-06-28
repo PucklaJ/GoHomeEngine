@@ -281,6 +281,90 @@ func (this *OpenGLESRenderer) FilterShaderFiles(name, file, shader_type string) 
 	return file
 }
 
+func (this *OpenGLESRenderer) FilterShaderSource(name, source, shader_type string) string {
+	if name == "BackBufferShader" {
+		if shader_type == "Vertex File" {
+			source = gohome.BACKBUFFER_SHADER_VERTEX_SOURCE_OPENGLES
+		} else if shader_type == "Fragment File" {
+			source = gohome.BACKBUFFER_SHADER_FRAGMENT_SOURCE_OPENGLES
+		}
+	} else if name == "PostProcessingShader" {
+		if shader_type == "Vertex File" {
+			source = gohome.POST_PROCESSING_SHADER_VERTEX_SOURCE_OPENGLES
+		} else if shader_type == "Fragment File" {
+			source = gohome.POST_PROCESSING_SHADER_FRAGMENT_SOURCE_OPENGLES
+		}
+	} else if name == "RenderScreenShader" {
+		if shader_type == "Vertex File" {
+			source = gohome.POST_PROCESSING_SHADER_VERTEX_SOURCE_OPENGLES
+		} else if shader_type == "Fragment File" {
+			source = gohome.RENDER_SCREEN_SHADER_FRAGMENT_SOURCE_OPENGLES
+		}
+	} else if name == gohome.ENTITY3D_SHADER_NAME {
+		if shader_type == "Vertex File" {
+			source = gohome.ENTITY_3D_SHADER_VERTEX_SOURCE_OPENGLES
+		} else if shader_type == "Fragment File" {
+			source = gohome.ENTITY_3D_SHADER_FRAGMENT_SOURCE_OPENGLES
+		}
+	} else if name == "3D No Shadows" {
+		if shader_type == "Vertex File" {
+			source = gohome.ENTITY_3D_NO_SHADOWS_SHADER_VERTEX_SOURCE_OPENGLES
+		} else if shader_type == "Fragment File" {
+			source = gohome.ENTITY_3D_NO_SHADOWS_SHADER_FRAGMENT_SOURCE_OPENGLES
+		}
+	} else if name == gohome.ENTITY3D_NO_UV_SHADER_NAME {
+		if shader_type == "Vertex File" {
+			source = gohome.ENTITY_3D_NOUV_SHADER_VERTEX_SOURCE_OPENGLES
+		} else if shader_type == "Fragment File" {
+			source = gohome.ENTITY_3D_NOUV_SHADER_FRAGMENT_SOURCE_OPENGLES
+		}
+	} else if name == gohome.ENTITY3D_NO_UV_NO_SHADOWS_SHADER_NAME {
+		if shader_type == "Vertex File" {
+			source = gohome.ENTITY_3D_NOUV_SHADER_VERTEX_SOURCE_OPENGLES
+		} else if shader_type == "Fragment File" {
+			source = gohome.ENTITY_3D_NOUV_NO_SHADOWS_SHADER_FRAGMENT_SOURCE_OPENGLES
+		}
+	} else if name == "3D Simple" {
+		if shader_type == "Vertex File" {
+			source = gohome.ENTITY_3D_NO_SHADOWS_SHADER_VERTEX_SOURCE_OPENGLES
+		} else if shader_type == "Fragment File" {
+			source = gohome.ENTITY_3D_SIMPLE_SHADER_FRAGMENT_SOURCE_OPENGLES
+		}
+	} else if name == "3D Instanced" {
+		if shader_type == "Vertex File" {
+			source = gohome.ENTITY_3D_INSTANCED_SHADER_VERTEX_SOURCE_OPENGLES
+		} else if shader_type == "Fragment File" {
+			source = gohome.ENTITY_3D_SHADER_FRAGMENT_SOURCE_OPENGLES
+		}
+	} else if name == gohome.SHADOWMAP_SHADER_NAME {
+		if shader_type == "Vertex File" {
+			source = gohome.SHADOWMAP_SHADER_VERTEX_SOURCE_OPENGLES
+		} else if shader_type == "Fragment File" {
+			source = gohome.SHADOWMAP_SHADER_FRAGMENT_SOURCE_OPENGLES
+		}
+	} else if name == gohome.SHADOWMAP_INSTANCED_SHADER_NAME {
+		if shader_type == "Vertex File" {
+			source = gohome.SHADOWMAP_INSTANCED_SHADER_VERTEX_SOURCE_OPENGLES
+		} else if shader_type == "Fragment File" {
+			source = gohome.SHADOWMAP_SHADER_FRAGMENT_SOURCE_OPENGLES
+		}
+	} else if name == gohome.SPRITE2D_SHADER_NAME {
+		if shader_type == "Vertex File" {
+			source = gohome.SPRITE_2D_SHADER_VERTEX_SOURCE_OPENGLES
+		} else if shader_type == "Fragment File" {
+			source = gohome.SPRITE_2D_SHADER_FRAGMENT_SOURCE_OPENGLES
+		}
+	} else if name == gohome.LINES3D_SHADER_NAME {
+		if shader_type == "Vertex File" {
+			source = gohome.LINES_3D_SHADER_VERTEX_SOURCE_OPENGLES
+		} else if shader_type == "Fragment File" {
+			source = gohome.LINES_3D_SHADER_FRAGMENT_SOURCE_OPENGLES
+		}
+	}
+
+	return source
+}
+
 func (this *OpenGLESRenderer) SetBackgroundColor(bgColor color.Color) {
 	this.backgroundColor = bgColor
 }
