@@ -60,7 +60,6 @@ void main()
 #version 100
 
 precision mediump float;
-
 varying vec2 fragTexCoords;
 
 uniform sampler2D BackBuffer;
