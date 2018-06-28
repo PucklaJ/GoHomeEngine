@@ -2756,6 +2756,7 @@ void main()
 	LINES_3D_SHADER_FRAGMENT_SOURCE_OPENGLES string = `
 #version 100
 
+precision mediump float;
 varying vec4 fragColor;
 
 void main()

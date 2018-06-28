@@ -179,7 +179,7 @@ func (this *OpenGLESRenderer) CreateInstancedMesh3D(name string) gohome.Instance
 	return CreateOpenGLESInstancedMesh3D(name)
 }
 func (this *OpenGLESRenderer) CreateLines3DInterface(name string) gohome.Lines3DInterface {
-	return nil
+	return CreateOpenGLESLines3DInterface(name)
 }
 func (this *OpenGLESRenderer) SetWireFrame(b bool) {
 
@@ -273,8 +273,8 @@ func (this *OpenGLESRenderer) SetOpenGLESContex(context gl.Context) {
 	this.gles = context
 }
 
-func (this *OpenGLESRenderer) GetContext() gl.Context {
-	return this.gles
+func (this *OpenGLESRenderer) GetContext() *gl.Context {
+	return &this.gles
 }
 
 func (this *OpenGLESRenderer) FilterShaderFiles(name, file, shader_type string) string {
@@ -374,7 +374,7 @@ func (this *OpenGLESRenderer) GetBackgroundColor() color.Color {
 }
 
 func handleOpenGLESError(tag, objectName, errorPrefix string) {
-	err := gohome.Render.(*OpenGLESRenderer).GetContext().GetError()
+	err := (*gohome.Render.(*OpenGLESRenderer).GetContext()).GetError()
 	if err != gl.NO_ERROR {
 		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, tag, objectName, errorPrefix+"ErrorCode: "+strconv.Itoa(int(err)))
 	}
