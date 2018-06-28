@@ -35,6 +35,7 @@ type Renderer interface {
 	NextTextureUnit() uint32
 	DecrementTextureUnit(amount uint32)
 	FilterShaderFiles(name, file, shader_type string) string
+	FilterShaderSource(name, source, shader_type string) string
 }
 
 var Render Renderer

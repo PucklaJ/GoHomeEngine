@@ -20,7 +20,20 @@ void main()
 		{
 			fragPos = gl_in[i].gl_Position;
 			gl_Position = projectionMatrix3D * lightSpaceMatrices[face] * fragPos;
-			fragTexCoord = geoTexCoord[i];
+			switch(i)
+			{
+			    case 0:
+			        fragTexCoord = geoTexCoord[0];
+			        break;
+			    case 1:
+                	fragTexCoord = geoTexCoord[1];
+                	break;
+                case 2:
+                    fragTexCoord = geoTexCoord[2];
+                	break;
+                default:
+                    break;
+			}
 			EmitVertex();
 		}
 		EndPrimitive();

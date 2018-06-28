@@ -1,5 +1,7 @@
 package gohome
 
+import "github.com/go-gl/mathgl/mgl32"
+
 const (
 	ENTITY3D_SHADER_NAME                  string = "3D"
 	ENTITY3D_NO_UV_SHADER_NAME            string = "3D NoUV"
@@ -22,8 +24,7 @@ type Entity3D struct {
 func (this *Entity3D) commonInit() {
 	this.Transform = &TransformableObject3D{}
 	this.Transform.Scale = [3]float32{1.0, 1.0, 1.0}
-	// this.Transform.Rotation.V = [3]float32{0.0,0.0,1.0}
-	// this.Transform.Rotation.W = 0.0
+	this.Transform.Rotation = mgl32.QuatRotate(0.0,mgl32.Vec3{0.0,1.0,0.0})
 
 	this.transform = this.Transform
 
@@ -34,10 +35,10 @@ func (this *Entity3D) commonInit() {
 	if this.Model3D != nil && !this.Model3D.HasUV() {
 		this.Shader = ResourceMgr.GetShader(ENTITY3D_NO_UV_SHADER_NAME)
 		if this.Shader == nil {
-			ResourceMgr.LoadShader(ENTITY3D_NO_UV_SHADER_NAME, "vertex3dNoUV.glsl", "fragment3dNoUV.glsl", "", "", "", "")
+			ResourceMgr.LoadShaderSource(ENTITY3D_NO_UV_SHADER_NAME, ENTITY_3D_NOUV_SHADER_VERTEX_SOURCE_OPENGL, ENTITY_3D_NOUV_SHADER_FRAGMENT_SOURCE_OPENGL, "", "", "", "")
 			this.Shader = ResourceMgr.GetShader(ENTITY3D_NO_UV_SHADER_NAME)
 			if this.Shader == nil {
-				ResourceMgr.LoadShader(ENTITY3D_NO_UV_NO_SHADOWS_SHADER_NAME, "vertex3dNoUV.glsl", "fragment3dNoUVNoShadows.glsl", "", "", "", "")
+				ResourceMgr.LoadShaderSource(ENTITY3D_NO_UV_NO_SHADOWS_SHADER_NAME, ENTITY_3D_NOUV_SHADER_VERTEX_SOURCE_OPENGL, ENTITY_3D_NOUV_NO_SHADOWS_SHADER_FRAGMENT_SOURCE_OPENGL, "", "", "", "")
 				this.Shader = ResourceMgr.GetShader(ENTITY3D_NO_UV_NO_SHADOWS_SHADER_NAME)
 				if this.Shader != nil {
 					ResourceMgr.SetShader(ENTITY3D_NO_UV_SHADER_NAME, ENTITY3D_NO_UV_NO_SHADOWS_SHADER_NAME)

@@ -427,4 +427,3 @@ void setVariables()
 	vec3 camPos = (fragInverseViewMatrix3D*vec4(0.0,0.0,0.0,1.0)).xyz;
 	viewDir = camPos - fragPos;
 }
-

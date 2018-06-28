@@ -380,6 +380,36 @@ func (this *OpenGLRenderer) FilterShaderFiles(name, file, shader_type string) st
 	return file
 }
 
+func (this *OpenGLRenderer) FilterShaderSource(name, source, shader_type string) string {
+	if name == "BackBufferShader" {
+		if !this.hasFunctionAvailable("MULTISAMPLE") {
+			if shader_type == "Vertex File" {
+				source = gohome.BACKBUFFER_NOMS_SHADER_VERTEX_SOURCE_OPENGL
+			} else if shader_type == "Fragment File" {
+				source = gohome.BACKBUFFER_NOMS_SHADER_FRAGMENT_SOURCE_OPENGL
+			}
+		}
+	} else if name == "PostProcessingShader" {
+		if !this.hasFunctionAvailable("MULTISAMPLE") {
+			if shader_type == "Vertex File" {
+				source = gohome.POST_PROCESSING_SHADER_NOMS_VERTEX_SOURCE_OPENGL
+			} else if shader_type == "Fragment File" {
+				source = gohome.POST_PROCESSING_SHADER_NOMS_FRAGMENT_SOURCE_OPENGL
+			}
+		}
+	} else if name == "RenderScreenShader" {
+		if !this.hasFunctionAvailable("MULTISAMPLE") {
+			if shader_type == "Vertex File" {
+				source = gohome.POST_PROCESSING_SHADER_NOMS_VERTEX_SOURCE_OPENGL
+			} else if shader_type == "Fragment File" {
+				source = gohome.RENDER_SCREEN_NOMS_SHADER_FRAGMENT_SOURCE_OPENGL
+			}
+		}
+	}
+
+	return source
+}
+
 func (this *OpenGLRenderer) SetBackgroundColor(bgColor color.Color) {
 	this.backgroundColor = bgColor
 }
