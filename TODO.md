@@ -11,7 +11,6 @@
 + Add DirectXRenderer
 + WorldEditor (3D, 2D)
 + Add Default Shaders to source code
-+ Add LoadShader Function with code instead of file
 + Change Build scripts to programs
 + Add Tween interpreter language
 
