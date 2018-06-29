@@ -53,8 +53,9 @@ func (this *SpriteAnimationScene) Init() {
 	this.mage3.Transform.Position[0] = 85.0+122.0
 
 	this.andromalius.Init("Andromalius")
-	this.andromaliusAnim = gohome.SpriteAnimation2D(this.andromalius.Texture.GetWidth(),this.andromalius.Texture.GetHeight(),8,3,0.1,true)
+	this.andromaliusAnim = gohome.SpriteAnimation2DOffset(this.andromalius.Texture.GetWidth(),this.andromalius.Texture.GetHeight(),4,1,0,2*88,4*57,0,0.1,true)
 	this.andromaliusAnim.SetParent(&this.andromalius)
+	this.andromaliusAnim.LoopBackwards = true
 	this.andromaliusAnim.Start()
 	gohome.UpdateMgr.AddObject(&this.andromaliusAnim)
 	gohome.RenderMgr.AddObject(&this.andromalius)
@@ -86,6 +87,7 @@ func (this *SpriteAnimationScene) Init() {
 		{[2]float32{240,280},[2]float32{320,350}},
 	},0.1,true)
 	this.shadowAnim.SetParent(&this.shadow)
+	this.shadowAnim.LoopBackwards = true
 	this.shadowAnim.Start()
 	gohome.UpdateMgr.AddObject(&this.shadowAnim)
 	gohome.RenderMgr.AddObject(&this.shadow)
