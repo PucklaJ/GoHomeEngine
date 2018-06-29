@@ -16,6 +16,9 @@ type OpenGLESTexture struct {
 	name    string
 	oglName gl.Texture
 	gles    *gl.Context
+
+	keyColor color.Color
+	modColor color.Color
 }
 
 func (ogltex *OpenGLESTexture) bindingPoint() gl.Enum {
@@ -220,4 +223,20 @@ func (ogltex *OpenGLESTexture) SetBorderDepth(depth float32) {
 
 func (ogltex *OpenGLESTexture) GetName() string {
 	return ogltex.name
+}
+
+func (this *OpenGLESTexture) SetKeyColor(col color.Color) {
+	this.keyColor = col
+}
+
+func (this *OpenGLESTexture) SetModColor(col color.Color) {
+	this.modColor = col
+}
+
+func (this *OpenGLESTexture) GetKeyColor() color.Color {
+	return this.keyColor
+}
+
+func (this *OpenGLESTexture) GetModColor() color.Color {
+	return this.modColor
 }

@@ -5,3 +5,4 @@ The images used for this example are created by [Balmer](https://opengameart.org
     <img src="https://opengameart.org/sites/default/files/license_images/cc-by.png" alt="CC-BY 3.0">
     <p>CC-BY 3.0</p>
 </a>
+The Natsu image was downloaded from [here](http://spritedatabase.net/file/12282)

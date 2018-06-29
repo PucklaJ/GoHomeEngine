@@ -132,3 +132,19 @@ func (this *OpenGLESCubeMap) SetBorderDepth(depth float32) {
 	// gl.BindTexture(gl.TEXTURE_CUBE_MAP, 0)
 	gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_WARNING, "CubeMap", this.GetName(), "Border Depth is not supported by OpenGLES")
 }
+
+func (this *OpenGLESCubeMap) SetKeyColor(col color.Color) {
+
+}
+
+func (this *OpenGLESCubeMap) SetModColor(col color.Color) {
+
+}
+
+func (this *OpenGLESCubeMap) GetKeyColor() color.Color {
+	return nil
+}
+
+func (this *OpenGLESCubeMap) GetModColor() color.Color {
+	return nil
+}

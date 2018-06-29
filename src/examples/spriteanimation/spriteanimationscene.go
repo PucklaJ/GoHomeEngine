@@ -22,6 +22,8 @@ type SpriteAnimationScene struct {
 	acid2Anim       gohome.Tweenset
 	acid3           gohome.Sprite2D
 	acid3Anim       gohome.Tweenset
+	natsu		    gohome.Sprite2D
+	natsuAnim		gohome.Tweenset
 }
 
 func (this *SpriteAnimationScene) Init() {
@@ -32,6 +34,7 @@ func (this *SpriteAnimationScene) Init() {
 	gohome.ResourceMgr.PreloadTexture("Andromalius","andromalius-57x88.png")
 	gohome.ResourceMgr.PreloadTexture("Shadow","shadow-80x70.png")
 	gohome.ResourceMgr.PreloadTexture("Acid","acid2-14x67.png")
+	gohome.ResourceMgr.PreloadTexture("Natsu","Natsu.png")
 	gohome.ResourceMgr.LoadPreloadedResources()
 
 	gohome.Render.SetBackgroundColor(colornames.White)
@@ -84,6 +87,7 @@ func (this *SpriteAnimationScene) Init() {
 	this.shadow.Transform.Position[0] = 85.0+122.0+87.0+57.0
 	this.shadowAnim.Loop = true
 	this.shadowAnim.LoopBackwards = true
+	this.andromalius.Texture.SetKeyColor(colornames.Black)
 
 	this.acid1.Init("Acid")
 	this.acid1Anim = gohome.SpriteAnimation2DOffset(this.acid1.Texture,8,1,0,0,0,2*67,0.2)
@@ -94,6 +98,7 @@ func (this *SpriteAnimationScene) Init() {
 	this.acid1.Transform.Position[1] = 110.0
 	this.acid1Anim.Loop = true
 	this.acid1Anim.LoopBackwards = true
+	this.acid1.Texture.SetKeyColor(colornames.Darkviolet)
 
 	this.acid2.Init("Acid")
 	this.acid2Anim = gohome.SpriteAnimation2DOffset(this.acid2.Texture,8,1,0,2*67,0,0,0.2)
@@ -117,6 +122,27 @@ func (this *SpriteAnimationScene) Init() {
 	this.acid3.Transform.Position[1] = 110.0
 	this.acid3Anim.Loop = true
 	this.acid3Anim.LoopBackwards = false
+
+	this.natsu.Init("Natsu")
+	this.natsu.Texture.SetKeyColor(gohome.Color{0,128,0,255})
+	this.natsuAnim = gohome.SpriteAnimation2DRegions([]gohome.TextureRegion{
+		{[2]float32{8,204},[2]float32{8+45,204+82}},
+		{[2]float32{53,204},[2]float32{53+39,204+82}},
+		{[2]float32{97,205},[2]float32{97+45,205+81}},
+		{[2]float32{149,205},[2]float32{149+47,205+81}},
+		{[2]float32{202,205},[2]float32{202+48,205+81}},
+		{[2]float32{262,205},[2]float32{262+52,205+81}},
+		{[2]float32{322,205},[2]float32{322+53,205+81}},
+		{[2]float32{388,205},[2]float32{388+45,205+81}},
+		{[2]float32{445,205},[2]float32{445+54,205+81}},
+	},0.2)
+	this.natsuAnim.Loop = true
+	this.natsuAnim.LoopBackwards = true
+	this.natsuAnim.SetParent(&this.natsu)
+	this.natsuAnim.Start()
+	gohome.UpdateMgr.AddObject(&this.natsuAnim)
+	gohome.RenderMgr.AddObject(&this.natsu)
+	this.natsu.Transform.Position[1] = 110.0+67.0
 
 	gohome.RenderMgr.RenderToScreenFirst = true
 }

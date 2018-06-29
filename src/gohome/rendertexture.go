@@ -16,10 +16,14 @@ type RenderTexture interface {
 	Unbind(unit uint32)
 	GetWidth() int
 	GetHeight() int
+	GetKeyColor() color.Color
+	GetModColor() color.Color
 	ChangeSize(width, height uint32)
 	Terminate()
 	SetFiltering(filtering uint32)
 	SetWrapping(wrapping uint32)
 	SetBorderColor(col color.Color)
 	SetBorderDepth(depth float32)
+	SetKeyColor(col color.Color)
+	SetModColor(col color.Color)
 }

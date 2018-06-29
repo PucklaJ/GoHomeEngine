@@ -17,6 +17,9 @@ type OpenGLTexture struct {
 	name         string
 	oglName      uint32
 	multiSampled bool
+
+	keyColor color.Color
+	modColor color.Color
 }
 
 func (ogltex *OpenGLTexture) bindingPoint() uint32 {
@@ -245,6 +248,22 @@ func (ogltex *OpenGLTexture) SetBorderDepth(depth float32) {
 	gl.TexParameterfv(ogltex.bindingPoint(), gl.TEXTURE_BORDER_COLOR, &col[0])
 
 	gl.BindTexture(ogltex.bindingPoint(), 0)
+}
+
+func (ogltex *OpenGLTexture) SetKeyColor(col color.Color) {
+	ogltex.keyColor = col
+}
+
+func (ogltex *OpenGLTexture) GetKeyColor() color.Color {
+	return ogltex.keyColor
+}
+
+func (ogltex *OpenGLTexture) SetModColor(col color.Color) {
+	ogltex.modColor = col
+}
+
+func (ogltex *OpenGLTexture) GetModColor() color.Color {
+	return ogltex.modColor
 }
 
 func (ogltex *OpenGLTexture) GetName() string {

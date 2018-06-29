@@ -307,3 +307,19 @@ func (this *OpenGLRenderTexture) SetBorderDepth(depth float32) {
 		this.textures[i].SetBorderDepth(depth)
 	}
 }
+
+func (this *OpenGLRenderTexture) GetKeyColor() color.Color {
+	return nil
+}
+
+func (this *OpenGLRenderTexture) GetModColor() color.Color {
+	return nil
+}
+
+func (this *OpenGLRenderTexture) SetKeyColor(col color.Color) {
+
+}
+
+func (this *OpenGLRenderTexture) SetModColor(col color.Color) {
+
+}

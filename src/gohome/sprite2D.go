@@ -6,6 +6,10 @@ const (
 	FLIP_UNIFORM_NAME string = "flip"
 	TEXTURE_REGION_UNIFORM_NAME string = "textureRegion"
 	DEPTH_UNIFORM_NAME string = "depth"
+	ENABLE_KEY_UNIFORM_NAME string = "enableKey"
+	KEY_COLOR_UNIFORM_NAME string = "keyColor"
+	ENABLE_MOD_UNIFORM_NAME string = "enableMod"
+	MOD_COLOR_UNIFORM_NAME string = "modColor"
 )
 
 var sprite2DMesh Mesh2D = nil
@@ -113,6 +117,18 @@ func (spr *Sprite2D) setUniforms() {
 		shader.SetUniformI(FLIP_UNIFORM_NAME, int32(spr.Flip))
 		shader.SetUniformV4(TEXTURE_REGION_UNIFORM_NAME,spr.TextureRegion.Normalize(spr.Texture).Vec4())
 		shader.SetUniformF(DEPTH_UNIFORM_NAME,1.0-float32(spr.Depth)/255.0-1.0)
+		if spr.Texture.GetKeyColor() != nil {
+			shader.SetUniformI(ENABLE_KEY_UNIFORM_NAME,1)
+			shader.SetUniformV3(KEY_COLOR_UNIFORM_NAME,ColorToVec3(spr.Texture.GetKeyColor()))
+		} else {
+			shader.SetUniformI(ENABLE_KEY_UNIFORM_NAME,0)
+		}
+		if spr.Texture.GetModColor() != nil {
+			shader.SetUniformI(ENABLE_MOD_UNIFORM_NAME,1)
+			shader.SetUniformV3(MOD_COLOR_UNIFORM_NAME,ColorToVec3(spr.Texture.GetModColor()))
+		} else {
+			shader.SetUniformI(ENABLE_MOD_UNIFORM_NAME,0)
+		}
 	}
 }
 

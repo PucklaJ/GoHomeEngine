@@ -128,3 +128,19 @@ func (this *OpenGLCubeMap) SetBorderDepth(depth float32) {
 
 	gl.BindTexture(gl.TEXTURE_CUBE_MAP, 0)
 }
+
+func (this *OpenGLCubeMap) GetKeyColor() color.Color {
+	return nil
+}
+
+func (this *OpenGLCubeMap) GetModColor() color.Color {
+	return nil
+}
+
+func (this *OpenGLCubeMap) SetKeyColor(col color.Color) {
+
+}
+
+func (this *OpenGLCubeMap) SetModColor(col color.Color) {
+
+}
