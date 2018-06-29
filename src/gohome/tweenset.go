@@ -231,8 +231,7 @@ func SpriteAnimation2DRegions(regions []TextureRegion, frametime float32, loop b
 }
 
 func SpriteAnimation2DOffset(twidth, theight, framesx,framesy,offsetx1,offsety1,offsetx2,offsety2 int, frametime float32, loop bool) Tweenset {
-	var anim Tweenset
-
+	var regions []TextureRegion
 	var keywidth,keyheight float32
 	keywidth = float32(twidth-offsetx1-offsetx2)/float32(framesx)
 	keyheight = float32(theight-offsety1-offsety2)/float32(framesy)
@@ -243,14 +242,9 @@ func SpriteAnimation2DOffset(twidth, theight, framesx,framesy,offsetx1,offsety1,
 				[2]float32{float32(x)*keywidth+float32(offsetx1),float32(y)*keyheight+float32(offsety1)},
 				[2]float32{float32(x)*keywidth+keywidth+float32(offsetx1),float32(y)*keyheight+keyheight+float32(offsety1)},
 			}
-			anim.Tweens = append(anim.Tweens,&TweenRegion2D{
-				Destination: region,
-				Time: frametime,
-				TweenType: TWEEN_TYPE_AFTER_PREVIOUS,
-			})
+			regions = append(regions,region)
 		}
 	}
-	anim.Loop = loop
 
-	return anim
+	return SpriteAnimation2DRegions(regions,frametime,loop)
 }

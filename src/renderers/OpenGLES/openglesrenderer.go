@@ -29,16 +29,16 @@ func (this *OpenGLESRenderer) createBackBufferMesh() {
 		/*X,Y
 		  U,V
 		*/
-		gohome.Mesh2DVertex{-1.0, -1.0, // LEFT-DOWN
+		  {-1.0, -1.0, // LEFT-DOWN
 			0.0, 0.0},
 
-		gohome.Mesh2DVertex{1.0, -1.0, // RIGHT-DOWN
+		   {1.0, -1.0, // RIGHT-DOWN
 			1.0, 0.0},
 
-		gohome.Mesh2DVertex{1.0, 1.0, // RIGHT-UP
+		   {1.0, 1.0, // RIGHT-UP
 			1.0, 1.0},
 
-		gohome.Mesh2DVertex{-1.0, 1.0, // LEFT-UP
+		  {-1.0, 1.0, // LEFT-UP
 			0.0, 1.0},
 	}
 
@@ -49,31 +49,6 @@ func (this *OpenGLESRenderer) createBackBufferMesh() {
 
 	this.backBufferMesh.AddVertices(vertices, indices)
 	this.backBufferMesh.Load()
-
-	// this.backBufferMesh = CreateOpenGLESMesh2D("BackBufferMesh")
-
-	// var vertices []gohome.Mesh2DVertex = make([]gohome.Mesh2DVertex, 4)
-	// var indices []uint32 = make([]uint32, 6)
-
-	// vertices[0].Vertex(-1.0, -1.0)
-	// vertices[1].Vertex(1.0, -1.0)
-	// vertices[2].Vertex(1.0, 1.0)
-	// vertices[3].Vertex(-1.0, 1.0)
-
-	// vertices[0].TexCoord(0.0, 0.0)
-	// vertices[1].TexCoord(1.0, 0.0)
-	// vertices[2].TexCoord(1.0, 1.0)
-	// vertices[3].TexCoord(0.0, 1.0)
-
-	// indices[0] = 0
-	// indices[1] = 1
-	// indices[2] = 2
-	// indices[3] = 2
-	// indices[4] = 3
-	// indices[5] = 0
-
-	// this.backBufferMesh.AddVertices(vertices, indices)
-	// this.backBufferMesh.Load()
 
 }
 
@@ -238,7 +213,7 @@ func (this *OpenGLESRenderer) GetNativeResolution() (uint32, uint32) {
 func (this *OpenGLESRenderer) OnResize(newWidth, newHeight uint32) {
 	if this.gles != nil {
 		this.gles.Viewport(0, 0, int(newWidth), int(newHeight))
-		this.SetNativeResolution(newWidth, newHeight)
+		this.SetNativeResolution(newWidth,newHeight)
 	}
 }
 func (this *OpenGLESRenderer) PreRender() {
