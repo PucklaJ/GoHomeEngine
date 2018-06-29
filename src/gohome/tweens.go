@@ -279,6 +279,133 @@ func (this *TweenScale2D) Reset() {
 	this.elapsedTime = 0.0
 	this.transform.Scale = this.Destination.Sub(this.velocity.Mul(this.Time))
 }
+
+type TweenRegion2D struct {
+	Destination TextureRegion
+	Time float32
+	TweenType uint8
+
+	startRegion  TextureRegion
+	startSize	 mgl32.Vec2
+	parent *Sprite2D
+	elapsedTime float32
+}
+
+func (this *TweenRegion2D) Start(parent interface{}) {
+	this.elapsedTime = 0.0
+
+	if parent != nil {
+		this.parent = parent.(*Sprite2D)
+		if this.parent != nil {
+			this.startRegion = this.parent.TextureRegion
+			this.parent.TextureRegion = this.Destination
+			if this.parent.Transform != nil {
+				this.startSize = this.parent.Transform.Size
+				this.parent.Transform.Size = [2]float32{this.Destination.Width(),this.Destination.Height()}
+			}
+		}
+	}
+}
+
+func (this *TweenRegion2D) Update(delta_time float32) bool {
+	if this.parent == nil {
+		return true
+	}
+
+	this.elapsedTime += delta_time
+	if this.elapsedTime >= this.Time {
+		return true
+	}
+
+	return false
+}
+
+func (this *TweenRegion2D) End() {
+	if this.parent == nil {
+		return
+	}
+
+	this.elapsedTime = 0.0
+}
+
+func (this *TweenRegion2D) GetType() uint8 {
+	return this.TweenType
+}
+
+func (this *TweenRegion2D) Reset() {
+	if this.parent == nil {
+		return
+	}
+	this.elapsedTime = 0.0
+	this.parent.TextureRegion = this.startRegion
+	if this.parent.Transform != nil {
+	   this.parent.Transform.Size = this.startSize
+	}
+}
+
+type TweenTexture2D struct {
+	Destination Texture
+	Time float32
+	TweenType uint8
+
+	elapsedTime float32
+	parent *Sprite2D
+	startTexture Texture
+	startSize mgl32.Vec2
+}
+
+func (this *TweenTexture2D) Start(parent interface{}) {
+	this.elapsedTime = 0.0
+
+	if parent != nil {
+		this.parent = parent.(*Sprite2D)
+		if this.parent != nil {
+			this.startTexture = this.parent.Texture
+			this.parent.Texture = this.Destination
+			if this.parent.Transform != nil {
+				this.startSize = this.parent.Transform.Size
+				this.parent.Transform.Size = [2]float32{float32(this.Destination.GetWidth()),float32(this.Destination.GetHeight())}
+			}
+		}
+	}
+}
+
+func (this *TweenTexture2D) Update(delta_time float32) bool {
+	if this.parent == nil {
+		return true
+	}
+
+	this.elapsedTime += delta_time
+	if this.elapsedTime >= this.Time {
+		return true
+	}
+
+	return false
+}
+
+func (this *TweenTexture2D) End() {
+	if this.parent == nil {
+		return
+	}
+
+	this.elapsedTime = 0.0
+}
+
+func (this *TweenTexture2D) GetType() uint8 {
+	return this.TweenType
+}
+
+func (this *TweenTexture2D) Reset() {
+	if this.parent == nil {
+		return
+	}
+	this.elapsedTime = 0.0
+	this.parent.Texture = this.startTexture
+	if this.parent.Transform != nil {
+		this.parent.Transform.Size = this.startSize
+	}
+}
+
 type TweenPosition3D struct {
 	Destination mgl32.Vec3
 	Time float32

@@ -180,6 +180,7 @@ func (this *OpenGLESRenderTexture) Create(name string, width, height, textures u
 		0,
 		0, 0,
 		int(width), int(height),
+		false,
 	}
 }
 

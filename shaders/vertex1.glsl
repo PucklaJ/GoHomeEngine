@@ -69,7 +69,5 @@ vec2 flipTexCoord(vec2 tc)
 		flippedTexCoord = tc;
 	}
 
-
-
 	return flippedTexCoord;
 }

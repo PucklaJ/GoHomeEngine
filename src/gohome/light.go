@@ -100,10 +100,10 @@ func (this *PointLight) InitShadowmap(width, height uint32) {
 		return
 	}
 	if ResourceMgr.GetShader(POINT_LIGHT_SHADOWMAP_SHADER_NAME) == nil {
-		ResourceMgr.LoadShader(POINT_LIGHT_SHADOWMAP_SHADER_NAME, "pointLightShadowMapVert.glsl", "pointLightShadowMapFrag.glsl", "pointLightShadowMapGeo.glsl", "", "", "")
+		ResourceMgr.LoadShaderSource(POINT_LIGHT_SHADOWMAP_SHADER_NAME, POINTLIGHT_SHADOWMAP_SHADER_VERTEX_SOURCE_OPENGL, POINTLIGHT_SHADOWMAP_SHADER_FRAGMENT_SOURCE_OPENGL, POINTLIGHT_SHADOWMAP_SHADER_GEOMETRY_SOURCE_OPENGL, "", "", "")
 	}
 	if ResourceMgr.GetShader(POINT_LIGHT_SHADOWMAP_INSTANCED_SHADER_NAME) == nil {
-		ResourceMgr.LoadShader(POINT_LIGHT_SHADOWMAP_INSTANCED_SHADER_NAME, "pointLightShadowMapInstancedVert.glsl", "pointLightShadowMapFrag.glsl", "pointLightShadowMapGeo.glsl", "", "", "")
+		ResourceMgr.LoadShaderSource(POINT_LIGHT_SHADOWMAP_INSTANCED_SHADER_NAME, POINTLIGHT_SHADOWMAP_INSTANCED_SHADER_VERTEX_SOURCE_OPENGL, POINTLIGHT_SHADOWMAP_SHADER_FRAGMENT_SOURCE_OPENGL, POINTLIGHT_SHADOWMAP_SHADER_GEOMETRY_SOURCE_OPENGL, "", "", "")
 	}
 	if this.ShadowMap != nil {
 		this.ShadowMap.Terminate()
@@ -241,12 +241,7 @@ func (this *DirectionalLight) InitShadowmap(width, height uint32) {
 	if this.CastsShadows == 0 {
 		return
 	}
-	if ResourceMgr.GetShader(SHADOWMAP_SHADER_NAME) == nil {
-		ResourceMgr.LoadShader(SHADOWMAP_SHADER_NAME, "shadowMapVert.glsl", "shadowMapFrag.glsl", "", "", "", "")
-	}
-	if ResourceMgr.GetShader(SHADOWMAP_INSTANCED_SHADER_NAME) == nil {
-		ResourceMgr.LoadShader(SHADOWMAP_INSTANCED_SHADER_NAME, "shadowMapInstancedVert.glsl", "shadowMapFrag.glsl", "", "", "", "")
-	}
+	loadShadowMapShader()
 	if this.ShadowMap != nil {
 		this.ShadowMap.Terminate()
 	} else {
@@ -450,16 +445,20 @@ func (pl *SpotLight) SetUniforms(s Shader, arrayIndex uint32) {
 	}
 }
 
+func loadShadowMapShader() {
+	if ResourceMgr.GetShader(SHADOWMAP_SHADER_NAME) == nil {
+		ResourceMgr.LoadShaderSource(SHADOWMAP_SHADER_NAME, SHADOWMAP_SHADER_VERTEX_SOURCE_OPENGL, SHADOWMAP_SHADER_FRAGMENT_SOURCE_OPENGL, "", "", "", "")
+	}
+	if ResourceMgr.GetShader(SHADOWMAP_INSTANCED_SHADER_NAME) == nil {
+		ResourceMgr.LoadShaderSource(SHADOWMAP_INSTANCED_SHADER_NAME, SHADOWMAP_INSTANCED_SHADER_VERTEX_SOURCE_OPENGL, SHADOWMAP_SHADER_FRAGMENT_SOURCE_OPENGL, "", "", "", "")
+	}
+}
+
 func (this *SpotLight) InitShadowmap(width, height uint32) {
 	if this.CastsShadows == 0 {
 		return
 	}
-	if ResourceMgr.GetShader(SHADOWMAP_SHADER_NAME) == nil {
-		ResourceMgr.LoadShader(SHADOWMAP_SHADER_NAME, "shadowMapVert.glsl", "shadowMapFrag.glsl", "", "", "", "")
-	}
-	if ResourceMgr.GetShader(SHADOWMAP_INSTANCED_SHADER_NAME) == nil {
-		ResourceMgr.LoadShader(SHADOWMAP_INSTANCED_SHADER_NAME, "shadowMapInstancedVert.glsl", "shadowMapFrag.glsl", "", "", "", "")
-	}
+	loadShadowMapShader()
 	if this.ShadowMap != nil {
 		this.ShadowMap.Terminate()
 	} else {

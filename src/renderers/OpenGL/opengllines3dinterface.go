@@ -25,6 +25,7 @@ func (this *OpenGLLines3DInterface) Init() {
 func (this *OpenGLLines3DInterface) AddLines(lines []gohome.Line3D) {
 	if this.loaded {
 		gohome.ErrorMgr.Warning("Lines3DInterface", this.Name, "It has already been loaded to the GPU! You can't add any vertices anymore!")
+		return
 	}
 
 	this.lines = append(this.lines, lines...)

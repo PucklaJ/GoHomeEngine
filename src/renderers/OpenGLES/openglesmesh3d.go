@@ -305,3 +305,7 @@ func (oglm *OpenGLESMesh3D) GetName() string {
 func (oglm *OpenGLESMesh3D) AABB() gohome.AxisAlignedBoundingBox {
 	return oglm.aabb
 }
+
+func (oglm *OpenGLESMesh3D) HasUV() bool {
+	return true
+}

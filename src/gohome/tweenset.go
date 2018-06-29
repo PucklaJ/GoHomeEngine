@@ -3,6 +3,7 @@ package gohome
 type Tweenset struct {
 	Tweens []Tween
 	Loop bool
+	LoopBackwards bool
 
 	currentTweens []Tween
 	addedTweensNotAdd []uint32
@@ -12,6 +13,7 @@ type Tweenset struct {
 	allTweensAdded bool
 	ElapsedTime float32
 	parent interface{}
+	inLoop bool
 }
 
 func (this *Tweenset) SetParent(twobj interface{}) {
@@ -63,12 +65,24 @@ func (this *Tweenset) Update(delta_time float32) {
 	}
 }
 
+func (this *Tweenset) reverseTweens() {
+	for i:=0;i<len(this.Tweens)/2;i++ {
+		this.Tweens[i],this.Tweens[len(this.Tweens)-1-i] = this.Tweens[len(this.Tweens)-1-i],this.Tweens[i]
+	}
+}
+
 func (this *Tweenset) shouldAddNewTweens() bool {
 	if len(this.currentTweens) == 0 && !this.allTweensAdded {
 		return true
 	} else if len(this.currentTweens) == 0 && this.allTweensAdded {
 		if this.Loop {
 			this.Reset()
+			if this.LoopBackwards {
+				if !this.inLoop {
+					this.reverseTweens()
+				}
+				this.inLoop = !this.inLoop
+			}
 			this.paused = false
 			return true
 		}
@@ -105,6 +119,9 @@ func (this *Tweenset) Reset() {
 
 	for i:=len(this.Tweens)-1;i>=0;i-- {
 		this.Tweens[i].Reset()
+	}
+	if this.inLoop {
+		this.reverseTweens()
 	}
 }
 
@@ -177,4 +194,63 @@ func (this *Tweenset) hasAlreadyBeenAdded(i uint32) bool {
 		}
 	}
 	return false
+}
+
+func SpriteAnimation2D(twidth, theight , framesx, framesy int,frametime float32, loop bool) Tweenset {
+	return SpriteAnimation2DOffset(twidth,theight,framesx,framesy,0,0,0,0,frametime,loop)
+}
+
+func SpriteAnimation2DTextures(textures []Texture, frametime float32, loop bool) Tweenset {
+	var anim Tweenset
+
+	for i:=0;i<len(textures);i++ {
+		anim.Tweens = append(anim.Tweens,&TweenTexture2D{
+			Destination: textures[i],
+			Time: frametime,
+			TweenType: TWEEN_TYPE_AFTER_PREVIOUS,
+		})
+	}
+	anim.Loop = loop
+
+	return anim
+}
+
+func SpriteAnimation2DRegions(regions []TextureRegion, frametime float32, loop bool) Tweenset {
+	var anim Tweenset
+
+	for i:=0;i<len(regions);i++ {
+		anim.Tweens = append(anim.Tweens,&TweenRegion2D{
+			Destination: regions[i],
+			Time: frametime,
+			TweenType: TWEEN_TYPE_AFTER_PREVIOUS,
+		})
+	}
+	anim.Loop = loop
+
+	return anim
+}
+
+func SpriteAnimation2DOffset(twidth, theight, framesx,framesy,offsetx1,offsety1,offsetx2,offsety2 int, frametime float32, loop bool) Tweenset {
+	var anim Tweenset
+
+	var keywidth,keyheight float32
+	keywidth = float32(twidth-offsetx1-offsetx2)/float32(framesx)
+	keyheight = float32(theight-offsety1-offsety2)/float32(framesy)
+
+	for y:=0;y<framesy;y++ {
+		for x:=0;x<framesx;x++ {
+			region := TextureRegion{
+				[2]float32{float32(x)*keywidth+float32(offsetx1),float32(y)*keyheight+float32(offsety1)},
+				[2]float32{float32(x)*keywidth+keywidth+float32(offsetx1),float32(y)*keyheight+keyheight+float32(offsety1)},
+			}
+			anim.Tweens = append(anim.Tweens,&TweenRegion2D{
+				Destination: region,
+				Time: frametime,
+				TweenType: TWEEN_TYPE_AFTER_PREVIOUS,
+			})
+		}
+	}
+	anim.Loop = loop
+
+	return anim
 }

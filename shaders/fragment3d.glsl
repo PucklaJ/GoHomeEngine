@@ -577,4 +577,3 @@ void setVariables()
 	}
 	viewDir = normalize((fragToTangentSpace*(fragPos*-1.0)));
 }
-

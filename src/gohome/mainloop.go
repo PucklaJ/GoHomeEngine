@@ -84,6 +84,7 @@ func (this *MainLoop) InitWindowAndRenderer() {
 }
 
 func (MainLoop) InitManagers() {
+	ErrorMgr.Init()
 	ResourceMgr.Init()
 	UpdateMgr.Init()
 	RenderMgr.Init()
@@ -91,7 +92,6 @@ func (MainLoop) InitManagers() {
 	SceneMgr.Init()
 	InputMgr.Init()
 	FPSLimit.Init()
-	ErrorMgr.Init()
 }
 
 func (this *MainLoop) LoopOnce() {
@@ -136,11 +136,11 @@ func (this *MainLoop) Quit() {
 }
 
 func Init3DShaders() {
-	ResourceMgr.LoadShader(ENTITY3D_SHADER_NAME, "vertex3d.glsl", "fragment3d.glsl", "", "", "", "")
+	ResourceMgr.LoadShaderSource(ENTITY3D_SHADER_NAME, ENTITY_3D_SHADER_VERTEX_SOURCE_OPENGL, ENTITY_3D_SHADER_FRAGMENT_SOURCE_OPENGL, "", "", "", "")
 	if ResourceMgr.GetShader(ENTITY3D_SHADER_NAME) == nil {
-		ResourceMgr.LoadShader("3D No Shadows", "vertex3dNoShadows.glsl", "fragment3dNoShadows.glsl", "", "", "", "")
+		ResourceMgr.LoadShaderSource("3D No Shadows", ENTITY_3D_NO_SHADOWS_SHADER_VERTEX_SOURCE_OPENGL, ENTITY_3D_NO_SHADOWS_SHADER_FRAGMENT_SOURCE_OPENGL, "", "", "", "")
 		if ResourceMgr.GetShader("3D No Shadows") == nil {
-			ResourceMgr.LoadShader("3D Simple", "vertex3dNoShadows.glsl", "fragment3dSimple.glsl", "", "", "", "")
+			ResourceMgr.LoadShaderSource("3D Simple", ENTITY_3D_NO_SHADOWS_SHADER_VERTEX_SOURCE_OPENGL, ENTITY_3D_SIMPLE_SHADER_FRAGMENT_SOURCE_OPENGL, "", "", "", "")
 			if ResourceMgr.GetShader("3D Simple") != nil {
 				ResourceMgr.SetShader(ENTITY3D_SHADER_NAME, "3D Simple")
 			}
@@ -151,7 +151,7 @@ func Init3DShaders() {
 }
 
 func Init2DShaders() {
-	ResourceMgr.LoadShader(SPRITE2D_SHADER_NAME, "vertex1.glsl", "fragment.glsl", "", "", "", "")
+	ResourceMgr.LoadShaderSource(SPRITE2D_SHADER_NAME, SPRITE_2D_SHADER_VERTEX_SOURCE_OPENGL, SPRITE_2D_SHADER_FRAGMENT_SOURCE_OPENGL, "", "", "", "")
 }
 
 func InitDefaultValues() {

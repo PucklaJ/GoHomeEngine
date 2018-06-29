@@ -64,6 +64,7 @@ func androidFrameworkmain(a app.App) {
 			break
 		}
 	}
+
 }
 func (this *AndroidFramework) onLifecycle(e lifecycle.Event) {
 	msg := "Lifecycle: From: " + e.From.String() + " To: " + e.To.String() + " CrossVisible: " + e.Crosses(lifecycle.StageVisible).String() + " CrossFocused: " + e.Crosses(lifecycle.StageFocused).String()
@@ -92,6 +93,8 @@ func (this *AndroidFramework) initStuff(e lifecycle.Event) {
 	this.renderer.SetOpenGLESContex(context)
 	this.mainLoop.InitWindowAndRenderer()
 	this.mainLoop.InitManagers()
+	gohome.RenderMgr.UpdateProjectionWithViewport = true
+	gohome.Render.AfterInit()
 	this.mainLoop.SetupStartScene()
 	this.appl.Send(paint.Event{})
 }
@@ -129,7 +132,7 @@ func (this *AndroidFramework) onTouch(e touch.Event) {
 	gohome.InputMgr.Touches[uint8(e.Sequence)] = inputTouch
 }
 func (this *AndroidFramework) onPaint(e paint.Event) {
-	if this.renderer.GetContext() == nil {
+	if (*this.renderer.GetContext()) == nil {
 		return
 	}
 	this.endOtherThanPaint = time.Now()
@@ -170,6 +173,9 @@ func (this *AndroidFramework) WindowClosed() bool {
 }
 func (this *AndroidFramework) WindowSwap() {
 	this.appl.Publish()
+}
+func (this *AndroidFramework) WindowSetSize(size mgl32.Vec2) {
+
 }
 func (this *AndroidFramework) WindowGetSize() mgl32.Vec2 {
 	viewport := gohome.Render.GetViewport()

@@ -1,5 +1,5 @@
 # GoHomeEngine
-[![godoc](https://godoc.org/github.com/PucklaMotzer09/gohomeengine/src/gohome?status.svg)](https://godoc.org/github.com/PucklaMotzer09/gohomeengine/src/gohome)
+[![godoc](https://godoc.org/github.com/PucklaMotzer09/GoHomeEngine/src/gohome?status.svg)](https://godoc.org/github.com/PucklaMotzer09/GoHomeEngine/src/gohome)
 [![License: Zlib](https://img.shields.io/badge/License-Zlib-green.svg)](https://github.com/PucklaMotzer09/GoHomeEngine/blob/master/LICENSE.md)
 [![GitHub last commit](https://img.shields.io/github/last-commit/PucklaMotzer09/GoHomeEngine.svg)](https://github.com/PucklaMotzer09/GoHomeEngine/commits/master)
 <br>

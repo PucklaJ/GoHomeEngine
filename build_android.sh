@@ -101,7 +101,7 @@ fi
 copiedManifest=0
 if [ ! -f $(pwd)/AndroidMainfest.xml ]
 then
-	if [ ! -f $CMDDIR/fsreplacer/fsreplacer -a ! -f $CMDDIR/fsreplacer/fsreplacer.exe ]
+	if [ ! -f $CMDDIR/fsreplacer/fsreplacer -o ! -f $CMDDIR/fsreplacer/fsreplacer.exe ]
 	then
 		echo Compiling string in file replacer ...
 		workingDir=$(pwd)

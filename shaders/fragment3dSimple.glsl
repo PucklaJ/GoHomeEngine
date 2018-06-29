@@ -458,4 +458,3 @@ void setVariables()
 	norm = normalize(fragToTangentSpace*fragNormal);
 	viewDir = normalize((fragToTangentSpace*(fragPos*-1.0)));
 }
-

@@ -1,6 +1,9 @@
 package gohome
 
-import "image/color"
+import (
+	"image/color"
+	"github.com/go-gl/mathgl/mgl32"
+)
 
 const (
 	LINES3D_SHADER_NAME string = "Lines3DShader"
@@ -40,12 +43,13 @@ type Lines3D struct {
 
 func (this *Lines3D) Init() {
 	if ResourceMgr.GetShader(LINES3D_SHADER_NAME) == nil {
-		ResourceMgr.LoadShader(LINES3D_SHADER_NAME,"lines3DVert.glsl","lines3DFrag.glsl","","","","")
+		ResourceMgr.LoadShaderSource(LINES3D_SHADER_NAME,LINES_3D_SHADER_VERTEX_SOURCE_OPENGL,LINES_3D_SHADER_FRAGMENT_SOURCE_OPENGL,"","","","")
 	}
 	this.linesInterface = Render.CreateLines3DInterface(this.Name)
 	this.linesInterface.Init()
 	this.Transform = &TransformableObject3D{
 		Scale: [3]float32{1.0,1.0,1.0},
+		Rotation: mgl32.QuatRotate(0.0,mgl32.Vec3{0.0,1.0,0.0}),
 	}
 	this.transform = this.Transform
 	this.Visible = true

@@ -153,6 +153,32 @@ func (rsmgr *ResourceManager) LoadShader(name, vertex_path, fragment_path, geome
 	}
 }
 
+func filterShaderSource(name, vertex, fragment, geometry, tesselletion_control, eveluation, compute string) (string,string,string,string,string,string) {
+	vertex = Render.FilterShaderSource(name,vertex,"Vertex File")
+	fragment = Render.FilterShaderSource(name,fragment,"Fragment File")
+	geometry = Render.FilterShaderSource(name,geometry,"Geometry File")
+	tesselletion_control = Render.FilterShaderSource(name,tesselletion_control,"Tesselation Control File")
+	eveluation = Render.FilterShaderSource(name,eveluation,"Eveluation File")
+	compute = Render.FilterShaderSource(name,compute, "Compute File")
+
+	return vertex, fragment, geometry, tesselletion_control, eveluation, compute
+}
+
+func (rsmgr *ResourceManager) LoadShaderSource(name, vertex, fragment, geometry, tesselletion_control, eveluation, compute string) {
+	if _, ok := rsmgr.shaders[name]; ok {
+		ErrorMgr.Error("Shader", name, "Has already been loaded")
+		return
+	}
+	vertex, fragment, geometry, tesselletion_control, eveluation, compute = filterShaderSource(name,vertex,fragment,geometry, tesselletion_control, eveluation, compute)
+	shader, err := Render.LoadShader(name, vertex, fragment, geometry, tesselletion_control, eveluation, compute)
+	if err != nil {
+		ErrorMgr.Error("Shader", name, "Loading source: "+err.Error())
+		return
+	}
+	rsmgr.shaders[name] = shader
+	ErrorMgr.Log("Shader", name, "Finished Loading!")
+}
+
 func (rsmgr *ResourceManager) GetShader(name string) Shader {
 	s := rsmgr.shaders[name]
 	return s

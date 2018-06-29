@@ -563,4 +563,3 @@ void setVariables()
 	norm = mix(normalize(fragToTangentSpace*fragNormal),normalize(2.0*(texture2D(materialnormalMap,fragTexCoord)).xyz-1.0),material.NormalMapLoaded ? 1.0 : 0.0);
 	viewDir = normalize((fragToTangentSpace*(fragPos*-1.0)));
 }
-

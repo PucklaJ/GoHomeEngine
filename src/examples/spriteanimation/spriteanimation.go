@@ -7,5 +7,5 @@ import (
 )
 
 func main() {
-	gohome.MainLop.Run(&framework.AndroidFramework{},&renderer.OpenGLESRenderer{},640,480,"Lines3D",&Lines3DScene{})
+	gohome.MainLop.Run(&framework.AndroidFramework{},&renderer.OpenGLESRenderer{},640,480,"SpriteAnimation",&SpriteAnimationScene{})
 }

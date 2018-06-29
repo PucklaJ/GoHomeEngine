@@ -10,15 +10,11 @@
 + Add SDLFramework
 + Add DirectXRenderer
 + WorldEditor (3D, 2D)
-+ Add Default Shaders to source code
-+ Add LoadShader Function with code instead of file
 + Change Build scripts to programs
 + Add Tween interpreter language
 
 ## 2D
 
-+ Sprite Animations
-	- Add To Tweens
 + Instanced Mesh
 + Particle
 + Convert screen position to world position
