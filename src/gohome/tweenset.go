@@ -196,11 +196,21 @@ func (this *Tweenset) hasAlreadyBeenAdded(i uint32) bool {
 	return false
 }
 
-func SpriteAnimation2D(twidth, theight , framesx, framesy int,frametime float32, loop bool) Tweenset {
-	return SpriteAnimation2DOffset(twidth,theight,framesx,framesy,0,0,0,0,frametime,loop)
+func (this Tweenset) Merge(other Tweenset) Tweenset {
+	var otherTweens []Tween
+	otherTweens = make([]Tween, len(other.Tweens))
+	for i:=0;i<len(other.Tweens);i++ {
+		otherTweens[i] = other.Tweens[i].Copy()
+	}
+	this.Tweens = append(this.Tweens,otherTweens...)
+	return this
 }
 
-func SpriteAnimation2DTextures(textures []Texture, frametime float32, loop bool) Tweenset {
+func SpriteAnimation2D(texture Texture, framesx, framesy int,frametime float32) Tweenset {
+	return SpriteAnimation2DOffset(texture,framesx,framesy,0,0,0,0,frametime)
+}
+
+func SpriteAnimation2DTextures(textures []Texture, frametime float32) Tweenset {
 	var anim Tweenset
 
 	for i:=0;i<len(textures);i++ {
@@ -210,12 +220,11 @@ func SpriteAnimation2DTextures(textures []Texture, frametime float32, loop bool)
 			TweenType: TWEEN_TYPE_AFTER_PREVIOUS,
 		})
 	}
-	anim.Loop = loop
 
 	return anim
 }
 
-func SpriteAnimation2DRegions(regions []TextureRegion, frametime float32, loop bool) Tweenset {
+func SpriteAnimation2DRegions(regions []TextureRegion, frametime float32) Tweenset {
 	var anim Tweenset
 
 	for i:=0;i<len(regions);i++ {
@@ -225,16 +234,15 @@ func SpriteAnimation2DRegions(regions []TextureRegion, frametime float32, loop b
 			TweenType: TWEEN_TYPE_AFTER_PREVIOUS,
 		})
 	}
-	anim.Loop = loop
 
 	return anim
 }
 
-func SpriteAnimation2DOffset(twidth, theight, framesx,framesy,offsetx1,offsety1,offsetx2,offsety2 int, frametime float32, loop bool) Tweenset {
+func SpriteAnimation2DOffset(texture Texture, framesx,framesy,offsetx1,offsety1,offsetx2,offsety2 int, frametime float32) Tweenset {
 	var regions []TextureRegion
 	var keywidth,keyheight float32
-	keywidth = float32(twidth-offsetx1-offsetx2)/float32(framesx)
-	keyheight = float32(theight-offsety1-offsety2)/float32(framesy)
+	keywidth = float32(texture.GetWidth()-offsetx1-offsetx2)/float32(framesx)
+	keyheight = float32(texture.GetHeight()-offsety1-offsety2)/float32(framesy)
 
 	for y:=0;y<framesy;y++ {
 		for x:=0;x<framesx;x++ {
@@ -246,5 +254,5 @@ func SpriteAnimation2DOffset(twidth, theight, framesx,framesy,offsetx1,offsety1,
 		}
 	}
 
-	return SpriteAnimation2DRegions(regions,frametime,loop)
+	return SpriteAnimation2DRegions(regions,frametime)
 }

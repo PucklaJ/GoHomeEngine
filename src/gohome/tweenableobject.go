@@ -12,6 +12,7 @@ type Tween interface {
 	GetType() uint8
 	End()
 	Reset()
+	Copy() Tween
 }
 
 type TweenableObject2D interface {

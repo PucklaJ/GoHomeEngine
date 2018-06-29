@@ -57,6 +57,10 @@ func (this *TweenPosition2D) Reset() {
 	}
 }
 
+func (this *TweenPosition2D) Copy() Tween {
+	return &TweenPosition2D{Destination:this.Destination,Time:this.Time,TweenType:this.TweenType}
+}
+
 type TweenRotation2D struct {
 	Destination float32
 	Time float32
@@ -110,6 +114,10 @@ func (this *TweenRotation2D) Reset() {
 	}
 }
 
+func (this *TweenRotation2D) Copy() Tween {
+	return &TweenRotation2D{Destination:this.Destination,Time:this.Time,TweenType:this.TweenType}
+}
+
 type TweenWait struct {
 	Time float32
 	TweenType uint8
@@ -138,6 +146,10 @@ func (this *TweenWait) End() {
 }
 func (this *TweenWait) Reset() {
 	this.elapsedTime = 0.0
+}
+
+func (this *TweenWait) Copy() Tween {
+	return &TweenWait{Time:this.Time,TweenType:this.TweenType}
 }
 
 type BlinkableObject interface {
@@ -216,6 +228,10 @@ func (this *TweenBlink) Reset() {
 	}
 }
 
+func (this *TweenBlink) Copy() Tween {
+	return &TweenBlink{Amount:this.Amount,Time:this.Time,TweenType:this.TweenType}
+}
+
 type TweenScale2D struct {
 	Destination mgl32.Vec2
 	Time float32
@@ -278,6 +294,10 @@ func (this *TweenScale2D) Reset() {
 	}
 	this.elapsedTime = 0.0
 	this.transform.Scale = this.Destination.Sub(this.velocity.Mul(this.Time))
+}
+
+func (this *TweenScale2D) Copy() Tween {
+	return &TweenScale2D{Destination:this.Destination,Time:this.Time,TweenType:this.TweenType}
 }
 
 type TweenRegion2D struct {
@@ -343,6 +363,10 @@ func (this *TweenRegion2D) Reset() {
 	}
 }
 
+func (this *TweenRegion2D) Copy() Tween {
+	return &TweenRegion2D{Destination:this.Destination,Time:this.Time,TweenType:this.TweenType}
+}
+
 type TweenTexture2D struct {
 	Destination Texture
 	Time float32
@@ -406,6 +430,10 @@ func (this *TweenTexture2D) Reset() {
 	}
 }
 
+func (this *TweenTexture2D) Copy() Tween {
+	return &TweenTexture2D{Destination:this.Destination,Time:this.Time,TweenType:this.TweenType}
+}
+
 type TweenPosition3D struct {
 	Destination mgl32.Vec3
 	Time float32
@@ -462,6 +490,10 @@ func (this *TweenPosition3D) Reset() {
 	}
 }
 
+func (this *TweenPosition3D) Copy() Tween {
+	return &TweenPosition3D{Destination:this.Destination,Time:this.Time,TweenType:this.TweenType}
+}
+
 type TweenRotation3D struct {
 	Destination mgl32.Quat
 	Time float32
@@ -513,6 +545,10 @@ func (this *TweenRotation3D) Reset() {
 		this.transform.Rotation = this.start
 	}
 	this.elapsedTime = 0.0
+}
+
+func (this *TweenRotation3D) Copy() Tween {
+	return &TweenRotation3D{Destination:this.Destination,Time:this.Time,TweenType:this.TweenType}
 }
 
 type TweenScale3D struct {
@@ -577,6 +613,10 @@ func (this *TweenScale3D) Reset() {
 	}
 	this.elapsedTime = 0.0
 	this.transform.Scale = this.Destination.Sub(this.velocity.Mul(this.Time))
+}
+
+func (this *TweenScale3D) Copy() Tween {
+	return &TweenScale3D{Destination:this.Destination,Time:this.Time,TweenType:this.TweenType}
 }
 
 

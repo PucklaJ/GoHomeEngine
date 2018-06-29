@@ -6,16 +6,22 @@ import (
 )
 
 type SpriteAnimationScene struct {
-	mage1 gohome.Sprite2D
-	mage1Anim gohome.Tweenset
-	mage2 gohome.Sprite2D
-	mage2Anim gohome.Tweenset
-	mage3 gohome.Sprite2D
-	mage3Anim gohome.Tweenset
-	andromalius gohome.Sprite2D
+	mage1           gohome.Sprite2D
+	mage1Anim       gohome.Tweenset
+	mage2           gohome.Sprite2D
+	mage2Anim       gohome.Tweenset
+	mage3           gohome.Sprite2D
+	mage3Anim       gohome.Tweenset
+	andromalius     gohome.Sprite2D
 	andromaliusAnim gohome.Tweenset
-	shadow gohome.Sprite2D
-	shadowAnim gohome.Tweenset
+	shadow          gohome.Sprite2D
+	shadowAnim      gohome.Tweenset
+	acid1           gohome.Sprite2D
+	acid1Anim       gohome.Tweenset
+	acid2           gohome.Sprite2D
+	acid2Anim       gohome.Tweenset
+	acid3           gohome.Sprite2D
+	acid3Anim       gohome.Tweenset
 }
 
 func (this *SpriteAnimationScene) Init() {
@@ -25,73 +31,92 @@ func (this *SpriteAnimationScene) Init() {
 	gohome.ResourceMgr.PreloadTexture("Mage3","mage-3-87x110.png")
 	gohome.ResourceMgr.PreloadTexture("Andromalius","andromalius-57x88.png")
 	gohome.ResourceMgr.PreloadTexture("Shadow","shadow-80x70.png")
+	gohome.ResourceMgr.PreloadTexture("Acid","acid2-14x67.png")
 	gohome.ResourceMgr.LoadPreloadedResources()
 
 	gohome.Render.SetBackgroundColor(colornames.White)
 
 	this.mage1.Init("Mage1")
-	this.mage1Anim = gohome.SpriteAnimation2D(this.mage1.Texture.GetWidth(),this.mage1.Texture.GetHeight(),4,2,0.1,true)
+	this.mage1Anim = gohome.SpriteAnimation2D(this.mage1.Texture,4,2,0.1)
 	this.mage1Anim.SetParent(&this.mage1)
 	this.mage1Anim.Start()
 	gohome.UpdateMgr.AddObject(&this.mage1Anim)
 	gohome.RenderMgr.AddObject(&this.mage1)
+	this.mage1Anim.Loop = true
 
 	this.mage2.Init("Mage2")
-	this.mage2Anim = gohome.SpriteAnimation2D(this.mage2.Texture.GetWidth(),this.mage2.Texture.GetHeight(),4,2,0.1,true)
+	this.mage2Anim = gohome.SpriteAnimation2D(this.mage2.Texture,4,2,0.1)
 	this.mage2Anim.SetParent(&this.mage2)
 	this.mage2Anim.Start()
 	gohome.UpdateMgr.AddObject(&this.mage2Anim)
 	gohome.RenderMgr.AddObject(&this.mage2)
 	this.mage2.Transform.Position[0] = 85.0
+	this.mage2Anim.Loop = true
 
 	this.mage3.Init("Mage3")
-	this.mage3Anim = gohome.SpriteAnimation2D(this.mage3.Texture.GetWidth(),this.mage3.Texture.GetHeight(),4,2,0.1,true)
+	this.mage3Anim = gohome.SpriteAnimation2D(this.mage3.Texture,4,2,0.1)
 	this.mage3Anim.SetParent(&this.mage3)
 	this.mage3Anim.Start()
 	gohome.UpdateMgr.AddObject(&this.mage3Anim)
 	gohome.RenderMgr.AddObject(&this.mage3)
 	this.mage3.Transform.Position[0] = 85.0+122.0
+	this.mage3Anim.Loop = true
 
 	this.andromalius.Init("Andromalius")
-	this.andromaliusAnim = gohome.SpriteAnimation2DOffset(this.andromalius.Texture.GetWidth(),this.andromalius.Texture.GetHeight(),4,1,0,2*88,4*57,0,0.1,true)
+	this.andromaliusAnim = gohome.SpriteAnimation2DOffset(this.andromalius.Texture,4,1,0,2*88,4*57,0,0.1)
 	this.andromaliusAnim.SetParent(&this.andromalius)
 	this.andromaliusAnim.LoopBackwards = true
 	this.andromaliusAnim.Start()
 	gohome.UpdateMgr.AddObject(&this.andromaliusAnim)
 	gohome.RenderMgr.AddObject(&this.andromalius)
 	this.andromalius.Transform.Position[0] = 85.0+122.0+87.0
+	this.andromaliusAnim.Loop = true
 
 	this.shadow.Init("Shadow")
-	this.shadowAnim = gohome.SpriteAnimation2DRegions([]gohome.TextureRegion{
-		{[2]float32{0,0},[2]float32{80,70}},
-		{[2]float32{80,0},[2]float32{160,70}},
-		{[2]float32{160,0},[2]float32{240,70}},
-		{[2]float32{240,0},[2]float32{320,70}},
-
-		{[2]float32{0,70},[2]float32{80,140}},
-		{[2]float32{80,70},[2]float32{160,140}},
-		{[2]float32{160,70},[2]float32{240,140}},
-		{[2]float32{240,70},[2]float32{320,140}},
-
-		{[2]float32{0,140},[2]float32{80,210}},
-		{[2]float32{80,140},[2]float32{160,210}},
-		{[2]float32{160,140},[2]float32{240,210}},
-		{[2]float32{240,140},[2]float32{320,210}},
-
-		{[2]float32{0,210},[2]float32{80,280}},
-		{[2]float32{80,210},[2]float32{160,280}},
-
-		{[2]float32{0,280},[2]float32{80,350}},
-		{[2]float32{80,280},[2]float32{160,350}},
-		{[2]float32{160,280},[2]float32{240,350}},
-		{[2]float32{240,280},[2]float32{320,350}},
-	},0.1,true)
+	shadowAnim1 := gohome.SpriteAnimation2DOffset(this.shadow.Texture,4,3,0,0,0,2*70,0.1)
+	shadowAnim2 := gohome.SpriteAnimation2DOffset(this.shadow.Texture,2,1,0,3*70,2*80,1*70,0.1)
+	shadowAnim3 := gohome.SpriteAnimation2DOffset(this.shadow.Texture,4,1,0,4*70,0,0,0.1)
+	this.shadowAnim = shadowAnim1.Merge(shadowAnim2).Merge(shadowAnim3)
 	this.shadowAnim.SetParent(&this.shadow)
-	this.shadowAnim.LoopBackwards = true
 	this.shadowAnim.Start()
 	gohome.UpdateMgr.AddObject(&this.shadowAnim)
 	gohome.RenderMgr.AddObject(&this.shadow)
 	this.shadow.Transform.Position[0] = 85.0+122.0+87.0+57.0
+	this.shadowAnim.Loop = true
+	this.shadowAnim.LoopBackwards = true
+
+	this.acid1.Init("Acid")
+	this.acid1Anim = gohome.SpriteAnimation2DOffset(this.acid1.Texture,8,1,0,0,0,2*67,0.2)
+	this.acid1Anim.SetParent(&this.acid1)
+	this.acid1Anim.Start()
+	gohome.UpdateMgr.AddObject(&this.acid1Anim)
+	gohome.RenderMgr.AddObject(&this.acid1)
+	this.acid1.Transform.Position[1] = 110.0
+	this.acid1Anim.Loop = true
+	this.acid1Anim.LoopBackwards = true
+
+	this.acid2.Init("Acid")
+	this.acid2Anim = gohome.SpriteAnimation2DOffset(this.acid2.Texture,8,1,0,2*67,0,0,0.2)
+	this.acid2Anim.SetParent(&this.acid2)
+	this.acid2Anim.Start()
+	gohome.UpdateMgr.AddObject(&this.acid2Anim)
+	gohome.RenderMgr.AddObject(&this.acid2)
+	this.acid2.Transform.Position[0] = 14.0
+	this.acid2.Transform.Position[1] = 110.0
+	this.acid2Anim.Loop = true
+	this.acid2Anim.LoopBackwards = true
+
+	this.acid3.Init("Acid")
+	this.acid3Anim = gohome.SpriteAnimation2DOffset(this.acid3.Texture,8,1,0,1*67,0,1*67,0.2)
+	this.acid3Anim = this.acid3Anim.Merge(this.acid2Anim).Merge(this.acid1Anim)
+	this.acid3Anim.SetParent(&this.acid3)
+	this.acid3Anim.Start()
+	gohome.UpdateMgr.AddObject(&this.acid3Anim)
+	gohome.RenderMgr.AddObject(&this.acid3)
+	this.acid3.Transform.Position[0] = 14.0*2
+	this.acid3.Transform.Position[1] = 110.0
+	this.acid3Anim.Loop = true
+	this.acid3Anim.LoopBackwards = false
 
 	gohome.RenderMgr.RenderToScreenFirst = true
 }
