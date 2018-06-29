@@ -91,6 +91,8 @@ func (this *OpenGLESRenderer) Init() error {
 func (this *OpenGLESRenderer) AfterInit() {
 	this.gles.Enable(gl.DEPTH_TEST)
 	this.gles.Enable(gl.CULL_FACE)
+	this.gles.BlendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA)
+	this.gles.Enable(gl.BLEND)
 }
 
 func (this *OpenGLESRenderer) Terminate() {

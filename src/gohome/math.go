@@ -102,3 +102,11 @@ func (this TextureRegion) String() string {
 
 		   ")"
 }
+
+func (this TextureRegion) Width() float32 {
+	return this.Max[0] - this.Min[0]
+}
+
+func (this TextureRegion) Height() float32 {
+	return this.Max[1] - this.Min[1]
+}
