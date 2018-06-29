@@ -15,8 +15,6 @@
 
 ## 2D
 
-+ Sprite Animations
-	- Add To Tweens
 + Instanced Mesh
 + Particle
 + Convert screen position to world position
