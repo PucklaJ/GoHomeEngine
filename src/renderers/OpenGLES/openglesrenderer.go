@@ -5,6 +5,7 @@ import (
 	"golang.org/x/mobile/gl"
 	"image/color"
 	"strconv"
+	"log"
 )
 
 type OpenGLESError struct {
@@ -60,10 +61,13 @@ func (this *OpenGLESRenderer) Init() error {
 
 	this.createBackBufferMesh()
 
+	log.Println("GLESViewport:",this.GetViewport())
+
 	return nil
 }
 
 func (this *OpenGLESRenderer) AfterInit() {
+	this.gles.DepthFunc(gl.LEQUAL)
 	this.gles.Enable(gl.DEPTH_TEST)
 	this.gles.Enable(gl.CULL_FACE)
 	this.gles.BlendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA)
@@ -169,12 +173,14 @@ func (this *OpenGLESRenderer) GetViewport() gohome.Viewport {
 
 	this.gles.GetIntegerv(data[:], gl.VIEWPORT)
 
-	return gohome.Viewport{
+	viewport := gohome.Viewport{
 		X:      int(data[0]),
 		Y:      int(data[1]),
 		Width:  int(data[2]),
 		Height: int(data[3]),
 	}
+
+	return viewport
 }
 func (this *OpenGLESRenderer) SetNativeResolution(width, height uint32) {
 	if gohome.RenderMgr.BackBuffer2D == nil || gohome.RenderMgr.BackBuffer3D == nil || gohome.RenderMgr.BackBufferMS == nil || gohome.RenderMgr.BackBuffer == nil {

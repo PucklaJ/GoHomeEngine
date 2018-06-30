@@ -1,9 +1,46 @@
 package gohome
 
+import (
+	"github.com/go-gl/mathgl/mgl32"
+)
+
 type Mouse struct {
 	Pos   [2]int16
 	DPos  [2]int16
 	Wheel [2]int8
+}
+
+func (this *Mouse) ToWorldPosition2D() mgl32.Vec2 {
+	return this.ToWorldPosition2DAdv(0,0)
+}
+
+func (this *Mouse) ToWorldPosition2DAdv(cameraIndex int32, viewportIndex uint32) mgl32.Vec2 {
+	screenPos := mgl32.Vec2{float32(this.Pos[0]),float32(this.Pos[1])}
+	viewportPos := screenPos
+	viewport := Render.GetViewport()
+	if len(RenderMgr.viewport2Ds)-1 >= int(viewportIndex) {
+		viewport = *RenderMgr.viewport2Ds[viewportIndex]
+	}
+
+	viewportPos = viewportPos.Sub(mgl32.Vec2{float32(viewport.X),float32(viewport.Y)})
+	normalizedPos := mgl32.Vec2{viewportPos.X()/float32(viewport.Width)*2.0-1.0,(1.0-viewportPos.Y()/float32(viewport.Height))*2.0-1.0}
+	projection := RenderMgr.Projection2D
+	projMatrix := mgl32.Ident4()
+	if projection != nil {
+		projection.CalculateProjectionMatrix()
+		projMatrix = projection.GetProjectionMatrix()
+	}
+	normalizedPosV3 := normalizedPos.Vec3(-1.0)
+	projectedPos := Mat4MulVec3(projMatrix.Inv(), normalizedPosV3)
+
+	if len(RenderMgr.camera2Ds)-1 >= int(cameraIndex) {
+		cam := RenderMgr.camera2Ds[cameraIndex]
+		cam.CalculateViewMatrix()
+		invViewMatrix := cam.GetInverseViewMatrix()
+		projectedPos = Mat4MulVec3(invViewMatrix.Mat4(),projectedPos)
+	}
+
+	return projectedPos.Vec2()
 }
 
 type Touch struct {

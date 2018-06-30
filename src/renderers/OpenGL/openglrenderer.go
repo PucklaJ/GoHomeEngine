@@ -79,7 +79,7 @@ func (this *OpenGLRenderer) AfterInit() {
 	}
 
 	gl.Enable(gl.MULTISAMPLE)
-	gl.DepthFunc(gl.LESS)
+	gl.DepthFunc(gl.LEQUAL)
 	gl.Enable(gl.DEPTH_CLAMP)
 	gl.ClearDepth(2.0)
 	gl.Enable(gl.BLEND)

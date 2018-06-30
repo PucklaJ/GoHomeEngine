@@ -17,7 +17,6 @@
 
 + Instanced Mesh
 + Particle
-+ Convert screen position to world position
 + Physics
 	- [Box2D](https://github.com/ByteArena/box2d)
 + [TiledMaps](https://github.com/pikkpoiss/tmxgo)

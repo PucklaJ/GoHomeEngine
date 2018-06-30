@@ -1,9 +1,10 @@
 package main
 
 import (
-	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
 	"github.com/PucklaMotzer09/gohomeengine/src/frameworks/GTK"
 	"github.com/PucklaMotzer09/gohomeengine/src/frameworks/GTK/gtk"
+	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
+	"github.com/go-gl/mathgl/mgl32"
 	"log"
 )
 
@@ -17,13 +18,13 @@ func (this *GTKGUIScene) InitGUI() {
 	var box gtk.Box
 	var button gtk.Button
 	var button2 gtk.Button
-	box = gtk.BoxNew(gtk.ORIENTATION_HORIZONTAL,0)
+	box = gtk.BoxNew(gtk.ORIENTATION_HORIZONTAL, 0)
 	button = gtk.ButtonNewWithLabel("Enter Me")
 	button2 = gtk.ButtonNewWithLabel("Click Me")
-	button.SignalConnect("enter",func(button gtk.Button) {
+	button.SignalConnect("enter", func(button gtk.Button) {
 		log.Println("Entered Button")
 	})
-	button2.SignalConnect("clicked",func(button gtk.Button) {
+	button2.SignalConnect("clicked", func(button gtk.Button) {
 		log.Println("Clicked Button2")
 	})
 	gtk.GetWindow().ToContainer().Add(box.ToWidget())
@@ -32,7 +33,7 @@ func (this *GTKGUIScene) InitGUI() {
 	box.ToContainer().Add(button.ToWidget())
 	box.ToContainer().Add(button2.ToWidget())
 
-	gtk.GetGLArea().ToWidget().SetSizeRequest(640/2,480/2)
+	gtk.GetGLArea().ToWidget().SetSizeRequest(640/2, 480/2)
 }
 
 func (this *GTKGUIScene) Init() {
@@ -60,8 +61,7 @@ func (this *GTKGUIScene) Init() {
 }
 
 func (this *GTKGUIScene) Update(delta_time float32) {
-	this.cube.Transform.Rotation[0] += 30.0 * delta_time
-	this.cube.Transform.Rotation[1] += 30.0 * delta_time
+	this.cube.Transform.Rotation = this.cube.Transform.Rotation.Mul(mgl32.QuatRotate(mgl32.DegToRad(30.0)*delta_time, mgl32.Vec3{0.0, 1.0, 0.0})).Mul(mgl32.QuatRotate(mgl32.DegToRad(30.0)*delta_time, mgl32.Vec3{1.0, 0.0, 0.0}))
 }
 
 func (this *GTKGUIScene) Terminate() {

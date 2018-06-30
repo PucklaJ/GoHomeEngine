@@ -133,11 +133,13 @@ type RenderManager struct {
 }
 
 func (rmgr *RenderManager) Init() {
+	windowSize := Framew.WindowGetSize()
+
 	rmgr.CurrentShader = nil
-	rmgr.BackBufferMS = Render.CreateRenderTexture("BackBufferMS", uint32(Framew.WindowGetSize()[0]), uint32(Framew.WindowGetSize()[1]), 1, true, true, false, false)
-	rmgr.BackBuffer = Render.CreateRenderTexture("BackBuffer", uint32(Framew.WindowGetSize()[0]), uint32(Framew.WindowGetSize()[1]), 1, true, false, false, false)
-	rmgr.BackBuffer2D = Render.CreateRenderTexture("BackBuffer2D", uint32(Framew.WindowGetSize()[0]), uint32(Framew.WindowGetSize()[1]), 1, true, true, false, false)
-	rmgr.BackBuffer3D = Render.CreateRenderTexture("BackBuffer3D", uint32(Framew.WindowGetSize()[0]), uint32(Framew.WindowGetSize()[1]), 1, true, true, false, false)
+	rmgr.BackBufferMS = Render.CreateRenderTexture("BackBufferMS", uint32(windowSize[0]), uint32(windowSize[1]), 1, true, true, false, false)
+	rmgr.BackBuffer = Render.CreateRenderTexture("BackBuffer", uint32(windowSize[0]), uint32(windowSize[1]), 1, true, false, false, false)
+	rmgr.BackBuffer2D = Render.CreateRenderTexture("BackBuffer2D", uint32(windowSize[0]), uint32(windowSize[1]), 1, true, true, false, false)
+	rmgr.BackBuffer3D = Render.CreateRenderTexture("BackBuffer3D", uint32(windowSize[0]), uint32(windowSize[1]), 1, true, true, false, false)
 	ResourceMgr.LoadShaderSource("BackBufferShader", BACKBUFFER_SHADER_VERTEX_SOURCE_OPENGL, BACKBUFFER_SHADER_FRAGMENT_SOURCE_OPENGL, "", "", "", "")
 	ResourceMgr.LoadShaderSource("PostProcessingShader", POST_PROCESSING_SHADER_VERTEX_SOURCE_OPENGL, POST_PROCESSING_SHADER_FRAGMENT_SOURCE_OPENGL, "", "", "", "")
 	ResourceMgr.LoadShaderSource("RenderScreenShader", POST_PROCESSING_SHADER_VERTEX_SOURCE_OPENGL, RENDER_SCREEN_SHADER_FRAGMENT_SOURCE_OPENGL, "", "", "", "")
@@ -145,29 +147,30 @@ func (rmgr *RenderManager) Init() {
 	rmgr.PostProcessingShader = ResourceMgr.GetShader("PostProcessingShader")
 	rmgr.renderScreenShader = ResourceMgr.GetShader("RenderScreenShader")
 
+
 	rmgr.AddViewport2D(&Viewport{
 		0,
 		0, 0,
-		int(Framew.WindowGetSize()[0]),
-		int(Framew.WindowGetSize()[1]),
+		int(windowSize[0]),
+		int(windowSize[1]),
 		true,
 	})
 	rmgr.AddViewport3D(&Viewport{
 		0,
 		0, 0,
-		int(Framew.WindowGetSize()[0]),
-		int(Framew.WindowGetSize()[1]),
+		int(windowSize[0]),
+		int(windowSize[1]),
 		true,
 	})
 	rmgr.SetProjection2D(&Ortho2DProjection{
 		Left:   0.0,
-		Right:  Framew.WindowGetSize()[0],
+		Right:  windowSize[0],
 		Top:    0.0,
-		Bottom: Framew.WindowGetSize()[1],
+		Bottom: windowSize[1],
 	})
 	rmgr.SetProjection3D(&PerspectiveProjection{
-		Width:     Framew.WindowGetSize()[0],
-		Height:    Framew.WindowGetSize()[1],
+		Width:     windowSize[0],
+		Height:    windowSize[1],
 		FOV:       70.0,
 		NearPlane: 0.1,
 		FarPlane:  1000.0,
@@ -453,6 +456,8 @@ func (rmgr *RenderManager) handleCurrentCameraAndViewport(rtype RenderType, came
 			}
 			rmgr.currentViewport.Width = int(wSize.X())
 			rmgr.currentViewport.Height = int(wSize.Y())
+			rmgr.currentViewport.X = 0
+			rmgr.currentViewport.Y = 0
 		}
 		Render.SetViewport(*rmgr.currentViewport)
 		if rmgr.UpdateProjectionWithViewport {

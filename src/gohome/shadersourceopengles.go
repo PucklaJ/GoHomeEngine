@@ -2892,7 +2892,8 @@ vec2 flipTexCoord(vec2 tc);
 
 void main()
 {
-	gl_Position = projectionMatrix2D *vec4(vec2(viewMatrix2D*transformMatrix2D*vec3(vertex,1.0)),depth,1.0);
+	gl_Position = projectionMatrix2D *vec4(vec2(viewMatrix2D*transformMatrix2D*vec3(vertex,1.0)),0.0,1.0);
+	gl_Position.z = depth;
 	fragTexCoord = textureRegionToTexCoord(flipTexCoord(texCoord));
 }
 

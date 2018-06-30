@@ -34,7 +34,7 @@ fi
 
 GOHOME_PKG_CONFIG_PATH=${GOPATH}/src/github.com/PucklaMotzer09/gohomeengine/deps/pkg/windows
 PKG_CONFIG_PATH=${PKG_CONFIG_PATH}:${GOHOME_PKG_CONFIG_PATH}
-$CMDPATH/fsreplacer/fsreplacer $GOHOME_PKG_CONFIG_PATH/assimp.pc '%GOPATH%' $($CMDPATH/bsreplacer/bsreplacer.exe $GOPATH)
+$CMDPATH/fsreplacer/fsreplacer.exe $GOHOME_PKG_CONFIG_PATH/assimp.pc '%GOPATH%' $($CMDPATH/bsreplacer/bsreplacer.exe $GOPATH)
 
 wantInstall=0
 wantRun=0
@@ -111,7 +111,7 @@ then
 	strip -s $placedPath/$executableName.exe
 fi
 
-$CMDPATH/fsreplacer/fsreplacer $GOHOME_PKG_CONFIG_PATH/assimp.pc $($CMDPATH/bsreplacer/bsreplacer.exe $GOPATH) '%GOPATH%'
+$CMDPATH/fsreplacer/fsreplacer.exe $GOHOME_PKG_CONFIG_PATH/assimp.pc $($CMDPATH/bsreplacer/bsreplacer.exe $GOPATH) '%GOPATH%'
 
 echo Placed executable in $placedPath
 

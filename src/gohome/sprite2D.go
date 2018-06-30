@@ -116,7 +116,7 @@ func (spr *Sprite2D) setUniforms() {
 	if shader != nil {
 		shader.SetUniformI(FLIP_UNIFORM_NAME, int32(spr.Flip))
 		shader.SetUniformV4(TEXTURE_REGION_UNIFORM_NAME,spr.TextureRegion.Normalize(spr.Texture).Vec4())
-		shader.SetUniformF(DEPTH_UNIFORM_NAME,1.0-float32(spr.Depth)/255.0-1.0)
+		shader.SetUniformF(DEPTH_UNIFORM_NAME,(1.0-float32(spr.Depth)/255.0)*2.0-1.0)
 		if spr.Texture.GetKeyColor() != nil {
 			shader.SetUniformI(ENABLE_KEY_UNIFORM_NAME,1)
 			shader.SetUniformV3(KEY_COLOR_UNIFORM_NAME,ColorToVec3(spr.Texture.GetKeyColor()))
