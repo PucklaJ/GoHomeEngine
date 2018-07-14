@@ -29,3 +29,71 @@ type AudioManager interface {
 	CreateMusic(name string, samples []byte,format uint8, sampleRate uint32) Music
 	Terminate()
 }
+
+type NilSound struct {
+
+}
+
+func (*NilSound) Play() {
+
+}
+
+func (*NilSound) Pause() {
+
+}
+
+func (*NilSound) Resume() {
+
+}
+
+func (*NilSound) Stop() {
+
+}
+
+func (*NilSound) Terminate() {
+
+}
+
+type NilMusic struct {
+
+}
+
+func (*NilMusic) Play() {
+
+}
+
+func (*NilMusic) Pause() {
+
+}
+
+func (*NilMusic) Resume() {
+
+}
+
+func (*NilMusic) Stop() {
+
+}
+
+func (*NilMusic) Terminate() {
+
+}
+
+type NilAudioManager struct {
+
+}
+
+func (*NilAudioManager) Init() {
+
+}
+
+func (*NilAudioManager) CreateSound(name ,fileName string) Sound {
+	return &NilSound{}
+}
+
+func (*NilAudioManager) CreateMusic(name string,samples []byte, format uint8, sampleRate uint32) Music {
+	return &NilMusic{}
+}
+
+func (*NilAudioManager) Terminate() {
+
+}
