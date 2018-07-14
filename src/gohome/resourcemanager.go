@@ -12,7 +12,6 @@ import (
 	"strconv"
 	"strings"
 	"sync"
-	"github.com/PucklaMotzer09/gohomeengine/src/loaders/wav"
 )
 
 const (
@@ -257,6 +256,14 @@ func (rsmgr *ResourceManager) GetFont(name string) *Font {
 	return font
 }
 
+func (rsmgr *ResourceManager) GetSound(name string) Sound {
+	return rsmgr.sounds[name]
+}
+
+func (rsmgr *ResourceManager) GetMusic(name string) Music {
+	return rsmgr.musics[name]
+}
+
 func (rsmgr *ResourceManager) Terminate() {
 	for k, v := range rsmgr.shaders {
 		v.Terminate()
@@ -433,7 +440,22 @@ func (rsmgr *ResourceManager) LoadFont(name, path string) {
 }
 
 func (rsmgr *ResourceManager) LoadMusic(name, path string) {
+	if resName,ok := rsmgr.resourceFileNames[path];ok {
+		ErrorMgr.Warning("Music",name,"Has already been loaded with this or another name!")
+		rsmgr.musics[name] = rsmgr.musics[resName]
+		return
+	}
+	if _,ok := rsmgr.musics[name]; ok {
+		ErrorMgr.Warning("Music",name,"Has already been loaded!")
+		return
+	}
 
+	music := Framew.LoadMusic(name,path)
+
+	if music != nil {
+		rsmgr.musics[name] = music
+		ErrorMgr.Log("Music",name,"Finished Loading!")
+	}
 }
 
 func (rsmgr *ResourceManager) LoadSound(name, path string) {
@@ -447,26 +469,12 @@ func (rsmgr *ResourceManager) LoadSound(name, path string) {
 		return
 	}
 
-	wavReader,err := loader.LoadWAVFile(path)
-	if err != nil {
-		ErrorMgr.MessageError(ERROR_LEVEL_ERROR,"Sound",name,err)
-		return
-	}
-	format := loader.GetAudioFormat(wavReader)
-	if format == AUDIO_FORMAT_UNKNOWN {
-		ErrorMgr.Error("Sound",name,"The audio format is unknow: C: " + strconv.Itoa(int(wavReader.GetNumChannels())) + " B: " + strconv.Itoa(int(wavReader.GetBitsPerSample()/wavReader.GetNumChannels())))
-		return
-	}
-	samples,err := loader.ReadAllSamples(wavReader)
-	if err != nil {
-		ErrorMgr.MessageError(ERROR_LEVEL_ERROR,"Sound",name,err)
-		return
-	}
-	sampleRate := wavReader.GetSampleRate()
+	sound := Framew.LoadSound(name,path)
 
-	sound := Framew.GetAudioManager().CreateSound(name,samples,format,sampleRate)
-	rsmgr.sounds[name] = sound
-	ErrorMgr.Log("Sound",name,"Finished Loading!")
+	if sound != nil {
+		rsmgr.sounds[name] = sound
+		ErrorMgr.Log("Sound",name,"Finished Loading!")
+	}
 }
 
 func (rsmgr *ResourceManager) loadFont(name, path string, preloaded bool) {

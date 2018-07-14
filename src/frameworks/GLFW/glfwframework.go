@@ -4,6 +4,7 @@ import (
 	// "fmt"
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
 	"github.com/PucklaMotzer09/gohomeengine/src/loaders/assimp"
+	loadwav "github.com/PucklaMotzer09/gohomeengine/src/loaders/wav"
 	"github.com/go-gl/glfw/v3.2/glfw"
 	"github.com/go-gl/mathgl/mgl32"
 	"io"
@@ -12,6 +13,7 @@ import (
 	"os"
 	"strings"
 	"github.com/PucklaMotzer09/gohomeengine/src/audio"
+	"strconv"
 )
 
 type GLFWFramework struct {
@@ -589,4 +591,30 @@ func (gfw *GLFWFramework) EndTextInput() {
 
 func (gfw *GLFWFramework) GetAudioManager() gohome.AudioManager {
 	return &gfw.audioManager
+}
+
+func (gfw *GLFWFramework) LoadSound(name,path string) gohome.Sound {
+	wavReader,err := loadwav.LoadWAVFile(path)
+	if err != nil {
+		gohome.ErrorMgr.MessageError(gohome.ERROR_LEVEL_ERROR,"Sound",name,err)
+		return nil
+	}
+	format := loadwav.GetAudioFormat(wavReader)
+	if format == gohome.AUDIO_FORMAT_UNKNOWN {
+		gohome.ErrorMgr.Error("Sound",name,"The audio format is unknow: C: " + strconv.Itoa(int(wavReader.GetNumChannels())) + " B: " + strconv.Itoa(int(wavReader.GetBitsPerSample()/wavReader.GetNumChannels())))
+		return nil
+	}
+	samples,err := loadwav.ReadAllSamples(wavReader)
+	if err != nil {
+		gohome.ErrorMgr.MessageError(gohome.ERROR_LEVEL_ERROR,"Sound",name,err)
+		return nil
+	}
+	sampleRate := wavReader.GetSampleRate()
+
+	sound := gfw.audioManager.CreateSound(name,samples,format,sampleRate)
+
+	return sound
+}
+func (gfw *GLFWFramework) LoadMusic(name,path string) gohome.Music {
+	return &gohome.NilMusic{}
 }

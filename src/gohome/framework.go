@@ -35,6 +35,8 @@ type Framework interface {
 
 	OpenFile(file string) (io.ReadCloser, error)
 	LoadLevel(rsmgr *ResourceManager, name, path string, preloaded, loadToGPU bool) *Level
+	LoadSound(name,path string) Sound
+	LoadMusic(name,path string) Music
 
 	ShowYesNoDialog(title, message string) uint8
 
