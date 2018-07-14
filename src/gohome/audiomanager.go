@@ -1,21 +1,27 @@
 package gohome
 
+import "time"
+
 type Sound interface {
-	Play()
+	Play(loop bool)
 	Pause()
 	Resume()
 	Stop()
 	Terminate()
 	IsPlaying() bool
+	GetPlayingDuration() time.Duration
+	GetDuration() time.Duration
 }
 
 type Music interface {
-	Play()
+	Play(loop bool)
 	Pause()
 	Resume()
 	Stop()
 	Terminate()
 	IsPlaying() bool
+	GetPlayingDuration() time.Duration
+	GetDuration() time.Duration
 }
 
 const (
@@ -37,7 +43,7 @@ type NilSound struct {
 
 }
 
-func (*NilSound) Play() {
+func (*NilSound) Play(loop bool) {
 
 }
 func (*NilSound) Pause() {
@@ -55,12 +61,18 @@ func (*NilSound) Terminate() {
 func (*NilSound) IsPlaying() bool {
 	return false
 }
+func (*NilSound) GetPlayingDuration() time.Duration {
+	return time.Second*0
+}
+func (*NilSound) GetDuration() time.Duration {
+	return time.Second*0
+}
 
 type NilMusic struct {
 
 }
 
-func (*NilMusic) Play() {
+func (*NilMusic) Play(loop bool) {
 
 }
 func (*NilMusic) Pause() {
@@ -77,6 +89,12 @@ func (*NilMusic) Terminate() {
 }
 func (*NilMusic) IsPlaying() bool {
 	return false
+}
+func (*NilMusic) GetPlayingDuration() time.Duration {
+	return time.Second*0
+}
+func (*NilMusic) GetDuration() time.Duration {
+	return time.Second*0
 }
 
 type NilAudioManager struct {

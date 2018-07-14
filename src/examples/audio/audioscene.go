@@ -1,6 +1,9 @@
 package main
 
-import "github.com/PucklaMotzer09/gohomeengine/src/gohome"
+import (
+	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
+	"fmt"
+)
 
 type AudioScene struct {
 	sound gohome.Sound
@@ -18,7 +21,7 @@ func (this *AudioScene) Update(delta_time float32) {
 		if this.music == nil {
 			this.music = gohome.ResourceMgr.GetMusic("TownTheme")
 			if this.music != nil {
-				this.music.Play()
+				this.music.Play(true)
 			}
 		} else {
 			if this.music.IsPlaying() {
@@ -33,7 +36,7 @@ func (this *AudioScene) Update(delta_time float32) {
 		if this.sound == nil {
 			this.sound = gohome.ResourceMgr.GetSound("Bottle")
 			if this.sound != nil {
-				this.sound.Play()
+				this.sound.Play(false)
 			}
 		} else {
 			if this.sound.IsPlaying() {
@@ -42,6 +45,10 @@ func (this *AudioScene) Update(delta_time float32) {
 				this.sound.Resume()
 			}
 		}
+	}
+
+	if this.music != nil {
+		fmt.Println("Music:",this.music.GetPlayingDuration())
 	}
 }
 
