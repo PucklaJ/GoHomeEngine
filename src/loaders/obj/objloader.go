@@ -7,6 +7,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
 )
 
 type OBJVertex struct {
@@ -82,7 +83,7 @@ type OBJLoader struct {
 	normalsLoaded    bool
 	texCoordsLoaded  bool
 	materialPaths    []string
-	openMaterialFile func(path string) (io.ReadCloser, error)
+	openMaterialFile func(path string) (*gohome.File, error)
 	directory        string
 }
 
@@ -118,7 +119,7 @@ func (this *OBJLoader) SetMaterialPaths(paths []string) {
 	this.materialPaths = paths
 }
 
-func (this *OBJLoader) SetOpenMaterialFile(function func(path string) (io.ReadCloser, error)) {
+func (this *OBJLoader) SetOpenMaterialFile(function func(path string) (*gohome.File, error)) {
 	this.openMaterialFile = function
 }
 
@@ -230,8 +231,12 @@ func (this *OBJLoader) loadMaterialFile(path string) error {
 		this.materialPaths = append(this.materialPaths, "")
 	}
 	if this.openMaterialFile == nil {
-		this.openMaterialFile = func(path string) (io.ReadCloser, error) {
-			return os.Open(path)
+		this.openMaterialFile = func(path string) (*gohome.File, error) {
+			gFile := &gohome.File{}
+			osFile,err := os.Open(path)
+			gFile.ReadSeeker = osFile
+			gFile.Closer = osFile
+			return gFile,err
 		}
 	}
 	for i := 0; i < len(this.materialPaths); i++ {

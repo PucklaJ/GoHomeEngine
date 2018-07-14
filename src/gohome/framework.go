@@ -12,6 +12,11 @@ const (
 	DIALOG_ERROR     = iota
 )
 
+type File struct {
+	io.ReadSeeker
+	io.Closer
+}
+
 type Framework interface {
 	Init(ml *MainLoop) error
 	Update()
@@ -33,7 +38,7 @@ type Framework interface {
 	CursorHidden() bool
 	CursorDisabled() bool
 
-	OpenFile(file string) (io.ReadCloser, error)
+	OpenFile(file string) (*File, error)
 	LoadLevel(rsmgr *ResourceManager, name, path string, preloaded, loadToGPU bool) *Level
 	LoadSound(name,path string) Sound
 	LoadMusic(name,path string) Music

@@ -12,7 +12,6 @@ import (
 	"golang.org/x/mobile/event/size"
 	"golang.org/x/mobile/event/touch"
 	"golang.org/x/mobile/gl"
-	"io"
 	"strings"
 	"time"
 )
@@ -206,8 +205,12 @@ func (this *AndroidFramework) CursorDisabled() bool {
 	return false
 }
 
-func (this *AndroidFramework) OpenFile(file string) (io.ReadCloser, error) {
-	return asset.Open(file)
+func (this *AndroidFramework) OpenFile(file string) (*gohome.File, error) {
+	gFile := &gohome.File{}
+	aFile,err := asset.Open(file)
+	gFile.ReadSeeker = aFile
+	gFile.Closer = aFile
+	return gFile,err
 }
 
 func getFileExtension(file string) string {
@@ -294,4 +297,11 @@ func (this *AndroidFramework) GetTextInput() string {
 
 func (this *AndroidFramework) GetAudioManager() gohome.AudioManager {
 	return &gohome.NilAudioManager{}
+}
+
+func (*AndroidFramework) LoadSound(name,path string) gohome.Sound {
+	return nil
+}
+func (*AndroidFramework) LoadMusic(name,path string) gohome.Music {
+	return nil
 }

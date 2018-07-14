@@ -7,7 +7,6 @@ import (
 	loadwav "github.com/PucklaMotzer09/gohomeengine/src/loaders/wav"
 	"github.com/go-gl/glfw/v3.2/glfw"
 	"github.com/go-gl/mathgl/mgl32"
-	"io"
 	"log"
 	"math"
 	"os"
@@ -507,8 +506,12 @@ func (gfw *GLFWFramework) WindowIsFullscreen() bool {
 	return gfw.window.GetMonitor() != nil
 }
 
-func (gfw *GLFWFramework) OpenFile(file string) (io.ReadCloser, error) {
-	return os.Open(file)
+func (gfw *GLFWFramework) OpenFile(file string) (*gohome.File, error) {
+	gFile := &gohome.File{}
+	osFile,err := os.Open(file)
+	gFile.ReadSeeker = osFile
+	gFile.Closer = osFile
+	return gFile,err
 }
 
 func getFileExtension(file string) string {

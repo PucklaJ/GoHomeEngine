@@ -13,7 +13,7 @@ func LoadWAVFile(fileName string) (*wav.Reader, error) {
 		return nil,err
 	}
 
-	file,err := os.Open(fileName)
+	file,err := gohome.Framew.OpenFile(fileName)
 	if err != nil {
 		return nil,err
 	}

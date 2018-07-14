@@ -189,3 +189,10 @@ func (this *GTKFramework) GetGtkWindow() gtk.Window {
 func (*GTKFramework) GetAudioManager() gohome.AudioManager {
 	return &gohome.NilAudioManager{}
 }
+
+func (*GTKFramework) LoadSound(name,path string) gohome.Sound {
+	return nil
+}
+func (*GTKFramework) LoadMusic(name,path string) gohome.Music {
+	return nil
+}
