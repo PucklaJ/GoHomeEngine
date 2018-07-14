@@ -5,6 +5,7 @@ import (
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
 	"github.com/PucklaMotzer09/gohomeengine/src/loaders/assimp"
 	loadwav "github.com/PucklaMotzer09/gohomeengine/src/loaders/wav"
+	loadmp3 "github.com/PucklaMotzer09/gohomeengine/src/loaders/mp3"
 	"github.com/go-gl/glfw/v3.2/glfw"
 	"github.com/go-gl/mathgl/mgl32"
 	"log"
@@ -619,5 +620,19 @@ func (gfw *GLFWFramework) LoadSound(name,path string) gohome.Sound {
 	return sound
 }
 func (gfw *GLFWFramework) LoadMusic(name,path string) gohome.Music {
-	return &gohome.NilMusic{}
+	decoder,err := loadmp3.LoadMP3File(path)
+	if err != nil {
+		gohome.ErrorMgr.MessageError(gohome.ERROR_LEVEL_ERROR,"Music",name,err)
+		return nil
+	}
+	format := loadmp3.GetAudioFormat(decoder)
+	sampleRate := uint32(decoder.SampleRate())
+	samples,err := loadmp3.ReadAllSamples(decoder)
+	if err != nil {
+		gohome.ErrorMgr.MessageError(gohome.ERROR_LEVEL_ERROR,"Music",name,err)
+		return nil
+	}
+
+	music := gfw.audioManager.CreateMusic(name,samples,format,sampleRate)
+	return music
 }

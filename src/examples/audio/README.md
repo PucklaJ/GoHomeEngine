@@ -1,3 +1,4 @@
 ## Audio Example
 
-bach.wav has been downloaded from [here](http://www.music.helsinki.fi/tmt/opetus/uusmedia/esim/index-e.html)
+bottle.wav has been downloaded from [here](https://opengameart.org/content/rpg-sound-pack)<br>
+TownTheme.mp3 has been downloaded from [here](https://opengameart.org/content/town-theme-rpg)

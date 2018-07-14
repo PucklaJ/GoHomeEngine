@@ -15,6 +15,7 @@ type Music interface {
 	Resume()
 	Stop()
 	Terminate()
+	IsPlaying() bool
 }
 
 const (
@@ -73,6 +74,9 @@ func (*NilMusic) Stop() {
 }
 func (*NilMusic) Terminate() {
 
+}
+func (*NilMusic) IsPlaying() bool {
+	return false
 }
 
 type NilAudioManager struct {
