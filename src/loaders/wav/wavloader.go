@@ -55,18 +55,17 @@ func ReadAllSamples(reader *wav.Reader) ([]byte,error) {
 func GetAudioFormat(reader *wav.Reader) uint8 {
 	numChannels := reader.GetNumChannels()
 	bitsPerSample := reader.GetBitsPerSample()
-	bitsPerChannel := bitsPerSample / numChannels
 
 	switch numChannels {
 	case 1:
-		switch bitsPerChannel {
+		switch bitsPerSample {
 		case 8:
 			return gohome.AUDIO_FORMAT_MONO8
 		case 16:
 			return gohome.AUDIO_FORMAT_MONO16
 		}
 	case 2:
-		switch bitsPerChannel {
+		switch bitsPerSample {
 		case 8:
 			return gohome.AUDIO_FORMAT_STEREO8
 		case 16:
