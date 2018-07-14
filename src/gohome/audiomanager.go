@@ -6,6 +6,7 @@ type Sound interface {
 	Resume()
 	Stop()
 	Terminate()
+	IsPlaying() bool
 }
 
 type Music interface {
@@ -38,21 +39,20 @@ type NilSound struct {
 func (*NilSound) Play() {
 
 }
-
 func (*NilSound) Pause() {
 
 }
-
 func (*NilSound) Resume() {
 
 }
-
 func (*NilSound) Stop() {
 
 }
-
 func (*NilSound) Terminate() {
 
+}
+func (*NilSound) IsPlaying() bool {
+	return false
 }
 
 type NilMusic struct {
@@ -62,19 +62,15 @@ type NilMusic struct {
 func (*NilMusic) Play() {
 
 }
-
 func (*NilMusic) Pause() {
 
 }
-
 func (*NilMusic) Resume() {
 
 }
-
 func (*NilMusic) Stop() {
 
 }
-
 func (*NilMusic) Terminate() {
 
 }
@@ -86,15 +82,12 @@ type NilAudioManager struct {
 func (*NilAudioManager) Init() {
 
 }
-
 func (*NilAudioManager) CreateSound(name string, samples []byte, format uint8, sampleRate uint32) Sound {
 	return &NilSound{}
 }
-
 func (*NilAudioManager) CreateMusic(name string,samples []byte, format uint8, sampleRate uint32) Music {
 	return &NilMusic{}
 }
-
 func (*NilAudioManager) Terminate() {
 
 }

@@ -12,23 +12,30 @@ type OpenALSound struct {
 
 	buffer al.Buffer
 	source al.Source
+	playing bool
 }
 
 func (this *OpenALSound) Play() {
 	al.PlaySources([]al.Source{this.source})
+	this.playing = true
 }
 func (this *OpenALSound) Pause() {
 	al.PauseSources([]al.Source{this.source})
+	this.playing = false
 }
 func (this *OpenALSound) Resume() {
 	this.Play()
 }
 func (this *OpenALSound) Stop() {
 	al.StopSources([]al.Source{this.source})
+	this.playing = false
 }
 func (this *OpenALSound) Terminate() {
 	al.DeleteBuffer(this.buffer)
 	al.DeleteSource(this.source)
+}
+func (this *OpenALSound) IsPlaying() bool {
+	return this.playing
 }
 
 type OpenALMusic struct {
