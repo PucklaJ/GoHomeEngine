@@ -46,6 +46,8 @@ type Framework interface {
 	StartTextInput()
 	GetTextInput() string
 	EndTextInput()
+
+	GetAudioManager() AudioManager
 }
 
 var Framew Framework

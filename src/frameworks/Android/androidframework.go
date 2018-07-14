@@ -291,3 +291,7 @@ func (this *AndroidFramework) EndTextInput() {
 func (this *AndroidFramework) GetTextInput() string {
 	return ""
 }
+
+func (this *AndroidFramework) GetAudioManager() gohome.AudioManager {
+	return &gohome.NilAudioManager{}
+}

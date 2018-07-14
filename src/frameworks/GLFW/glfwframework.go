@@ -584,3 +584,7 @@ func (gfw *GLFWFramework) EndTextInput() {
 	gfw.textInputStarted = false
 	gfw.textInputBuffer = ""
 }
+
+func (*GLFWFramework) GetAudioManager() gohome.AudioManager {
+	return &gohome.NilAudioManager{}
+}

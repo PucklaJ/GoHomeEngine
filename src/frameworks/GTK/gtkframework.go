@@ -185,3 +185,7 @@ func (this *GTKFramework) EndTextInput() {
 func (this *GTKFramework) GetGtkWindow() gtk.Window {
 	return gtk.GetWindow()
 }
+
+func (*GTKFramework) GetAudioManager() gohome.AudioManager {
+	return &gohome.NilAudioManager{}
+}
