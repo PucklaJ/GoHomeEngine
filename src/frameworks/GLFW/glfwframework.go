@@ -11,6 +11,7 @@ import (
 	"math"
 	"os"
 	"strings"
+	"github.com/PucklaMotzer09/gohomeengine/src/audio"
 )
 
 type GLFWFramework struct {
@@ -28,6 +29,7 @@ type GLFWFramework struct {
 
 	textInputStarted bool
 	textInputBuffer  string
+	audioManager audio.OpenALAudioManager
 }
 
 func (gfw *GLFWFramework) Init(ml *gohome.MainLoop) error {
@@ -585,6 +587,6 @@ func (gfw *GLFWFramework) EndTextInput() {
 	gfw.textInputBuffer = ""
 }
 
-func (*GLFWFramework) GetAudioManager() gohome.AudioManager {
-	return &gohome.NilAudioManager{}
+func (gfw *GLFWFramework) GetAudioManager() gohome.AudioManager {
+	return &gfw.audioManager
 }
