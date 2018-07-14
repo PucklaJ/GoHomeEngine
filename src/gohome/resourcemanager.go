@@ -272,6 +272,20 @@ func (rsmgr *ResourceManager) Terminate() {
 		v.Terminate()
 		delete(rsmgr.Models, k)
 	}
+
+	for k := range rsmgr.Levels {
+		delete(rsmgr.Levels,k)
+	}
+
+	for k,v := range rsmgr.sounds {
+		v.Terminate()
+		delete(rsmgr.sounds,k)
+	}
+
+	for k,v := range rsmgr.musics {
+		v.Terminate()
+		delete(rsmgr.musics,k)
+	}
 }
 
 func (rsmgr *ResourceManager) PreloadShader(name, vertex_path, fragment_path, geometry_path, tesselletion_control_path, eveluation_path, compute_path string) {
@@ -711,6 +725,30 @@ func (rsmgr *ResourceManager) DeleteShader(name string) {
 		ErrorMgr.Log("Shader", name, "Deleted!")
 	} else {
 		ErrorMgr.Warning("Shader", name, "Couldn't delete! It hasn't been loaded!")
+	}
+}
+
+func (rsmgr *ResourceManager) DeleteSound(name string) {
+	sound,ok := rsmgr.sounds[name]
+	if ok {
+		sound.Terminate()
+		delete(rsmgr.sounds,name)
+		rsmgr.deleteResourceFileName(name)
+		ErrorMgr.Log("Sound",name,"Deleted!")
+	} else {
+		ErrorMgr.Warning("Sound",name,"Couldn't delete! It has not been loaded!")
+	}
+}
+
+func (rsmgr *ResourceManager) DeleteMusic(name string) {
+	music,ok := rsmgr.musics[name]
+	if ok {
+		music.Terminate()
+		delete(rsmgr.musics,name)
+		rsmgr.deleteResourceFileName(name)
+		ErrorMgr.Log("Music",name,"Deleted!")
+	} else {
+		ErrorMgr.Warning("Music",name,"Couldn't delete! It has not been loaded!")
 	}
 }
 
