@@ -12,6 +12,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"github.com/PucklaMotzer09/gohomeengine/src/loaders/wav"
 )
 
 const (
@@ -431,7 +432,25 @@ func (rsmgr *ResourceManager) LoadSound(name, path string) {
 		ErrorMgr.Warning("Sound",name,"Has already been loaded!")
 		return
 	}
-	sound := Framew.GetAudioManager().CreateSound(name,path)
+
+	wavReader,err := loader.LoadWAVFile(path)
+	if err != nil {
+		ErrorMgr.MessageError(ERROR_LEVEL_ERROR,"Sound",name,err)
+		return
+	}
+	format := loader.GetAudioFormat(wavReader)
+	if format == AUDIO_FORMAT_UNKNOWN {
+		ErrorMgr.Error("Sound",name,"The audio format is unknow: C: " + strconv.Itoa(int(wavReader.GetNumChannels())) + " B: " + strconv.Itoa(int(wavReader.GetBitsPerSample()/wavReader.GetNumChannels())))
+		return
+	}
+	samples,err := loader.ReadAllSamples(wavReader)
+	if err != nil {
+		ErrorMgr.MessageError(ERROR_LEVEL_ERROR,"Sound",name,err)
+		return
+	}
+	sampleRate := wavReader.GetSampleRate()
+
+	sound := Framew.GetAudioManager().CreateSound(name,samples,format,sampleRate)
 	rsmgr.sounds[name] = sound
 	ErrorMgr.Log("Sound",name,"Finished Loading!")
 }

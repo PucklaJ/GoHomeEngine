@@ -21,11 +21,12 @@ const (
 	AUDIO_FORMAT_STEREO16 uint8 = iota
 	AUDIO_FORMAT_MONO8 uint8 = iota
 	AUDIO_FORMAT_MONO16 uint8 = iota
+	AUDIO_FORMAT_UNKNOWN uint8 = iota
 )
 
 type AudioManager interface {
 	Init()
-	CreateSound(name string,fileName string) Sound
+	CreateSound(name string, samples []byte, format uint8, sampleRate uint32) Sound
 	CreateMusic(name string, samples []byte,format uint8, sampleRate uint32) Music
 	Terminate()
 }
@@ -86,7 +87,7 @@ func (*NilAudioManager) Init() {
 
 }
 
-func (*NilAudioManager) CreateSound(name ,fileName string) Sound {
+func (*NilAudioManager) CreateSound(name string, samples []byte, format uint8, sampleRate uint32) Sound {
 	return &NilSound{}
 }
 
