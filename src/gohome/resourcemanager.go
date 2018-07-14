@@ -55,17 +55,29 @@ var (
 		"assets/",
 		"assets/fonts/",
 	}
+	MUSIC_SOUND_PATHS = [8]string{
+		"",
+		"sounds/",
+		"sound/",
+		"music/",
+		"assets/",
+		"assets/sounds/",
+		"assets/sound/",
+		"assets/music/",
+	}
 )
 
 type ResourceManager struct {
+	preloader
+
 	textures          map[string]Texture
 	shaders           map[string]Shader
 	Models            map[string]*Model3D
 	Levels            map[string]*Level
 	fonts             map[string]*Font
+	musics			  map[string]Music
+	sounds			  map[string]Sound
 	resourceFileNames map[string]string
-
-	preloader
 
 	LoadModelsWithSameName bool
 }
@@ -76,6 +88,8 @@ func (rsmgr *ResourceManager) Init() {
 	rsmgr.Models = make(map[string]*Model3D)
 	rsmgr.Levels = make(map[string]*Level)
 	rsmgr.fonts = make(map[string]*Font)
+	rsmgr.musics = make(map[string]Music)
+	rsmgr.sounds = make(map[string]Sound)
 	rsmgr.resourceFileNames = make(map[string]string)
 
 	rsmgr.preloader.Init()
@@ -401,6 +415,25 @@ func (rsmgr *ResourceManager) PreloadFont(name, path string) {
 
 func (rsmgr *ResourceManager) LoadFont(name, path string) {
 	rsmgr.loadFont(name, path, false)
+}
+
+func (rsmgr *ResourceManager) LoadMusic(name, path string) {
+
+}
+
+func (rsmgr *ResourceManager) LoadSound(name, path string) {
+	if resName,ok := rsmgr.resourceFileNames[path];ok {
+		ErrorMgr.Warning("Sound",name,"Has already been loaded with this or another name!")
+		rsmgr.sounds[name] = rsmgr.sounds[resName]
+		return
+	}
+	if _,ok := rsmgr.sounds[name]; ok {
+		ErrorMgr.Warning("Sound",name,"Has already been loaded!")
+		return
+	}
+	sound := Framew.GetAudioManager().CreateSound(name,path)
+	rsmgr.sounds[name] = sound
+	ErrorMgr.Log("Sound",name,"Finished Loading!")
 }
 
 func (rsmgr *ResourceManager) loadFont(name, path string, preloaded bool) {
