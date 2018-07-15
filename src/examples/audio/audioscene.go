@@ -12,8 +12,9 @@ type AudioScene struct {
 
 func (this *AudioScene) Init() {
 	gohome.Framew.GetAudioManager().Init()
-	gohome.ResourceMgr.LoadSound("Bottle","bottle.wav")
-	gohome.ResourceMgr.LoadMusic("TownTheme","TownTheme.mp3")
+	gohome.ResourceMgr.PreloadSound("Bottle","bottle.wav")
+	gohome.ResourceMgr.PreloadMusic("TownTheme","TownTheme.mp3")
+	gohome.ResourceMgr.LoadPreloadedResources()
 }
 
 func (this *AudioScene) Update(delta_time float32) {

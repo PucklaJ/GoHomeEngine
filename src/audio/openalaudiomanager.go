@@ -230,6 +230,8 @@ func (this *OpenALAudioManager) Update(delta_time float32) {
 func (this *OpenALAudioManager) removeMusicFromSlice(music *OpenALMusic) {
 	if len(this.musics) == 1 {
 		this.musics = this.musics[:0]
+	} else if len(this.musics) == 0 {
+		return
 	} else {
 		var index,i uint32
 		for i = 0;i<uint32(len(this.musics));i++ {
@@ -244,6 +246,8 @@ func (this *OpenALAudioManager) removeMusicFromSlice(music *OpenALMusic) {
 func (this *OpenALAudioManager) removeSoundFromSlice(sound *OpenALSound) {
 	if len(this.sounds) == 1 {
 		this.sounds = this.sounds[:0]
+	} else if len(this.sounds) == 0 {
+		return
 	} else {
 		var index,i uint32
 		for i = 0;i<uint32(len(this.sounds));i++ {
