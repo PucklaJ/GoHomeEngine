@@ -44,6 +44,7 @@ A game engine for 2D and 3D games written in go
 * Loading Shaders
 * Multiple Viewports
 * Tweens
+* Audio (.wav and .mp3)
 
 ##### 3D
 * Rendering 3D Models
@@ -67,13 +68,21 @@ A game engine for 2D and 3D games written in go
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// For Desktop (The windows assimp library is provided with this repository)
 	sudo apt-get install libassimp-dev libx11-dev libxrandr-dev libxcursor-dev libxinerama-dev libpthread-stubs0-dev zlib1g-dev libglfw3-dev libgl1-mesa-dev libxi-dev
+	// For GTK
+	sudo apt-get install libgtk-3-dev
+	// On Windows use msys and execute one of the following commands
+	pacman -S mingw-w64-x86_64-gtk3 // for 64-Bit
+	pacman -S mingw-w64-i686-gtk3   // for 32-Bit
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 2. Install the go-Dependencies:<br>
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    // For Desktop
+	// For Desktop
 	go get -u github.com/go-gl/gl/all-core
 	go get -u github.com/go-gl/glfw/v3.2
 	go get -u github.com/raedatoui/assimp
+	go get -u github.com/phf/go-openal
+	go get -u github.com/PucklaMotzer09/go-wav
+	go get -u github.com/hajimehoshi/go-mp3
 	// For Mobile
 	go get -u golang.org/x/mobile/cmd/gomobile
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -81,7 +90,7 @@ A game engine for 2D and 3D games written in go
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	cd $GOPATH/src/github.com/PucklaMotzer09/gohomeengine/src/examples/basic
 	$GOPATH/src/github.com/PucklaMotzer09/gohomeengine/build.sh -linux -run
-	// You should see a gopher in the middle
+	// You should see a gopher in the middle (use -windows instead of -linux on windows)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ## Tutorial
