@@ -605,7 +605,7 @@ func (gfw *GLFWFramework) LoadSound(name,path string) gohome.Sound {
 	}
 	format := loadwav.GetAudioFormat(wavReader)
 	if format == gohome.AUDIO_FORMAT_UNKNOWN {
-		gohome.ErrorMgr.Error("Sound",name,"The audio format is unknow: C: " + strconv.Itoa(int(wavReader.GetNumChannels())) + " B: " + strconv.Itoa(int(wavReader.GetBitsPerSample())))
+		gohome.ErrorMgr.Error("Sound",name,"The audio format is unknow: C: " + strconv.Itoa(int(wavReader.NumChannels)) + " B: " + strconv.Itoa(int(wavReader.BitsPerSample)))
 		return nil
 	}
 	samples,err := loadwav.ReadAllSamples(wavReader)
@@ -613,7 +613,7 @@ func (gfw *GLFWFramework) LoadSound(name,path string) gohome.Sound {
 		gohome.ErrorMgr.MessageError(gohome.ERROR_LEVEL_ERROR,"Sound",name,err)
 		return nil
 	}
-	sampleRate := wavReader.GetSampleRate()
+	sampleRate := wavReader.SampleRate
 
 	sound := gfw.audioManager.CreateSound(name,samples,format,sampleRate)
 

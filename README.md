@@ -8,22 +8,28 @@ A game engine for 2D and 3D games written in go
 ## Dependencies
 
 ##### General
-+ [go-gl/mathgl](https://github.com/go-gl/mathgl)
-+ [tga](https://github.com/blezek/tga)
++ [go-gl/mathgl](https://github.com/go-gl/mathgl) ([License](https://github.com/go-gl/mathgl/blob/master/LICENSE))
++ [tga](https://github.com/blezek/tga) ([License](https://github.com/blezek/tga/blob/master/LICENSE.MIT))
++ [go-openal](https://github.com/phf/go-openal) ([License](https://github.com/phf/go-openal/blob/master/LICENSE))
++ [go-wav](https://github.com/PucklaMotzer09/go-wav) ([Forked from here](https://github.com/sdobz/go-wav)) ([License](https://github.com/verdverm/go-wav/blob/master/LICENSE.md))
++ [go-mp3](https://github.com/hajimehoshi/go-mp3) ([License](https://github.com/hajimehoshi/go-mp3/blob/master/LICENSE))
 
 ##### GLFWFramework
-+ [assimp](https://github.com/assimp/assimp)
-+ [glfw](https://github.com/glfw/glfw)
++ [assimp](https://github.com/assimp/assimp) ([License](https://github.com/assimp/assimp/blob/master/LICENSE))
++ [glfw](https://github.com/glfw/glfw) ([License](https://github.com/glfw/glfw/blob/master/LICENSE.md))
+
+##### GTKFramework
++ [gtk](https://gtk.org) ([License](http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html))
 
 ##### AndroidFramework
-+ [AndroidSDK](https://developer.android.com/studio/)
-+ [gomobile](https://github.com/golang/mobile)
++ [AndroidSDK](https://developer.android.com/studio/) ([License](https://developer.android.com/studio/terms))
++ [gomobile](https://github.com/golang/mobile) ([License](https://github.com/golang/mobile/blob/master/LICENSE))
 
 ##### OpenGLRenderer
-+ [go-gl/gl](https://github.com/go-gl/gl)
++ [go-gl/gl](https://github.com/go-gl/gl) ([License](https://github.com/go-gl/gl/blob/master/LICENSE))
 
 ##### OpenGLESRenderer
-+ [gomobile/gles](https://github.com/golang/mobile)
++ [gomobile/gles](https://github.com/golang/mobile/tree/master/gl) ([License](https://github.com/golang/mobile/blob/master/LICENSE))
 
 ## Platforms
 
@@ -54,6 +60,7 @@ A game engine for 2D and 3D games written in go
 ##### 2D
 * Rendering 2D Sprites
 * Camera (Translating, Rotating and Zooming) 
+* Sprite Animation
 
 ## Installation
 1. Install the c-Dependencies:<br>

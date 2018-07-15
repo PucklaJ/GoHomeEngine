@@ -1,14 +1,12 @@
 package loader
 
 import (
-	"github.com/cryptix/wav"
-	"os"
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
-	"io"
+	"github.com/PucklaMotzer09/go-wav"
 )
 
-func LoadWAVFile(fileName string) (*wav.Reader, error) {
-	wavInfo,err := os.Stat(fileName)
+func LoadWAVFile(fileName string) (*wav.WavData, error) {
+	/*wavInfo,err := os.Stat(fileName)
 	if err != nil {
 		return nil,err
 	}
@@ -23,11 +21,19 @@ func LoadWAVFile(fileName string) (*wav.Reader, error) {
 		return reader,err
 	}
 
-	return reader,nil
-}
+	return reader,nil*/
 
-func StreamWAVFile(reader *wav.Reader) ([]byte,error) {
-	return reader.ReadRawSample()
+	file,err := gohome.Framew.OpenFile(fileName)
+	if err != nil {
+		return nil, err
+	}
+
+	data,err := wav.ReadWavData(file)
+	if err != nil {
+		return nil,err
+	}
+
+	return &data,err
 }
 
 func convert24BitTo16Bit(samples []byte,sampleCount uint32) []byte {
@@ -42,35 +48,20 @@ func convert24BitTo16Bit(samples []byte,sampleCount uint32) []byte {
 	return newSamples
 }
 
-func ReadAllSamples(reader *wav.Reader) ([]byte,error) {
-	rawReader,err := reader.GetDumbReader()
-	if err != nil {
-		return nil,err
+func ReadAllSamples(data *wav.WavData) ([]byte,error) {
+
+	samples := data.Data
+
+	if data.BitsPerSample == 24 {
+		samples = convert24BitTo16Bit(samples,uint32(len(samples)*8/24))
 	}
 
-	numSamples := reader.GetSampleCount()
-	bitsPerSample := reader.GetBitsPerSample()
-	bytesPerSample := bitsPerSample/8
-	byteCount := uint32(bytesPerSample)*numSamples
-
-	data := make([]byte,byteCount)
-
-	readBytes,err := rawReader.Read(data)
-	if err != nil && err != io.EOF {
-		return nil,err
-	}
-	data = data[:readBytes]
-
-	if reader.GetBitsPerSample() == 24 {
-		data = convert24BitTo16Bit(data,reader.GetSampleCount())
-	}
-
-	return data,nil
+	return samples,nil
 }
 
-func GetAudioFormat(reader *wav.Reader) uint8 {
-	numChannels := reader.GetNumChannels()
-	bitsPerSample := reader.GetBitsPerSample()
+func GetAudioFormat(data *wav.WavData) uint8 {
+	numChannels := data.NumChannels
+	bitsPerSample := data.BitsPerSample
 
 	switch numChannels {
 	case 1:
