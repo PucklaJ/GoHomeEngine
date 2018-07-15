@@ -97,7 +97,7 @@ A game engine for 2D and 3D games written in go
 
 The following code describes what is needed to write a game with GoHome
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.go}
+```go
 package main
 
 import (
@@ -125,6 +125,6 @@ func (*StartScene) Terminate() {
 func main() {
 	gohome.MainLop.Run(&framework.GLFWFramework{},&renderer.OpenGLRenderer{},1280,720,"Example",&StartScene{})
 }
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```
 
 This program opens a window with a black background. To learn more you can look at the examples in src/examples
