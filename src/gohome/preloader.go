@@ -42,9 +42,28 @@ type preloadedFont struct {
 }
 
 type preloadedFontData struct {
+	preloadedFont
+	font Font
+}
+
+type preloadedSound struct {
 	Name string
 	Path string
-	font Font
+}
+
+type preloadedSoundData struct {
+	preloadedSound
+	sound Sound
+}
+
+type preloadedMusic struct {
+	Name string
+	Path string
+}
+
+type preloadedMusicData struct {
+	preloadedMusic
+	music Music
 }
 
 type preloadedLevelData struct {
@@ -77,6 +96,8 @@ type preloader struct {
 	preloadedShaders  []preloadedShader
 	preloadedLevels   []preloadedLevel
 	preloadedFonts    []preloadedFont
+	preloadedSounds	  []preloadedSound
+	preloadedMusics	  []preloadedMusic
 
 	preloadedShaderDataChan     chan preloadedShaderData
 	preloadedLevelsChan         chan preloadedLevelData
@@ -84,6 +105,8 @@ type preloader struct {
 	PreloadedMeshesChan         chan PreloadedMesh
 	preloadedTextureDataChan    chan preloadedTextureData
 	preloadedFontChan           chan preloadedFontData
+	preloadedSoundChan			chan preloadedSoundData
+	preloadedMusicChan			chan preloadedMusicData
 	alreadyPreloadedTextureChan chan alreadyPreloadedResource
 	alreadyPreloadedLevelChan   chan alreadyPreloadedResource
 	exitChan                    chan bool
@@ -91,6 +114,8 @@ type preloader struct {
 	exitTexturesChan            chan bool
 	exitShadersChan             chan bool
 	exitFontsChan               chan bool
+	exitSoundsChan				chan bool
+	exitMusicsChan				chan bool
 
 	preloadedTexturesToFinish []preloadedTextureData
 	preloadedShadersToFinish  []preloadedShaderData
@@ -229,6 +254,52 @@ func (this *preloader) loadPreloadedFont(f preloadedFont, wg *sync.WaitGroup) {
 	ResourceMgr.loadFont(f.Name, f.Path, true)
 }
 
+func (this *preloader) loadPreloadedSounds() {
+	if len(this.preloadedSounds) == 0 {
+
+	} else {
+		var wg1 sync.WaitGroup
+		wg1.Add(len(this.preloadedSounds))
+		for i := 0; i < len(this.preloadedSounds); i++ {
+			go this.loadPreloadedSound(this.preloadedSounds[i], &wg1)
+		}
+		wg1.Wait()
+	}
+
+	go func() {
+		this.exitSoundsChan <- true
+	}()
+}
+
+func (this *preloader) loadPreloadedSound(f preloadedSound, wg *sync.WaitGroup) {
+	defer wg.Done()
+
+	ResourceMgr.loadSound(f.Name, f.Path, true)
+}
+
+func (this *preloader) loadPreloadedMusics() {
+	if len(this.preloadedMusics) == 0 {
+
+	} else {
+		var wg1 sync.WaitGroup
+		wg1.Add(len(this.preloadedMusics))
+		for i := 0; i < len(this.preloadedMusics); i++ {
+			go this.loadPreloadedMusic(this.preloadedMusics[i], &wg1)
+		}
+		wg1.Wait()
+	}
+
+	go func() {
+		this.exitMusicsChan <- true
+	}()
+}
+
+func (this *preloader) loadPreloadedMusic(f preloadedMusic, wg *sync.WaitGroup) {
+	defer wg.Done()
+
+	ResourceMgr.loadMusic(f.Name, f.Path, true)
+}
+
 func (this *preloader) finish(wg *sync.WaitGroup) {
 	defer wg.Done()
 
@@ -257,6 +328,14 @@ func (this *preloader) finish(wg *sync.WaitGroup) {
 			ResourceMgr.fonts[font.Name] = &font.font
 			ResourceMgr.resourceFileNames[font.Path] = font.Name
 			ErrorMgr.Log("Font", font.Name, "Finished Loading!")
+		case sound := <-this.preloadedSoundChan:
+			ResourceMgr.sounds[sound.Name] = sound.sound
+			ResourceMgr.resourceFileNames[sound.Path] = sound.Name
+			ErrorMgr.Log("Sound",sound.Name,"Finished Loading!")
+		case music := <-this.preloadedMusicChan:
+			ResourceMgr.musics[music.Name] = music.music
+			ResourceMgr.resourceFileNames[music.Path] = music.Name
+			ErrorMgr.Log("Music",music.Name,"Finished Loading!")
 		case <-this.exitChan:
 			done = true
 		default:
@@ -270,8 +349,8 @@ func (this *preloader) finish(wg *sync.WaitGroup) {
 func (this *preloader) checkExit(wg *sync.WaitGroup) {
 	defer wg.Done()
 
-	var LevelsExit, texturesExit, shadersExit, fontsExit bool = false, false, false, false
-	var done bool = false
+	var LevelsExit, texturesExit, shadersExit, fontsExit, soundsExit, musicsExit bool
+	var done bool
 
 	for true {
 		select {
@@ -283,8 +362,12 @@ func (this *preloader) checkExit(wg *sync.WaitGroup) {
 			shadersExit = true
 		case <-this.exitFontsChan:
 			fontsExit = true
+		case <-this.exitSoundsChan:
+			soundsExit = true
+		case <-this.exitMusicsChan:
+			musicsExit = true
 		default:
-			if LevelsExit && texturesExit && shadersExit && fontsExit {
+			if LevelsExit && texturesExit && shadersExit && fontsExit && soundsExit && musicsExit {
 				this.exitChan <- true
 				done = true
 			}
@@ -355,11 +438,15 @@ func (this *preloader) openChannels() {
 	this.alreadyPreloadedLevelChan = make(chan alreadyPreloadedResource)
 	this.preloadedTextureDataChan = make(chan preloadedTextureData)
 	this.preloadedFontChan = make(chan preloadedFontData)
+	this.preloadedSoundChan = make(chan preloadedSoundData)
+	this.preloadedMusicChan = make(chan preloadedMusicData)
 	this.exitChan = make(chan bool)
 	this.exitLevelsChan = make(chan bool)
 	this.exitTexturesChan = make(chan bool)
 	this.exitShadersChan = make(chan bool)
 	this.exitFontsChan = make(chan bool)
+	this.exitSoundsChan = make(chan bool)
+	this.exitMusicsChan = make(chan bool)
 }
 
 func (this *preloader) closeChannels() {
@@ -371,6 +458,8 @@ func (this *preloader) closeChannels() {
 	close(this.alreadyPreloadedTextureChan)
 	close(this.alreadyPreloadedLevelChan)
 	close(this.preloadedFontChan)
+	close(this.preloadedSoundChan)
+	close(this.preloadedMusicChan)
 	close(this.exitChan)
 	close(this.exitLevelsChan)
 	close(this.exitTexturesChan)
@@ -388,6 +477,8 @@ func (this *preloader) clearSlices() {
 	this.alreadyPreloadedTexturePathsToSet = this.alreadyPreloadedTexturePathsToSet[:0]
 	this.alreadyPreloadedLevelPathsToSet = this.alreadyPreloadedLevelPathsToSet[:0]
 	this.preloadedFonts = this.preloadedFonts[:0]
+	this.preloadedSounds = this.preloadedSounds[:0]
+	this.preloadedMusics = this.preloadedMusics[:0]
 }
 
 func (this *preloader) loadPreloadedResources() {
@@ -402,6 +493,8 @@ func (this *preloader) loadPreloadedResources() {
 	go this.loadPreloadedShaders()
 	go this.loadPreloadedTextures()
 	go this.loadPreloadedFonts()
+	go this.loadPreloadedSounds()
+	go this.loadPreloadedMusics()
 
 	wg.Wait()
 
