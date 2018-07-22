@@ -4,8 +4,6 @@
     - Line, Polygon, etc.
 + Controller Input
 + Browser support
-+ Audio
-	- [beep](https://github.com/faiface/beep) or OpenAL
 + Simple Loading Screen
 + Add SDLFramework
 + Add DirectXRenderer

@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
+	"github.com/go-gl/mathgl/mgl32"
 )
 
 type CubeScene struct {
@@ -23,8 +24,8 @@ func (this *CubeScene) Init() {
 }
 
 func (this *CubeScene) Update(delta_time float32) {
-	this.cube.Transform.Rotation[0] += 30.0 * delta_time
-	this.cube.Transform.Rotation[1] += 30.0 * delta_time
+	this.cube.Transform.Rotation = this.cube.Transform.Rotation.Mul(mgl32.QuatRotate(mgl32.DegToRad(30.0)*delta_time, mgl32.Vec3{1.0, 0.0, 0.0}))
+	this.cube.Transform.Rotation = this.cube.Transform.Rotation.Mul(mgl32.QuatRotate(mgl32.DegToRad(30.0)*delta_time, mgl32.Vec3{0.0, 1.0, 0.0}))
 }
 
 func (this *CubeScene) Terminate() {
