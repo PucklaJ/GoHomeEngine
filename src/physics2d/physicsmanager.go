@@ -30,8 +30,8 @@ func Vec2ToB2Vec2(vec mgl32.Vec2) box2d.B2Vec2 {
 
 func B2Vec2ToVec2(vec box2d.B2Vec2) mgl32.Vec2 {
 	return mgl32.Vec2{
-		ScalarToPixel(vec[0]),
-		ScalarToPixel(vec[1]),
+		ScalarToPixel(vec.X),
+		ScalarToPixel(vec.Y),
 	}
 }
 
@@ -57,6 +57,14 @@ func ToBox2DCoordinates(vec mgl32.Vec2) box2d.B2Vec2 {
 	return Vec2ToB2Vec2(vec)
 }
 
+func ToBox2DAngle(angle float32) float64 {
+	return float64(mgl32.DegToRad(angle))
+}
+
+func ToPixelAngle(angle float64) float32 {
+	return mgl32.RadToDeg(float32(angle))
+}
+
 type PhysicsManager2D struct {
 	World box2d.B2World
 }
@@ -66,9 +74,32 @@ func (this *PhysicsManager2D) Init(gravity mgl32.Vec2) {
 	nw, nh := gohome.Render.GetNativeResolution()
 	WORLD_SIZE[0] = float32(nw)
 	WORLD_SIZE[1] = float32(nh)
-	gohome.UpdateMgr.AddObject(this)
+
+	gohome.ErrorMgr.Log("Physics", "Box2D", "Initialized!")
 }
 
 func (this *PhysicsManager2D) Update(delta_time float32) {
-	this.World.Step(float64(delta_time), VELOCITY_ITERATIONS, POSITION_ITERATIONS)
+	this.World.Step(float64(delta_time), int(VELOCITY_ITERATIONS), int(POSITION_ITERATIONS))
+}
+
+func (this *PhysicsManager2D) CreateDynamicBox(pos mgl32.Vec2, size mgl32.Vec2) *box2d.B2Body {
+	bodyDef := box2d.MakeB2BodyDef()
+	bodyDef.Type = box2d.B2BodyType.B2_dynamicBody
+	bodyDef.Position = ToBox2DCoordinates(pos)
+	shape := box2d.MakeB2PolygonShape()
+	shape.SetAsBox(ScalarToBox2D(size[0])/2.0, ScalarToBox2D(size[1])/2.0)
+	body := this.World.CreateBody(&bodyDef)
+	body.CreateFixture(&shape, 1.0)
+	return body
+}
+
+func (this *PhysicsManager2D) CreateStaticBox(pos mgl32.Vec2, size mgl32.Vec2) *box2d.B2Body {
+	bodyDef := box2d.MakeB2BodyDef()
+	bodyDef.Type = box2d.B2BodyType.B2_staticBody
+	bodyDef.Position = ToBox2DCoordinates(pos)
+	shape := box2d.MakeB2PolygonShape()
+	shape.SetAsBox(ScalarToBox2D(size[0])/2.0, ScalarToBox2D(size[1])/2.0)
+	body := this.World.CreateBody(&bodyDef)
+	body.CreateFixture(&shape, 1.0)
+	return body
 }

@@ -11,19 +11,27 @@ type Mouse struct {
 }
 
 func (this *Mouse) ToWorldPosition2D() mgl32.Vec2 {
-	return this.ToWorldPosition2DAdv(0,0)
+	return this.ToWorldPosition2DAdv(0, 0)
 }
 
 func (this *Mouse) ToWorldPosition2DAdv(cameraIndex int32, viewportIndex uint32) mgl32.Vec2 {
-	screenPos := mgl32.Vec2{float32(this.Pos[0]),float32(this.Pos[1])}
+	screenPos := mgl32.Vec2{float32(this.Pos[0]), float32(this.Pos[1])}
+	if RenderMgr.EnableBackBuffer {
+		wsize := Framew.WindowGetSize()
+		screenPos[0] /= wsize[0]
+		screenPos[1] /= wsize[1]
+		nw, nh := Render.GetNativeResolution()
+		screenPos[0] *= float32(nw)
+		screenPos[1] *= float32(nh)
+	}
 	viewportPos := screenPos
 	viewport := Render.GetViewport()
 	if len(RenderMgr.viewport2Ds)-1 >= int(viewportIndex) {
 		viewport = *RenderMgr.viewport2Ds[viewportIndex]
 	}
 
-	viewportPos = viewportPos.Sub(mgl32.Vec2{float32(viewport.X),float32(viewport.Y)})
-	normalizedPos := mgl32.Vec2{viewportPos.X()/float32(viewport.Width)*2.0-1.0,(1.0-viewportPos.Y()/float32(viewport.Height))*2.0-1.0}
+	viewportPos = viewportPos.Sub(mgl32.Vec2{float32(viewport.X), float32(viewport.Y)})
+	normalizedPos := mgl32.Vec2{viewportPos.X()/float32(viewport.Width)*2.0 - 1.0, (1.0-viewportPos.Y()/float32(viewport.Height))*2.0 - 1.0}
 	projection := RenderMgr.Projection2D
 	projMatrix := mgl32.Ident4()
 	if projection != nil {
@@ -37,28 +45,28 @@ func (this *Mouse) ToWorldPosition2DAdv(cameraIndex int32, viewportIndex uint32)
 		cam := RenderMgr.camera2Ds[cameraIndex]
 		cam.CalculateViewMatrix()
 		invViewMatrix := cam.GetInverseViewMatrix()
-		projectedPos = Mat4MulVec3(invViewMatrix.Mat4(),projectedPos)
+		projectedPos = Mat4MulVec3(invViewMatrix.Mat4(), projectedPos)
 	}
 
 	return projectedPos.Vec2()
 }
 
 type Touch struct {
-	ID 		uint8
-	Pos 	[2]int16
-	DPos 	[2]int16
-	PPos 	[2]int16
+	ID   uint8
+	Pos  [2]int16
+	DPos [2]int16
+	PPos [2]int16
 }
 
 type InputManager struct {
-	prevKeys    map[Key]bool
-	currentKeys map[Key]bool
-	holdTimes   map[Key]float32
-	prevTouches map[uint8]bool
+	prevKeys       map[Key]bool
+	currentKeys    map[Key]bool
+	holdTimes      map[Key]float32
+	prevTouches    map[uint8]bool
 	currentTouches map[uint8]bool
 
-	Mouse       Mouse
-	Touches		map[uint8]Touch
+	Mouse   Mouse
+	Touches map[uint8]Touch
 }
 
 func (inmgr *InputManager) Init() {
@@ -111,12 +119,12 @@ func (inmgr *InputManager) JustPressed(key Key) bool {
 }
 
 func (inmgr *InputManager) IsTouched(id uint8) bool {
-	touched,ok := inmgr.currentTouches[id]
+	touched, ok := inmgr.currentTouches[id]
 	return touched && ok
 }
 
 func (inmgr *InputManager) WasTouched(id uint8) bool {
-	touched,ok := inmgr.prevTouches[id]
+	touched, ok := inmgr.prevTouches[id]
 	return touched && ok
 }
 
@@ -141,7 +149,7 @@ func (inmgr *InputManager) Update(delta_time float32) {
 			inmgr.holdTimes[k] += delta_time
 		}
 	}
-	for k,v := range inmgr.currentTouches {
+	for k, v := range inmgr.currentTouches {
 		inmgr.prevTouches[k] = v
 	}
 }

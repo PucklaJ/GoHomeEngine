@@ -17,6 +17,10 @@ func (this *PhysicsConnector2D) Init(tobj *gohome.TransformableObject2D, body *b
 }
 
 func (this *PhysicsConnector2D) Update(delta_time float32) {
-	this.Transform.Position = ToPixelCoordinates(this.Body.GetPosition())
-	this.Transform.Rotation = float32(this.Body.GetAngle())
+	pixelPos := ToPixelCoordinates(this.Body.GetPosition())
+	offset := this.Transform.Origin.Sub(mgl32.Vec2{0.5, 0.5})
+	offset[0] *= this.Transform.Size[0] * this.Transform.Scale[0]
+	offset[1] *= this.Transform.Size[1] * this.Transform.Scale[1]
+	this.Transform.Position = pixelPos.Add(offset)
+	this.Transform.Rotation = ToPixelAngle(this.Body.GetAngle())
 }
