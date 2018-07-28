@@ -2,6 +2,7 @@ package gohome
 
 import (
 	"github.com/blezek/tga"
+	"github.com/elliotmr/tmx"
 	"github.com/golang/freetype"
 	"image"
 	"image/color"
@@ -65,6 +66,12 @@ var (
 		"assets/sound/",
 		"assets/music/",
 	}
+	TMX_MAP_PATHS = [4]string{
+		"",
+		"maps",
+		"assets",
+		"assets/maps",
+	}
 )
 
 type ResourceManager struct {
@@ -75,8 +82,9 @@ type ResourceManager struct {
 	Models            map[string]*Model3D
 	Levels            map[string]*Level
 	fonts             map[string]*Font
-	musics			  map[string]Music
-	sounds			  map[string]Sound
+	musics            map[string]Music
+	sounds            map[string]Sound
+	tmxmaps           map[string]*tmx.Map
 	resourceFileNames map[string]string
 
 	LoadModelsWithSameName bool
@@ -90,6 +98,7 @@ func (rsmgr *ResourceManager) Init() {
 	rsmgr.fonts = make(map[string]*Font)
 	rsmgr.musics = make(map[string]Music)
 	rsmgr.sounds = make(map[string]Sound)
+	rsmgr.tmxmaps = make(map[string]*tmx.Map)
 	rsmgr.resourceFileNames = make(map[string]string)
 
 	rsmgr.preloader.Init()
@@ -114,7 +123,7 @@ func GetPathFromFile(path string) string {
 	}
 }
 
-func OpenFileWithPaths(path string, paths []string) (io.ReadCloser, error) {
+func OpenFileWithPaths(path string, paths []string) (File, error) {
 	var reader io.ReadCloser
 	var err error
 
@@ -167,13 +176,13 @@ func (rsmgr *ResourceManager) LoadShader(name, vertex_path, fragment_path, geome
 	}
 }
 
-func filterShaderSource(name, vertex, fragment, geometry, tesselletion_control, eveluation, compute string) (string,string,string,string,string,string) {
-	vertex = Render.FilterShaderSource(name,vertex,"Vertex File")
-	fragment = Render.FilterShaderSource(name,fragment,"Fragment File")
-	geometry = Render.FilterShaderSource(name,geometry,"Geometry File")
-	tesselletion_control = Render.FilterShaderSource(name,tesselletion_control,"Tesselation Control File")
-	eveluation = Render.FilterShaderSource(name,eveluation,"Eveluation File")
-	compute = Render.FilterShaderSource(name,compute, "Compute File")
+func filterShaderSource(name, vertex, fragment, geometry, tesselletion_control, eveluation, compute string) (string, string, string, string, string, string) {
+	vertex = Render.FilterShaderSource(name, vertex, "Vertex File")
+	fragment = Render.FilterShaderSource(name, fragment, "Fragment File")
+	geometry = Render.FilterShaderSource(name, geometry, "Geometry File")
+	tesselletion_control = Render.FilterShaderSource(name, tesselletion_control, "Tesselation Control File")
+	eveluation = Render.FilterShaderSource(name, eveluation, "Eveluation File")
+	compute = Render.FilterShaderSource(name, compute, "Compute File")
 
 	return vertex, fragment, geometry, tesselletion_control, eveluation, compute
 }
@@ -183,7 +192,7 @@ func (rsmgr *ResourceManager) LoadShaderSource(name, vertex, fragment, geometry,
 		ErrorMgr.Error("Shader", name, "Has already been loaded")
 		return
 	}
-	vertex, fragment, geometry, tesselletion_control, eveluation, compute = filterShaderSource(name,vertex,fragment,geometry, tesselletion_control, eveluation, compute)
+	vertex, fragment, geometry, tesselletion_control, eveluation, compute = filterShaderSource(name, vertex, fragment, geometry, tesselletion_control, eveluation, compute)
 	shader, err := Render.LoadShader(name, vertex, fragment, geometry, tesselletion_control, eveluation, compute)
 	if err != nil {
 		ErrorMgr.Error("Shader", name, "Loading source: "+err.Error())
@@ -281,17 +290,17 @@ func (rsmgr *ResourceManager) Terminate() {
 	}
 
 	for k := range rsmgr.Levels {
-		delete(rsmgr.Levels,k)
+		delete(rsmgr.Levels, k)
 	}
 
-	for k,v := range rsmgr.sounds {
+	for k, v := range rsmgr.sounds {
 		v.Terminate()
-		delete(rsmgr.sounds,k)
+		delete(rsmgr.sounds, k)
 	}
 
-	for k,v := range rsmgr.musics {
+	for k, v := range rsmgr.musics {
 		v.Terminate()
-		delete(rsmgr.musics,k)
+		delete(rsmgr.musics, k)
 	}
 }
 
@@ -508,30 +517,30 @@ func (rsmgr *ResourceManager) checkPreloadedMusic(name string) bool {
 	return true
 }
 
-func (rsmgr *ResourceManager) PreloadMusic(name,path string) {
-	if rsmgr.checkMusic(name,path) && rsmgr.checkPreloadedMusic(name) {
-		rsmgr.preloadedMusics = append(rsmgr.preloadedMusics,preloadedMusic{name,path})
+func (rsmgr *ResourceManager) PreloadMusic(name, path string) {
+	if rsmgr.checkMusic(name, path) && rsmgr.checkPreloadedMusic(name) {
+		rsmgr.preloadedMusics = append(rsmgr.preloadedMusics, preloadedMusic{name, path})
 	}
 }
 
 func (rsmgr *ResourceManager) LoadMusic(name, path string) {
-	rsmgr.loadMusic(name,path,false)
+	rsmgr.loadMusic(name, path, false)
 }
 
-func (rsmgr *ResourceManager) loadMusic(name,path string,preloaded bool) {
+func (rsmgr *ResourceManager) loadMusic(name, path string, preloaded bool) {
 	if !preloaded {
-		if !rsmgr.checkMusic(name,path) {
+		if !rsmgr.checkMusic(name, path) {
 			return
 		}
 	}
 
-	music := Framew.LoadMusic(name,path)
+	music := Framew.LoadMusic(name, path)
 
 	if music != nil {
 		if !preloaded {
 			rsmgr.musics[name] = music
 			rsmgr.resourceFileNames[path] = name
-			ErrorMgr.Log("Music",name,"Finished Loading!")
+			ErrorMgr.Log("Music", name, "Finished Loading!")
 		} else {
 			rsmgr.preloadedMusicChan <- preloadedMusicData{
 				preloadedMusic{
@@ -570,30 +579,30 @@ func (rsmgr *ResourceManager) checkPreloadedSound(name string) bool {
 	return true
 }
 
-func (rsmgr *ResourceManager) PreloadSound(name,path string) {
-	if rsmgr.checkSound(name,path) && rsmgr.checkPreloadedSound(name) {
-		rsmgr.preloadedSounds = append(rsmgr.preloadedSounds,preloadedSound{name,path})
+func (rsmgr *ResourceManager) PreloadSound(name, path string) {
+	if rsmgr.checkSound(name, path) && rsmgr.checkPreloadedSound(name) {
+		rsmgr.preloadedSounds = append(rsmgr.preloadedSounds, preloadedSound{name, path})
 	}
 }
 
 func (rsmgr *ResourceManager) LoadSound(name, path string) {
-	rsmgr.loadSound(name,path,false)
+	rsmgr.loadSound(name, path, false)
 }
 
-func (rsmgr *ResourceManager) loadSound(name,path string,preloaded bool) {
+func (rsmgr *ResourceManager) loadSound(name, path string, preloaded bool) {
 	if !preloaded {
-		if !rsmgr.checkSound(name,path) {
+		if !rsmgr.checkSound(name, path) {
 			return
 		}
 	}
 
-	sound := Framew.LoadSound(name,path)
+	sound := Framew.LoadSound(name, path)
 
 	if sound != nil {
 		if !preloaded {
 			rsmgr.sounds[name] = sound
 			rsmgr.resourceFileNames[path] = name
-			ErrorMgr.Log("Sound",name,"Finished Loading!")
+			ErrorMgr.Log("Sound", name, "Finished Loading!")
 		} else {
 			rsmgr.preloadedSoundChan <- preloadedSoundData{
 				preloadedSound{
@@ -825,26 +834,26 @@ func (rsmgr *ResourceManager) DeleteShader(name string) {
 }
 
 func (rsmgr *ResourceManager) DeleteSound(name string) {
-	sound,ok := rsmgr.sounds[name]
+	sound, ok := rsmgr.sounds[name]
 	if ok {
 		sound.Terminate()
-		delete(rsmgr.sounds,name)
+		delete(rsmgr.sounds, name)
 		rsmgr.deleteResourceFileName(name)
-		ErrorMgr.Log("Sound",name,"Deleted!")
+		ErrorMgr.Log("Sound", name, "Deleted!")
 	} else {
-		ErrorMgr.Warning("Sound",name,"Couldn't delete! It has not been loaded!")
+		ErrorMgr.Warning("Sound", name, "Couldn't delete! It has not been loaded!")
 	}
 }
 
 func (rsmgr *ResourceManager) DeleteMusic(name string) {
-	music,ok := rsmgr.musics[name]
+	music, ok := rsmgr.musics[name]
 	if ok {
 		music.Terminate()
-		delete(rsmgr.musics,name)
+		delete(rsmgr.musics, name)
 		rsmgr.deleteResourceFileName(name)
-		ErrorMgr.Log("Music",name,"Deleted!")
+		ErrorMgr.Log("Music", name, "Deleted!")
 	} else {
-		ErrorMgr.Warning("Music",name,"Couldn't delete! It has not been loaded!")
+		ErrorMgr.Warning("Music", name, "Couldn't delete! It has not been loaded!")
 	}
 }
 
@@ -855,6 +864,43 @@ func (rsmgr *ResourceManager) deleteResourceFileName(name string) {
 			return
 		}
 	}
+}
+
+func (rsmgr *ResourceManager) checkTMXMap(name, path string) bool {
+	if name1, ok := rsmgr.resourceFileNames[path]; ok {
+		rsmgr.tmxmaps[name] = rsmgr.tmxmaps[name1]
+		ErrorMgr.Warning("TMXMap", name, "Has alreay been loaded with this or another name!")
+		return false
+	}
+	if _, ok := rsmgr.tmxmaps[name]; ok {
+		ErrorMgr.Warning("TMXMap", name, "Has already been loaded!")
+		return false
+	}
+	return true
+}
+
+func (rsmgr *ResourceManager) LoadTMXMap(name, path string) {
+	if !rsmgr.checkTMXMap(name, path) {
+		return
+	}
+
+	file, err := OpenFileWithPaths(path, TMX_MAP_PATHS)
+	if err != nil {
+		ErrorMgr.MessageError(ERROR_LEVEL_ERROR, "TMXMap", name, err)
+		return
+	}
+	fileName := GetFileFromPath(path)
+
+	tmxmap, err := tmx.LoadReader(file, fileName)
+	if err != nil {
+		ErrorMgr.MessageError(ERROR_LEVEL_ERROR, "TMXMap", name, err)
+		return
+	}
+
+	rsmgr.tmxmaps[name] = tmxmap
+	rsmgr.resourceFileNames[path] = name
+
+	ErrorMgr.Log("TMXMap", name, "Finished Loading!")
 }
 
 var ResourceMgr ResourceManager
