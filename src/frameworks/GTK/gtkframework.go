@@ -4,7 +4,6 @@ import (
 	"github.com/PucklaMotzer09/gohomeengine/src/frameworks/GTK/gtk"
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
 	"github.com/go-gl/mathgl/mgl32"
-	"io"
 	"os"
 	"strings"
 	"time"
@@ -104,8 +103,15 @@ func (this *GTKFramework) CursorDisabled() bool {
 	return gtk.CursorDisabled()
 }
 
-func (this *GTKFramework) OpenFile(file string) (io.ReadCloser, error) {
-	return os.Open(file)
+func (this *GTKFramework) OpenFile(file string) (*gohome.File, error) {
+	osFile, err := os.Open(file)
+	if err != nil {
+		return nil, err
+	}
+	gFile := &gohome.File{}
+	gFile.ReadSeeker = osFile
+	gFile.Closer = gFile
+	return gFile, nil
 }
 
 func getFileExtension(file string) string {
@@ -190,9 +196,9 @@ func (*GTKFramework) GetAudioManager() gohome.AudioManager {
 	return &gohome.NilAudioManager{}
 }
 
-func (*GTKFramework) LoadSound(name,path string) gohome.Sound {
+func (*GTKFramework) LoadSound(name, path string) gohome.Sound {
 	return nil
 }
-func (*GTKFramework) LoadMusic(name,path string) gohome.Music {
+func (*GTKFramework) LoadMusic(name, path string) gohome.Music {
 	return nil
 }
