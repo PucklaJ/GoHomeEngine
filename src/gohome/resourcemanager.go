@@ -123,8 +123,8 @@ func GetPathFromFile(path string) string {
 	}
 }
 
-func OpenFileWithPaths(path string, paths []string) (File, error) {
-	var reader io.ReadCloser
+func OpenFileWithPaths(path string, paths []string) (*File, error) {
+	var reader *File
 	var err error
 
 	for i := 0; i < len(paths); i++ {
@@ -301,6 +301,10 @@ func (rsmgr *ResourceManager) Terminate() {
 	for k, v := range rsmgr.musics {
 		v.Terminate()
 		delete(rsmgr.musics, k)
+	}
+
+	for k := range rsmgr.tmxmaps {
+		delete(rsmgr.tmxmaps, k)
 	}
 }
 
@@ -857,6 +861,17 @@ func (rsmgr *ResourceManager) DeleteMusic(name string) {
 	}
 }
 
+func (rsmgr *ResourceManager) DeleteTMXMap(name string) {
+	_, ok := rsmgr.tmxmaps[name]
+	if ok {
+		delete(rsmgr.tmxmaps, name)
+		rsmgr.deleteResourceFileName(name)
+		ErrorMgr.Log("TMXMap", name, "Deleted!")
+	} else {
+		ErrorMgr.Warning("TMXMap", name, "Couldn't delete! It has not been loaded!")
+	}
+}
+
 func (rsmgr *ResourceManager) deleteResourceFileName(name string) {
 	for k := range rsmgr.resourceFileNames {
 		if rsmgr.resourceFileNames[k] == name {
@@ -884,7 +899,7 @@ func (rsmgr *ResourceManager) LoadTMXMap(name, path string) {
 		return
 	}
 
-	file, err := OpenFileWithPaths(path, TMX_MAP_PATHS)
+	file, err := OpenFileWithPaths(path, TMX_MAP_PATHS[:])
 	if err != nil {
 		ErrorMgr.MessageError(ERROR_LEVEL_ERROR, "TMXMap", name, err)
 		return
@@ -901,6 +916,10 @@ func (rsmgr *ResourceManager) LoadTMXMap(name, path string) {
 	rsmgr.resourceFileNames[path] = name
 
 	ErrorMgr.Log("TMXMap", name, "Finished Loading!")
+}
+
+func (rsmgr *ResourceManager) GetTMXMap(name string) *tmx.Map {
+	return rsmgr.tmxmaps[name]
 }
 
 var ResourceMgr ResourceManager
