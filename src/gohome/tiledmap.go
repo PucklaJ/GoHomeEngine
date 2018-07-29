@@ -175,13 +175,11 @@ func (this *TiledMap) renderConfiguration(config sprite2DConfiguration, pos mgl3
 	spr.Transform.Size[1] = float32(config.Region.Height())
 	spr.Transform.Position = pos
 	spr.Flip = config.Flip
-
 	RenderMgr.RenderRenderObject(&spr)
 }
 
 func (this *TiledMap) loadTileLayer(l *tmx.Layer) {
 	data := l.Data
-
 	iter, err := data.Iter()
 	if err != nil {
 		ErrorMgr.Error("TiledMap", l.Name, "Couldn't get the TileIterator!")
@@ -253,19 +251,16 @@ func (this *TiledMap) generateTextures() {
 		if img == nil {
 			continue
 		}
+		ResourceMgr.LoadTexture(t.Name, img.Source)
 		if t.TileCount == 0 {
-			if img.Height != nil && img.Width != nil {
-				rows := (uint32(*img.Height) - 2*t.Margin + t.Spacing) / (t.Spacing + t.TileHeight)
-				if t.Columns == 0 {
-					t.Columns = (uint32(*img.Width) - 2*t.Margin + t.Spacing) / (t.Spacing + t.TileWidth)
-				}
-				t.TileCount = rows * t.Columns
+			tex := ResourceMgr.GetTexture(t.Name)
+			rows := (uint32(tex.GetHeight()) - 2*t.Margin + t.Spacing) / (t.Spacing + t.TileHeight)
+			if t.Columns == 0 {
+				t.Columns = (uint32(tex.GetWidth()) - 2*t.Margin + t.Spacing) / (t.Spacing + t.TileWidth)
 			}
+			t.TileCount = rows * t.Columns
 		}
-
-		ResourceMgr.PreloadTexture(t.Name, img.Source)
 	}
-	ResourceMgr.LoadPreloadedResources()
 
 	for i := 0; i < len(this.TileSets); i++ {
 		img := this.TileSets[i].Image
