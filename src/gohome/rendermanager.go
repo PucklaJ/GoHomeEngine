@@ -450,31 +450,29 @@ func (rmgr *RenderManager) handleCurrentCameraAndViewport(rtype RenderType, came
 		rmgr.currentViewport.StrapToWindow = false
 	}
 
-	if rmgr.currentViewport != nil {
-		if rmgr.currentViewport.StrapToWindow {
-			var wSize mgl32.Vec2
-			if !rmgr.EnableBackBuffer {
-				wSize = Framew.WindowGetSize()
-			} else {
-				nw, nh := Render.GetNativeResolution()
-				wSize = [2]float32{float32(nw), float32(nh)}
-			}
-			rmgr.currentViewport.Width = int(wSize.X())
-			rmgr.currentViewport.Height = int(wSize.Y())
-			rmgr.currentViewport.X = 0
-			rmgr.currentViewport.Y = 0
+	if rmgr.currentViewport.StrapToWindow {
+		var wSize mgl32.Vec2
+		if !rmgr.EnableBackBuffer {
+			wSize = Framew.WindowGetSize()
+		} else {
+			nw, nh := Render.GetNativeResolution()
+			wSize = [2]float32{float32(nw), float32(nh)}
 		}
-		Render.SetViewport(*rmgr.currentViewport)
-		if rmgr.UpdateProjectionWithViewport {
-			if TYPE_2D.Compatible(rtype) {
-				if rmgr.Projection2D != nil {
-					rmgr.Projection2D.Update(*rmgr.currentViewport)
-				}
+		rmgr.currentViewport.Width = int(wSize.X())
+		rmgr.currentViewport.Height = int(wSize.Y())
+		rmgr.currentViewport.X = 0
+		rmgr.currentViewport.Y = 0
+	}
+	Render.SetViewport(*rmgr.currentViewport)
+	if rmgr.UpdateProjectionWithViewport {
+		if TYPE_2D.Compatible(rtype) {
+			if rmgr.Projection2D != nil {
+				rmgr.Projection2D.Update(*rmgr.currentViewport)
 			}
-			if TYPE_3D.Compatible(rtype) {
-				if rmgr.Projection3D != nil {
-					rmgr.Projection3D.Update(*rmgr.currentViewport)
-				}
+		}
+		if TYPE_3D.Compatible(rtype) {
+			if rmgr.Projection3D != nil {
+				rmgr.Projection3D.Update(*rmgr.currentViewport)
 			}
 		}
 	}
@@ -695,3 +693,35 @@ func (rmgr *RenderManager) UpdateProjection2D(viewportIndex int32) {
 }
 
 var RenderMgr RenderManager
+
+type NilRenderObject struct {
+}
+
+func (*NilRenderObject) Render() {
+
+}
+
+func (*NilRenderObject) SetShader(s Shader) {
+
+}
+func (*NilRenderObject) GetShader() Shader {
+	return nil
+}
+func (*NilRenderObject) SetType(rtype RenderType) {
+
+}
+func (*NilRenderObject) GetType() RenderType {
+	return TYPE_EVERYTHING
+}
+func (*NilRenderObject) IsVisible() bool {
+	return true
+}
+func (*NilRenderObject) NotRelativeCamera() int {
+	return -1
+}
+func (*NilRenderObject) SetTransformableObject(tobj TransformableObject) {
+
+}
+func (*NilRenderObject) GetTransformableObject() TransformableObject {
+	return nil
+}
