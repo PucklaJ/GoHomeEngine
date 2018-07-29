@@ -85,6 +85,7 @@ func (this *TiledMap) Init(tmxmapname string) {
 	this.Map = tmxmap
 	this.Texture = Render.CreateRenderTexture("TMXMapTexture", this.Width*this.TileWidth, this.Height*this.TileHeight, 1, false, false, false, false)
 	rt := this.Texture.(RenderTexture)
+	rt.SetFiltering(FILTERING_NEAREST)
 	rt.SetAsTarget()
 	var backCol color.Color
 	back := this.BackgroundColor
@@ -146,7 +147,6 @@ func (this *TiledMap) getSprite2DConfiguration(tile tmx.TileInstance) sprite2DCo
 	}
 
 	id := gid - ts.FirstGID
-
 	config.Region = getTextureRegionFromID(ts, id)
 	config.TextureName = ts.Name
 	config.Flip = getFlip(tile)
@@ -155,6 +155,10 @@ func (this *TiledMap) getSprite2DConfiguration(tile tmx.TileInstance) sprite2DCo
 }
 
 func (this *TiledMap) renderConfiguration(config sprite2DConfiguration, pos mgl32.Vec2, rt RenderTexture) {
+	if config.TextureName == "" {
+		return
+	}
+
 	texture := ResourceMgr.GetTexture(config.TextureName)
 	if texture == nil {
 		ErrorMgr.Error("TiledMap", config.TextureName, "Couldn't get texture from tile!")
@@ -191,21 +195,26 @@ func (this *TiledMap) loadTileLayer(l *tmx.Layer) {
 	}
 	texture.SetFiltering(FILTERING_NEAREST)
 
-	var counter uint32 = 0
 	var pos mgl32.Vec2
 	texture.SetAsTarget()
 	for iter.Next() {
 		tile := iter.Get()
+		if tile.GID() == 0 {
+			continue
+		}
 		config := this.getSprite2DConfiguration(tile)
-
+		counter := iter.GetIndex()
 		pos[0] = float32((counter % this.Width) * this.TileWidth)
 		pos[1] = float32(((counter - (counter % this.Width)) / this.Width) * this.TileHeight)
 
 		this.renderConfiguration(config, pos, texture)
-
-		counter++
 	}
 	texture.UnsetAsTarget()
+
+	if l.Opacity != nil {
+		alpha := uint8(*l.Opacity * 255.0)
+		texture.SetModColor(Color{255, 255, 255, alpha})
+	}
 
 	this.layers = append(this.layers, texture)
 }
@@ -244,13 +253,40 @@ func (this *TiledMap) generateTextures() {
 		if img == nil {
 			continue
 		}
+		if t.TileCount == 0 {
+			if img.Height != nil && img.Width != nil {
+				rows := (uint32(*img.Height) - 2*t.Margin + t.Spacing) / (t.Spacing + t.TileHeight)
+				if t.Columns == 0 {
+					t.Columns = (uint32(*img.Width) - 2*t.Margin + t.Spacing) / (t.Spacing + t.TileWidth)
+				}
+				t.TileCount = rows * t.Columns
+			}
+		}
 
 		ResourceMgr.PreloadTexture(t.Name, img.Source)
 	}
 	ResourceMgr.LoadPreloadedResources()
 
-	prev := RenderMgr.UpdateProjectionWithViewport
-	RenderMgr.UpdateProjectionWithViewport = true
+	for i := 0; i < len(this.TileSets); i++ {
+		img := this.TileSets[i].Image
+		if img == nil || img.Trans == nil {
+			continue
+		}
+		tex := ResourceMgr.GetTexture(this.TileSets[i].Name)
+		if tex == nil {
+			continue
+		}
+		keyCol := *img.Trans
+		if keyCol[0] != '#' {
+			keyCol = "#" + keyCol
+		}
+		col := HEXToColor(keyCol)
+		tex.SetKeyColor(col)
+	}
+
+	rt := this.Texture.(RenderTexture)
+	prev := RenderMgr.Projection2D
+	RenderMgr.SetProjection2DToTexture(rt)
 	for i := 0; i < len(this.Layers); i++ {
 		l := this.Layers[i]
 		if l.Data != nil {
@@ -261,8 +297,6 @@ func (this *TiledMap) generateTextures() {
 			this.loadImageLayer(l)
 		}
 	}
-
-	rt := this.Texture.(RenderTexture)
 	rt.SetAsTarget()
 
 	for i := 0; i < len(this.layers); i++ {
@@ -273,5 +307,5 @@ func (this *TiledMap) generateTextures() {
 	}
 
 	rt.UnsetAsTarget()
-	RenderMgr.UpdateProjectionWithViewport = prev
+	RenderMgr.Projection2D = prev
 }

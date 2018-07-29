@@ -132,7 +132,7 @@ void main()
 	fragTexCoords = texCoords[gl_VertexID];
 	gl_Position = vec4(vertices[gl_VertexID],0.0,1.0);
 }`
-POST_PROCESSING_SHADER_FRAGMENT_SOURCE_OPENGL string = `
+	POST_PROCESSING_SHADER_FRAGMENT_SOURCE_OPENGL string = `
 #version 150
 
 in vec2 fragTexCoords;
@@ -200,7 +200,7 @@ void main()
 	if(fragColor.a < 0.1)
 	    discard;
 }`
-POST_PROCESSING_SHADER_NOMS_VERTEX_SOURCE_OPENGL string = `
+	POST_PROCESSING_SHADER_NOMS_VERTEX_SOURCE_OPENGL string = `
 #version 120
 
 attribute vec2 vertex;
@@ -213,7 +213,7 @@ void main()
 	fragTexCoords = texCoord;
 	gl_Position = vec4(vertex,0.0,1.0);
 }`
-POST_PROCESSING_SHADER_NOMS_FRAGMENT_SOURCE_OPENGL string = `
+	POST_PROCESSING_SHADER_NOMS_FRAGMENT_SOURCE_OPENGL string = `
 #version 120
 
 varying vec2 fragTexCoords;
@@ -302,7 +302,7 @@ void main()
 	if(fragColor.a < 0.1)
 	    discard;
 }`
-RENDER_SCREEN_NOMS_SHADER_FRAGMENT_SOURCE_OPENGL string = `
+	RENDER_SCREEN_NOMS_SHADER_FRAGMENT_SOURCE_OPENGL string = `
 #version 110
 
 varying vec2 fragTexCoords;
@@ -949,7 +949,7 @@ void setVariables()
 	}
 	viewDir = normalize((fragToTangentSpace*(fragPos*-1.0)));
 }`
-ENTITY_3D_NO_SHADOWS_SHADER_VERTEX_SOURCE_OPENGL string = `
+	ENTITY_3D_NO_SHADOWS_SHADER_VERTEX_SOURCE_OPENGL string = `
 #version 110
 
 attribute vec3 vertex;
@@ -987,7 +987,7 @@ void main()
 
 	fragViewMatrix3D = viewMatrix3D;
 }`
-ENTITY_3D_NO_SHADOWS_SHADER_FRAGMENT_SOURCE_OPENGL string = `
+	ENTITY_3D_NO_SHADOWS_SHADER_FRAGMENT_SOURCE_OPENGL string = `
 #version 110
 
 #define MAX_POINT_LIGHTS 5
@@ -1466,7 +1466,7 @@ void setVariables()
 	}
 	viewDir = normalize((fragToTangentSpace*(fragPos*-1.0)));
 }`
-ENTITY_3D_NOUV_SHADER_VERTEX_SOURCE_OPENGL string = `
+	ENTITY_3D_NOUV_SHADER_VERTEX_SOURCE_OPENGL string = `
 #version 110
 
 attribute vec3 vertex;
@@ -1492,7 +1492,7 @@ void main()
 	fragViewMatrix3D = viewMatrix3D;
 	fragInverseViewMatrix3D = inverseViewMatrix3D;
 }`
-ENTITY_3D_NOUV_SHADER_FRAGMENT_SOURCE_OPENGL string = `
+	ENTITY_3D_NOUV_SHADER_FRAGMENT_SOURCE_OPENGL string = `
 #version 110
 
 #define MAX_POINT_LIGHTS 5
@@ -2022,7 +2022,7 @@ void setVariables()
 	vec3 camPos = (fragInverseViewMatrix3D*vec4(0.0,0.0,0.0,1.0)).xyz;
 	viewDir = camPos - fragPos;
 }`
-ENTITY_3D_NOUV_NO_SHADOWS_SHADER_FRAGMENT_SOURCE_OPENGL string = `
+	ENTITY_3D_NOUV_NO_SHADOWS_SHADER_FRAGMENT_SOURCE_OPENGL string = `
 #version 110
 
 #define MAX_POINT_LIGHTS 5
@@ -2452,7 +2452,7 @@ void setVariables()
 	vec3 camPos = (fragInverseViewMatrix3D*vec4(0.0,0.0,0.0,1.0)).xyz;
 	viewDir = camPos - fragPos;
 }`
-ENTITY_3D_SIMPLE_SHADER_FRAGMENT_SOURCE_OPENGL string = `
+	ENTITY_3D_SIMPLE_SHADER_FRAGMENT_SOURCE_OPENGL string = `
 #version 110
 
 #define MAX_POINT_LIGHTS 5
@@ -2913,7 +2913,7 @@ void setVariables()
 	norm = normalize(fragToTangentSpace*fragNormal);
 	viewDir = normalize((fragToTangentSpace*(fragPos*-1.0)));
 }`
-ENTITY_3D_INSTANCED_SHADER_VERTEX_SOURCE_OPENGL string = `
+	ENTITY_3D_INSTANCED_SHADER_VERTEX_SOURCE_OPENGL string = `
 #version 110
 
 attribute vec3 vertex;
@@ -2975,7 +2975,7 @@ void main()
 	gl_Position = projectionMatrix3D*viewMatrix3D*transformMatrix3D*vec4(vertex,1.0);
 	fragColor = color;
 }`
-LINES_3D_SHADER_FRAGMENT_SOURCE_OPENGL string = `
+	LINES_3D_SHADER_FRAGMENT_SOURCE_OPENGL string = `
 #version 110
 
 varying vec4 fragColor;
@@ -3005,7 +3005,7 @@ void main()
 	gl_Position = transformMatrix3D*vec4(vertex,1.0);
 	geoTexCoord = texCoord;
 }`
-POINTLIGHT_SHADOWMAP_SHADER_FRAGMENT_SOURCE_OPENGL string = `
+	POINTLIGHT_SHADOWMAP_SHADER_FRAGMENT_SOURCE_OPENGL string = `
 #version 150
 
 in vec2 fragTexCoord;
@@ -3041,7 +3041,7 @@ void main()
 	lightDistance = lightDistance / farPlane;
 	gl_FragDepth = lightDistance;
 }`
-POINTLIGHT_SHADOWMAP_SHADER_GEOMETRY_SOURCE_OPENGL string = `
+	POINTLIGHT_SHADOWMAP_SHADER_GEOMETRY_SOURCE_OPENGL string = `
 #version 150
 
 layout(triangles) in;
@@ -3083,7 +3083,7 @@ void main()
 		EndPrimitive();
 	}
 }`
-POINTLIGHT_SHADOWMAP_INSTANCED_SHADER_VERTEX_SOURCE_OPENGL string = `
+	POINTLIGHT_SHADOWMAP_INSTANCED_SHADER_VERTEX_SOURCE_OPENGL string = `
 #version 150
 
 in vec3 vertex;
@@ -3124,7 +3124,7 @@ void main()
 	gl_Position = projectionMatrix3D*viewMatrix3D*transformMatrix3D*vec4(vertex,1.0);
 	fragTexCoord = texCoord;
 }`
-SHADOWMAP_SHADER_FRAGMENT_SOURCE_OPENGL string = `
+	SHADOWMAP_SHADER_FRAGMENT_SOURCE_OPENGL string = `
 #version 110
 
 varying	vec2 fragTexCoord;
@@ -3156,7 +3156,7 @@ void main()
 		discard;
 	}
 }`
-SHADOWMAP_INSTANCED_SHADER_VERTEX_SOURCE_OPENGL string = `
+	SHADOWMAP_INSTANCED_SHADER_VERTEX_SOURCE_OPENGL string = `
 #version 110
 
 attribute vec3 vertex;
@@ -3176,7 +3176,7 @@ void main()
 	gl_Position = projectionMatrix3D*viewMatrix3D*transformMatrix3D*vec4(vertex,1.0);
 	fragTexCoord = texCoord;
 }`
-SHADOWMAP_RENDER_SHADER_FRAGMENT_SOURCE_OPENGL string = `
+	SHADOWMAP_RENDER_SHADER_FRAGMENT_SOURCE_OPENGL string = `
 #version 110
 
 varying vec2 fragTexCoord;
@@ -3276,7 +3276,7 @@ varying vec2 fragTexCoord;
 
 uniform sampler2D texture0;
 uniform vec3 keyColor;
-uniform vec3 modColor;
+uniform vec4 modColor;
 uniform bool enableKey;
 uniform bool enableMod;
 
@@ -3311,7 +3311,8 @@ vec4 applyModColor(vec4 color)
 {
     if(enableMod)
     {
-        return vec4(color.xyz*modColor,color.a);
+    	color.a *= modColor.a;
+        return color;
     }
 
     return color;

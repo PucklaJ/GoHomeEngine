@@ -688,4 +688,10 @@ func (rmgr *RenderManager) SetProjection2DToTexture(texture Texture) {
 	}
 }
 
+func (rmgr *RenderManager) UpdateProjection2D(viewportIndex int32) {
+	if viewportIndex >= 0 && viewportIndex < int32(len(rmgr.viewport2Ds)) {
+		rmgr.Projection2D.Update(*rmgr.viewport2Ds[viewportIndex])
+	}
+}
+
 var RenderMgr RenderManager

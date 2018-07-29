@@ -2953,7 +2953,7 @@ varying vec2 fragTexCoord;
 
 uniform sampler2D texture0;
 uniform vec3 keyColor;
-uniform vec3 modColor;
+uniform vec4 modColor;
 uniform bool enableKey;
 uniform bool enableMod;
 
@@ -2988,7 +2988,7 @@ vec4 applyModColor(vec4 color)
 {
     if(enableMod)
     {
-        return vec4(color.xyz*modColor,color.a);
+        return color*modColor;
     }
 
     return color;

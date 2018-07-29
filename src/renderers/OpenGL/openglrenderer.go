@@ -83,7 +83,8 @@ func (this *OpenGLRenderer) AfterInit() {
 	gl.Enable(gl.DEPTH_CLAMP)
 	gl.ClearDepth(2.0)
 	gl.Enable(gl.BLEND)
-	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
+	gl.BlendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
+	gl.BlendEquation(gl.FUNC_ADD)
 
 	gl.FrontFace(gl.CCW)
 	gl.Enable(gl.CULL_FACE)

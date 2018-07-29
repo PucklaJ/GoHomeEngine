@@ -1,31 +1,31 @@
 package gohome
 
 const (
-	SPRITE2D_SHADER_NAME string = "2D"
-	SPRITE2D_MESH_NAME   string = "SPRITE2D_MESH"
-	FLIP_UNIFORM_NAME string = "flip"
+	SPRITE2D_SHADER_NAME        string = "2D"
+	SPRITE2D_MESH_NAME          string = "SPRITE2D_MESH"
+	FLIP_UNIFORM_NAME           string = "flip"
 	TEXTURE_REGION_UNIFORM_NAME string = "textureRegion"
-	DEPTH_UNIFORM_NAME string = "depth"
-	ENABLE_KEY_UNIFORM_NAME string = "enableKey"
-	KEY_COLOR_UNIFORM_NAME string = "keyColor"
-	ENABLE_MOD_UNIFORM_NAME string = "enableMod"
-	MOD_COLOR_UNIFORM_NAME string = "modColor"
+	DEPTH_UNIFORM_NAME          string = "depth"
+	ENABLE_KEY_UNIFORM_NAME     string = "enableKey"
+	KEY_COLOR_UNIFORM_NAME      string = "keyColor"
+	ENABLE_MOD_UNIFORM_NAME     string = "enableMod"
+	MOD_COLOR_UNIFORM_NAME      string = "modColor"
 )
 
 var sprite2DMesh Mesh2D = nil
 
 type Sprite2D struct {
-	Texture Texture
+	Texture             Texture
 	Visible             bool
 	NotRelativeToCamera int
 	Flip                uint8
 
-	Shader Shader
-	RenderType RenderType
-	transform TransformableObject
-	Transform *TransformableObject2D
+	Shader        Shader
+	RenderType    RenderType
+	transform     TransformableObject
+	Transform     *TransformableObject2D
 	TextureRegion TextureRegion
-	Depth uint8
+	Depth         uint8
 }
 
 func createSprite2DMesh() {
@@ -35,16 +35,16 @@ func createSprite2DMesh() {
 		/*X,Y
 		  U,V
 		*/
-		  {-0.5, -0.5, // LEFT-DOWN
+		{-0.5, -0.5, // LEFT-DOWN
 			0.0, 0.0},
 
-		   {0.5, -0.5, // RIGHT-DOWN
+		{0.5, -0.5, // RIGHT-DOWN
 			1.0, 0.0},
 
-		   {0.5, 0.5, // RIGHT-UP
+		{0.5, 0.5, // RIGHT-UP
 			1.0, 1.0},
 
-		   {-0.5, 0.5, // LEFT-UP
+		{-0.5, 0.5, // LEFT-UP
 			0.0, 1.0},
 	}
 
@@ -63,7 +63,7 @@ func (spr *Sprite2D) commonInit() {
 	spr.Transform.Scale = [2]float32{1.0, 1.0}
 	if spr.Texture != nil {
 		spr.Transform.Size = [2]float32{float32(spr.Texture.GetWidth()), float32(spr.Texture.GetHeight())}
-		spr.TextureRegion.Min = [2]float32{0.0,0.0}
+		spr.TextureRegion.Min = [2]float32{0.0, 0.0}
 		spr.TextureRegion.Max = spr.Transform.Size
 	}
 	spr.Transform.RotationPoint = [2]float32{0.5, 0.5}
@@ -115,19 +115,19 @@ func (spr *Sprite2D) setUniforms() {
 
 	if shader != nil {
 		shader.SetUniformI(FLIP_UNIFORM_NAME, int32(spr.Flip))
-		shader.SetUniformV4(TEXTURE_REGION_UNIFORM_NAME,spr.TextureRegion.Normalize(spr.Texture).Vec4())
-		shader.SetUniformF(DEPTH_UNIFORM_NAME,(1.0-float32(spr.Depth)/255.0)*2.0-1.0)
+		shader.SetUniformV4(TEXTURE_REGION_UNIFORM_NAME, spr.TextureRegion.Normalize(spr.Texture).Vec4())
+		shader.SetUniformF(DEPTH_UNIFORM_NAME, (1.0-float32(spr.Depth)/255.0)*2.0-1.0)
 		if spr.Texture.GetKeyColor() != nil {
-			shader.SetUniformI(ENABLE_KEY_UNIFORM_NAME,1)
-			shader.SetUniformV3(KEY_COLOR_UNIFORM_NAME,ColorToVec3(spr.Texture.GetKeyColor()))
+			shader.SetUniformI(ENABLE_KEY_UNIFORM_NAME, 1)
+			shader.SetUniformV3(KEY_COLOR_UNIFORM_NAME, ColorToVec3(spr.Texture.GetKeyColor()))
 		} else {
-			shader.SetUniformI(ENABLE_KEY_UNIFORM_NAME,0)
+			shader.SetUniformI(ENABLE_KEY_UNIFORM_NAME, 0)
 		}
 		if spr.Texture.GetModColor() != nil {
-			shader.SetUniformI(ENABLE_MOD_UNIFORM_NAME,1)
-			shader.SetUniformV3(MOD_COLOR_UNIFORM_NAME,ColorToVec3(spr.Texture.GetModColor()))
+			shader.SetUniformI(ENABLE_MOD_UNIFORM_NAME, 1)
+			shader.SetUniformV4(MOD_COLOR_UNIFORM_NAME, ColorToVec4(spr.Texture.GetModColor()))
 		} else {
-			shader.SetUniformI(ENABLE_MOD_UNIFORM_NAME,0)
+			shader.SetUniformI(ENABLE_MOD_UNIFORM_NAME, 0)
 		}
 	}
 }

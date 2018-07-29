@@ -309,17 +309,27 @@ func (this *OpenGLRenderTexture) SetBorderDepth(depth float32) {
 }
 
 func (this *OpenGLRenderTexture) GetKeyColor() color.Color {
-	return nil
+	if len(this.textures) == 0 {
+		return nil
+	}
+	return this.textures[0].GetKeyColor()
 }
 
 func (this *OpenGLRenderTexture) GetModColor() color.Color {
-	return nil
+	if len(this.textures) == 0 {
+		return nil
+	}
+	return this.textures[0].GetModColor()
 }
 
 func (this *OpenGLRenderTexture) SetKeyColor(col color.Color) {
-
+	for i := 0; i < len(this.textures); i++ {
+		this.textures[i].SetKeyColor(col)
+	}
 }
 
 func (this *OpenGLRenderTexture) SetModColor(col color.Color) {
-
+	for i := 0; i < len(this.textures); i++ {
+		this.textures[i].SetModColor(col)
+	}
 }
