@@ -129,7 +129,7 @@ type RenderManager struct {
 	EnableBackBuffer             bool
 	WireFrameMode                bool
 	UpdateProjectionWithViewport bool
-	RenderToScreenFirst			 bool
+	RenderToScreenFirst          bool
 }
 
 func (rmgr *RenderManager) Init() {
@@ -146,7 +146,6 @@ func (rmgr *RenderManager) Init() {
 	rmgr.BackBufferShader = ResourceMgr.GetShader("BackBufferShader")
 	rmgr.PostProcessingShader = ResourceMgr.GetShader("PostProcessingShader")
 	rmgr.renderScreenShader = ResourceMgr.GetShader("RenderScreenShader")
-
 
 	rmgr.AddViewport2D(&Viewport{
 		0,
@@ -445,6 +444,12 @@ func (rmgr *RenderManager) handleCurrentCameraAndViewport(rtype RenderType, came
 		}
 	}
 
+	if rmgr.currentViewport == nil {
+		vp := Render.GetViewport()
+		rmgr.currentViewport = &vp
+		rmgr.currentViewport.StrapToWindow = false
+	}
+
 	if rmgr.currentViewport != nil {
 		if rmgr.currentViewport.StrapToWindow {
 			var wSize mgl32.Vec2
@@ -518,7 +523,11 @@ func (rmgr *RenderManager) Render(rtype RenderType, cameraIndex int32, viewportI
 }
 
 func (rmgr *RenderManager) RenderRenderObject(robj RenderObject) {
-	rmgr.handleCurrentCameraAndViewport(robj.GetType(), 0, 0)
+	rmgr.RenderRenderObjectAdv(robj, -1, -1)
+}
+
+func (rmgr *RenderManager) RenderRenderObjectAdv(robj RenderObject, cameraIndex, viewportIndex int32) {
+	rmgr.handleCurrentCameraAndViewport(robj.GetType(), cameraIndex, viewportIndex)
 
 	Render.SetWireFrame(rmgr.WireFrameMode)
 
@@ -668,6 +677,15 @@ func (rmgr *RenderManager) clearToBackgroundColor() {
 		0}
 
 	Render.ClearScreen(newCol)
+}
+
+func (rmgr *RenderManager) SetProjection2DToTexture(texture Texture) {
+	rmgr.Projection2D = &Ortho2DProjection{
+		Left:   0.0,
+		Top:    0.0,
+		Right:  float32(texture.GetWidth()),
+		Bottom: float32(texture.GetHeight()),
+	}
 }
 
 var RenderMgr RenderManager
