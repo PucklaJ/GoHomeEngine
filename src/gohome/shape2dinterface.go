@@ -13,6 +13,8 @@ type Shape2DInterface interface {
 	AddTriangles(tris []Triangle2D)
 	GetPoints() []Shape2DVertex
 	SetDrawMode(mode uint8)
+	SetPointSize(size float32)
+	SetLineWidth(width float32)
 	Load()
 	Render()
 	Terminate()

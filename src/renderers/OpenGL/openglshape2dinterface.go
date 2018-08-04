@@ -15,6 +15,8 @@ type OpenGLShape2DInterface struct {
 	points         []gohome.Shape2DVertex
 	numVertices    uint32
 	openglDrawMode uint32
+	pointSize      float32
+	lineWidth      float32
 }
 
 func (this *OpenGLShape2DInterface) Init() {
@@ -112,9 +114,17 @@ func (this *OpenGLShape2DInterface) Render() {
 	} else {
 		this.attributePointer()
 	}
+
+	gl.PointSize(this.pointSize)
+	gl.LineWidth(this.lineWidth)
+
 	gl.GetError()
 	gl.DrawArrays(this.openglDrawMode, 0, int32(this.numVertices))
 	handleOpenGLError("Shape2DInterface", this.Name, "RenderError: ")
+
+	gl.PointSize(1.0)
+	gl.LineWidth(1.0)
+
 	if this.canUseVaos {
 		gl.BindVertexArray(0)
 	} else {
@@ -147,4 +157,11 @@ func (this *OpenGLShape2DInterface) SetDrawMode(mode uint8) {
 	default:
 		this.openglDrawMode = gl.POINTS
 	}
+}
+
+func (this *OpenGLShape2DInterface) SetPointSize(size float32) {
+	this.pointSize = size
+}
+func (this *OpenGLShape2DInterface) SetLineWidth(width float32) {
+	this.lineWidth = width
 }

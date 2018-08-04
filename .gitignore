@@ -22,4 +22,5 @@
 *spriteanimation
 *physics
 *tiledmap
+*shape2d
 *.glsl
