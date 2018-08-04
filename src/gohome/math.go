@@ -3,6 +3,7 @@ package gohome
 import (
 	"github.com/go-gl/mathgl/mgl32"
 	"image/color"
+	"math"
 	"strconv"
 )
 
@@ -132,6 +133,17 @@ func (this TextureRegion) Height() float32 {
 }
 
 type Shape2DVertex [2 + 4]float32 // Position + Color
+
+func (this *Shape2DVertex) Make(pos mgl32.Vec2, col color.Color) {
+	vecCol := ColorToVec4(col)
+	this[0] = pos[0]
+	this[1] = pos[1]
+	this[2] = vecCol[0]
+	this[3] = vecCol[1]
+	this[4] = vecCol[2]
+	this[5] = vecCol[3]
+}
+
 type Line2D [2]Shape2DVertex
 
 func (this *Line2D) SetColor(col color.Color) {
@@ -153,6 +165,27 @@ func (this *Line2D) Color() color.Color {
 }
 
 type Triangle2D [3]Shape2DVertex
+
+func (this *Triangle2D) ToLines() (lines []Line2D) {
+	var j uint32 = 1
+	var i uint32 = 0
+
+	for i = 0; i < 3; i++ {
+		if j == 3 {
+			j = 0
+		}
+
+		lines = append(lines, Line2D{
+			this[i],
+			this[j],
+		})
+
+		j++
+	}
+
+	return
+}
+
 type Rectangle2D [4]Shape2DVertex
 
 func (this *Rectangle2D) ToTriangles() (tris [2]Triangle2D) {
@@ -162,6 +195,80 @@ func (this *Rectangle2D) ToTriangles() (tris [2]Triangle2D) {
 	tris[1][0] = this[2]
 	tris[1][1] = this[3]
 	tris[1][2] = this[0]
+
+	return
+}
+
+func (this *Rectangle2D) ToLines() (lines []Line2D) {
+	var j uint32 = 1
+	var i uint32 = 0
+
+	for i = 0; i < 4; i++ {
+		if j == 4 {
+			j = 0
+		}
+
+		lines = append(lines, Line2D{
+			this[i],
+			this[j],
+		})
+
+		j++
+	}
+
+	return
+}
+
+type Circle2D struct {
+	Position mgl32.Vec2
+	Radius   float32
+	Col      color.Color
+}
+
+func FromPolar(radius float32, angle float32) mgl32.Vec2 {
+	return mgl32.Vec2{
+		radius * float32(math.Cos(float64(mgl32.DegToRad(angle)))),
+		radius * float32(math.Sin(float64(mgl32.DegToRad(angle)))),
+	}
+}
+
+func (this *Circle2D) ToTriangles(numTriangles uint32) (tris []Triangle2D) {
+	tris = append(tris, make([]Triangle2D, numTriangles)...)
+
+	var pos1, pos2, pos3 mgl32.Vec2
+	var vertex1, vertex2, vertex3 Shape2DVertex
+	pos3 = this.Position
+	vertex3.Make(pos3, this.Col)
+	for i := uint32(0); i < numTriangles; i++ {
+		pos1 = FromPolar(this.Radius, -(float32(i) * 360.0 / float32(numTriangles))).Add(this.Position)
+		pos2 = FromPolar(this.Radius, -(float32(i+1) * 360.0 / float32(numTriangles))).Add(this.Position)
+
+		vertex1.Make(pos1, this.Col)
+		vertex2.Make(pos2, this.Col)
+
+		tris[i][0] = vertex1
+		tris[i][1] = vertex2
+		tris[i][2] = vertex3
+	}
+
+	return
+}
+
+func (this *Circle2D) ToLines(numLines uint32) (lines []Line2D) {
+	lines = append(lines, make([]Line2D, numLines)...)
+
+	var pos1, pos2 mgl32.Vec2
+	var vertex1, vertex2 Shape2DVertex
+	for i := uint32(0); i < numLines; i++ {
+		pos1 = FromPolar(this.Radius, -(float32(i) * 360.0 / float32(numLines))).Add(this.Position)
+		pos2 = FromPolar(this.Radius, -(float32(i+1) * 360.0 / float32(numLines))).Add(this.Position)
+
+		vertex1.Make(pos1, this.Col)
+		vertex2.Make(pos2, this.Col)
+
+		lines[i][0] = vertex1
+		lines[i][1] = vertex2
+	}
 
 	return
 }
