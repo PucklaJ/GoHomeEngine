@@ -3192,7 +3192,8 @@ void main()
 
 // Sprite2D Shader
 const (
-	SPRITE_2D_SHADER_VERTEX_SOURCE_OPENGL string = `#version 110
+	SPRITE_2D_SHADER_VERTEX_SOURCE_OPENGL string = `
+#version 110
 
 #define FLIP_NONE 0
 #define FLIP_HORIZONTAL 1
@@ -3267,6 +3268,136 @@ vec2 flipTexCoord(vec2 tc)
 	return flippedTexCoord;
 }`
 	SPRITE_2D_SHADER_FRAGMENT_SOURCE_OPENGL string = `
+#version 110
+
+#define KEY_COLOR_PADDING 0.1
+#define ALPHA_DISCARD_PADDING 0.1
+
+varying vec2 fragTexCoord;
+
+uniform sampler2D texture0;
+uniform vec3 keyColor;
+uniform vec4 modColor;
+uniform bool enableKey;
+uniform bool enableMod;
+
+vec4 applyKeyColor(vec4 color);
+vec4 applyModColor(vec4 color);
+
+void main()
+{
+	gl_FragColor = applyModColor(applyKeyColor(texture2D(texture0,fragTexCoord)));
+	if(gl_FragColor.a < ALPHA_DISCARD_PADDING)
+	{
+		discard;
+	}
+}
+
+vec4 applyKeyColor(vec4 color)
+{
+    if(enableKey)
+    {
+        if(color.r >= keyColor.r - KEY_COLOR_PADDING && color.r <= keyColor.r + KEY_COLOR_PADDING &&
+           color.g >= keyColor.g - KEY_COLOR_PADDING && color.g <= keyColor.g + KEY_COLOR_PADDING &&
+           color.b >= keyColor.b - KEY_COLOR_PADDING && color.b <= keyColor.b + KEY_COLOR_PADDING)
+        {
+           discard;
+        }
+    }
+
+    return color;
+}
+
+vec4 applyModColor(vec4 color)
+{
+    if(enableMod)
+    {
+    	color.a *= modColor.a;
+        return color;
+    }
+
+    return color;
+}`
+)
+
+// Shape2D Shader
+const (
+	SHAPE_2D_SHADER_VERTEX_SOURCE_OPENGL string = `
+#version 110
+
+#define FLIP_NONE 0
+#define FLIP_HORIZONTAL 1
+#define FLIP_VERTICAL 2
+#define FLIP_DIAGONALLY 3
+
+attribute vec2 vertex;
+attribute vec2 texCoord;
+
+uniform mat3 transformMatrix2D;
+uniform mat4 projectionMatrix2D;
+uniform mat3 viewMatrix2D;
+uniform vec4 textureRegion;
+uniform int flip;
+uniform float depth;
+
+varying vec2 fragTexCoord;
+
+vec2 textureRegionToTexCoord(vec2 tc);
+vec2 flipTexCoord(vec2 tc);
+
+void main()
+{
+	gl_Position = projectionMatrix2D *vec4(vec2(viewMatrix2D*transformMatrix2D*vec3(vertex,1.0)),0.0,1.0);
+	gl_Position.z = depth;
+	fragTexCoord = textureRegionToTexCoord(flipTexCoord(texCoord));
+}
+
+vec2 textureRegionToTexCoord(vec2 tc)
+{
+    // X: 0 ->      0 -> Min X
+    // Y: 0 ->      0 -> Min Y
+    // Z: WIDTH ->  1 -> Max X
+    // W: HEIGHT -> 1 -> Max Y
+
+    vec2 newTexCoord = tc;
+    newTexCoord.x = newTexCoord.x * (textureRegion.z-textureRegion.x)+textureRegion.x;
+    newTexCoord.y = newTexCoord.y * (textureRegion.w-textureRegion.y)+textureRegion.y;
+
+    return newTexCoord;
+}
+
+vec2 flipTexCoord(vec2 tc)
+{
+	vec2 flippedTexCoord;
+
+
+	if(flip == FLIP_NONE)
+	{
+		flippedTexCoord = tc;
+	}
+	else if(flip == FLIP_HORIZONTAL)
+	{
+		flippedTexCoord.x = 1.0-tc.x;
+		flippedTexCoord.y = tc.y;
+	}
+	else if(flip == FLIP_VERTICAL)
+	{
+		flippedTexCoord.x = tc.x;
+		flippedTexCoord.y = 1.0-tc.y;
+	}
+	else if(flip == FLIP_DIAGONALLY)
+	{
+		flippedTexCoord.x = 1.0-tc.x;
+		flippedTexCoord.y = 1.0-tc.y;
+	}
+	else
+	{
+		flippedTexCoord = tc;
+	}
+
+	return flippedTexCoord;
+}`
+	SHAPE_2D_SHADER_FRAGMENT_SOURCE_OPENGL string = `
 #version 110
 
 #define KEY_COLOR_PADDING 0.1

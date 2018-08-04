@@ -1,55 +1,35 @@
 package gohome
 
 import (
-	"image/color"
 	"github.com/go-gl/mathgl/mgl32"
+	"image/color"
 )
 
 const (
 	LINES3D_SHADER_NAME string = "Lines3DShader"
 )
 
-type Line3D [2]Line3DVertex
-
-func (this *Line3D) SetColor(col color.Color) {
-	vec4Col := ColorToVec4(col)
-	for j:=0;j<2;j++ {
-		for i:=0;i<4;i++ {
-			(*this)[j][i+3] = vec4Col[i]
-		}
-	}
-}
-
-func (this *Line3D) Color() color.Color {
-	return Color{
-		R: uint8((*this)[0][3]*255.0),
-		G: uint8((*this)[0][4]*255.0),
-		B: uint8((*this)[0][5]*255.0),
-		A: uint8((*this)[0][6]*255.0),
-	}
-}
-
 type Lines3D struct {
-	Name string
+	Name           string
 	linesInterface Lines3DInterface
 
-	transform TransformableObject
-	Transform *TransformableObject3D
-	Visible bool
-	shader Shader
+	transform           TransformableObject
+	Transform           *TransformableObject3D
+	Visible             bool
+	shader              Shader
 	NotRelativeToCamera int
-	rtype RenderType
+	rtype               RenderType
 }
 
 func (this *Lines3D) Init() {
 	if ResourceMgr.GetShader(LINES3D_SHADER_NAME) == nil {
-		ResourceMgr.LoadShaderSource(LINES3D_SHADER_NAME,LINES_3D_SHADER_VERTEX_SOURCE_OPENGL,LINES_3D_SHADER_FRAGMENT_SOURCE_OPENGL,"","","","")
+		ResourceMgr.LoadShaderSource(LINES3D_SHADER_NAME, LINES_3D_SHADER_VERTEX_SOURCE_OPENGL, LINES_3D_SHADER_FRAGMENT_SOURCE_OPENGL, "", "", "", "")
 	}
 	this.linesInterface = Render.CreateLines3DInterface(this.Name)
 	this.linesInterface.Init()
 	this.Transform = &TransformableObject3D{
-		Scale: [3]float32{1.0,1.0,1.0},
-		Rotation: mgl32.QuatRotate(0.0,mgl32.Vec3{0.0,1.0,0.0}),
+		Scale:    [3]float32{1.0, 1.0, 1.0},
+		Rotation: mgl32.QuatRotate(0.0, mgl32.Vec3{0.0, 1.0, 0.0}),
 	}
 	this.transform = this.Transform
 	this.Visible = true
@@ -70,7 +50,7 @@ func (this *Lines3D) Load() {
 }
 
 func (this *Lines3D) SetColor(col color.Color) {
-	for i:=0;i<len(this.linesInterface.GetLines());i++ {
+	for i := 0; i < len(this.linesInterface.GetLines()); i++ {
 		this.linesInterface.GetLines()[i].SetColor(col)
 	}
 }

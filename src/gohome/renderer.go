@@ -17,6 +17,7 @@ type Renderer interface {
 	CreateCubeMap(name string) CubeMap
 	CreateInstancedMesh3D(name string) InstancedMesh3D
 	CreateLines3DInterface(name string) Lines3DInterface
+	CreateShape2DInterface(name string) Shape2DInterface
 	SetWireFrame(b bool)
 	SetViewport(viewport Viewport)
 	GetViewport() Viewport

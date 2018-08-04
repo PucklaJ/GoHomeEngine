@@ -425,3 +425,9 @@ func handleOpenGLError(tag, objectName, errorPrefix string) {
 		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, tag, objectName, errorPrefix+"ErrorCode: "+strconv.Itoa(int(err)))
 	}
 }
+
+func (this *OpenGLRenderer) CreateShape2DInterface(name string) gohome.Shape2DInterface {
+	return &OpenGLShape2DInterface{
+		Name: name,
+	}
+}
