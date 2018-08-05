@@ -124,6 +124,19 @@ func toRectangle2D(pos1, pos2, pos3, pos4 mgl32.Vec2) (rect Rectangle2D) {
 	return
 }
 
+func toPolygon2D(positions ...mgl32.Vec2) (poly Polygon2D) {
+	vecCol := ColorToVec4(DrawColor)
+	poly.Points = append(poly.Points, make([]Shape2DVertex, len(positions))...)
+	for i := 0; i < len(positions); i++ {
+		vertex := Shape2DVertex{
+			positions[i][0], positions[i][1],
+			vecCol[0], vecCol[1], vecCol[2], vecCol[3],
+		}
+		poly.Points[i] = vertex
+	}
+	return
+}
+
 func DrawLine3D(pos1, pos2 mgl32.Vec3) {
 	line := toLine3D(pos1, pos2)
 	var robj Lines3D
@@ -207,6 +220,27 @@ func DrawCircle2D(pos mgl32.Vec2, radius float32) {
 		robj.SetDrawMode(DRAW_MODE_LINES)
 	}
 
+	robj.Load()
+	RenderMgr.RenderRenderObject(&robj)
+	robj.Terminate()
+}
+
+func DrawPolygon2D(positions ...mgl32.Vec2) {
+	if len(positions) < 3 {
+		ErrorMgr.Error("Polygon2D", "Draw", "Cannot draw polygon with less than 3 vertices")
+		return
+	}
+
+	poly := toPolygon2D(positions...)
+	var robj Shape2D
+	robj.Init()
+	if Filled {
+		robj.AddTriangles(poly.ToTriangles())
+		robj.SetDrawMode(DRAW_MODE_TRIANGLES)
+	} else {
+		robj.AddLines(poly.ToLines())
+		robj.SetDrawMode(DRAW_MODE_LINES)
+	}
 	robj.Load()
 	RenderMgr.RenderRenderObject(&robj)
 	robj.Terminate()
