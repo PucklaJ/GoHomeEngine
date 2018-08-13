@@ -9,6 +9,7 @@ var DrawColor color.Color = Color{255, 255, 255, 255}
 var PointSize float32 = 1.0
 var LineWidth float32 = 1.0
 var Filled bool = true
+var CircleDetail uint32 = 30
 
 func toLine3D(pos1 mgl32.Vec3, pos2 mgl32.Vec3) (line Line3D) {
 	vecCol := ColorToVec4(DrawColor)
@@ -213,10 +214,10 @@ func DrawCircle2D(pos mgl32.Vec2, radius float32) {
 	var robj Shape2D
 	robj.Init()
 	if Filled {
-		robj.AddTriangles(circle.ToTriangles(40))
+		robj.AddTriangles(circle.ToTriangles(CircleDetail))
 		robj.SetDrawMode(DRAW_MODE_TRIANGLES)
 	} else {
-		robj.AddLines(circle.ToLines(40))
+		robj.AddLines(circle.ToLines(CircleDetail))
 		robj.SetDrawMode(DRAW_MODE_LINES)
 	}
 

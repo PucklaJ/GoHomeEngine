@@ -128,6 +128,9 @@ func (this *PhysicsManager2D) CreateStaticCircle(pos mgl32.Vec2, radius float32)
 
 func (this *PhysicsManager2D) GetDebugDraw() PhysicsDebugDraw2D {
 	return PhysicsDebugDraw2D{
-		mgr: this,
+		mgr:        this,
+		DrawBodies: true,
+		DrawJoints: true,
+		DrawAABBs:  false,
 	}
 }

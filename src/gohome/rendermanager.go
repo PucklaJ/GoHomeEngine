@@ -424,7 +424,7 @@ func (rmgr *RenderManager) renderInnerLoop(rtype RenderType, robj RenderObject, 
 }
 
 func (rmgr *RenderManager) Render(rtype RenderType, cameraIndex int32, viewportIndex int32, lightCollectionIndex int32) {
-	if len(rmgr.renderObjects) == 0 {
+	if len(rmgr.renderObjects) == 0 && len(rmgr.afterRenderObjects) == 0 {
 		return
 	}
 
