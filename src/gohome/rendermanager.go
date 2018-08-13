@@ -4,97 +4,6 @@ import (
 	"github.com/go-gl/mathgl/mgl32"
 )
 
-type RenderType uint8
-
-const (
-	TYPE_2D           RenderType = iota
-	TYPE_3D           RenderType = iota
-	TYPE_3D_NORMAL    RenderType = iota
-	TYPE_2D_NORMAL    RenderType = iota
-	TYPE_3D_INSTANCED RenderType = iota
-	TYPE_2D_INSTANCED RenderType = iota
-	TYPE_EVERYTHING   RenderType = iota
-)
-
-func (this RenderType) Compatible(rtype RenderType) bool {
-	if this == TYPE_EVERYTHING || rtype == TYPE_EVERYTHING {
-		return true
-	}
-	switch this {
-	case TYPE_2D:
-		switch rtype {
-		case TYPE_2D:
-			return true
-		case TYPE_2D_NORMAL:
-			return true
-		case TYPE_2D_INSTANCED:
-			return true
-		}
-		break
-	case TYPE_3D:
-		switch rtype {
-		case TYPE_3D:
-			return true
-		case TYPE_3D_NORMAL:
-			return true
-		case TYPE_3D_INSTANCED:
-			return true
-		}
-		break
-	case TYPE_3D_NORMAL:
-		switch rtype {
-		case TYPE_3D:
-			return true
-		case TYPE_3D_NORMAL:
-			return true
-		}
-		break
-	case TYPE_2D_NORMAL:
-		switch rtype {
-		case TYPE_2D:
-			return true
-		case TYPE_2D_NORMAL:
-			return true
-		}
-		break
-	case TYPE_3D_INSTANCED:
-		switch rtype {
-		case TYPE_3D:
-			return true
-		case TYPE_3D_INSTANCED:
-			return true
-		}
-		break
-	case TYPE_2D_INSTANCED:
-		switch rtype {
-		case TYPE_2D:
-			return true
-		case TYPE_2D_INSTANCED:
-			return true
-		}
-		break
-	}
-
-	return false
-}
-
-type TransformableObject interface {
-	CalculateTransformMatrix(rmgr *RenderManager, notRelativeToCamera int)
-	SetTransformMatrix(rmgr *RenderManager)
-}
-
-type RenderObject interface {
-	Render()
-	SetShader(s Shader)
-	GetShader() Shader
-	SetType(rtype RenderType)
-	GetType() RenderType
-	IsVisible() bool
-	NotRelativeCamera() int
-	SetTransformableObject(tobj TransformableObject)
-	GetTransformableObject() TransformableObject
-}
-
 type Viewport struct {
 	CameraIndex         int32
 	X, Y, Width, Height int
@@ -102,16 +11,17 @@ type Viewport struct {
 }
 
 type RenderManager struct {
-	renderObjects []RenderObject
-	CurrentShader Shader
-	camera2Ds     []*Camera2D
-	camera3Ds     []*Camera3D
-	viewport2Ds   []*Viewport
-	viewport3Ds   []*Viewport
-	Projection2D  Projection
-	Projection3D  Projection
-	ForceShader3D Shader
-	ForceShader2D Shader
+	renderObjects      []RenderObject
+	afterRenderObjects []RenderObject
+	CurrentShader      Shader
+	camera2Ds          []*Camera2D
+	camera3Ds          []*Camera3D
+	viewport2Ds        []*Viewport
+	viewport3Ds        []*Viewport
+	Projection2D       Projection
+	Projection3D       Projection
+	ForceShader3D      Shader
+	ForceShader2D      Shader
 
 	BackBufferMS RenderTexture
 	BackBuffer   RenderTexture
@@ -181,14 +91,27 @@ func (rmgr *RenderManager) Init() {
 }
 
 func (rmgr *RenderManager) AddObject(robj RenderObject) {
-	rmgr.renderObjects = append(rmgr.renderObjects, robj)
+	if robj.RendersLast() {
+		rmgr.afterRenderObjects = append(rmgr.afterRenderObjects, robj)
+	} else {
+		rmgr.renderObjects = append(rmgr.renderObjects, robj)
+	}
 }
 
 func (rmgr *RenderManager) RemoveObject(robj RenderObject) {
-	for i := 0; i < len(rmgr.renderObjects); i++ {
-		if robj == rmgr.renderObjects[i] {
-			rmgr.renderObjects = append(rmgr.renderObjects[:i], rmgr.renderObjects[i+1:]...)
-			return
+	if robj.RendersLast() {
+		for i := 0; i < len(rmgr.afterRenderObjects); i++ {
+			if robj == rmgr.afterRenderObjects[i] {
+				rmgr.afterRenderObjects = append(rmgr.afterRenderObjects[:i], rmgr.afterRenderObjects[i+1:]...)
+				return
+			}
+		}
+	} else {
+		for i := 0; i < len(rmgr.renderObjects); i++ {
+			if robj == rmgr.renderObjects[i] {
+				rmgr.renderObjects = append(rmgr.renderObjects[:i], rmgr.renderObjects[i+1:]...)
+				return
+			}
 		}
 	}
 }
@@ -491,6 +414,15 @@ func (rmgr *RenderManager) renderRenderObject(robj RenderObject, lightCollection
 	robj.Render()
 }
 
+func (rmgr *RenderManager) renderInnerLoop(rtype RenderType, robj RenderObject) {
+	if !robj.IsVisible() || !rtype.Compatible(robj.GetType()) {
+		return
+	}
+	Render.PreRender()
+	rmgr.renderRenderObject(rmgr.renderObjects[i], lightCollectionIndex)
+	Render.AfterRender()
+}
+
 func (rmgr *RenderManager) Render(rtype RenderType, cameraIndex int32, viewportIndex int32, lightCollectionIndex int32) {
 	if len(rmgr.renderObjects) == 0 {
 		return
@@ -505,12 +437,11 @@ func (rmgr *RenderManager) Render(rtype RenderType, cameraIndex int32, viewportI
 	}
 
 	for i := 0; i < len(rmgr.renderObjects); i++ {
-		if !rtype.Compatible(rmgr.renderObjects[i].GetType()) || !rmgr.renderObjects[i].IsVisible() {
-			continue
-		}
-		Render.PreRender()
-		rmgr.renderRenderObject(rmgr.renderObjects[i], lightCollectionIndex)
-		Render.AfterRender()
+		rmgr.renderInnerLoop(rtype, rmgr.renderObjects[i])
+	}
+
+	for i := 0; i < len(rmgr.afterRenderObjects); i++ {
+		rmgr.renderInnerLoop(rtype, rmgr.afterRenderObjects[i])
 	}
 
 	if rmgr.CurrentShader != nil {
@@ -693,35 +624,3 @@ func (rmgr *RenderManager) UpdateProjection2D(viewportIndex int32) {
 }
 
 var RenderMgr RenderManager
-
-type NilRenderObject struct {
-}
-
-func (*NilRenderObject) Render() {
-
-}
-
-func (*NilRenderObject) SetShader(s Shader) {
-
-}
-func (*NilRenderObject) GetShader() Shader {
-	return nil
-}
-func (*NilRenderObject) SetType(rtype RenderType) {
-
-}
-func (*NilRenderObject) GetType() RenderType {
-	return TYPE_EVERYTHING
-}
-func (*NilRenderObject) IsVisible() bool {
-	return true
-}
-func (*NilRenderObject) NotRelativeCamera() int {
-	return -1
-}
-func (*NilRenderObject) SetTransformableObject(tobj TransformableObject) {
-
-}
-func (*NilRenderObject) GetTransformableObject() TransformableObject {
-	return nil
-}
