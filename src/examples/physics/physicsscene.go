@@ -16,6 +16,8 @@ func (this *PhysicsScene) Init() {
 	gohome.ResourceMgr.LoadTexture("Box", "rect1.png")
 
 	this.PhysicsMgr.Init(mgl32.Vec2{0.0, 100.0})
+	debugDraw := this.PhysicsMgr.GetDebugDraw()
+	gohome.RenderMgr.AddObject(&debugDraw)
 	gohome.UpdateMgr.AddObject(&this.PhysicsMgr)
 
 	this.AddBox(gohome.Framew.WindowGetSize().Mul(0.5))
