@@ -414,12 +414,12 @@ func (rmgr *RenderManager) renderRenderObject(robj RenderObject, lightCollection
 	robj.Render()
 }
 
-func (rmgr *RenderManager) renderInnerLoop(rtype RenderType, robj RenderObject) {
+func (rmgr *RenderManager) renderInnerLoop(rtype RenderType, robj RenderObject, lightCollectionIndex int32) {
 	if !robj.IsVisible() || !rtype.Compatible(robj.GetType()) {
 		return
 	}
 	Render.PreRender()
-	rmgr.renderRenderObject(rmgr.renderObjects[i], lightCollectionIndex)
+	rmgr.renderRenderObject(robj, lightCollectionIndex)
 	Render.AfterRender()
 }
 
@@ -437,11 +437,11 @@ func (rmgr *RenderManager) Render(rtype RenderType, cameraIndex int32, viewportI
 	}
 
 	for i := 0; i < len(rmgr.renderObjects); i++ {
-		rmgr.renderInnerLoop(rtype, rmgr.renderObjects[i])
+		rmgr.renderInnerLoop(rtype, rmgr.renderObjects[i], lightCollectionIndex)
 	}
 
 	for i := 0; i < len(rmgr.afterRenderObjects); i++ {
-		rmgr.renderInnerLoop(rtype, rmgr.afterRenderObjects[i])
+		rmgr.renderInnerLoop(rtype, rmgr.afterRenderObjects[i], lightCollectionIndex)
 	}
 
 	if rmgr.CurrentShader != nil {

@@ -9,13 +9,14 @@ const (
 )
 
 type Entity3D struct {
+	NilRenderObject
 	Name                string
 	Model3D             *Model3D
 	Visible             bool
 	NotRelativeToCamera int
 
-	Shader
-	RenderType
+	Shader     Shader
+	RenderType RenderType
 
 	Transform *TransformableObject3D
 	transform TransformableObject
@@ -24,7 +25,7 @@ type Entity3D struct {
 func (this *Entity3D) commonInit() {
 	this.Transform = &TransformableObject3D{}
 	this.Transform.Scale = [3]float32{1.0, 1.0, 1.0}
-	this.Transform.Rotation = mgl32.QuatRotate(0.0,mgl32.Vec3{0.0,1.0,0.0})
+	this.Transform.Rotation = mgl32.QuatRotate(0.0, mgl32.Vec3{0.0, 1.0, 0.0})
 
 	this.transform = this.Transform
 

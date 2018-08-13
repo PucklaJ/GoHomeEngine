@@ -14,6 +14,7 @@ const (
 )
 
 type Text2D struct {
+	NilRenderObject
 	shader               Shader
 	renderType           RenderType
 	font                 *Font

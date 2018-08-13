@@ -16,8 +16,14 @@ func (this *PhysicsDebugDraw2D) GetType() gohome.RenderType {
 	return gohome.TYPE_2D_NORMAL
 }
 
+func (this *PhysicsDebugDraw2D) RendersLast() bool {
+	return true
+}
+
 func (this *PhysicsDebugDraw2D) Render() {
-	gohome.DrawColor = colornames.Purple
+	purple := colornames.Purple
+	purple.A = 150
+	gohome.DrawColor = purple
 	gohome.PointSize = 3.0
 	gohome.Filled = true
 
@@ -34,7 +40,7 @@ func (this *PhysicsDebugDraw2D) DrawFixture(f *box2d.B2Fixture, xf *box2d.B2Tran
 	pos := ToPixelCoordinates(xf.P)
 	switch f.GetType() {
 	case box2d.B2Shape_Type.E_circle:
-		gohome.DrawCircle2D(pos, float32(f.GetShape().GetRadius()))
+		gohome.DrawCircle2D(pos, ScalarToPixel(f.GetShape().GetRadius()))
 	case box2d.B2Shape_Type.E_polygon:
 		mat := mgl32.Translate2D(pos[0], pos[1]).Mul3(mgl32.Rotate2D(-float32(xf.Q.GetAngle())).Mat3())
 		polygon := f.GetShape().(*box2d.B2PolygonShape)

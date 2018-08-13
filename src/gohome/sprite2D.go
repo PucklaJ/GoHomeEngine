@@ -15,6 +15,7 @@ const (
 var sprite2DMesh Mesh2D = nil
 
 type Sprite2D struct {
+	NilRenderObject
 	Texture             Texture
 	Visible             bool
 	NotRelativeToCamera int

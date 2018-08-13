@@ -10,6 +10,7 @@ const (
 )
 
 type Lines3D struct {
+	NilRenderObject
 	Name           string
 	linesInterface Lines3DInterface
 

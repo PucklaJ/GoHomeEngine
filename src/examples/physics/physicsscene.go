@@ -4,6 +4,7 @@ import (
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
 	"github.com/PucklaMotzer09/gohomeengine/src/physics2d"
 	"github.com/go-gl/mathgl/mgl32"
+	"golang.org/x/image/colornames"
 )
 
 type PhysicsScene struct {
@@ -41,14 +42,32 @@ func (this *PhysicsScene) AddBox(pos mgl32.Vec2) {
 	gohome.UpdateMgr.AddObject(&con)
 
 	this.boxes = append(this.boxes, box)
+}
 
-	gohome.RenderMgr.EnableBackBuffer = true
+func (this *PhysicsScene) AddCircle(pos mgl32.Vec2) {
+	var circle gohome.Shape2D
+	var circle2D gohome.Circle2D
+
+	circle2D.Radius = 10.0
+	circle2D.Col = colornames.Lime
+
+	circle.Init()
+	circle.AddTriangles(circle2D.ToTriangles(15))
+	circle.SetDrawMode(gohome.DRAW_MODE_TRIANGLES)
+	circle.Load()
+	circle.Transform.Position = pos
+	gohome.RenderMgr.AddObject(&circle)
+
+	this.PhysicsMgr.CreateStaticCircle(pos, 10.0)
 }
 
 func (this *PhysicsScene) Update(delta_time float32) {
 	if gohome.InputMgr.IsPressed(gohome.MouseButtonLeft) {
 		pos := gohome.InputMgr.Mouse.ToWorldPosition2D()
 		this.AddBox(pos)
+	} else if gohome.InputMgr.JustPressed(gohome.MouseButtonRight) {
+		pos := gohome.InputMgr.Mouse.ToWorldPosition2D()
+		this.AddCircle(pos)
 	}
 }
 

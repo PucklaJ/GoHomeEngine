@@ -104,6 +104,28 @@ func (this *PhysicsManager2D) CreateStaticBox(pos mgl32.Vec2, size mgl32.Vec2) *
 	return body
 }
 
+func (this *PhysicsManager2D) CreateDynamicCircle(pos mgl32.Vec2, radius float32) *box2d.B2Body {
+	bodyDef := box2d.MakeB2BodyDef()
+	bodyDef.Type = box2d.B2BodyType.B2_dynamicBody
+	bodyDef.Position = ToBox2DCoordinates(pos)
+	shape := box2d.MakeB2CircleShape()
+	shape.SetRadius(ScalarToBox2D(radius))
+	body := this.World.CreateBody(&bodyDef)
+	body.CreateFixture(&shape, 1.0)
+	return body
+}
+
+func (this *PhysicsManager2D) CreateStaticCircle(pos mgl32.Vec2, radius float32) *box2d.B2Body {
+	bodyDef := box2d.MakeB2BodyDef()
+	bodyDef.Type = box2d.B2BodyType.B2_staticBody
+	bodyDef.Position = ToBox2DCoordinates(pos)
+	shape := box2d.MakeB2CircleShape()
+	shape.SetRadius(ScalarToBox2D(radius))
+	body := this.World.CreateBody(&bodyDef)
+	body.CreateFixture(&shape, 1.0)
+	return body
+}
+
 func (this *PhysicsManager2D) GetDebugDraw() PhysicsDebugDraw2D {
 	return PhysicsDebugDraw2D{
 		mgr: this,
