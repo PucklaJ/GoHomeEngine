@@ -420,14 +420,16 @@ func isConvex(index uint32, vertices []uint32, reflex []uint32, points []Shape2D
 
 	vim1, vi, vip1 := getPoints(index, vertices, points)
 
-	vprev := vim1.Sub(vi).Normalize()
-	vnext := vip1.Sub(vi).Normalize()
-	toMid := mid.Sub(vi).Normalize()
+	toPrev := vim1.Sub(vi)
+	toNext := vip1.Sub(vi)
 
-	angleprev := mgl32.RadToDeg(float32(math.Acos(float64(vprev.Dot(toMid)))))
-	anglenext := mgl32.RadToDeg(float32(math.Acos(float64(vnext.Dot(toMid)))))
-
-	return (anglenext + angleprev) < 180.0
+	theta1 := mgl32.RadToDeg(toPrev.Angle())
+	theta2 := mgl32.RadToDeg(toNext.Angle())
+	angle := 180.0 + theta1 - theta2 + 360.0
+	for angle > 360.0 {
+		angle -= 360.0
+	}
+	return angle < 180.0
 }
 
 func isReflex(index uint32, vertices []uint32, reflex []uint32, points []Shape2DVertex, mid mgl32.Vec2) bool {
