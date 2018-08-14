@@ -26,7 +26,7 @@ var (
 		"assets/",
 		"assets/shaders/",
 	}
-	TEXTURE_PATHS = [4]string{
+	TEXTURE_PATHS = []string{
 		"",
 		"textures/",
 		"assets/",
@@ -68,9 +68,9 @@ var (
 	}
 	TMX_MAP_PATHS = [4]string{
 		"",
-		"maps",
-		"assets",
-		"assets/maps",
+		"maps/",
+		"assets/",
+		"assets/maps/",
 	}
 )
 
@@ -123,19 +123,22 @@ func GetPathFromFile(path string) string {
 	}
 }
 
-func OpenFileWithPaths(path string, paths []string) (*File, error) {
+func OpenFileWithPaths(path string, paths []string) (*File, string, error) {
 	var reader *File
 	var err error
+	var filename string
 
 	for i := 0; i < len(paths); i++ {
-		if reader, err = Framew.OpenFile(paths[i] + path); err == nil {
+		filename = paths[i] + path
+		if reader, err = Framew.OpenFile(filename); err == nil {
 			break
 		} else if reader, err = Framew.OpenFile(paths[i] + GetFileFromPath(path)); err == nil {
+			filename = paths[i] + GetFileFromPath(path)
 			break
 		}
 	}
 
-	return reader, err
+	return reader, filename, err
 }
 
 func loadShaderFile(path string) (string, error) {
@@ -144,7 +147,7 @@ func loadShaderFile(path string) (string, error) {
 	} else {
 		var reader io.Reader
 		var err1 error
-		reader, err1 = OpenFileWithPaths(path, SHADER_PATHS[:])
+		reader, _, err1 = OpenFileWithPaths(path, SHADER_PATHS[:])
 		if err1 != nil {
 			return "", err1
 		}
@@ -459,7 +462,7 @@ func (rsmgr *ResourceManager) loadFont(name, path string, preloaded bool) {
 		}
 	}
 
-	reader, err := OpenFileWithPaths(path, FONT_PATHS[:])
+	reader, _, err := OpenFileWithPaths(path, FONT_PATHS[:])
 	if err != nil {
 		ErrorMgr.Message(ERROR_LEVEL_ERROR, "Font", name, "Couldn't load: "+err.Error())
 		return
@@ -634,7 +637,7 @@ func (rsmgr *ResourceManager) LoadTextureFunction(name, path string, preloaded b
 
 	var reader io.Reader
 	var err error
-	reader, err = OpenFileWithPaths(path, TEXTURE_PATHS[:])
+	reader, _, err = OpenFileWithPaths(path, TEXTURE_PATHS[:])
 	if err != nil {
 		ErrorMgr.Message(ERROR_LEVEL_ERROR, "Texture", name, "Couldn't load file: "+err.Error())
 		return nil
@@ -899,12 +902,11 @@ func (rsmgr *ResourceManager) LoadTMXMap(name, path string) {
 		return
 	}
 
-	file, err := OpenFileWithPaths(path, TMX_MAP_PATHS[:])
+	file, fileName, err := OpenFileWithPaths(path, TMX_MAP_PATHS[:])
 	if err != nil {
 		ErrorMgr.MessageError(ERROR_LEVEL_ERROR, "TMXMap", name, err)
 		return
 	}
-	fileName := GetFileFromPath(path)
 
 	tmxmap, err := tmx.LoadReader(file, fileName)
 	if err != nil {

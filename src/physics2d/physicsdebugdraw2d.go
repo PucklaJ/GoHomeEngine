@@ -70,22 +70,26 @@ func (this *PhysicsDebugDraw2D) Render() {
 	}
 
 	var shapes gohome.Shape2D
-	shapes.Init()
-	shapes.AddTriangles(this.triangles)
-	shapes.SetDrawMode(gohome.DRAW_MODE_TRIANGLES)
-	shapes.Load()
-	gohome.RenderMgr.RenderRenderObject(&shapes)
-	shapes.Terminate()
+	if len(this.triangles) != 0 {
+		shapes.Init()
+		shapes.AddTriangles(this.triangles)
+		shapes.SetDrawMode(gohome.DRAW_MODE_TRIANGLES)
+		shapes.Load()
+		gohome.RenderMgr.RenderRenderObject(&shapes)
+		shapes.Terminate()
 
-	shapes.Init()
-	shapes.AddLines(this.lines)
-	shapes.SetDrawMode(gohome.DRAW_MODE_LINES)
-	shapes.Load()
-	gohome.RenderMgr.RenderRenderObject(&shapes)
-	shapes.Terminate()
+		this.triangles = this.triangles[:0]
+	}
+	if len(this.lines) != 0 {
+		shapes.Init()
+		shapes.AddLines(this.lines)
+		shapes.SetDrawMode(gohome.DRAW_MODE_LINES)
+		shapes.Load()
+		gohome.RenderMgr.RenderRenderObject(&shapes)
+		shapes.Terminate()
 
-	this.lines = this.lines[:0]
-	this.triangles = this.triangles[:0]
+		this.lines = this.lines[:0]
+	}
 }
 
 func (this *PhysicsDebugDraw2D) DrawJoint(j box2d.B2JointInterface) {
@@ -125,7 +129,6 @@ func (this *PhysicsDebugDraw2D) DrawFixture(f *box2d.B2Fixture, xf *box2d.B2Tran
 		purple.A = 120
 	}
 	gohome.DrawColor = purple
-
 	switch f.GetType() {
 	case box2d.B2Shape_Type.E_circle:
 		this.DrawCircle(f, xf)
@@ -140,13 +143,18 @@ func (this *PhysicsDebugDraw2D) DrawFixture(f *box2d.B2Fixture, xf *box2d.B2Tran
 
 func (this *PhysicsDebugDraw2D) DrawCircle(f *box2d.B2Fixture, xf *box2d.B2Transform) {
 	radius := ScalarToPixel(f.GetShape().GetRadius())
-	pos := ToPixelCoordinates(xf.P)
+	b2offset := f.GetShape().(*box2d.B2CircleShape).M_p
+	offset := ToPixelDirection(b2offset)
+	b2Pos := xf.P
+	b2Pos.X += b2offset.X
+	b2Pos.Y += b2offset.Y
+	pos := ToPixelCoordinates(b2Pos)
 	var circle2d gohome.Circle2D
 	circle2d.Position = pos
 	circle2d.Radius = radius
 	circle2d.Col = gohome.DrawColor
 	this.triangles = append(this.triangles, circle2d.ToTriangles(gohome.CircleDetail)...)
-	pos2 := pos.Add(mgl32.Rotate2D(-float32(xf.Q.GetAngle())).Mul2(mgl32.Scale2D(radius, radius).Mat2()).Mul2x1(mgl32.Vec2{1.0, 0.0}))
+	pos2 := pos.Add(mgl32.Translate2D(-offset.X(), -offset.Y()).Mul3(mgl32.Rotate2D(-float32(xf.Q.GetAngle())).Mat3()).Mul3(mgl32.Translate2D(offset.X(), offset.Y())).Mul3(mgl32.Scale2D(radius, radius)).Mul3x1(mgl32.Vec3{1.0, 0.0, 1.0}).Vec2())
 	blue := colornames.Blue
 	blue.A = 150
 	var line gohome.Line2D

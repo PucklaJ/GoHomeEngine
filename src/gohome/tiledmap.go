@@ -175,7 +175,7 @@ func (this *TiledMap) renderConfiguration(config sprite2DConfiguration, pos mgl3
 	spr.Transform.Size[1] = float32(config.Region.Height())
 	spr.Transform.Position = pos
 	spr.Flip = config.Flip
-	RenderMgr.RenderRenderObject(&spr)
+	RenderMgr.RenderRenderObjectAdv(&spr, -1, -1)
 }
 
 func (this *TiledMap) loadTileLayer(l *tmx.Layer) {
@@ -251,7 +251,10 @@ func (this *TiledMap) generateTextures() {
 		if img == nil {
 			continue
 		}
+		prevPaths := TEXTURE_PATHS
+		TEXTURE_PATHS = append(TEXTURE_PATHS, TMX_MAP_PATHS[:]...)
 		ResourceMgr.LoadTexture(t.Name, img.Source)
+		TEXTURE_PATHS = prevPaths
 		if t.TileCount == 0 {
 			tex := ResourceMgr.GetTexture(t.Name)
 			rows := (uint32(tex.GetHeight()) - 2*t.Margin + t.Spacing) / (t.Spacing + t.TileHeight)
@@ -298,7 +301,7 @@ func (this *TiledMap) generateTextures() {
 		l := this.layers[i]
 		var spr Sprite2D
 		spr.InitTexture(l)
-		RenderMgr.RenderRenderObject(&spr)
+		RenderMgr.RenderRenderObjectAdv(&spr, -1, -1)
 	}
 
 	rt.UnsetAsTarget()

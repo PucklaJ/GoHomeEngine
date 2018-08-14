@@ -143,7 +143,9 @@ func (spr *Sprite2D) Render() {
 }
 
 func (spr *Sprite2D) Terminate() {
-	spr.Texture.Terminate()
+	if spr.Texture != nil {
+		spr.Texture.Terminate()
+	}
 }
 
 func (spr *Sprite2D) IsVisible() bool {

@@ -452,7 +452,7 @@ func (rmgr *RenderManager) Render(rtype RenderType, cameraIndex int32, viewportI
 }
 
 func (rmgr *RenderManager) RenderRenderObject(robj RenderObject) {
-	rmgr.RenderRenderObjectAdv(robj, -1, -1)
+	rmgr.RenderRenderObjectAdv(robj, 0, -1)
 }
 
 func (rmgr *RenderManager) RenderRenderObjectAdv(robj RenderObject, cameraIndex, viewportIndex int32) {

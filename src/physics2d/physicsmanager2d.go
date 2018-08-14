@@ -100,10 +100,15 @@ func (this *PhysicsManager2D) CreateStaticBox(pos mgl32.Vec2, size mgl32.Vec2) *
 	bodyDef := box2d.MakeB2BodyDef()
 	bodyDef.Type = box2d.B2BodyType.B2_staticBody
 	bodyDef.Position = ToBox2DCoordinates(pos)
+	fdef := box2d.MakeB2FixtureDef()
+	fdef.Density = 1.0
+	fdef.Friction = 2.0
+	fdef.Restitution = 0.0
 	shape := box2d.MakeB2PolygonShape()
 	shape.SetAsBox(ScalarToBox2D(size[0])/2.0, ScalarToBox2D(size[1])/2.0)
+	fdef.Shape = &shape
 	body := this.World.CreateBody(&bodyDef)
-	body.CreateFixture(&shape, 1.0)
+	body.CreateFixtureFromDef(&fdef)
 	return body
 }
 
@@ -122,10 +127,15 @@ func (this *PhysicsManager2D) CreateStaticCircle(pos mgl32.Vec2, radius float32)
 	bodyDef := box2d.MakeB2BodyDef()
 	bodyDef.Type = box2d.B2BodyType.B2_staticBody
 	bodyDef.Position = ToBox2DCoordinates(pos)
+	fdef := box2d.MakeB2FixtureDef()
+	fdef.Density = 1.0
+	fdef.Friction = 2.0
+	fdef.Restitution = 0.0
 	shape := box2d.MakeB2CircleShape()
 	shape.SetRadius(ScalarToBox2D(radius))
+	fdef.Shape = &shape
 	body := this.World.CreateBody(&bodyDef)
-	body.CreateFixture(&shape, 1.0)
+	body.CreateFixtureFromDef(&fdef)
 	return body
 }
 
@@ -211,11 +221,15 @@ func (this *PhysicsManager2D) CreatePolygon(X, Y float64, poly *tmx.Polygon) {
 	bodyDef := box2d.MakeB2BodyDef()
 	bodyDef.Type = box2d.B2BodyType.B2_staticBody
 	bodyDef.Position = ToBox2DCoordinates([2]float32{float32(X), float32(Y)})
+	fdef := box2d.MakeB2FixtureDef()
+	fdef.Density = 1.0
+	fdef.Friction = 2.0
+	fdef.Restitution = 0.0
 	shape := box2d.MakeB2PolygonShape()
-
 	shape.Set(b2vertices, len(b2vertices))
+	fdef.Shape = &shape
 	body := this.World.CreateBody(&bodyDef)
-	body.CreateFixture(&shape, 1.0)
+	body.CreateFixtureFromDef(&fdef)
 }
 
 func (this *PhysicsManager2D) CreatePolyline(X, Y float64, line *tmx.Polyline) {
@@ -237,7 +251,21 @@ func (this *PhysicsManager2D) CreatePolyline(X, Y float64, line *tmx.Polyline) {
 	for i := 0; i < len(vertices); i++ {
 		b2vertices[i] = ToBox2DDirection(vertices[i])
 	}
+	fdef := box2d.MakeB2FixtureDef()
+	fdef.Friction = 2.0
+	fdef.Density = 1.0
+	fdef.Restitution = 0.0
 	shape.CreateChain(b2vertices, len(b2vertices))
+	fdef.Shape = &shape
 	body := this.World.CreateBody(&bodyDef)
-	body.CreateFixture(&shape, 1.0)
+	body.CreateFixtureFromDef(&fdef)
+}
+
+func (this *PhysicsManager2D) Terminate() {
+	for b := this.World.GetBodyList(); b != nil; b = b {
+		b1 := b.GetNext()
+		this.World.DestroyBody(b)
+		b = b1
+	}
+	this.World.Destroy()
 }
