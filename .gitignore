@@ -21,6 +21,7 @@
 *tweens3d
 *spriteanimation
 *physics
-*tiledmap
 *shape2d
+*tiledmap
+*.tmx.
 *.glsl

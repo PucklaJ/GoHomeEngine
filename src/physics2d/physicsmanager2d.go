@@ -3,7 +3,10 @@ package physics2d
 import (
 	"github.com/ByteArena/box2d"
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
+	"github.com/elliotmr/tmx"
 	"github.com/go-gl/mathgl/mgl32"
+	"strconv"
+	"strings"
 )
 
 var (
@@ -133,4 +136,108 @@ func (this *PhysicsManager2D) GetDebugDraw() PhysicsDebugDraw2D {
 		DrawJoints: true,
 		DrawAABBs:  false,
 	}
+}
+
+func (this *PhysicsManager2D) LayerToCollision(tiledmap *gohome.TiledMap, layerName string) {
+	layers := tiledmap.Layers
+	for i := 0; i < len(layers); i++ {
+		l := layers[i]
+		if !strings.Contains(l.Name, layerName) {
+			continue
+		}
+		objs := l.Objects
+		if len(objs) == 0 {
+			continue
+		}
+		var lx, ly float64 = 0.0, 0.0
+		if l.OffsetX != nil {
+			lx = *l.OffsetX
+		}
+		if l.OffsetY != nil {
+			ly = *l.OffsetY
+		}
+		for j := 0; j < len(objs); j++ {
+			o := objs[j]
+			if o.Ellipse != nil {
+				if o.Width != nil && o.Height != nil {
+					this.CreateEllipse(lx+o.X, ly+o.Y, *o.Width, *o.Height)
+				}
+			} else if o.Polygon != nil {
+				this.CreatePolygon(lx+o.X, ly+o.Y, o.Polygon)
+			} else if o.Polyline != nil {
+				this.CreatePolyline(lx+o.X, ly+o.Y, o.Polyline)
+			} else if o.Point == nil && o.Text == nil && o.GID == nil {
+				if o.Width != nil && o.Height != nil {
+					this.CreateRectangle(lx+o.X, ly+o.Y, *o.Width, *o.Height)
+				}
+			}
+		}
+	}
+}
+
+func (this *PhysicsManager2D) CreateEllipse(X, Y, Width, Height float64) {
+	radius := float32((Width + Height) / 2.0 / 2.0)
+	pos := [2]float32{float32(X) + radius, float32(Y) + radius}
+
+	this.CreateStaticCircle(pos, radius)
+}
+
+func (this *PhysicsManager2D) CreateRectangle(X, Y, Width, Height float64) {
+	size := mgl32.Vec2{float32(Width), float32(Height)}
+	pos := mgl32.Vec2{float32(X), float32(Y)}.Add(size.Mul(0.5))
+
+	this.CreateStaticBox(pos, size)
+}
+
+func (this *PhysicsManager2D) CreatePolygon(X, Y float64, poly *tmx.Polygon) {
+	points := strings.Split(poly.Points, " ")
+	if len(points) > 8 {
+		gohome.ErrorMgr.Error("Physics", "Box2D", "Couldn't create collision polygon: It has more than 8 vertices")
+		return
+	}
+	vertices := make([]mgl32.Vec2, len(points))
+	b2vertices := make([]box2d.B2Vec2, len(points))
+	for i := 0; i < len(points); i++ {
+		point := strings.Split(points[i], ",")
+		x, _ := strconv.ParseFloat(point[0], 32)
+		y, _ := strconv.ParseFloat(point[1], 32)
+		vertices[i][0] = float32(x)
+		vertices[i][1] = float32(y)
+	}
+	for i := 0; i < len(vertices); i++ {
+		b2vertices[i] = ToBox2DDirection(vertices[i])
+	}
+
+	bodyDef := box2d.MakeB2BodyDef()
+	bodyDef.Type = box2d.B2BodyType.B2_staticBody
+	bodyDef.Position = ToBox2DCoordinates([2]float32{float32(X), float32(Y)})
+	shape := box2d.MakeB2PolygonShape()
+
+	shape.Set(b2vertices, len(b2vertices))
+	body := this.World.CreateBody(&bodyDef)
+	body.CreateFixture(&shape, 1.0)
+}
+
+func (this *PhysicsManager2D) CreatePolyline(X, Y float64, line *tmx.Polyline) {
+	bodyDef := box2d.MakeB2BodyDef()
+	bodyDef.Type = box2d.B2BodyType.B2_staticBody
+	bodyDef.Position = ToBox2DCoordinates([2]float32{float32(X), float32(Y)})
+	shape := box2d.MakeB2ChainShape()
+
+	points := strings.Split(line.Points, " ")
+	vertices := make([]mgl32.Vec2, len(points))
+	b2vertices := make([]box2d.B2Vec2, len(points))
+	for i := 0; i < len(points); i++ {
+		point := strings.Split(points[i], ",")
+		x, _ := strconv.ParseFloat(point[0], 32)
+		y, _ := strconv.ParseFloat(point[1], 32)
+		vertices[i][0] = float32(x)
+		vertices[i][1] = float32(y)
+	}
+	for i := 0; i < len(vertices); i++ {
+		b2vertices[i] = ToBox2DDirection(vertices[i])
+	}
+	shape.CreateChain(b2vertices, len(b2vertices))
+	body := this.World.CreateBody(&bodyDef)
+	body.CreateFixture(&shape, 1.0)
 }
