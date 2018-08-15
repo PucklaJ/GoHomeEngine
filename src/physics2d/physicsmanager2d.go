@@ -148,7 +148,7 @@ func (this *PhysicsManager2D) GetDebugDraw() PhysicsDebugDraw2D {
 	}
 }
 
-func (this *PhysicsManager2D) LayerToCollision(tiledmap *gohome.TiledMap, layerName string) {
+func (this *PhysicsManager2D) LayerToCollision(tiledmap *gohome.TiledMap, layerName string) (bodies []*box2d.B2Body) {
 	layers := tiledmap.Layers
 	for i := 0; i < len(layers); i++ {
 		l := layers[i]
@@ -170,40 +170,41 @@ func (this *PhysicsManager2D) LayerToCollision(tiledmap *gohome.TiledMap, layerN
 			o := objs[j]
 			if o.Ellipse != nil {
 				if o.Width != nil && o.Height != nil {
-					this.CreateEllipse(lx+o.X, ly+o.Y, *o.Width, *o.Height)
+					bodies = append(bodies, this.CreateEllipse(lx+o.X, ly+o.Y, *o.Width, *o.Height))
 				}
 			} else if o.Polygon != nil {
-				this.CreatePolygon(lx+o.X, ly+o.Y, o.Polygon)
+				bodies = append(bodies, this.CreatePolygon(lx+o.X, ly+o.Y, o.Polygon))
 			} else if o.Polyline != nil {
-				this.CreatePolyline(lx+o.X, ly+o.Y, o.Polyline)
+				bodies = append(bodies, this.CreatePolyline(lx+o.X, ly+o.Y, o.Polyline))
 			} else if o.Point == nil && o.Text == nil && o.GID == nil {
 				if o.Width != nil && o.Height != nil {
-					this.CreateRectangle(lx+o.X, ly+o.Y, *o.Width, *o.Height)
+					bodies = append(bodies, this.CreateRectangle(lx+o.X, ly+o.Y, *o.Width, *o.Height))
 				}
 			}
 		}
 	}
+	return
 }
 
-func (this *PhysicsManager2D) CreateEllipse(X, Y, Width, Height float64) {
+func (this *PhysicsManager2D) CreateEllipse(X, Y, Width, Height float64) *box2d.B2Body {
 	radius := float32((Width + Height) / 2.0 / 2.0)
 	pos := [2]float32{float32(X) + radius, float32(Y) + radius}
 
-	this.CreateStaticCircle(pos, radius)
+	return this.CreateStaticCircle(pos, radius)
 }
 
-func (this *PhysicsManager2D) CreateRectangle(X, Y, Width, Height float64) {
+func (this *PhysicsManager2D) CreateRectangle(X, Y, Width, Height float64) *box2d.B2Body {
 	size := mgl32.Vec2{float32(Width), float32(Height)}
 	pos := mgl32.Vec2{float32(X), float32(Y)}.Add(size.Mul(0.5))
 
-	this.CreateStaticBox(pos, size)
+	return this.CreateStaticBox(pos, size)
 }
 
-func (this *PhysicsManager2D) CreatePolygon(X, Y float64, poly *tmx.Polygon) {
+func (this *PhysicsManager2D) CreatePolygon(X, Y float64, poly *tmx.Polygon) *box2d.B2Body {
 	points := strings.Split(poly.Points, " ")
 	if len(points) > 8 {
 		gohome.ErrorMgr.Error("Physics", "Box2D", "Couldn't create collision polygon: It has more than 8 vertices")
-		return
+		return nil
 	}
 	vertices := make([]mgl32.Vec2, len(points))
 	b2vertices := make([]box2d.B2Vec2, len(points))
@@ -230,9 +231,10 @@ func (this *PhysicsManager2D) CreatePolygon(X, Y float64, poly *tmx.Polygon) {
 	fdef.Shape = &shape
 	body := this.World.CreateBody(&bodyDef)
 	body.CreateFixtureFromDef(&fdef)
+	return body
 }
 
-func (this *PhysicsManager2D) CreatePolyline(X, Y float64, line *tmx.Polyline) {
+func (this *PhysicsManager2D) CreatePolyline(X, Y float64, line *tmx.Polyline) *box2d.B2Body {
 	bodyDef := box2d.MakeB2BodyDef()
 	bodyDef.Type = box2d.B2BodyType.B2_staticBody
 	bodyDef.Position = ToBox2DCoordinates([2]float32{float32(X), float32(Y)})
@@ -259,6 +261,7 @@ func (this *PhysicsManager2D) CreatePolyline(X, Y float64, line *tmx.Polyline) {
 	fdef.Shape = &shape
 	body := this.World.CreateBody(&bodyDef)
 	body.CreateFixtureFromDef(&fdef)
+	return body
 }
 
 func (this *PhysicsManager2D) Terminate() {
