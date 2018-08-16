@@ -3207,6 +3207,7 @@ uniform mat3 transformMatrix2D;
 uniform mat4 projectionMatrix2D;
 uniform mat3 viewMatrix2D;
 uniform vec4 textureRegion;
+uniform bool enableTextureRegion;
 uniform int flip;
 uniform float depth;
 
@@ -3224,6 +3225,9 @@ void main()
 
 vec2 textureRegionToTexCoord(vec2 tc)
 {
+	if(!enableTextureRegion)
+		return tc;
+
     // X: 0 ->      0 -> Min X
     // Y: 0 ->      0 -> Min Y
     // Z: WIDTH ->  1 -> Max X
@@ -3317,6 +3321,28 @@ vec4 applyModColor(vec4 color)
     }
 
     return color;
+}`
+)
+
+// Text2D Shader
+const (
+	TEXT_2D_SHADER_FRAGMENT_SOURCE_OPENGL string = `
+#version 110
+
+#define ALPHA_DISCARD_PADDING 0.1
+
+varying vec2 fragTexCoord;
+
+uniform sampler2D texture0;
+uniform vec4 color;
+
+void main()
+{
+	gl_FragColor = texture2D(texture0,fragTexCoord) * color;
+	if(gl_FragColor.a < ALPHA_DISCARD_PADDING)
+	{
+		discard;
+	}
 }`
 )
 

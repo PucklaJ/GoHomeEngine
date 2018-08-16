@@ -2,6 +2,8 @@ package gohome
 
 import (
 	"github.com/go-gl/mathgl/mgl32"
+	"golang.org/x/image/colornames"
+	"image/color"
 	"strings"
 )
 
@@ -11,6 +13,12 @@ const (
 	FLIP_HORIZONTAL uint8 = 1
 	FLIP_VERTICAL   uint8 = 2
 	FLIP_DIAGONALLY uint8 = 3
+)
+
+const (
+	TEXT_2D_SHADER_NAME string = "Text2D"
+
+	COLOR_UNIFORM_NAME string = "color"
 )
 
 type Text2D struct {
@@ -30,6 +38,8 @@ type Text2D struct {
 	NotRelativeToCamera int
 	FontSize            uint32
 	Text                string
+	Depth               uint8
+	Color               color.Color
 }
 
 func (this *Text2D) Init(font string, fontSize uint32, str string) {
@@ -51,22 +61,46 @@ func (this *Text2D) Init(font string, fontSize uint32, str string) {
 	this.NotRelativeToCamera = -1
 	this.FontSize = fontSize
 	this.Text = str
-	this.shader = ResourceMgr.GetShader(SPRITE2D_SHADER_NAME)
+	this.shader = ResourceMgr.GetShader(TEXT_2D_SHADER_NAME)
+	if this.shader == nil {
+		ResourceMgr.LoadShaderSource(TEXT_2D_SHADER_NAME, SPRITE_2D_SHADER_VERTEX_SOURCE_OPENGL, TEXT_2D_SHADER_FRAGMENT_SOURCE_OPENGL, "", "", "", "")
+		this.shader = ResourceMgr.GetShader(TEXT_2D_SHADER_NAME)
+	}
+	this.Depth = 0
+	this.Color = colornames.White
 
 	this.updateText()
 }
 
-func (this *Text2D) Render() {
-	this.updateText()
+func (this *Text2D) setUniforms() {
+	shader := RenderMgr.CurrentShader
+	if shader != nil {
+		if len(this.textures) == 1 {
+			shader.SetUniformI("flip", int32(FLIP_NONE))
+		} else {
+			shader.SetUniformI("flip", int32(FLIP_VERTICAL))
+		}
+		shader.SetUniformF(DEPTH_UNIFORM_NAME, convertDepth(this.Depth))
+		shader.SetUniformI(ENABLE_TEXTURE_REGION_UNIFORM_NAME, 0)
+		shader.SetUniformV4(COLOR_UNIFORM_NAME, ColorToVec4(this.Color))
+	}
+}
+
+func (this *Text2D) getTexture() Texture {
 	var temp Texture
 	if len(this.textures) == 1 {
 		temp = this.textures[0]
-		RenderMgr.CurrentShader.SetUniformI("flip", int32(FLIP_NONE))
 	} else {
 		temp = this.renderTexture
-		RenderMgr.CurrentShader.SetUniformI("flip", int32(FLIP_VERTICAL))
 	}
+	return temp
+}
+
+func (this *Text2D) Render() {
+	this.updateText()
+	temp := this.getTexture()
 	if temp != nil {
+		this.setUniforms()
 		temp.Bind(0)
 		sprite2DMesh.Render()
 		temp.Unbind(0)

@@ -1,15 +1,16 @@
 package gohome
 
 const (
-	SPRITE2D_SHADER_NAME        string = "2D"
-	SPRITE2D_MESH_NAME          string = "SPRITE2D_MESH"
-	FLIP_UNIFORM_NAME           string = "flip"
-	TEXTURE_REGION_UNIFORM_NAME string = "textureRegion"
-	DEPTH_UNIFORM_NAME          string = "depth"
-	ENABLE_KEY_UNIFORM_NAME     string = "enableKey"
-	KEY_COLOR_UNIFORM_NAME      string = "keyColor"
-	ENABLE_MOD_UNIFORM_NAME     string = "enableMod"
-	MOD_COLOR_UNIFORM_NAME      string = "modColor"
+	SPRITE2D_SHADER_NAME               string = "2D"
+	SPRITE2D_MESH_NAME                 string = "SPRITE2D_MESH"
+	FLIP_UNIFORM_NAME                  string = "flip"
+	TEXTURE_REGION_UNIFORM_NAME        string = "textureRegion"
+	DEPTH_UNIFORM_NAME                 string = "depth"
+	ENABLE_KEY_UNIFORM_NAME            string = "enableKey"
+	KEY_COLOR_UNIFORM_NAME             string = "keyColor"
+	ENABLE_MOD_UNIFORM_NAME            string = "enableMod"
+	MOD_COLOR_UNIFORM_NAME             string = "modColor"
+	ENABLE_TEXTURE_REGION_UNIFORM_NAME string = "enableTextureRegion"
 )
 
 var sprite2DMesh Mesh2D = nil
@@ -111,13 +112,17 @@ func (spr *Sprite2D) GetType() RenderType {
 	return spr.RenderType
 }
 
+func convertDepth(depth uint8) float32 {
+	return (1.0-float32(depth)/255.0)*2.0 - 1.0
+}
+
 func (spr *Sprite2D) setUniforms() {
 	shader := RenderMgr.CurrentShader
 
 	if shader != nil {
 		shader.SetUniformI(FLIP_UNIFORM_NAME, int32(spr.Flip))
 		shader.SetUniformV4(TEXTURE_REGION_UNIFORM_NAME, spr.TextureRegion.Normalize(spr.Texture).Vec4())
-		shader.SetUniformF(DEPTH_UNIFORM_NAME, (1.0-float32(spr.Depth)/255.0)*2.0-1.0)
+		shader.SetUniformF(DEPTH_UNIFORM_NAME, convertDepth(spr.Depth))
 		if spr.Texture.GetKeyColor() != nil {
 			shader.SetUniformI(ENABLE_KEY_UNIFORM_NAME, 1)
 			shader.SetUniformV3(KEY_COLOR_UNIFORM_NAME, ColorToVec3(spr.Texture.GetKeyColor()))
@@ -130,6 +135,7 @@ func (spr *Sprite2D) setUniforms() {
 		} else {
 			shader.SetUniformI(ENABLE_MOD_UNIFORM_NAME, 0)
 		}
+		shader.SetUniformI(ENABLE_TEXTURE_REGION_UNIFORM_NAME, 1)
 	}
 }
 
