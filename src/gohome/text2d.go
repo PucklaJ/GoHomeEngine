@@ -75,11 +75,7 @@ func (this *Text2D) Init(font string, fontSize uint32, str string) {
 func (this *Text2D) setUniforms() {
 	shader := RenderMgr.CurrentShader
 	if shader != nil {
-		if len(this.textures) == 1 {
-			shader.SetUniformI("flip", int32(FLIP_NONE))
-		} else {
-			shader.SetUniformI("flip", int32(FLIP_VERTICAL))
-		}
+		shader.SetUniformI("flip", int32(FLIP_VERTICAL))
 		shader.SetUniformF(DEPTH_UNIFORM_NAME, convertDepth(this.Depth))
 		shader.SetUniformI(ENABLE_TEXTURE_REGION_UNIFORM_NAME, 0)
 		shader.SetUniformV4(COLOR_UNIFORM_NAME, ColorToVec4(this.Color))

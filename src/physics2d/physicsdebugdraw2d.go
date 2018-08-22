@@ -122,13 +122,16 @@ func (this *PhysicsDebugDraw2D) DrawJoint(j box2d.B2JointInterface) {
 }
 
 func (this *PhysicsDebugDraw2D) DrawFixture(f *box2d.B2Fixture, xf *box2d.B2Transform, awake bool) {
-	purple := colornames.Purple
-	if awake {
-		purple.A = 180
-	} else {
-		purple.A = 120
+	col := colornames.Purple
+	if f.IsSensor() {
+		col = colornames.Blue
 	}
-	gohome.DrawColor = purple
+	if awake {
+		col.A = 180
+	} else {
+		col.A = 120
+	}
+	gohome.DrawColor = col
 	switch f.GetType() {
 	case box2d.B2Shape_Type.E_circle:
 		this.DrawCircle(f, xf)
