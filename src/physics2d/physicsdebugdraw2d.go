@@ -10,9 +10,11 @@ import (
 type PhysicsDebugDraw2D struct {
 	gohome.NilRenderObject
 
-	DrawBodies bool
-	DrawJoints bool
-	DrawAABBs  bool
+	DrawBodies      bool
+	DrawJoints      bool
+	DrawAABBs       bool
+	OnlyDrawStatic  bool
+	OnlyDrawDynamic bool
 
 	mgr *PhysicsManager2D
 
@@ -32,9 +34,12 @@ func (this *PhysicsDebugDraw2D) Render() {
 	w := this.mgr.World
 	if this.DrawBodies {
 		for b := w.GetBodyList(); b != nil; b = b.GetNext() {
-			xf := b.GetTransform()
-			for f := b.GetFixtureList(); f != nil; f = f.GetNext() {
-				this.DrawFixture(f, &xf, b.IsAwake())
+			if (!this.OnlyDrawDynamic || b.GetType() == box2d.B2BodyType.B2_dynamicBody) &&
+				(!this.OnlyDrawStatic || b.GetType() == box2d.B2BodyType.B2_staticBody) {
+				xf := b.GetTransform()
+				for f := b.GetFixtureList(); f != nil; f = f.GetNext() {
+					this.DrawFixture(f, &xf, b.IsAwake())
+				}
 			}
 		}
 	}
@@ -72,6 +77,7 @@ func (this *PhysicsDebugDraw2D) Render() {
 	var shapes gohome.Shape2D
 	if len(this.triangles) != 0 {
 		shapes.Init()
+		shapes.Depth = 255
 		shapes.AddTriangles(this.triangles)
 		shapes.SetDrawMode(gohome.DRAW_MODE_TRIANGLES)
 		shapes.Load()
@@ -82,6 +88,7 @@ func (this *PhysicsDebugDraw2D) Render() {
 	}
 	if len(this.lines) != 0 {
 		shapes.Init()
+		shapes.Depth = 255
 		shapes.AddLines(this.lines)
 		shapes.SetDrawMode(gohome.DRAW_MODE_LINES)
 		shapes.Load()

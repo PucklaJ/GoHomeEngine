@@ -13,6 +13,7 @@ type Shape2D struct {
 	Transform           *TransformableObject2D
 	Visible             bool
 	NotRelativeToCamera int
+	Depth               uint8
 }
 
 func (this *Shape2D) Init() {
@@ -78,6 +79,10 @@ func (this *Shape2D) GetType() RenderType {
 }
 
 func (this *Shape2D) Render() {
+	shader := RenderMgr.CurrentShader
+	if shader != nil {
+		shader.SetUniformF(DEPTH_UNIFORM_NAME, convertDepth(this.Depth))
+	}
 	this.shapeInterface.Render()
 }
 

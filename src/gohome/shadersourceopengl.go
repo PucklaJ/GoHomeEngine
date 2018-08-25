@@ -3357,12 +3357,14 @@ attribute vec4 color;
 uniform mat3 transformMatrix2D;
 uniform mat4 projectionMatrix2D;
 uniform mat3 viewMatrix2D;
+uniform float depth;
 
 varying vec4 fragColor;
 
 void main()
 {
 	gl_Position = projectionMatrix2D *vec4(vec2(viewMatrix2D*transformMatrix2D*vec3(vertex,1.0)),0.0,1.0);
+	gl_Position.z = depth;
 	fragColor = color;
 }
 `
