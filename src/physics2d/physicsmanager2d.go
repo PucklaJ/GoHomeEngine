@@ -145,6 +145,7 @@ func (this *PhysicsManager2D) GetDebugDraw() PhysicsDebugDraw2D {
 		DrawBodies: true,
 		DrawJoints: true,
 		DrawAABBs:  false,
+		Visible:    true,
 	}
 }
 

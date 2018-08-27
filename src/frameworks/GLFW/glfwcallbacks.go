@@ -6,7 +6,7 @@ import (
 )
 
 func onKey(w *glfw.Window, key glfw.Key, scancode int, action glfw.Action, mods glfw.ModifierKey) {
-	if action == glfw.Press || action == glfw.Repeat {
+	if action == glfw.Press {
 		gohome.InputMgr.PressKey(glfwKeysTogohomeKeys(key))
 	} else if action == glfw.Release {
 		gohome.InputMgr.ReleaseKey(glfwKeysTogohomeKeys(key))

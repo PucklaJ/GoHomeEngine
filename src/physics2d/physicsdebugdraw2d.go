@@ -15,6 +15,7 @@ type PhysicsDebugDraw2D struct {
 	DrawAABBs       bool
 	OnlyDrawStatic  bool
 	OnlyDrawDynamic bool
+	Visible         bool
 
 	mgr *PhysicsManager2D
 
@@ -28,6 +29,10 @@ func (this *PhysicsDebugDraw2D) GetType() gohome.RenderType {
 
 func (this *PhysicsDebugDraw2D) RendersLast() bool {
 	return true
+}
+
+func (this *PhysicsDebugDraw2D) IsVisible() bool {
+	return this.Visible
 }
 
 func (this *PhysicsDebugDraw2D) Render() {
