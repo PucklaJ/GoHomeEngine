@@ -66,7 +66,7 @@ func (this *Tweenset) Update(delta_time float32) {
 		}
 	}
 
-	if len(this.currentTweens) == 0 && !this.Loop {
+	if !this.Loop && this.allTweensAdded {
 		this.done = true
 	}
 }

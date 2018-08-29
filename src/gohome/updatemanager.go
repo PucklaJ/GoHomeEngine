@@ -10,6 +10,7 @@ type UpdateObject interface {
 
 type UpdateManager struct {
 	updateObjects []UpdateObject
+	breakLoop     bool
 }
 
 func (upmgr *UpdateManager) Init() {
@@ -28,14 +29,28 @@ func (upmgr *UpdateManager) RemoveObject(upobj UpdateObject) {
 	}
 }
 
+func (upmgr *UpdateManager) BreakUpdateLoop() {
+	upmgr.breakLoop = true
+}
+
 func (upmgr *UpdateManager) Update(delta_time float32) {
+	upmgr.breakLoop = false
 	var obj UpdateObject
-	for i := 0; i < len(upmgr.updateObjects); i++ {
+	objlen := len(upmgr.updateObjects)
+	for i := 0; i < objlen && i < len(upmgr.updateObjects); i++ {
+		if upmgr.breakLoop {
+			upmgr.breakLoop = false
+			break
+		}
 		obj = upmgr.updateObjects[i]
 		if obj == nil {
 			ErrorMgr.Error("UpdateManager", strconv.Itoa(i), "UpdateObject is nil")
 		} else {
 			obj.Update(delta_time)
+
+			if i >= len(upmgr.updateObjects) || obj != upmgr.updateObjects[i] {
+				i--
+			}
 		}
 	}
 }

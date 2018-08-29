@@ -6,6 +6,21 @@ type Scene interface {
 	Terminate()
 }
 
+type NilScene struct {
+}
+
+func (this *NilScene) Init() {
+
+}
+
+func (this *NilScene) Update(delta_time float32) {
+
+}
+
+func (this *NilScene) Terminate() {
+
+}
+
 type SceneManager struct {
 	currentScene Scene
 }
@@ -22,8 +37,11 @@ func (scmgr *SceneManager) SwitchScene(scn Scene) {
 	if scn != nil {
 		scmgr.currentScene = scn
 		scmgr.currentScene.Init()
-		UpdateMgr.AddObject(scmgr.currentScene)
+		if scn == scmgr.currentScene {
+			UpdateMgr.AddObject(scmgr.currentScene)
+		}
 	}
+	UpdateMgr.BreakUpdateLoop()
 }
 
 func (scmgr *SceneManager) GetCurrentScene() Scene {

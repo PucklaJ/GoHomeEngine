@@ -1,19 +1,17 @@
 package framework
 
 import (
-	// "fmt"
+	"github.com/PucklaMotzer09/gohomeengine/src/audio"
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
-	"github.com/PucklaMotzer09/gohomeengine/src/loaders/assimp"
-	loadwav "github.com/PucklaMotzer09/gohomeengine/src/loaders/wav"
 	loadmp3 "github.com/PucklaMotzer09/gohomeengine/src/loaders/mp3"
+	loadwav "github.com/PucklaMotzer09/gohomeengine/src/loaders/wav"
 	"github.com/go-gl/glfw/v3.2/glfw"
 	"github.com/go-gl/mathgl/mgl32"
 	"log"
 	"math"
 	"os"
-	"strings"
-	"github.com/PucklaMotzer09/gohomeengine/src/audio"
 	"strconv"
+	"strings"
 )
 
 type GLFWFramework struct {
@@ -31,7 +29,7 @@ type GLFWFramework struct {
 
 	textInputStarted bool
 	textInputBuffer  string
-	audioManager audio.OpenALAudioManager
+	audioManager     audio.OpenALAudioManager
 }
 
 func (gfw *GLFWFramework) Init(ml *gohome.MainLoop) error {
@@ -509,10 +507,10 @@ func (gfw *GLFWFramework) WindowIsFullscreen() bool {
 
 func (gfw *GLFWFramework) OpenFile(file string) (*gohome.File, error) {
 	gFile := &gohome.File{}
-	osFile,err := os.Open(file)
+	osFile, err := os.Open(file)
 	gFile.ReadSeeker = osFile
 	gFile.Closer = osFile
-	return gFile,err
+	return gFile, err
 }
 
 func getFileExtension(file string) string {
@@ -559,7 +557,8 @@ func (gfw *GLFWFramework) LoadLevel(rsmgr *gohome.ResourceManager, name, path st
 	if equalIgnoreCase(extension, "obj") {
 		return loadLevelOBJ(rsmgr, name, path, preloaded, loadToGPU)
 	}
-	return loader.LoadLevelAssimp(rsmgr, name, path, preloaded, loadToGPU)
+	gohome.ErrorMgr.Error("Level", name, "The extension "+extension+" is not supported")
+	return nil
 }
 
 func (gfw *GLFWFramework) ShowYesNoDialog(title, message string) uint8 {
@@ -597,42 +596,42 @@ func (gfw *GLFWFramework) GetAudioManager() gohome.AudioManager {
 	return &gfw.audioManager
 }
 
-func (gfw *GLFWFramework) LoadSound(name,path string) gohome.Sound {
-	wavReader,err := loadwav.LoadWAVFile(path)
+func (gfw *GLFWFramework) LoadSound(name, path string) gohome.Sound {
+	wavReader, err := loadwav.LoadWAVFile(path)
 	if err != nil {
-		gohome.ErrorMgr.MessageError(gohome.ERROR_LEVEL_ERROR,"Sound",name,err)
+		gohome.ErrorMgr.MessageError(gohome.ERROR_LEVEL_ERROR, "Sound", name, err)
 		return nil
 	}
 	format := loadwav.GetAudioFormat(wavReader)
 	if format == gohome.AUDIO_FORMAT_UNKNOWN {
-		gohome.ErrorMgr.Error("Sound",name,"The audio format is unknow: C: " + strconv.Itoa(int(wavReader.NumChannels)) + " B: " + strconv.Itoa(int(wavReader.BitsPerSample)))
+		gohome.ErrorMgr.Error("Sound", name, "The audio format is unknow: C: "+strconv.Itoa(int(wavReader.NumChannels))+" B: "+strconv.Itoa(int(wavReader.BitsPerSample)))
 		return nil
 	}
-	samples,err := loadwav.ReadAllSamples(wavReader)
+	samples, err := loadwav.ReadAllSamples(wavReader)
 	if err != nil {
-		gohome.ErrorMgr.MessageError(gohome.ERROR_LEVEL_ERROR,"Sound",name,err)
+		gohome.ErrorMgr.MessageError(gohome.ERROR_LEVEL_ERROR, "Sound", name, err)
 		return nil
 	}
 	sampleRate := wavReader.SampleRate
 
-	sound := gfw.audioManager.CreateSound(name,samples,format,sampleRate)
+	sound := gfw.audioManager.CreateSound(name, samples, format, sampleRate)
 
 	return sound
 }
-func (gfw *GLFWFramework) LoadMusic(name,path string) gohome.Music {
-	decoder,err := loadmp3.LoadMP3File(path)
+func (gfw *GLFWFramework) LoadMusic(name, path string) gohome.Music {
+	decoder, err := loadmp3.LoadMP3File(path)
 	if err != nil {
-		gohome.ErrorMgr.MessageError(gohome.ERROR_LEVEL_ERROR,"Music",name,err)
+		gohome.ErrorMgr.MessageError(gohome.ERROR_LEVEL_ERROR, "Music", name, err)
 		return nil
 	}
 	format := loadmp3.GetAudioFormat(decoder)
 	sampleRate := uint32(decoder.SampleRate())
-	samples,err := loadmp3.ReadAllSamples(decoder)
+	samples, err := loadmp3.ReadAllSamples(decoder)
 	if err != nil {
-		gohome.ErrorMgr.MessageError(gohome.ERROR_LEVEL_ERROR,"Music",name,err)
+		gohome.ErrorMgr.MessageError(gohome.ERROR_LEVEL_ERROR, "Music", name, err)
 		return nil
 	}
 
-	music := gfw.audioManager.CreateMusic(name,samples,format,sampleRate)
+	music := gfw.audioManager.CreateMusic(name, samples, format, sampleRate)
 	return music
 }
