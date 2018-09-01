@@ -7,6 +7,8 @@ import (
 type ButtonCallback func(btn *Button)
 
 var focusedButton *Button
+var ButtonFont string = "Button"
+var ButtonFontSize uint32 = 24
 
 type Button struct {
 	Sprite2D
@@ -15,9 +17,11 @@ type Button struct {
 	EnterCallback ButtonCallback
 	LeaveCallback ButtonCallback
 	Entered       bool
+	Text          string
 
 	EnterModColor color.Color
 	PressModColor color.Color
+	Text2D        Text2D
 }
 
 func (this *Button) Init(pos [2]float32, texture string) {
@@ -38,6 +42,14 @@ func (this *Button) Init(pos [2]float32, texture string) {
 
 	this.EnterModColor = Color{200, 200, 200, 255}
 	this.PressModColor = Color{128, 128, 128, 255}
+
+	this.Text2D.Init(ButtonFont, ButtonFontSize, this.Text)
+	this.Text2D.Transform.Origin = [2]float32{0.0, 0.0}
+	this.Text2D.NotRelativeToCamera = 0
+	this.Text2D.Color = Color{0, 0, 0, 255}
+	this.Text2D.Transform.Origin = [2]float32{0.5, 0.5}
+
+	RenderMgr.AddObject(&this.Text2D)
 }
 
 func (this *Button) Update(delta_time float32) {
@@ -77,9 +89,18 @@ func (this *Button) Update(delta_time float32) {
 			this.Texture.SetModColor(this.PressModColor)
 		}
 	}
+
+	this.Text2D.Text = this.Text
+	size := this.Transform.Size
+	size[0], size[1] = size[0]*this.Transform.Scale[0], size[1]*this.Transform.Scale[1]
+	offset := [2]float32{size[0] * this.Transform.Origin[0], size[1] * this.Transform.Origin[1]}
+	this.Text2D.Transform.Position = this.Transform.Position.Sub(offset).Add(size.Mul(0.5))
+	this.Text2D.NotRelativeToCamera = this.NotRelativeToCamera
 }
 
 func (this *Button) Terminate() {
 	UpdateMgr.RemoveObject(this)
 	RenderMgr.RemoveObject(this)
+	RenderMgr.RemoveObject(&this.Text2D)
+	this.Text2D.Terminate()
 }

@@ -40,6 +40,7 @@ type Text2D struct {
 	Text                string
 	Depth               uint8
 	Color               color.Color
+	Flip                uint8
 }
 
 func (this *Text2D) Init(font string, fontSize uint32, str string) {
@@ -68,6 +69,7 @@ func (this *Text2D) Init(font string, fontSize uint32, str string) {
 	}
 	this.Depth = 0
 	this.Color = colornames.White
+	this.Flip = FLIP_NONE
 
 	this.updateText()
 }
@@ -75,7 +77,26 @@ func (this *Text2D) Init(font string, fontSize uint32, str string) {
 func (this *Text2D) setUniforms() {
 	shader := RenderMgr.CurrentShader
 	if shader != nil {
-		shader.SetUniformI("flip", int32(FLIP_VERTICAL))
+		var flip uint8
+		if len(this.textures) == 1 {
+			flip = FLIP_NONE
+		} else {
+			flip = FLIP_VERTICAL
+		}
+		switch flip {
+		case FLIP_NONE:
+			flip = this.Flip
+		case FLIP_VERTICAL:
+			switch this.Flip {
+			case FLIP_HORIZONTAL:
+				flip = FLIP_DIAGONALLY
+			case FLIP_VERTICAL:
+				flip = FLIP_NONE
+			case FLIP_DIAGONALLY:
+				flip = FLIP_HORIZONTAL
+			}
+		}
+		shader.SetUniformI(FLIP_UNIFORM_NAME, int32(flip))
 		shader.SetUniformF(DEPTH_UNIFORM_NAME, convertDepth(this.Depth))
 		shader.SetUniformI(ENABLE_TEXTURE_REGION_UNIFORM_NAME, 0)
 		shader.SetUniformV4(COLOR_UNIFORM_NAME, ColorToVec4(this.Color))

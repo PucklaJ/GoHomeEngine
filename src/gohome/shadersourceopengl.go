@@ -3329,7 +3329,7 @@ const (
 	TEXT_2D_SHADER_FRAGMENT_SOURCE_OPENGL string = `
 #version 110
 
-#define ALPHA_DISCARD_PADDING 0.1
+#define ALPHA_DISCARD_PADDING 0.3
 
 varying vec2 fragTexCoord;
 

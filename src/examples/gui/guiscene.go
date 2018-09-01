@@ -12,11 +12,15 @@ type GUIScene struct {
 
 func (this *GUIScene) Init() {
 	gohome.Init2DShaders()
+	gohome.ResourceMgr.LoadFont("Button", "/usr/share/fonts/truetype/ubuntu/Ubuntu-R.ttf")
+	gohome.ButtonFont = "Button"
+	this.btn.Text = "0"
 	this.btn.Init(gohome.Framew.WindowGetSize().Mul(0.25), "")
 	this.btn.Transform.Origin = [2]float32{0.5, 0.5}
 	this.btn.PressCallback = func(btn *gohome.Button) {
 		fmt.Println("Pressed 0")
 	}
+	this.btn1.Text = "1"
 	this.btn1.Init(gohome.Framew.WindowGetSize().Mul(0.75), "")
 	this.btn1.Transform.Origin = [2]float32{0.5, 0.5}
 	this.btn1.PressCallback = func(btn *gohome.Button) {
