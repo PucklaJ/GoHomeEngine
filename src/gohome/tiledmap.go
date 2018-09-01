@@ -133,17 +133,24 @@ func (this *TiledMap) getSprite2DConfiguration(tile tmx.TileInstance) sprite2DCo
 	gid := tile.GID()
 	var ts *tmx.TileSet
 	var config sprite2DConfiguration
-
-	for i := 0; i < len(this.TileSets); i++ {
-		t := this.TileSets[i]
-		if gid >= t.FirstGID && gid <= t.FirstGID+(t.TileCount-1) {
-			ts = t
-			break
+	if len(this.TileSets) == 1 {
+		ts = this.TileSets[0]
+	} else {
+		for i := 0; i < len(this.TileSets); i++ {
+			t := this.TileSets[i]
+			if gid >= t.FirstGID && gid <= t.FirstGID+(t.TileCount-1) {
+				ts = t
+				break
+			}
 		}
-	}
 
-	if ts == nil {
-		return config
+		if ts == nil {
+			if len(this.TileSets) == 0 {
+				return config
+			} else {
+				ts = this.TileSets[len(this.TileSets)-1]
+			}
+		}
 	}
 
 	id := gid - ts.FirstGID
@@ -204,7 +211,6 @@ func (this *TiledMap) loadTileLayer(l *tmx.Layer) {
 		counter := iter.GetIndex()
 		pos[0] = float32((counter % this.Width) * this.TileWidth)
 		pos[1] = float32(((counter - (counter % this.Width)) / this.Width) * this.TileHeight)
-
 		this.renderConfiguration(config, pos, texture)
 	}
 	texture.UnsetAsTarget()

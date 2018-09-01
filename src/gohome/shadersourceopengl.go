@@ -3316,7 +3316,7 @@ vec4 applyModColor(vec4 color)
 {
     if(enableMod)
     {
-    	color.a *= modColor.a;
+    	color *= modColor;
         return color;
     }
 

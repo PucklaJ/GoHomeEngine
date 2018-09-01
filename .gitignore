@@ -23,5 +23,6 @@
 *physics
 *shape2d
 *tiledmap
+*gui
 *.tmx.
 *.glsl
