@@ -69,7 +69,8 @@ func ToPixelAngle(angle float64) float32 {
 }
 
 type PhysicsManager2D struct {
-	World box2d.B2World
+	World  box2d.B2World
+	Paused bool
 }
 
 func (this *PhysicsManager2D) Init(gravity mgl32.Vec2) {
@@ -82,6 +83,10 @@ func (this *PhysicsManager2D) Init(gravity mgl32.Vec2) {
 }
 
 func (this *PhysicsManager2D) Update(delta_time float32) {
+	if this.Paused {
+		return
+	}
+
 	this.World.Step(float64(delta_time), int(VELOCITY_ITERATIONS), int(POSITION_ITERATIONS))
 }
 

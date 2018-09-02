@@ -99,6 +99,10 @@ func (this *Button) Update(delta_time float32) {
 }
 
 func (this *Button) Terminate() {
+	if focusedButton == this {
+		focusedButton = nil
+	}
+
 	UpdateMgr.RemoveObject(this)
 	RenderMgr.RemoveObject(this)
 	RenderMgr.RemoveObject(&this.Text2D)
