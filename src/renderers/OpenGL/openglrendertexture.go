@@ -19,6 +19,7 @@ type OpenGLRenderTexture struct {
 	textures     []gohome.Texture
 	prevViewport gohome.Viewport
 	viewport     gohome.Viewport
+	prevFBO      int32
 }
 
 func CreateOpenGLRenderTexture(name string, width, height, textures uint32, depthBuffer, multiSampled, shadowMap, cubeMap bool) *OpenGLRenderTexture {
@@ -184,6 +185,7 @@ func (this *OpenGLRenderTexture) GetName() string {
 }
 
 func (this *OpenGLRenderTexture) SetAsTarget() {
+	gl.GetIntegerv(gl.FRAMEBUFFER_BINDING, &this.prevFBO)
 	gl.BindFramebuffer(gl.FRAMEBUFFER, this.fbo)
 	handleOpenGLError("RenderTexture", this.Name, "glBindFramebuffer in SetAsTarget")
 	this.prevViewport = gohome.Render.GetViewport()
@@ -191,7 +193,7 @@ func (this *OpenGLRenderTexture) SetAsTarget() {
 }
 
 func (this *OpenGLRenderTexture) UnsetAsTarget() {
-	gl.BindFramebuffer(gl.FRAMEBUFFER, 0)
+	gl.BindFramebuffer(gl.FRAMEBUFFER, uint32(this.prevFBO))
 	handleOpenGLError("RenderTexture", this.Name, "glBindFramebuffer in UnsetAsTarget")
 	gohome.Render.SetViewport(this.prevViewport)
 }

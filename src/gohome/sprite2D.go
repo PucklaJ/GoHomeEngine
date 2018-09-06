@@ -21,6 +21,7 @@ type Sprite2D struct {
 	Visible             bool
 	NotRelativeToCamera int
 	Flip                uint8
+	Name                string
 
 	Shader        Shader
 	RenderType    RenderType
@@ -67,6 +68,7 @@ func (spr *Sprite2D) commonInit() {
 		spr.Transform.Size = [2]float32{float32(spr.Texture.GetWidth()), float32(spr.Texture.GetHeight())}
 		spr.TextureRegion.Min = [2]float32{0.0, 0.0}
 		spr.TextureRegion.Max = spr.Transform.Size
+		spr.Name = spr.Texture.GetName()
 	}
 	spr.Transform.RotationPoint = [2]float32{0.5, 0.5}
 	spr.Transform.Origin = [2]float32{0.0, 0.0}
@@ -85,6 +87,7 @@ func (spr *Sprite2D) commonInit() {
 
 func (spr *Sprite2D) Init(texName string) {
 	spr.Texture = ResourceMgr.GetTexture(texName)
+	spr.Name = texName
 	spr.commonInit()
 }
 
@@ -145,6 +148,8 @@ func (spr *Sprite2D) Render() {
 		spr.Texture.Bind(0)
 		sprite2DMesh.Render()
 		spr.Texture.Unbind(0)
+	} else {
+		ErrorMgr.Error("Sprite2D", spr.Name, "Couldn't render: The Texture is nil")
 	}
 }
 
