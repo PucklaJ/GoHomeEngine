@@ -4,7 +4,7 @@ import (
 	// "fmt"
 	"encoding/binary"
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
-	"github.com/go-gl/mathgl/mgl32"
+	"github.com/PucklaMotzer09/mathgl/mgl32"
 	"golang.org/x/mobile/exp/f32"
 	"golang.org/x/mobile/gl"
 	"sync"
@@ -126,11 +126,11 @@ func (oglm *OpenGLESMesh3D) AddVertices(vertices []gohome.Mesh3DVertex, indices 
 }
 
 func (oglm *OpenGLESMesh3D) checkAABB() {
-	var max,min mgl32.Vec3 = [3]float32{oglm.vertices[0][0],oglm.vertices[0][1],oglm.vertices[0][2]}, [3]float32{oglm.vertices[0][0],oglm.vertices[0][1],oglm.vertices[0][2]}
+	var max, min mgl32.Vec3 = [3]float32{oglm.vertices[0][0], oglm.vertices[0][1], oglm.vertices[0][2]}, [3]float32{oglm.vertices[0][0], oglm.vertices[0][1], oglm.vertices[0][2]}
 	var current gohome.Mesh3DVertex
-	for i:=0;i<len(oglm.vertices);i++ {
+	for i := 0; i < len(oglm.vertices); i++ {
 		current = oglm.vertices[i]
-		for j:=0;j<3;j++ {
+		for j := 0; j < 3; j++ {
 			if current[j] > max[j] {
 				max[j] = current[j]
 			} else if current[j] < min[j] {
@@ -139,7 +139,7 @@ func (oglm *OpenGLESMesh3D) checkAABB() {
 		}
 	}
 
-	for i:=0;i<3;i++ {
+	for i := 0; i < 3; i++ {
 		if max[i] > oglm.aabb.Max[i] {
 			oglm.aabb.Max[i] = max[i]
 		}

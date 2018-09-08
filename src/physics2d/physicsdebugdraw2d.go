@@ -3,7 +3,7 @@ package physics2d
 import (
 	"github.com/ByteArena/box2d"
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
-	"github.com/go-gl/mathgl/mgl32"
+	"github.com/PucklaMotzer09/mathgl/mgl32"
 	"golang.org/x/image/colornames"
 )
 

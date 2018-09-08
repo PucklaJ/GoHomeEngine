@@ -1,8 +1,8 @@
 package gohome
 
 import (
+	"github.com/PucklaMotzer09/mathgl/mgl32"
 	"github.com/elliotmr/tmx"
-	"github.com/go-gl/mathgl/mgl32"
 	"image/color"
 )
 

@@ -2,7 +2,7 @@ package gohome
 
 import (
 	// "fmt"
-	"github.com/go-gl/mathgl/mgl32"
+	"github.com/PucklaMotzer09/mathgl/mgl32"
 	"image/color"
 	"math"
 	"strconv"

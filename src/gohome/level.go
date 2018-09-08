@@ -1,7 +1,7 @@
 package gohome
 
 import (
-	"github.com/go-gl/mathgl/mgl32"
+	"github.com/PucklaMotzer09/mathgl/mgl32"
 )
 
 type LevelTransformableObject struct {
@@ -26,7 +26,7 @@ type LevelObject struct {
 type Level struct {
 	Name         string
 	LevelObjects []LevelObject
-	entities 	 []*Entity3D
+	entities     []*Entity3D
 }
 
 func (this *Level) AddToScene() {
@@ -37,7 +37,7 @@ func (this *Level) AddToScene() {
 			entity.InitModel(m)
 			entity.SetTransformableObject(&this.LevelObjects[i].Transform)
 			RenderMgr.AddObject(&entity)
-			this.entities = append(this.entities,&entity)
+			this.entities = append(this.entities, &entity)
 		}
 	}
 }
