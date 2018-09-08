@@ -1,8 +1,8 @@
 package gohome
 
 import (
+	"github.com/PucklaMotzer09/tmx"
 	"github.com/blezek/tga"
-	"github.com/elliotmr/tmx"
 	"github.com/golang/freetype"
 	"image"
 	"image/color"

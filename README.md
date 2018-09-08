@@ -14,7 +14,7 @@ A game engine for 2D and 3D games written in go
 + [go-wav](https://github.com/PucklaMotzer09/go-wav) ([Forked from here](https://github.com/sdobz/go-wav)) ([License](https://github.com/verdverm/go-wav/blob/master/LICENSE.md))
 + [go-mp3](https://github.com/hajimehoshi/go-mp3) ([License](https://github.com/hajimehoshi/go-mp3/blob/master/LICENSE))
 + [box2d](https://github.com/BxteArena/box2d)([License](https://github.com/ByteArena/box2d/blob/master/LICENSE.md))
-+ [tmx](https://github.com/elliotmr/tmx)([License](https://github.com/elliotmr/tmx/blob/master/LICENSE))
++ [tmx](https://github.com/PucklaMotzer09/tmx) ([Forked from here])(https://github.com/elliotmr/tmx) ([License](https://github.com/PucklaMotzer09/tmx/blob/master/LICENSE))
 
 ##### GLFWFramework
 + [assimp](https://github.com/assimp/assimp) ([License](https://github.com/assimp/assimp/blob/master/LICENSE))
