@@ -10,9 +10,11 @@ A game engine for 2D and 3D games written in go
 ##### General
 + [go-gl/mathgl](https://github.com/go-gl/mathgl) ([License](https://github.com/go-gl/mathgl/blob/master/LICENSE))
 + [tga](https://github.com/blezek/tga) ([License](https://github.com/blezek/tga/blob/master/LICENSE.MIT))
-+ [go-openal](https://github.com/phf/go-openal) ([License](https://github.com/phf/go-openal/blob/master/LICENSE))
++ [go-openal](https://github.com/timshannon/go-openal) ([License](https://github.com/timshannon/go-openal/blob/master/LICENSE))
 + [go-wav](https://github.com/PucklaMotzer09/go-wav) ([Forked from here](https://github.com/sdobz/go-wav)) ([License](https://github.com/verdverm/go-wav/blob/master/LICENSE.md))
 + [go-mp3](https://github.com/hajimehoshi/go-mp3) ([License](https://github.com/hajimehoshi/go-mp3/blob/master/LICENSE))
++ [box2d](https://github.com/BxteArena/box2d)([License](https://github.com/ByteArena/box2d/blob/master/LICENSE.md))
++ [tmx](https://github.com/elliotmr/tmx)([License](https://github.com/elliotmr/tmx/blob/master/LICENSE))
 
 ##### GLFWFramework
 + [assimp](https://github.com/assimp/assimp) ([License](https://github.com/assimp/assimp/blob/master/LICENSE))
