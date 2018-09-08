@@ -20,8 +20,8 @@ func (this *BasicScene) Init() {
 
 	this.gopher.Transform.Origin = [2]float32{0.5, 0.5}
 	this.littleGopher.Transform.Origin = [2]float32{0.5, 0.5}
-	nw, nh := gohome.Render.GetNativeResolution()
-	this.gopher.Transform.Position = [2]float32{float32(nw) / 2.0, float32(nh) / 2.0}
+	nr := gohome.Render.GetNativeResolution()
+	this.gopher.Transform.Position = nr.Div(2.0)
 	this.littleGopher.Transform.Scale = [2]float32{0.3, 0.3}
 	this.littleGopher.Depth = 1
 	this.gopher.Depth = 0
