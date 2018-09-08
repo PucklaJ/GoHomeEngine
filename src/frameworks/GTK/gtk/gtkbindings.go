@@ -6,7 +6,7 @@ package gtk
 */
 import "C"
 import (
-	"github.com/go-gl/mathgl/mgl32"
+	"github.com/PucklaMotzer09/mathgl/mgl32"
 	"os"
 	"unsafe"
 )
@@ -51,7 +51,7 @@ type GLArea struct {
 
 type Button struct {
 	Handle *C.GtkButton
-	ID int
+	ID     int
 }
 
 func Init() {
@@ -143,7 +143,7 @@ func ButtonNew() Button {
 	defer func() {
 		buttonID++
 	}()
-	return Button{C.widgetToButton(C.gtk_button_new()),buttonID}
+	return Button{C.widgetToButton(C.gtk_button_new()), buttonID}
 }
 
 func ButtonNewWithLabel(label string) Button {
@@ -152,7 +152,7 @@ func ButtonNewWithLabel(label string) Button {
 	}()
 	cs := C.CString(label)
 	defer C.free(unsafe.Pointer(cs))
-	return Button{C.widgetToButton(C.gtk_button_new_with_label(cs)),buttonID}
+	return Button{C.widgetToButton(C.gtk_button_new_with_label(cs)), buttonID}
 }
 
 func CreateGLAreaAndAddToWindow() {
@@ -175,7 +175,7 @@ func (this Container) Add(widget Widget) {
 }
 
 func (this Container) Remove(widget Widget) {
-	C.gtk_container_remove(this.Handle,widget.Handle)
+	C.gtk_container_remove(this.Handle, widget.Handle)
 }
 
 func (this Box) ToContainer() Container {
@@ -214,7 +214,7 @@ func (this Widget) SetSizeRequest(width, height int) {
 	C.gtk_widget_set_size_request(this.Handle, C.gint(width), C.gint(height))
 }
 
-func (this Button) SignalConnect(signal string,callback ButtonSignalCallback) {
+func (this Button) SignalConnect(signal string, callback ButtonSignalCallback) {
 
 	if buttonSignalCallbacks == nil {
 		buttonSignalCallbacks = make(map[int]map[string]ButtonSignalCallback)
@@ -223,14 +223,14 @@ func (this Button) SignalConnect(signal string,callback ButtonSignalCallback) {
 		buttonSignalCallbacks[this.ID] = make(map[string]ButtonSignalCallback)
 	}
 	var alreadyConnected bool = false
-	if _,ok := buttonSignalCallbacks[this.ID];ok {
-		if _,ok1 := buttonSignalCallbacks[this.ID][signal];ok1 {
+	if _, ok := buttonSignalCallbacks[this.ID]; ok {
+		if _, ok1 := buttonSignalCallbacks[this.ID][signal]; ok1 {
 			alreadyConnected = true
 		}
 	}
 	if !alreadyConnected {
 		signalcs := C.CString(signal)
-		C.signalConnectButton(this.Handle,signalcs,C.int(this.ID))
+		C.signalConnectButton(this.Handle, signalcs, C.int(this.ID))
 	}
 
 	buttonSignalCallbacks[this.ID][signal] = callback

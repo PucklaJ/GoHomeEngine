@@ -1,7 +1,7 @@
 package gohome
 
 import (
-	"github.com/go-gl/mathgl/mgl32"
+	"github.com/PucklaMotzer09/mathgl/mgl32"
 	"io"
 )
 
@@ -40,8 +40,8 @@ type Framework interface {
 
 	OpenFile(file string) (*File, error)
 	LoadLevel(rsmgr *ResourceManager, name, path string, preloaded, loadToGPU bool) *Level
-	LoadSound(name,path string) Sound
-	LoadMusic(name,path string) Music
+	LoadSound(name, path string) Sound
+	LoadMusic(name, path string) Music
 
 	ShowYesNoDialog(title, message string) uint8
 

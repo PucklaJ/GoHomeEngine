@@ -1,6 +1,6 @@
 package gohome
 
-import "github.com/go-gl/mathgl/mgl32"
+import "github.com/PucklaMotzer09/mathgl/mgl32"
 
 const (
 	ENTITY3D_SHADER_NAME                  string = "3D"

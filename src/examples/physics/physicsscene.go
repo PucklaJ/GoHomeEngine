@@ -4,7 +4,7 @@ import (
 	"github.com/ByteArena/box2d"
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
 	"github.com/PucklaMotzer09/gohomeengine/src/physics2d"
-	"github.com/go-gl/mathgl/mgl32"
+	"github.com/PucklaMotzer09/mathgl/mgl32"
 )
 
 type PhysicsScene struct {

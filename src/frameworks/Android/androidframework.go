@@ -4,7 +4,7 @@ import (
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
 	"github.com/PucklaMotzer09/gohomeengine/src/loaders/obj"
 	"github.com/PucklaMotzer09/gohomeengine/src/renderers/OpenGLES"
-	"github.com/go-gl/mathgl/mgl32"
+	"github.com/PucklaMotzer09/mathgl/mgl32"
 	"golang.org/x/mobile/app"
 	"golang.org/x/mobile/asset"
 	"golang.org/x/mobile/event/lifecycle"
@@ -69,18 +69,18 @@ func (this *AndroidFramework) onLifecycle(e lifecycle.Event) {
 	msg := "Lifecycle: From: " + e.From.String() + " To: " + e.To.String() + " CrossVisible: " + e.Crosses(lifecycle.StageVisible).String() + " CrossFocused: " + e.Crosses(lifecycle.StageFocused).String()
 	gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_LOG, "Framework", "Android\t", msg)
 	if e.Crosses(lifecycle.StageFocused) == lifecycle.CrossOn {
-		for i:=0;i<len(this.onFocusCallbacks);i++ {
+		for i := 0; i < len(this.onFocusCallbacks); i++ {
 			this.onFocusCallbacks[i](true)
 		}
 	} else {
-		for i:=0;i<len(this.onFocusCallbacks);i++ {
+		for i := 0; i < len(this.onFocusCallbacks); i++ {
 			this.onFocusCallbacks[i](false)
 		}
 	}
 	if e.Crosses(lifecycle.StageVisible) == lifecycle.CrossOn {
 		this.initStuff(e)
 	} else if e.Crosses(lifecycle.StageVisible) == lifecycle.CrossOff {
-		for i:=0;i<len(this.onCloseCallbacks);i++ {
+		for i := 0; i < len(this.onCloseCallbacks); i++ {
 			this.onCloseCallbacks[i]()
 		}
 		this.mainLoop.Quit()
@@ -122,9 +122,9 @@ func (this *AndroidFramework) onTouch(e touch.Event) {
 
 	if e.Type == touch.TypeBegin {
 		gohome.InputMgr.Touch(uint8(e.Sequence))
-		inputTouch.DPos = [2]int16{0,0}
+		inputTouch.DPos = [2]int16{0, 0}
 	} else if e.Type == touch.TypeEnd {
-		inputTouch.DPos = [2]int16{0,0}
+		inputTouch.DPos = [2]int16{0, 0}
 		gohome.InputMgr.ReleaseTouch(uint8(e.Sequence))
 	}
 
@@ -149,8 +149,8 @@ func (this *AndroidFramework) onPaint(e paint.Event) {
 func (this *AndroidFramework) onSize(e size.Event) {
 	gohome.Render.OnResize(uint32(e.WidthPx), uint32(e.HeightPx))
 
-	for i:=0;i<len(this.onResizeCallbacks);i++ {
-		this.onResizeCallbacks[i](uint32(e.WidthPx),uint32(e.HeightPx))
+	for i := 0; i < len(this.onResizeCallbacks); i++ {
+		this.onResizeCallbacks[i](uint32(e.WidthPx), uint32(e.HeightPx))
 	}
 }
 
@@ -207,10 +207,10 @@ func (this *AndroidFramework) CursorDisabled() bool {
 
 func (this *AndroidFramework) OpenFile(file string) (*gohome.File, error) {
 	gFile := &gohome.File{}
-	aFile,err := asset.Open(file)
+	aFile, err := asset.Open(file)
 	gFile.ReadSeeker = aFile
 	gFile.Closer = aFile
-	return gFile,err
+	return gFile, err
 }
 
 func getFileExtension(file string) string {
@@ -271,16 +271,16 @@ func (this *AndroidFramework) ShowYesNoDialog(title, message string) uint8 {
 }
 
 func (this *AndroidFramework) OnResize(callback func(newWidth, newHeight uint32)) {
-	this.onResizeCallbacks = append(this.onResizeCallbacks,callback)
+	this.onResizeCallbacks = append(this.onResizeCallbacks, callback)
 }
 func (this *AndroidFramework) OnMove(callback func(newPosX, newPosY uint32)) {
-	this.onMoveCallbacks = append(this.onMoveCallbacks,callback)
+	this.onMoveCallbacks = append(this.onMoveCallbacks, callback)
 }
 func (this *AndroidFramework) OnClose(callback func()) {
-	this.onCloseCallbacks = append(this.onCloseCallbacks,callback)
+	this.onCloseCallbacks = append(this.onCloseCallbacks, callback)
 }
 func (this *AndroidFramework) OnFocus(callback func(focused bool)) {
-	this.onFocusCallbacks = append(this.onFocusCallbacks,callback)
+	this.onFocusCallbacks = append(this.onFocusCallbacks, callback)
 }
 
 func (this *AndroidFramework) StartTextInput() {
@@ -299,9 +299,9 @@ func (this *AndroidFramework) GetAudioManager() gohome.AudioManager {
 	return &gohome.NilAudioManager{}
 }
 
-func (*AndroidFramework) LoadSound(name,path string) gohome.Sound {
+func (*AndroidFramework) LoadSound(name, path string) gohome.Sound {
 	return nil
 }
-func (*AndroidFramework) LoadMusic(name,path string) gohome.Music {
+func (*AndroidFramework) LoadMusic(name, path string) gohome.Music {
 	return nil
 }

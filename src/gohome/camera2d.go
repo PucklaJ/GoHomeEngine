@@ -1,7 +1,7 @@
 package gohome
 
 import (
-	"github.com/go-gl/mathgl/mgl32"
+	"github.com/PucklaMotzer09/mathgl/mgl32"
 )
 
 type Camera2D struct {

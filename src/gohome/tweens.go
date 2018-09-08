@@ -1,21 +1,21 @@
 package gohome
 
 import (
-	"github.com/go-gl/mathgl/mgl32"
+	"github.com/PucklaMotzer09/mathgl/mgl32"
 )
 
 type TweenPosition2D struct {
 	Destination mgl32.Vec2
-	Time float32
-	TweenType uint8
+	Time        float32
+	TweenType   uint8
 
-	transform *TransformableObject2D
-	velocity mgl32.Vec2
+	transform   *TransformableObject2D
+	velocity    mgl32.Vec2
 	elapsedTime float32
 }
 
 func (this *TweenPosition2D) Start(parent interface{}) {
-	parent2D,ok := parent.(TweenableObject2D)
+	parent2D, ok := parent.(TweenableObject2D)
 	if ok {
 		this.transform = parent2D.GetTransform2D()
 	} else {
@@ -23,7 +23,7 @@ func (this *TweenPosition2D) Start(parent interface{}) {
 	}
 
 	if this.transform != nil {
-		this.velocity = this.Destination.Sub(this.transform.Position).Mul(1.0/this.Time)
+		this.velocity = this.Destination.Sub(this.transform.Position).Mul(1.0 / this.Time)
 	}
 	this.elapsedTime = 0.0
 }
@@ -58,21 +58,21 @@ func (this *TweenPosition2D) Reset() {
 }
 
 func (this *TweenPosition2D) Copy() Tween {
-	return &TweenPosition2D{Destination:this.Destination,Time:this.Time,TweenType:this.TweenType}
+	return &TweenPosition2D{Destination: this.Destination, Time: this.Time, TweenType: this.TweenType}
 }
 
 type TweenRotation2D struct {
 	Destination float32
-	Time float32
-	TweenType uint8
+	Time        float32
+	TweenType   uint8
 
-	transform *TransformableObject2D
-	velocity float32
+	transform   *TransformableObject2D
+	velocity    float32
 	elapsedTime float32
 }
 
 func (this *TweenRotation2D) Start(parent interface{}) {
-	parent2D,ok := parent.(TweenableObject2D)
+	parent2D, ok := parent.(TweenableObject2D)
 	if ok {
 		this.transform = parent2D.GetTransform2D()
 	} else {
@@ -80,7 +80,7 @@ func (this *TweenRotation2D) Start(parent interface{}) {
 	}
 
 	if this.transform != nil {
-		this.velocity = (this.Destination - this.transform.Rotation)  / this.Time
+		this.velocity = (this.Destination - this.transform.Rotation) / this.Time
 	}
 	this.elapsedTime = 0.0
 }
@@ -109,17 +109,17 @@ func (this *TweenRotation2D) End() {
 }
 func (this *TweenRotation2D) Reset() {
 	if this.transform != nil {
-		this.transform.Rotation = this.Destination - this.velocity * this.Time
+		this.transform.Rotation = this.Destination - this.velocity*this.Time
 		this.elapsedTime = 0.0
 	}
 }
 
 func (this *TweenRotation2D) Copy() Tween {
-	return &TweenRotation2D{Destination:this.Destination,Time:this.Time,TweenType:this.TweenType}
+	return &TweenRotation2D{Destination: this.Destination, Time: this.Time, TweenType: this.TweenType}
 }
 
 type TweenWait struct {
-	Time float32
+	Time      float32
 	TweenType uint8
 
 	elapsedTime float32
@@ -149,7 +149,7 @@ func (this *TweenWait) Reset() {
 }
 
 func (this *TweenWait) Copy() Tween {
-	return &TweenWait{Time:this.Time,TweenType:this.TweenType}
+	return &TweenWait{Time: this.Time, TweenType: this.TweenType}
 }
 
 type BlinkableObject interface {
@@ -159,20 +159,20 @@ type BlinkableObject interface {
 }
 
 type TweenBlink struct {
-	Amount uint32
-	Time float32
+	Amount    uint32
+	Time      float32
 	TweenType uint8
 
-	timeForOneBlink float32
-	elapsedTime float32
+	timeForOneBlink     float32
+	elapsedTime         float32
 	oneBlinkElapsedTime float32
-	previousVisible bool
-	parent BlinkableObject
+	previousVisible     bool
+	parent              BlinkableObject
 }
 
 func (this *TweenBlink) Start(parent interface{}) {
 	this.elapsedTime = 0.0
-	this.timeForOneBlink = this.Time/float32(this.Amount)
+	this.timeForOneBlink = this.Time / float32(this.Amount)
 	if parent != nil {
 		this.parent = parent.(BlinkableObject)
 		if this.parent != nil {
@@ -229,17 +229,17 @@ func (this *TweenBlink) Reset() {
 }
 
 func (this *TweenBlink) Copy() Tween {
-	return &TweenBlink{Amount:this.Amount,Time:this.Time,TweenType:this.TweenType}
+	return &TweenBlink{Amount: this.Amount, Time: this.Time, TweenType: this.TweenType}
 }
 
 type TweenScale2D struct {
 	Destination mgl32.Vec2
-	Time float32
-	TweenType uint8
+	Time        float32
+	TweenType   uint8
 
 	elapsedTime float32
-	velocity mgl32.Vec2
-	transform *TransformableObject2D
+	velocity    mgl32.Vec2
+	transform   *TransformableObject2D
 }
 
 func (this *TweenScale2D) Start(parent interface{}) {
@@ -247,7 +247,7 @@ func (this *TweenScale2D) Start(parent interface{}) {
 	this.transform = nil
 
 	if parent != nil {
-		parent2D,ok := parent.(TweenableObject2D)
+		parent2D, ok := parent.(TweenableObject2D)
 		if ok {
 			this.transform = parent2D.GetTransform2D()
 		} else {
@@ -257,7 +257,7 @@ func (this *TweenScale2D) Start(parent interface{}) {
 		return
 	}
 
-	this.velocity = this.Destination.Sub(this.transform.Scale).Mul(1.0/this.Time)
+	this.velocity = this.Destination.Sub(this.transform.Scale).Mul(1.0 / this.Time)
 }
 
 func (this *TweenScale2D) Update(delta_time float32) bool {
@@ -297,17 +297,17 @@ func (this *TweenScale2D) Reset() {
 }
 
 func (this *TweenScale2D) Copy() Tween {
-	return &TweenScale2D{Destination:this.Destination,Time:this.Time,TweenType:this.TweenType}
+	return &TweenScale2D{Destination: this.Destination, Time: this.Time, TweenType: this.TweenType}
 }
 
 type TweenRegion2D struct {
 	Destination TextureRegion
-	Time float32
-	TweenType uint8
+	Time        float32
+	TweenType   uint8
 
-	startRegion  TextureRegion
-	startSize	 mgl32.Vec2
-	parent *Sprite2D
+	startRegion TextureRegion
+	startSize   mgl32.Vec2
+	parent      *Sprite2D
 	elapsedTime float32
 }
 
@@ -321,7 +321,7 @@ func (this *TweenRegion2D) Start(parent interface{}) {
 			this.parent.TextureRegion = this.Destination
 			if this.parent.Transform != nil {
 				this.startSize = this.parent.Transform.Size
-				this.parent.Transform.Size = [2]float32{this.Destination.Width(),this.Destination.Height()}
+				this.parent.Transform.Size = [2]float32{this.Destination.Width(), this.Destination.Height()}
 			}
 		}
 	}
@@ -359,23 +359,23 @@ func (this *TweenRegion2D) Reset() {
 	this.elapsedTime = 0.0
 	this.parent.TextureRegion = this.startRegion
 	if this.parent.Transform != nil {
-	   this.parent.Transform.Size = this.startSize
+		this.parent.Transform.Size = this.startSize
 	}
 }
 
 func (this *TweenRegion2D) Copy() Tween {
-	return &TweenRegion2D{Destination:this.Destination,Time:this.Time,TweenType:this.TweenType}
+	return &TweenRegion2D{Destination: this.Destination, Time: this.Time, TweenType: this.TweenType}
 }
 
 type TweenTexture2D struct {
 	Destination Texture
-	Time float32
-	TweenType uint8
+	Time        float32
+	TweenType   uint8
 
-	elapsedTime float32
-	parent *Sprite2D
+	elapsedTime  float32
+	parent       *Sprite2D
 	startTexture Texture
-	startSize mgl32.Vec2
+	startSize    mgl32.Vec2
 }
 
 func (this *TweenTexture2D) Start(parent interface{}) {
@@ -388,7 +388,7 @@ func (this *TweenTexture2D) Start(parent interface{}) {
 			this.parent.Texture = this.Destination
 			if this.parent.Transform != nil {
 				this.startSize = this.parent.Transform.Size
-				this.parent.Transform.Size = [2]float32{float32(this.Destination.GetWidth()),float32(this.Destination.GetHeight())}
+				this.parent.Transform.Size = [2]float32{float32(this.Destination.GetWidth()), float32(this.Destination.GetHeight())}
 			}
 		}
 	}
@@ -431,22 +431,22 @@ func (this *TweenTexture2D) Reset() {
 }
 
 func (this *TweenTexture2D) Copy() Tween {
-	return &TweenTexture2D{Destination:this.Destination,Time:this.Time,TweenType:this.TweenType}
+	return &TweenTexture2D{Destination: this.Destination, Time: this.Time, TweenType: this.TweenType}
 }
 
 type TweenPosition3D struct {
 	Destination mgl32.Vec3
-	Time float32
-	TweenType uint8
+	Time        float32
+	TweenType   uint8
 
-	transform *TransformableObject3D
-	velocity mgl32.Vec3
+	transform   *TransformableObject3D
+	velocity    mgl32.Vec3
 	elapsedTime float32
 }
 
 func (this *TweenPosition3D) Start(parent interface{}) {
 	if parent != nil {
-		parent3D,ok := parent.(TweenableObject3D)
+		parent3D, ok := parent.(TweenableObject3D)
 		if ok {
 			this.transform = parent3D.GetTransform3D()
 		} else {
@@ -454,9 +454,8 @@ func (this *TweenPosition3D) Start(parent interface{}) {
 		}
 	}
 
-
 	if this.transform != nil {
-		this.velocity = this.Destination.Sub(this.transform.Position).Mul(1.0/this.Time)
+		this.velocity = this.Destination.Sub(this.transform.Position).Mul(1.0 / this.Time)
 	}
 	this.elapsedTime = 0.0
 }
@@ -491,21 +490,21 @@ func (this *TweenPosition3D) Reset() {
 }
 
 func (this *TweenPosition3D) Copy() Tween {
-	return &TweenPosition3D{Destination:this.Destination,Time:this.Time,TweenType:this.TweenType}
+	return &TweenPosition3D{Destination: this.Destination, Time: this.Time, TweenType: this.TweenType}
 }
 
 type TweenRotation3D struct {
 	Destination mgl32.Quat
-	Time float32
-	TweenType uint8
+	Time        float32
+	TweenType   uint8
 
-	transform *TransformableObject3D
-	start mgl32.Quat
+	transform   *TransformableObject3D
+	start       mgl32.Quat
 	elapsedTime float32
 }
 
 func (this *TweenRotation3D) Start(parent interface{}) {
-	parent3D,ok := parent.(TweenableObject3D)
+	parent3D, ok := parent.(TweenableObject3D)
 	if ok {
 		this.transform = parent3D.GetTransform3D()
 	} else {
@@ -523,7 +522,7 @@ func (this *TweenRotation3D) Update(delta_time float32) bool {
 	}
 	this.elapsedTime += delta_time
 
-	this.transform.Rotation = mgl32.QuatSlerp(this.start,this.Destination,this.elapsedTime/this.Time)
+	this.transform.Rotation = mgl32.QuatSlerp(this.start, this.Destination, this.elapsedTime/this.Time)
 
 	if this.elapsedTime >= this.Time {
 		return true
@@ -548,17 +547,17 @@ func (this *TweenRotation3D) Reset() {
 }
 
 func (this *TweenRotation3D) Copy() Tween {
-	return &TweenRotation3D{Destination:this.Destination,Time:this.Time,TweenType:this.TweenType}
+	return &TweenRotation3D{Destination: this.Destination, Time: this.Time, TweenType: this.TweenType}
 }
 
 type TweenScale3D struct {
 	Destination mgl32.Vec3
-	Time float32
-	TweenType uint8
+	Time        float32
+	TweenType   uint8
 
 	elapsedTime float32
-	velocity mgl32.Vec3
-	transform *TransformableObject3D
+	velocity    mgl32.Vec3
+	transform   *TransformableObject3D
 }
 
 func (this *TweenScale3D) Start(parent interface{}) {
@@ -566,7 +565,7 @@ func (this *TweenScale3D) Start(parent interface{}) {
 	this.transform = nil
 
 	if parent != nil {
-		parent3D,ok := parent.(TweenableObject3D)
+		parent3D, ok := parent.(TweenableObject3D)
 		if ok {
 			this.transform = parent3D.GetTransform3D()
 		} else {
@@ -576,7 +575,7 @@ func (this *TweenScale3D) Start(parent interface{}) {
 		return
 	}
 
-	this.velocity = this.Destination.Sub(this.transform.Scale).Mul(1.0/this.Time)
+	this.velocity = this.Destination.Sub(this.transform.Scale).Mul(1.0 / this.Time)
 }
 
 func (this *TweenScale3D) Update(delta_time float32) bool {
@@ -616,7 +615,5 @@ func (this *TweenScale3D) Reset() {
 }
 
 func (this *TweenScale3D) Copy() Tween {
-	return &TweenScale3D{Destination:this.Destination,Time:this.Time,TweenType:this.TweenType}
+	return &TweenScale3D{Destination: this.Destination, Time: this.Time, TweenType: this.TweenType}
 }
-
-
