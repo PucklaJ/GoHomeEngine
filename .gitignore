@@ -24,5 +24,6 @@
 *shape2d
 *tiledmap
 *gui
+*audio
 *.tmx.
 *.glsl
