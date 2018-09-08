@@ -54,7 +54,7 @@ func (this *Button) Init(pos [2]float32, texture string) {
 
 func (this *Button) Update(delta_time float32) {
 	if focusedButton == nil || focusedButton == this {
-		mpos := [2]float32{float32(InputMgr.Mouse.Pos[0]), float32(InputMgr.Mouse.Pos[1])}
+		mpos := InputMgr.Mouse.ToScreenPosition()
 		size := this.Transform.Size
 		size[0] *= this.Transform.Scale[0]
 		size[1] *= this.Transform.Scale[1]

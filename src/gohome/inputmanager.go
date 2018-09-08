@@ -18,11 +18,9 @@ func (this *Mouse) ToWorldPosition2DAdv(cameraIndex int32, viewportIndex uint32)
 	screenPos := mgl32.Vec2{float32(this.Pos[0]), float32(this.Pos[1])}
 	if RenderMgr.EnableBackBuffer {
 		wsize := Framew.WindowGetSize()
-		screenPos[0] /= wsize[0]
-		screenPos[1] /= wsize[1]
-		nw, nh := Render.GetNativeResolution()
-		screenPos[0] *= float32(nw)
-		screenPos[1] *= float32(nh)
+		screenPos = screenPos.DivVec(wsize)
+		ns := Render.GetNativeResolution()
+		screenPos = screenPos.MulVec(ns)
 	}
 	viewportPos := screenPos
 	viewport := Render.GetViewport()
@@ -49,6 +47,17 @@ func (this *Mouse) ToWorldPosition2DAdv(cameraIndex int32, viewportIndex uint32)
 	}
 
 	return projectedPos.Vec2()
+}
+
+func (this *Mouse) ToScreenPosition() (vec mgl32.Vec2) {
+	vec[0], vec[1] = float32(this.Pos[0]), float32(this.Pos[1])
+
+	ns := Render.GetNativeResolution()
+	ws := Framew.WindowGetSize()
+	rel := ns.DivVec(ws)
+	vec = vec.MulVec(rel)
+
+	return
 }
 
 type Touch struct {

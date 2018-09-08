@@ -2,6 +2,7 @@ package renderer
 
 import (
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
+	"github.com/PucklaMotzer09/mathgl/mgl32"
 	"github.com/go-gl/gl/all-core/gl"
 	"image/color"
 	"strconv"
@@ -278,8 +279,8 @@ func (this *OpenGLRenderer) SetNativeResolution(width, height uint32) {
 
 	gohome.RenderMgr.UpdateViewports(current, previous)
 }
-func (this *OpenGLRenderer) GetNativeResolution() (uint32, uint32) {
-	return uint32(gohome.RenderMgr.BackBuffer.GetWidth()), uint32(gohome.RenderMgr.BackBuffer.GetHeight())
+func (this *OpenGLRenderer) GetNativeResolution() mgl32.Vec2 {
+	return [2]float32{float32(gohome.RenderMgr.BackBuffer.GetWidth()), float32(gohome.RenderMgr.BackBuffer.GetHeight())}
 }
 func (this *OpenGLRenderer) OnResize(newWidth, newHeight uint32) {
 	gl.Viewport(0, 0, int32(newWidth), int32(newHeight))

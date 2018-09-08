@@ -490,10 +490,10 @@ func (this *SpotLight) RenderShadowMap() {
 	} else {
 		prevFOV = 70.0
 	}
-	nW, nH := Render.GetNativeResolution()
+	ns := Render.GetNativeResolution()
 	projection := &PerspectiveProjection{
-		Width:     float32(nW),
-		Height:    float32(nH),
+		Width:     ns[0],
+		Height:    ns[1],
 		FOV:       prevFOV,
 		NearPlane: 0.1,
 		FarPlane:  1000.0,

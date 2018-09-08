@@ -75,9 +75,7 @@ type PhysicsManager2D struct {
 
 func (this *PhysicsManager2D) Init(gravity mgl32.Vec2) {
 	this.World = box2d.MakeB2World(ToBox2DDirection(gravity))
-	nw, nh := gohome.Render.GetNativeResolution()
-	WORLD_SIZE[0] = float32(nw)
-	WORLD_SIZE[1] = float32(nh)
+	WORLD_SIZE = gohome.Render.GetNativeResolution()
 
 	gohome.ErrorMgr.Log("Physics", "Box2D", "Initialized!")
 }

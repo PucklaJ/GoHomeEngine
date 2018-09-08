@@ -378,8 +378,7 @@ func (rmgr *RenderManager) handleCurrentCameraAndViewport(rtype RenderType, came
 		if !rmgr.EnableBackBuffer {
 			wSize = Framew.WindowGetSize()
 		} else {
-			nw, nh := Render.GetNativeResolution()
-			wSize = [2]float32{float32(nw), float32(nh)}
+			wSize = Render.GetNativeResolution()
 		}
 		rmgr.currentViewport.Width = int(wSize.X())
 		rmgr.currentViewport.Height = int(wSize.Y())

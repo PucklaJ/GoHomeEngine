@@ -1,6 +1,7 @@
 package gohome
 
 import (
+	"github.com/PucklaMotzer09/mathgl/mgl32"
 	"image/color"
 )
 
@@ -22,7 +23,7 @@ type Renderer interface {
 	SetViewport(viewport Viewport)
 	GetViewport() Viewport
 	SetNativeResolution(width, height uint32)
-	GetNativeResolution() (uint32, uint32)
+	GetNativeResolution() mgl32.Vec2
 	OnResize(newWidth, newHeight uint32)
 	PreRender()
 	AfterRender()
