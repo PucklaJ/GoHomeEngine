@@ -289,9 +289,6 @@ func (this *Text2D) renderTexturesToRenderTexture() {
 
 	shader.Unuse()
 	this.renderTexture.UnsetAsTarget()
-	if RenderMgr.EnableBackBuffer {
-		RenderMgr.BackBuffer2D.SetAsTarget()
-	}
 }
 
 func (this *Text2D) updateUniforms() {
