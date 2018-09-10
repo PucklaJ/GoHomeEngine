@@ -8,6 +8,8 @@ import (
 type GUIScene struct {
 	btn  gohome.Button
 	btn1 gohome.Button
+
+	slider gohome.Slider
 }
 
 func (this *GUIScene) Init() {
@@ -26,11 +28,19 @@ func (this *GUIScene) Init() {
 	this.btn1.PressCallback = func(btn *gohome.Button) {
 		fmt.Println("Pressed 1")
 	}
+
+	this.slider.Init([2]float32{300.0, 100.0}, "", "")
 }
 
 func (this *GUIScene) Update(delta_time float32) {
 }
 
 func (this *GUIScene) Terminate() {
-
+	this.btn.Terminate()
+	this.btn.Sprite2D.Terminate()
+	this.btn1.Terminate()
+	this.btn1.Sprite2D.Terminate()
+	this.slider.Terminate()
+	this.slider.Long.Terminate()
+	this.slider.Circle.Terminate()
 }
