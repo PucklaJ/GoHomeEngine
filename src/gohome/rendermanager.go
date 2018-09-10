@@ -622,4 +622,8 @@ func (rmgr *RenderManager) UpdateProjection2D(viewportIndex int32) {
 	}
 }
 
+func (rmgr *RenderManager) NumRenderObjects() uint32 {
+	return uint32(len(rmgr.renderObjects) + len(rmgr.afterRenderObjects))
+}
+
 var RenderMgr RenderManager
