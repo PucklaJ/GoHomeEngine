@@ -602,7 +602,6 @@ func (rsmgr *ResourceManager) loadSound(name, path string, preloaded bool) {
 			return
 		}
 	}
-
 	sound := Framew.LoadSound(name, path)
 
 	if sound != nil {

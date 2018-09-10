@@ -53,6 +53,24 @@ func (this *OpenALSound) GetDuration() time.Duration {
 	return this.Duration
 }
 
+func (this *OpenALSound) SetVolume(vol float32) {
+	audio := gohome.Framew.GetAudioManager().(*OpenALAudioManager)
+	this.setVolumeHard(vol * audio.volume)
+}
+
+func (this *OpenALSound) setVolumeHard(vol float32) {
+	this.source.Setf(al.AlGain, vol)
+}
+
+func (this *OpenALSound) GetVolume() float32 {
+	audio := gohome.Framew.GetAudioManager().(*OpenALAudioManager)
+	return this.getVolumeHard() / audio.volume
+}
+
+func (this *OpenALSound) getVolumeHard() float32 {
+	return this.source.Getf(al.AlGain)
+}
+
 type OpenALMusic struct {
 	Name     string
 	Duration time.Duration
@@ -99,11 +117,31 @@ func (this *OpenALMusic) GetDuration() time.Duration {
 	return this.Duration
 }
 
+func (this *OpenALMusic) SetVolume(vol float32) {
+	audio := gohome.Framew.GetAudioManager().(*OpenALAudioManager)
+	this.setVolumeHard(vol * audio.volume)
+}
+
+func (this *OpenALMusic) setVolumeHard(vol float32) {
+	this.source.Setf(al.AlGain, vol)
+}
+
+func (this *OpenALMusic) GetVolume() float32 {
+	audio := gohome.Framew.GetAudioManager().(*OpenALAudioManager)
+	return this.getVolumeHard() / audio.volume
+}
+
+func (this *OpenALMusic) getVolumeHard() float32 {
+	return this.source.Getf(al.AlGain)
+}
+
 type OpenALAudioManager struct {
 	device  *al.Device
 	context *al.Context
 	sounds  []*OpenALSound
 	musics  []*OpenALMusic
+
+	volume float32
 }
 
 func (this *OpenALAudioManager) Init() {
@@ -127,6 +165,7 @@ func (this *OpenALAudioManager) Init() {
 
 	gohome.UpdateMgr.AddObject(this)
 
+	this.volume = 1.0
 }
 func (this *OpenALAudioManager) CreateSound(name string, samples []byte, format uint8, sampleRate uint32) gohome.Sound {
 	sound := &OpenALSound{}
@@ -161,6 +200,8 @@ func (this *OpenALAudioManager) CreateSound(name string, samples []byte, format 
 	sound.Duration, _ = time.ParseDuration(strconv.Itoa(int(microSeconds)) + "µs")
 
 	this.sounds = append(this.sounds, sound)
+
+	sound.SetVolume(1.0)
 
 	return sound
 }
@@ -197,6 +238,8 @@ func (this *OpenALAudioManager) CreateMusic(name string, samples []byte, format 
 	music.Duration, _ = time.ParseDuration(strconv.Itoa(int(microSeconds)) + "µs")
 
 	this.musics = append(this.musics, music)
+
+	music.SetVolume(1.0)
 
 	return music
 }
@@ -257,6 +300,21 @@ func (this *OpenALAudioManager) removeSoundFromSlice(sound *OpenALSound) {
 		}
 		this.sounds = append(this.sounds[:index], this.sounds[index+1:]...)
 	}
+}
+func (this *OpenALAudioManager) SetVolume(vol float32) {
+	pvol := this.volume
+	this.volume = vol
+
+	for _, s := range this.sounds {
+		s.setVolumeHard(s.getVolumeHard() / pvol * vol)
+	}
+	for _, m := range this.musics {
+		m.setVolumeHard(m.getVolumeHard() / pvol * vol)
+	}
+}
+
+func (this *OpenALAudioManager) GetVolume() float32 {
+	return this.volume
 }
 
 func getOpenALFormat(gohomeformat uint8) al.Format {
