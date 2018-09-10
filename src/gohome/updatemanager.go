@@ -63,4 +63,8 @@ func (upmgr *UpdateManager) Terminate() {
 	upmgr.updateObjects = append(upmgr.updateObjects[:0], upmgr.updateObjects[len(upmgr.updateObjects):]...)
 }
 
+func (upmgr *UpdateManager) NumUpdateObjects() uint32 {
+	return uint32(len(upmgr.updateObjects))
+}
+
 var UpdateMgr UpdateManager
