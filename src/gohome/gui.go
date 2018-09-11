@@ -159,6 +159,9 @@ func (this *Slider) Init(pos [2]float32, longTex, circleTex string) {
 	this.EnterModColor = Color{180, 180, 180, 255}
 	this.PressModColor = Color{128, 128, 128, 255}
 
+	this.Long.NotRelativeToCamera = 0
+	this.Circle.NotRelativeToCamera = 0
+
 	RenderMgr.AddObject(&this.Long)
 	RenderMgr.AddObject(&this.Circle)
 	UpdateMgr.AddObject(this)

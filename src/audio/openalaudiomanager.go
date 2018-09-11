@@ -14,6 +14,7 @@ type OpenALSound struct {
 	buffer  al.Buffer
 	source  al.Source
 	playing bool
+	volume  float32
 }
 
 func (this *OpenALSound) Play(loop bool) {
@@ -56,6 +57,7 @@ func (this *OpenALSound) GetDuration() time.Duration {
 func (this *OpenALSound) SetVolume(vol float32) {
 	audio := gohome.Framew.GetAudioManager().(*OpenALAudioManager)
 	this.setVolumeHard(vol * audio.volume)
+	this.volume = vol
 }
 
 func (this *OpenALSound) setVolumeHard(vol float32) {
@@ -63,12 +65,7 @@ func (this *OpenALSound) setVolumeHard(vol float32) {
 }
 
 func (this *OpenALSound) GetVolume() float32 {
-	audio := gohome.Framew.GetAudioManager().(*OpenALAudioManager)
-	return this.getVolumeHard() / audio.volume
-}
-
-func (this *OpenALSound) getVolumeHard() float32 {
-	return this.source.Getf(al.AlGain)
+	return this.volume
 }
 
 type OpenALMusic struct {
@@ -78,6 +75,7 @@ type OpenALMusic struct {
 	buffer  al.Buffer
 	source  al.Source
 	playing bool
+	volume  float32
 }
 
 func (this *OpenALMusic) Play(loop bool) {
@@ -120,6 +118,7 @@ func (this *OpenALMusic) GetDuration() time.Duration {
 func (this *OpenALMusic) SetVolume(vol float32) {
 	audio := gohome.Framew.GetAudioManager().(*OpenALAudioManager)
 	this.setVolumeHard(vol * audio.volume)
+	this.volume = vol
 }
 
 func (this *OpenALMusic) setVolumeHard(vol float32) {
@@ -127,12 +126,7 @@ func (this *OpenALMusic) setVolumeHard(vol float32) {
 }
 
 func (this *OpenALMusic) GetVolume() float32 {
-	audio := gohome.Framew.GetAudioManager().(*OpenALAudioManager)
-	return this.getVolumeHard() / audio.volume
-}
-
-func (this *OpenALMusic) getVolumeHard() float32 {
-	return this.source.Getf(al.AlGain)
+	return this.volume
 }
 
 type OpenALAudioManager struct {
@@ -302,14 +296,13 @@ func (this *OpenALAudioManager) removeSoundFromSlice(sound *OpenALSound) {
 	}
 }
 func (this *OpenALAudioManager) SetVolume(vol float32) {
-	pvol := this.volume
 	this.volume = vol
 
 	for _, s := range this.sounds {
-		s.setVolumeHard(s.getVolumeHard() / pvol * vol)
+		s.setVolumeHard(s.volume * vol)
 	}
 	for _, m := range this.musics {
-		m.setVolumeHard(m.getVolumeHard() / pvol * vol)
+		m.setVolumeHard(m.volume * vol)
 	}
 }
 
