@@ -1,12 +1,13 @@
 package framework
 
 import (
+	"errors"
 	"github.com/PucklaMotzer09/gohomeengine/src/audio"
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
 	loadmp3 "github.com/PucklaMotzer09/gohomeengine/src/loaders/mp3"
 	loadwav "github.com/PucklaMotzer09/gohomeengine/src/loaders/wav"
 	"github.com/PucklaMotzer09/mathgl/mgl32"
-	"github.com/go-gl/glfw/v3.2/glfw"
+	"github.com/go-gl/glfw/v3.3/glfw"
 	"log"
 	"math"
 	"os"
@@ -35,8 +36,8 @@ type GLFWFramework struct {
 func (gfw *GLFWFramework) Init(ml *gohome.MainLoop) error {
 	gfw.textInputStarted = false
 	gfw.window = nil
-	if err := glfw.Init(); err != nil {
-		return err
+	if !glfw.Init() {
+		return errors.New("Couldn't initialize GLFW")
 	}
 	ml.DoStuff()
 
@@ -68,11 +69,7 @@ func (gfw *GLFWFramework) createWindowProfile(windowWidth, windowHeight uint32, 
 		setProfile()
 	}
 	glfw.WindowHint(glfw.Samples, 8)
-	var err error
-	gfw.window, err = glfw.CreateWindow(int(windowWidth), int(windowHeight), title, nil, nil)
-	if err != nil {
-		return err
-	}
+	gfw.window = glfw.CreateWindow(int(windowWidth), int(windowHeight), title, nil, nil)
 
 	gfw.window.MakeContextCurrent()
 	gfw.window.SetKeyCallback(onKey)
