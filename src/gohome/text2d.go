@@ -1,7 +1,6 @@
 package gohome
 
 import (
-	"github.com/PucklaMotzer09/mathgl/mgl32"
 	"golang.org/x/image/colornames"
 	"image/color"
 	"strings"
@@ -247,73 +246,31 @@ func (this *Text2D) updateText() {
 }
 
 func (this *Text2D) renderTexturesToRenderTexture() {
-	shader := ResourceMgr.GetShader(SPRITE2D_SHADER_NAME)
-	shader.Use()
 	this.renderTexture.SetAsTarget()
-	var projection Ortho2DProjection
-	projection.Right = float32(this.renderTexture.GetWidth())
-	projection.Bottom = float32(this.renderTexture.GetHeight())
-	projection.Left = 0.0
-	projection.Top = 0.0
-	projection.CalculateProjectionMatrix()
-	projectionMatrix := projection.GetProjectionMatrix()
-	viewMatrix := mgl32.Ident3()
-
-	shader.SetUniformM4("projectionMatrix2D", projectionMatrix)
-	shader.SetUniformM3("viewMatrix2D", viewMatrix)
-	shader.SetUniformI("texture0", 0)
-	shader.SetUniformI("flip", int32(FLIP_NONE))
+	prevProj := RenderMgr.Projection2D
+	RenderMgr.SetProjection2DToTexture(this.renderTexture)
 
 	var x, y uint32 = 0, 0
 	for i := 0; i < len(this.textures); i++ {
-		var width, height uint32 = 1000, this.font.GetGlyphMaxHeight()
+		height := this.font.GetGlyphMaxHeight()
 		if this.textures[i] != nil {
-			width = uint32(this.textures[i].GetWidth())
+			var spr Sprite2D
+			spr.InitTexture(this.textures[i])
+			spr.Transform.Position = [2]float32{float32(x), float32(y)}
+			spr.NotRelativeToCamera = 0
+			RenderMgr.RenderRenderObject(&spr)
 			height = uint32(this.textures[i].GetHeight())
-			this.textures[i].Bind(0)
-
-			var transformMatrix TransformableObject2D
-			transformMatrix.Size = [2]float32{float32(width), float32(height)}
-			transformMatrix.Scale = [2]float32{1.0, 1.0}
-			transformMatrix.Origin = [2]float32{0.0, 0.0}
-			transformMatrix.RotationPoint = [2]float32{0.5, 0.5}
-			transformMatrix.Position = [2]float32{float32(x), float32(y)}
-			transformMatrix.CalculateTransformMatrix(nil, -1)
-			shader.SetUniformM3("transformMatrix2D", transformMatrix.GetTransformMatrix())
-
-			sprite2DMesh.Render()
 		}
 
 		y += uint32(int32(height) + LINE_PADDING)
 	}
 
-	shader.Unuse()
 	this.renderTexture.UnsetAsTarget()
+	RenderMgr.Projection2D = prevProj
 }
 
 func (this *Text2D) updateUniforms() {
-	this.transform.CalculateTransformMatrix(&RenderMgr, this.NotRelativeToCamera)
-
-	shader := RenderMgr.CurrentShader
-	if shader != nil {
-		shader.Use()
-		if RenderMgr.Projection2D != nil {
-			shader.SetUniformM4("projectionMatrix2D", RenderMgr.Projection2D.GetProjectionMatrix())
-		} else {
-			shader.SetUniformM4("projectionMatrix2D", mgl32.Ident4())
-		}
-		if this.transform != nil {
-			this.transform.SetTransformMatrix(&RenderMgr)
-		} else {
-			shader.SetUniformM3("transformMatrix2D", mgl32.Ident3())
-		}
-		cam := RenderMgr.currentCamera2D
-		if cam != nil {
-			shader.SetUniformM3("viewMatrix2D", cam.GetViewMatrix())
-		} else {
-			shader.SetUniformM3("viewMatrix2D", mgl32.Ident3())
-		}
-	}
+	RenderMgr.prepareRenderRenderObject(this, -1)
 }
 
 func (this *Text2D) SetTransformableObject(tobj TransformableObject) {
