@@ -31,6 +31,8 @@ type Framework interface {
 	WindowSetFullscreen(b bool)
 	WindowIsFullscreen() bool
 
+	MonitorGetSize() mgl32.Vec2
+
 	CurserShow()
 	CursorHide()
 	CursorDisable()
