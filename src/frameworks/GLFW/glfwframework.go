@@ -636,3 +636,16 @@ func (gfw *GLFWFramework) LoadMusic(name, path string) gohome.Music {
 	music := gfw.audioManager.CreateMusic(name, samples, format, sampleRate)
 	return music
 }
+
+func (gfw *GLFWFramework) MonitorGetSize() mgl32.Vec2 {
+	m := getFocusedMonitor(gfw.window)
+	vm := m.GetVideoMode()
+	if vm != nil {
+		return [2]float32{
+			float32(vm.Width),
+			float32(vm.Height),
+		}
+	} else {
+		return gfw.WindowGetSize()
+	}
+}

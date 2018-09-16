@@ -80,6 +80,9 @@ func (this *Button) Update(delta_time float32) {
 			} else {
 				this.Texture.SetModColor(nil)
 				if focusedButton == this {
+					if !prevEntered && this.LeaveCallback != nil && InputMgr.WasPressed(MouseButtonLeft) {
+						this.LeaveCallback(this)
+					}
 					focusedButton = nil
 				}
 				if prevEntered && this.LeaveCallback != nil {
