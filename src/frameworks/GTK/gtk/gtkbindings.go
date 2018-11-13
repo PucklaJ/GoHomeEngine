@@ -6,9 +6,10 @@ package gtk
 */
 import "C"
 import (
-	"github.com/PucklaMotzer09/mathgl/mgl32"
 	"os"
 	"unsafe"
+
+	"github.com/PucklaMotzer09/mathgl/mgl32"
 )
 
 type Orientation int
@@ -212,6 +213,14 @@ func GetGLArea() GLArea {
 
 func (this Widget) SetSizeRequest(width, height int) {
 	C.gtk_widget_set_size_request(this.Handle, C.gint(width), C.gint(height))
+}
+
+func (this Widget) GetParent() Widget {
+	return Widget{C.gtk_widget_get_parent(this.Handle)}
+}
+
+func (this Widget) IsNULL() bool {
+	return this.Handle == nil
 }
 
 func (this Button) SignalConnect(signal string, callback ButtonSignalCallback) {

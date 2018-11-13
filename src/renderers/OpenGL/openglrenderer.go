@@ -1,11 +1,12 @@
 package renderer
 
 import (
+	"image/color"
+	"strconv"
+
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
 	"github.com/PucklaMotzer09/mathgl/mgl32"
 	"github.com/go-gl/gl/all-core/gl"
-	"image/color"
-	"strconv"
 )
 
 const (
@@ -114,7 +115,9 @@ func (this *OpenGLRenderer) SetWireFrame(b bool) {
 }
 
 func (this *OpenGLRenderer) Terminate() {
-	gl.DeleteVertexArrays(1, &this.BackBufferVao)
+	if this.BackBufferVao != 0 {
+		gl.DeleteVertexArrays(1, &this.BackBufferVao)
+	}
 	if this.backBufferMesh != nil {
 		this.backBufferMesh.Terminate()
 	}

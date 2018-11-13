@@ -1,6 +1,7 @@
 package framework
 
 import (
+	"errors"
 	"os"
 	"strings"
 	"time"
@@ -40,9 +41,14 @@ func (this *GTKFramework) Init(ml *gohome.MainLoop) error {
 	gtk.Init()
 	if this.UseWholeWindowAsGLArea {
 		this.InitStuff(ml)
+	} else {
+		gohome.ErrorMgr.Init()
 	}
 	gohome.RenderMgr.EnableBackBuffer = false
 	ml.SetupStartScene()
+	if gtk.GetGLArea().ToWidget().GetParent().IsNULL() {
+		return errors.New("GLArea has not been added!")
+	}
 
 	gtk.Main()
 
