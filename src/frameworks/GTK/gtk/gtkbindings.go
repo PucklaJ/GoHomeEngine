@@ -6,63 +6,11 @@ package gtk
 */
 import "C"
 import (
-	"errors"
 	"os"
 	"unsafe"
 
 	"github.com/PucklaMotzer09/mathgl/mgl32"
 )
-
-type Orientation int
-type RenderCallback func()
-type MotionNotifyCallback func(x, y int16)
-type UseWholeWindowCallback func() bool
-
-type ButtonSignalCallback func(button Button)
-
-var OnMotion MotionNotifyCallback
-var OnRender RenderCallback
-var OnUseWholeScreen UseWholeWindowCallback
-
-var buttonSignalCallbacks map[int]map[string]ButtonSignalCallback
-
-const (
-	ORIENTATION_HORIZONTAL Orientation = iota
-	ORIENTATION_VERTICAL   Orientation = iota
-)
-
-type Box struct {
-	Handle *C.GtkBox
-}
-
-type Window struct {
-	Handle *C.GtkWindow
-}
-
-type Container struct {
-	Handle *C.GtkContainer
-}
-
-type Widget struct {
-	Handle *C.GtkWidget
-}
-
-type GLArea struct {
-	Handle *C.GtkGLArea
-}
-
-type Button struct {
-	Handle *C.GtkButton
-	ID     int
-}
-
-type GObject struct {
-	Handle *C.GObject
-}
-
-type Builder struct {
-	Handle *C.GtkBuilder
-}
 
 func Init() {
 	argv := os.Args
@@ -91,17 +39,6 @@ func CreateWindow(windowWidth, windowHeight uint32, title string) error {
 
 func CreateWindowObject() Window {
 	return Window{C.createWindowObject()}
-}
-
-func (this Window) ConfigureParameters(width, height uint32, title string) {
-	ctitle := C.CString(title)
-	defer C.free(unsafe.Pointer(ctitle))
-
-	C.configureWindowParameters(this.Handle, C.uint(width), C.uint(height), ctitle)
-}
-
-func (this Window) ConnectSignals() {
-	C.connectWindowSignals(this.Handle)
 }
 
 func CreateGLArea() {
@@ -188,6 +125,10 @@ func BuilderNew() Builder {
 	return Builder{C.gtk_builder_new()}
 }
 
+func GridNew() Grid {
+	return Grid{C.widgetToGrid(C.gtk_grid_new())}
+}
+
 func CreateGLAreaAndAddToWindow() {
 	C.createGLArea()
 	C.addGLAreaToWindow()
@@ -206,105 +147,10 @@ func SetWindow(window Window) {
 	C.Window = window.Handle
 }
 
-func (this Container) Add(widget Widget) {
-	C.gtk_container_add(this.Handle, widget.Handle)
-	C.gtk_widget_show(widget.Handle)
-}
-
-func (this Container) Remove(widget Widget) {
-	C.gtk_container_remove(this.Handle, widget.Handle)
-}
-
-func (this Box) ToContainer() Container {
-	return Container{C.boxToContainer(this.Handle)}
-}
-
-func (this Button) ToContainer() Container {
-	return Container{C.buttonToContainer(this.Handle)}
-}
-
-func (this Box) ToWidget() Widget {
-	return Widget{C.boxToWidget(this.Handle)}
-}
-
-func (this GLArea) ToWidget() Widget {
-	return Widget{C.glareaToWidget(this.Handle)}
-}
-
-func (this Button) ToWidget() Widget {
-	return Widget{C.buttonToWidget(this.Handle)}
-}
-
-func (this GObject) ToWidget() Widget {
-	return Widget{C.gobjectToWidget(this.Handle)}
-}
-
-func (this Widget) ToBox() Box {
-	return Box{C.widgetToBox(this.Handle)}
-}
-
-func (this Window) ToContainer() Container {
-	return Container{C.windowToContainer(this.Handle)}
-}
-
-func (this Widget) ToWindow() Window {
-	return Window{C.widgetToWindow(this.Handle)}
-}
-
 func GetGLArea() GLArea {
 	return GLArea{C.GLarea}
 }
 
-func (this Widget) SetSizeRequest(width, height int) {
-	C.gtk_widget_set_size_request(this.Handle, C.gint(width), C.gint(height))
-}
-
-func (this Widget) GetParent() Widget {
-	return Widget{C.gtk_widget_get_parent(this.Handle)}
-}
-
-func (this Widget) IsNULL() bool {
-	return this.Handle == nil
-}
-
-func (this Builder) GetObject(name string) GObject {
-	cstr := C.CString(name)
-	defer C.free(unsafe.Pointer(cstr))
-
-	handle := C.gtk_builder_get_object(this.Handle, cstr)
-
-	return GObject{handle}
-}
-
-func (this Builder) AddFromFile(file string) error {
-	cfile := C.CString(file)
-	defer C.free(unsafe.Pointer(cfile))
-
-	if err := C.gtk_builder_add_from_file(this.Handle, cfile, nil); err == 0 {
-		return errors.New("Error while loading file")
-	}
-
-	return nil
-}
-
-func (this Button) SignalConnect(signal string, callback ButtonSignalCallback) {
-
-	if buttonSignalCallbacks == nil {
-		buttonSignalCallbacks = make(map[int]map[string]ButtonSignalCallback)
-	}
-	if buttonSignalCallbacks[this.ID] == nil {
-		buttonSignalCallbacks[this.ID] = make(map[string]ButtonSignalCallback)
-	}
-	var alreadyConnected bool = false
-	if _, ok := buttonSignalCallbacks[this.ID]; ok {
-		if _, ok1 := buttonSignalCallbacks[this.ID][signal]; ok1 {
-			alreadyConnected = true
-		}
-	}
-	if !alreadyConnected {
-		signalcs := C.CString(signal)
-		C.signalConnectButton(this.Handle, signalcs, C.int(this.ID))
-	}
-
-	buttonSignalCallbacks[this.ID][signal] = callback
+func SetGLArea(area GLArea) {
+	C.GLarea = area.Handle
 }

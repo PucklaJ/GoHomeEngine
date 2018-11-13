@@ -37,7 +37,6 @@ func (this *GTKFramework) AfterWindowCreation(ml *gohome.MainLoop) {
 	ml.InitRenderer()
 	ml.InitManagers()
 	gohome.Render.AfterInit()
-	gohome.RenderMgr.EnableBackBuffer = false
 	gohome.RenderMgr.RenderToScreenFirst = true
 }
 

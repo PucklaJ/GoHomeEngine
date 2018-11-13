@@ -6,8 +6,9 @@ package gtk
 */
 import "C"
 import (
-	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
 	"log"
+
+	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
 )
 
 //export gtkgo_quit
@@ -306,14 +307,14 @@ func useWholeWindowAsGLArea() int {
 }
 
 //export gtkgo_button_signal
-func gtkgo_button_signal(button *C.GtkButton,id int, signal *C.char) {
+func gtkgo_button_signal(button *C.GtkButton, id int, signal *C.char) {
 	signalstr := C.GoString(signal)
 	buttonSignalMap := buttonSignalCallbacks[id]
 	if buttonSignalMap != nil {
-		for signalname,callback := range(buttonSignalMap) {
+		for signalname, callback := range buttonSignalMap {
 			if signalname == signalstr {
 				if callback != nil {
-					callback(Button{button,id})
+					callback(Button{button, id})
 				}
 				return
 			}

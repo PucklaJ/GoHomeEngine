@@ -1,6 +1,7 @@
 #include "includes.h"
 #include "gtkccallbacksheader.h"
 #include "_cgo_export.h"
+#include <string.h>
 
 GtkWindow* Window = NULL;
 GtkGLArea* GLarea = NULL;
@@ -31,9 +32,13 @@ GtkWindow* createWindowObject()
 
 void configureWindowParameters(GtkWindow* window,unsigned int width, unsigned int height, const char* title)
 {
-	gtk_widget_set_size_request(GTK_WIDGET(window),1,1);
-	gtk_window_resize(window,width,height);
-	gtk_window_set_title(window,title);
+	if(width != 0 && height != 0)
+	{
+		gtk_widget_set_size_request(GTK_WIDGET(window),1,1);
+		gtk_window_resize(window,width,height);
+	}
+	if(strcmp(title,"")!=0)
+		gtk_window_set_title(window,title);
 	gtk_widget_set_events(GTK_WIDGET(window), GDK_POINTER_MOTION_MASK|GDK_SCROLL_MASK);
 }
 
@@ -52,12 +57,23 @@ void connectWindowSignals(GtkWindow* window)
 void createGLArea()
 {
 	GLarea = (GtkGLArea*)gtk_gl_area_new();
-	g_signal_connect(GTK_WIDGET(GLarea),"render",G_CALLBACK(gtkgo_gl_area_render_c),NULL);
-	g_signal_connect(GTK_WIDGET(GLarea),"realize",G_CALLBACK(gtkgo_gl_area_realize_c),NULL);
+	configureGLArea(GLarea);
+}
 
-	gtk_gl_area_set_has_depth_buffer(GLarea,TRUE);
+void configureGLArea(GtkGLArea* area)
+{
+	g_signal_connect(GTK_WIDGET(area),"render",G_CALLBACK(gtkgo_gl_area_render_c),NULL);
+	g_signal_connect(GTK_WIDGET(area),"realize",G_CALLBACK(gtkgo_gl_area_realize_c),NULL);
 
-	gdk_threads_add_idle(queue_render_idle,GLarea);
+	gtk_gl_area_set_has_depth_buffer(area,TRUE);
+
+	gdk_threads_add_idle(queue_render_idle,area);
+
+	if(gtk_widget_get_parent(GTK_WIDGET(area)) != NULL)
+	{
+		gtk_widget_unrealize(GTK_WIDGET(area));
+		gtk_widget_realize(GTK_WIDGET(area));
+	}
 }
 
 void windowSetSize(float width, float height)
@@ -210,6 +226,31 @@ GObject* widgetToGObject(GtkWidget* widget)
 GtkWindow* widgetToWindow(GtkWidget* widget)
 {
 	return GTK_WINDOW(widget);
+}
+
+GtkWidget* gpointerToWidget(gpointer data)
+{
+	return GTK_WIDGET(data);
+}
+
+GtkContainer* widgetToContainer(GtkWidget* widget)
+{
+	return GTK_CONTAINER(widget);
+}
+
+GtkGrid* widgetToGrid(GtkWidget* widget)
+{
+	return GTK_GRID(widget);
+}
+
+GtkWidget* windowToWidget(GtkWindow* window)
+{
+	return GTK_WIDGET(window);
+}
+
+GtkGLArea* gobjectToGLArea(GObject* object)
+{
+	return GTK_GL_AREA(object);
 }
 
 void signalConnectButton(GtkButton* button,char* signal, int id)

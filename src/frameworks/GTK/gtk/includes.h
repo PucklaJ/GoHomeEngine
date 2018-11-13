@@ -21,6 +21,7 @@ extern GtkWindow* createWindowObject();
 extern void configureWindowParameters(GtkWindow* window,unsigned int width, unsigned int height, const char* title);
 extern void connectWindowSignals(GtkWindow* window);
 extern void createGLArea();
+extern void configureGLArea(GtkGLArea* area);
 extern void addGLAreaToWindow();
 extern void addGLAreaToContainer(GtkContainer* container);
 extern void windowSetSize(float width, float height);
@@ -46,6 +47,11 @@ extern GtkButton* widgetToButton(GtkWidget* widget);
 extern GtkWidget* gobjectToWidget(GObject* object);
 extern GObject* widgetToGObject(GtkWidget* widget);
 extern GtkWindow* widgetToWindow(GtkWidget* widget);
+extern GtkWidget* gpointerToWidget(gpointer data);
+extern GtkContainer* widgetToContainer(GtkWidget* widget);
+extern GtkGrid* widgetToGrid(GtkWidget* widget);
+extern GtkWidget* windowToWidget(GtkWindow* window);
+extern GtkGLArea* gobjectToGLArea(GObject* object);
 
 extern void signalConnectButton(GtkButton* button,char* signal, int id);
 
