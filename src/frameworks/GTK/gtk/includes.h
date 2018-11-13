@@ -17,6 +17,9 @@ extern char* ErrorString;
 extern void initialise(int args,char** argv);
 
 extern int createWindow(unsigned int width, unsigned int height, const char* title);
+extern GtkWindow* createWindowObject();
+extern void configureWindowParameters(GtkWindow* window,unsigned int width, unsigned int height, const char* title);
+extern void connectWindowSignals(GtkWindow* window);
 extern void createGLArea();
 extern void addGLAreaToWindow();
 extern void addGLAreaToContainer(GtkContainer* container);
@@ -42,6 +45,7 @@ extern GtkBox* widgetToBox(GtkWidget* widget);
 extern GtkButton* widgetToButton(GtkWidget* widget);
 extern GtkWidget* gobjectToWidget(GObject* object);
 extern GObject* widgetToGObject(GtkWidget* widget);
+extern GtkWindow* widgetToWindow(GtkWidget* widget);
 
 extern void signalConnectButton(GtkButton* button,char* signal, int id);
 

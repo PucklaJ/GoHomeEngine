@@ -1,11 +1,12 @@
 package main
 
 import (
+	"log"
+
 	"github.com/PucklaMotzer09/gohomeengine/src/frameworks/GTK"
 	"github.com/PucklaMotzer09/gohomeengine/src/frameworks/GTK/gtk"
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
 	"github.com/PucklaMotzer09/mathgl/mgl32"
-	"log"
 )
 
 var gtkf *framework.GTKFramework
@@ -41,10 +42,8 @@ func (this *GTKGUIScene) Init() {
 	if !gtkf.UseWholeWindowAsGLArea {
 		gohome.MainLop.InitWindow()
 		this.InitGUI()
-		gohome.MainLop.InitRenderer()
-		gohome.MainLop.InitManagers()
-		gohome.Render.AfterInit()
-		gohome.RenderMgr.RenderToScreenFirst = true
+		gtkf.AfterWindowCreation(&gohome.MainLop)
+		gohome.RenderMgr.EnableBackBuffer = true
 	}
 
 	gohome.Init3DShaders()

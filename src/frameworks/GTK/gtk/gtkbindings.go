@@ -89,6 +89,25 @@ func CreateWindow(windowWidth, windowHeight uint32, title string) error {
 	return nil
 }
 
+func CreateWindowObject() Window {
+	return Window{C.createWindowObject()}
+}
+
+func (this Window) ConfigureParameters(width, height uint32, title string) {
+	ctitle := C.CString(title)
+	defer C.free(unsafe.Pointer(ctitle))
+
+	C.configureWindowParameters(this.Handle, C.uint(width), C.uint(height), ctitle)
+}
+
+func (this Window) ConnectSignals() {
+	C.connectWindowSignals(this.Handle)
+}
+
+func CreateGLArea() {
+	C.createGLArea()
+}
+
 func WindowSetSize(size mgl32.Vec2) {
 	C.windowSetSize(C.float(size.X()), C.float(size.Y()))
 }
@@ -183,6 +202,10 @@ func GetWindow() Window {
 	return Window{C.Window}
 }
 
+func SetWindow(window Window) {
+	C.Window = window.Handle
+}
+
 func (this Container) Add(widget Widget) {
 	C.gtk_container_add(this.Handle, widget.Handle)
 	C.gtk_widget_show(widget.Handle)
@@ -222,6 +245,10 @@ func (this Widget) ToBox() Box {
 
 func (this Window) ToContainer() Container {
 	return Container{C.windowToContainer(this.Handle)}
+}
+
+func (this Widget) ToWindow() Window {
+	return Window{C.widgetToWindow(this.Handle)}
 }
 
 func GetGLArea() GLArea {
