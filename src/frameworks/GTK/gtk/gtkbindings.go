@@ -6,6 +6,7 @@ package gtk
 */
 import "C"
 import (
+	"errors"
 	"os"
 	"unsafe"
 
@@ -53,6 +54,14 @@ type GLArea struct {
 type Button struct {
 	Handle *C.GtkButton
 	ID     int
+}
+
+type GObject struct {
+	Handle *C.GObject
+}
+
+type Builder struct {
+	Handle *C.GtkBuilder
 }
 
 func Init() {
@@ -156,6 +165,10 @@ func ButtonNewWithLabel(label string) Button {
 	return Button{C.widgetToButton(C.gtk_button_new_with_label(cs)), buttonID}
 }
 
+func BuilderNew() Builder {
+	return Builder{C.gtk_builder_new()}
+}
+
 func CreateGLAreaAndAddToWindow() {
 	C.createGLArea()
 	C.addGLAreaToWindow()
@@ -199,6 +212,10 @@ func (this Button) ToWidget() Widget {
 	return Widget{C.buttonToWidget(this.Handle)}
 }
 
+func (this GObject) ToWidget() Widget {
+	return Widget{C.gobjectToWidget(this.Handle)}
+}
+
 func (this Widget) ToBox() Box {
 	return Box{C.widgetToBox(this.Handle)}
 }
@@ -221,6 +238,26 @@ func (this Widget) GetParent() Widget {
 
 func (this Widget) IsNULL() bool {
 	return this.Handle == nil
+}
+
+func (this Builder) GetObject(name string) GObject {
+	cstr := C.CString(name)
+	defer C.free(unsafe.Pointer(cstr))
+
+	handle := C.gtk_builder_get_object(this.Handle, cstr)
+
+	return GObject{handle}
+}
+
+func (this Builder) AddFromFile(file string) error {
+	cfile := C.CString(file)
+	defer C.free(unsafe.Pointer(cfile))
+
+	if err := C.gtk_builder_add_from_file(this.Handle, cfile, nil); err == 0 {
+		return errors.New("Error while loading file")
+	}
+
+	return nil
 }
 
 func (this Button) SignalConnect(signal string, callback ButtonSignalCallback) {

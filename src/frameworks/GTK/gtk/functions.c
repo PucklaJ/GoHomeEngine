@@ -183,6 +183,16 @@ GtkButton* widgetToButton(GtkWidget* widget)
     return GTK_BUTTON(widget);
 }
 
+GtkWidget* gobjectToWidget(GObject* object)
+{
+	return GTK_WIDGET(object);
+}
+
+GObject* widgetToGObject(GtkWidget* widget)
+{
+	return G_OBJECT(widget);
+}
+
 void signalConnectButton(GtkButton* button,char* signal, int id)
 {
     ButtonSignalUserData* bsud = (ButtonSignalUserData*)malloc(sizeof(ButtonSignalUserData));
