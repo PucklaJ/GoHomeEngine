@@ -9,6 +9,11 @@ typedef struct {
     char* signal;
 } ButtonSignalUserData;
 
+typedef struct {
+    char* name;
+    char* signal;
+} WidgetSignalUserData;
+
 extern GtkWindow* Window;
 extern GtkGLArea* GLarea;
 
@@ -24,6 +29,7 @@ extern void createGLArea();
 extern void configureGLArea(GtkGLArea* area);
 extern void addGLAreaToWindow();
 extern void addGLAreaToContainer(GtkContainer* container);
+extern void widgetGetSize(GtkWidget* widget,gint* width, gint* height);
 extern void windowSetSize(float width, float height);
 extern void windowGetSize(float* width, float* height);
 extern void windowHideCursor();
@@ -53,6 +59,7 @@ extern GtkGrid* widgetToGrid(GtkWidget* widget);
 extern GtkWidget* windowToWidget(GtkWindow* window);
 extern GtkGLArea* gobjectToGLArea(GObject* object);
 
-extern void signalConnectButton(GtkButton* button,char* signal, int id);
+extern void signalConnectButton(GtkButton* button,const char* signal, int id);
+extern void sizeAllocateSignalConnectWidget(GtkWidget* widget,const char* signal,const char* name);
 
 #endif

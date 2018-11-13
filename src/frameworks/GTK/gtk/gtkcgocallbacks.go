@@ -321,3 +321,20 @@ func gtkgo_button_signal(button *C.GtkButton, id int, signal *C.char) {
 		}
 	}
 }
+
+//export gtkgo_widget_signal
+func gtkgo_widget_signal(widget *C.GtkWidget, name *C.char, signal *C.char) {
+	signalstr := C.GoString(signal)
+	namestr := C.GoString(name)
+	widgetSignalMap := widgetSignalCallbacks[namestr]
+	if widgetSignalMap != nil {
+		for signalname, callback := range widgetSignalMap {
+			if signalname == signalstr {
+				if callback != nil {
+					callback(Widget{widget})
+				}
+				return
+			}
+		}
+	}
+}

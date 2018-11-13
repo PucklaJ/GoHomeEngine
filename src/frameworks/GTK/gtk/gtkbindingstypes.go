@@ -12,12 +12,14 @@ type MotionNotifyCallback func(x, y int16)
 type UseWholeWindowCallback func() bool
 
 type ButtonSignalCallback func(button Button)
+type WidgetSignalCallback func(widget Widget)
 
 var OnMotion MotionNotifyCallback
 var OnRender RenderCallback
 var OnUseWholeScreen UseWholeWindowCallback
 
 var buttonSignalCallbacks map[int]map[string]ButtonSignalCallback
+var widgetSignalCallbacks map[string]map[string]WidgetSignalCallback
 
 const (
 	ORIENTATION_HORIZONTAL Orientation = iota

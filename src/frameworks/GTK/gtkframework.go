@@ -221,3 +221,16 @@ func (*GTKFramework) LoadMusic(name, path string) gohome.Music {
 func (this *GTKFramework) MonitorGetSize() mgl32.Vec2 {
 	return this.WindowGetSize()
 }
+
+func (this *GTKFramework) InitExternalDefault(window *gtk.Window, glarea *gtk.GLArea) {
+	if window != nil {
+		window.ConfigureParameters()
+		window.ConnectSignals()
+		gtk.SetWindow(*window)
+	}
+	if glarea != nil {
+		glarea.Configure()
+		gtk.SetGLArea(*glarea)
+	}
+	this.AfterWindowCreation(&gohome.MainLop)
+}

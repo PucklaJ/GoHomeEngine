@@ -88,3 +88,9 @@ void gtkgo_button_signal_c(GtkButton *button, gpointer user_data)
     gtkgo_button_signal(button,bsud->id,bsud->signal);
 }
 
+void gtkgo_widget_size_allocate_signal_c(GtkWidget* widget, GdkRectangle* allocation, gpointer user_data)
+{
+	WidgetSignalUserData* wsud = (WidgetSignalUserData*)user_data;
+	gtkgo_widget_signal(widget,wsud->name,wsud->signal);
+}
+

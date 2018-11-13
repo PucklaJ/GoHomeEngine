@@ -253,10 +253,31 @@ GtkGLArea* gobjectToGLArea(GObject* object)
 	return GTK_GL_AREA(object);
 }
 
-void signalConnectButton(GtkButton* button,char* signal, int id)
+void signalConnectButton(GtkButton* button,const char* signal, int id)
 {
     ButtonSignalUserData* bsud = (ButtonSignalUserData*)malloc(sizeof(ButtonSignalUserData));
     bsud->id = id;
-    bsud->signal = signal;
+    bsud->signal = (char*)malloc(strlen(signal));
+	strcpy(bsud->signal,signal);
     g_signal_connect(GTK_WIDGET(button),signal,G_CALLBACK(gtkgo_button_signal_c),bsud);
+}
+
+void sizeAllocateSignalConnectWidget(GtkWidget* widget,const char* signal,const char* name)
+{
+	WidgetSignalUserData* wsud = (WidgetSignalUserData*)malloc(sizeof(WidgetSignalUserData));
+	const gchar* namec = gtk_widget_get_name(widget);
+	wsud->name = (char*)malloc(strlen(namec));
+	strcpy(wsud->name,namec);
+	wsud->signal = (char*)malloc(strlen(signal));
+	strcpy(wsud->signal,signal);
+	g_signal_connect(widget,signal,G_CALLBACK(gtkgo_widget_size_allocate_signal_c),wsud);
+}
+
+void widgetGetSize(GtkWidget* widget,gint* width, gint* height)
+{
+	GtkAllocation* alloc = g_new(GtkAllocation,1);
+	gtk_widget_get_allocation(widget,alloc);
+	*width = alloc->width;
+	*height = alloc->height;
+	g_free(alloc);
 }

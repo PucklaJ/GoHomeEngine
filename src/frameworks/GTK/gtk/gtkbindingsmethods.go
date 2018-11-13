@@ -106,6 +106,20 @@ func (this Widget) SetSizeRequest(width, height int) {
 	C.gtk_widget_set_size_request(this.Handle, C.gint(width), C.gint(height))
 }
 
+func (this Widget) GetSizeRequest() (int32, int32) {
+	var width, height C.gint
+
+	C.gtk_widget_get_size_request(this.Handle, &width, &height)
+
+	return int32(width), int32(height)
+}
+
+func (this Widget) GetSize() (int32, int32) {
+	var width, height C.gint
+	C.widgetGetSize(this.Handle, &width, &height)
+	return int32(width), int32(height)
+}
+
 func (this Widget) GetParent() Widget {
 	return Widget{C.gtk_widget_get_parent(this.Handle)}
 }
@@ -116,6 +130,11 @@ func (this Widget) IsNULL() bool {
 
 func (this Widget) Realize() {
 	C.gtk_widget_realize(this.Handle)
+}
+
+func (this Widget) GetName() string {
+	name := C.gtk_widget_get_name(this.Handle)
+	return C.GoString(name)
 }
 
 func (this Builder) GetObject(name string) GObject {
@@ -174,7 +193,7 @@ func (this Button) SignalConnect(signal string, callback ButtonSignalCallback) {
 	if buttonSignalCallbacks[this.ID] == nil {
 		buttonSignalCallbacks[this.ID] = make(map[string]ButtonSignalCallback)
 	}
-	var alreadyConnected bool = false
+	var alreadyConnected = false
 	if _, ok := buttonSignalCallbacks[this.ID]; ok {
 		if _, ok1 := buttonSignalCallbacks[this.ID][signal]; ok1 {
 			alreadyConnected = true
@@ -183,7 +202,37 @@ func (this Button) SignalConnect(signal string, callback ButtonSignalCallback) {
 	if !alreadyConnected {
 		signalcs := C.CString(signal)
 		C.signalConnectButton(this.Handle, signalcs, C.int(this.ID))
+		C.free(unsafe.Pointer(signalcs))
 	}
 
 	buttonSignalCallbacks[this.ID][signal] = callback
+}
+
+func (this Widget) SignalConnect(signal string, callback WidgetSignalCallback) {
+	if widgetSignalCallbacks == nil {
+		widgetSignalCallbacks = make(map[string]map[string]WidgetSignalCallback)
+	}
+	name := this.GetName()
+	if widgetSignalCallbacks[name] == nil {
+		widgetSignalCallbacks[name] = make(map[string]WidgetSignalCallback)
+	}
+	var alreadyConnected = false
+	if _, ok := widgetSignalCallbacks[name]; ok {
+		if _, ok1 := widgetSignalCallbacks[name][signal]; ok1 {
+			alreadyConnected = true
+		}
+	}
+	if !alreadyConnected {
+		signalcs := C.CString(signal)
+		namecs := C.CString(name)
+
+		if signal == "size-allocate" {
+			C.sizeAllocateSignalConnectWidget(this.Handle, signalcs, namecs)
+		}
+
+		C.free(unsafe.Pointer(signalcs))
+		C.free(unsafe.Pointer(namecs))
+	}
+
+	widgetSignalCallbacks[name][signal] = callback
 }
