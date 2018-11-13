@@ -70,8 +70,16 @@ func (this GObject) ToWidget() Widget {
 	return Widget{C.gobjectToWidget(this.Handle)}
 }
 
+func (this GObject) ToListBox() ListBox {
+	return ListBox{C.gobjectToListBox(this.Handle)}
+}
+
 func (this GObject) ToGLArea() GLArea {
 	return GLArea{C.gobjectToGLArea(this.Handle)}
+}
+
+func (this GObject) ToMenuItem() MenuItem {
+	return MenuItem{C.gobjectToMenuItem(this.Handle)}
 }
 
 func (this Widget) ToBox() Box {
@@ -92,6 +100,14 @@ func (this Widget) ToContainer() Container {
 
 func (this Widget) ToGrid() Grid {
 	return Grid{C.widgetToGrid(this.Handle)}
+}
+
+func (this Widget) ToListBox() ListBox {
+	return ListBox{C.widgetToListBox(this.Handle)}
+}
+
+func (this Widget) ToLabel() Label {
+	return Label{C.widgetToLabel(this.Handle)}
 }
 
 func (this Widget) ShowAll() {
@@ -185,6 +201,24 @@ func (this Grid) Attach(child Widget, left, top, width, height int32) {
 	C.gtk_grid_attach(this.Handle, child.Handle, C.gint(left), C.gint(top), C.gint(width), C.gint(height))
 }
 
+func (this ListBox) Insert(widget Widget, position int32) {
+	C.gtk_list_box_insert(this.Handle, widget.Handle, C.gint(position))
+}
+
+func (this Label) SetText(text string) {
+	textcs := C.CString(text)
+	defer C.free(unsafe.Pointer(textcs))
+	C.gtk_label_set_text(this.Handle, textcs)
+}
+
+func (this Label) ToWidget() Widget {
+	return Widget{C.labelToWidget(this.Handle)}
+}
+
+func (this MenuItem) ToWidget() Widget {
+	return Widget{C.menuItemToWidget(this.Handle)}
+}
+
 func (this Button) SignalConnect(signal string, callback ButtonSignalCallback) {
 
 	if buttonSignalCallbacks == nil {
@@ -235,4 +269,35 @@ func (this Widget) SignalConnect(signal string, callback WidgetSignalCallback) {
 	}
 
 	widgetSignalCallbacks[name][signal] = callback
+}
+
+func (this MenuItem) SignalConnect(signal string, callback MenuItemSignalCallback) {
+	if menuItemSignalCallbacks == nil {
+		menuItemSignalCallbacks = make(map[string]map[string]MenuItemSignalCallback)
+	}
+	name := this.ToWidget().GetName()
+	if menuItemSignalCallbacks[name] == nil {
+		menuItemSignalCallbacks[name] = make(map[string]MenuItemSignalCallback)
+	}
+	var alreadyConnected = false
+	if _, ok := menuItemSignalCallbacks[name]; ok {
+		if _, ok1 := menuItemSignalCallbacks[name][signal]; ok1 {
+			alreadyConnected = true
+		}
+	}
+	if !alreadyConnected {
+		signalcs := C.CString(signal)
+		namecs := C.CString(name)
+
+		if signal == "" {
+
+		} else {
+			C.signalConnectMenuItem(this.Handle, signalcs, namecs)
+		}
+
+		C.free(unsafe.Pointer(signalcs))
+		C.free(unsafe.Pointer(namecs))
+	}
+
+	menuItemSignalCallbacks[name][signal] = callback
 }

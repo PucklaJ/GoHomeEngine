@@ -13,6 +13,7 @@ type UseWholeWindowCallback func() bool
 
 type ButtonSignalCallback func(button Button)
 type WidgetSignalCallback func(widget Widget)
+type MenuItemSignalCallback func(menuItem MenuItem)
 
 var OnMotion MotionNotifyCallback
 var OnRender RenderCallback
@@ -20,6 +21,7 @@ var OnUseWholeScreen UseWholeWindowCallback
 
 var buttonSignalCallbacks map[int]map[string]ButtonSignalCallback
 var widgetSignalCallbacks map[string]map[string]WidgetSignalCallback
+var menuItemSignalCallbacks map[string]map[string]MenuItemSignalCallback
 
 const (
 	ORIENTATION_HORIZONTAL Orientation = iota
@@ -69,4 +71,16 @@ type GPointer struct {
 
 type Grid struct {
 	Handle *C.GtkGrid
+}
+
+type ListBox struct {
+	Handle *C.GtkListBox
+}
+
+type Label struct {
+	Handle *C.GtkLabel
+}
+
+type MenuItem struct {
+	Handle *C.GtkMenuItem
 }

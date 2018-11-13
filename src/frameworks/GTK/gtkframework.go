@@ -69,7 +69,7 @@ func (this *GTKFramework) Update() {
 	gohome.InputMgr.Mouse.DPos[1] = 0
 }
 func (this *GTKFramework) Terminate() {
-
+	gtk.MainQuit()
 }
 func (this *GTKFramework) PollEvents() {
 

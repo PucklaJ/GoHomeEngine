@@ -253,6 +253,45 @@ GtkGLArea* gobjectToGLArea(GObject* object)
 	return GTK_GL_AREA(object);
 }
 
+GtkListBox* widgetToListBox(GtkWidget* widget)
+{
+	return GTK_LIST_BOX(widget);
+}
+
+GtkLabel* widgetToLabel(GtkWidget* widget)
+{
+	return GTK_LABEL(widget);
+}
+
+GtkWidget* labelToWidget(GtkLabel* label) 
+{
+	return GTK_WIDGET(label); 
+}
+
+GtkListBox* gobjectToListBox(GObject* object)
+{
+	return GTK_LIST_BOX(object);
+}
+
+GtkMenuItem* gobjectToMenuItem(GObject* object)
+{
+	return GTK_MENU_ITEM(object);
+}
+
+GtkWidget* menuItemToWidget(GtkMenuItem* menuItem)
+{
+	return GTK_WIDGET(menuItem);
+}
+
+void widgetGetSize(GtkWidget* widget,gint* width, gint* height)
+{
+	GtkAllocation* alloc = g_new(GtkAllocation,1);
+	gtk_widget_get_allocation(widget,alloc);
+	*width = alloc->width;
+	*height = alloc->height;
+	g_free(alloc);
+}
+
 void signalConnectButton(GtkButton* button,const char* signal, int id)
 {
     ButtonSignalUserData* bsud = (ButtonSignalUserData*)malloc(sizeof(ButtonSignalUserData));
@@ -273,11 +312,17 @@ void sizeAllocateSignalConnectWidget(GtkWidget* widget,const char* signal,const 
 	g_signal_connect(widget,signal,G_CALLBACK(gtkgo_widget_size_allocate_signal_c),wsud);
 }
 
-void widgetGetSize(GtkWidget* widget,gint* width, gint* height)
+void signalConnectMenuItem(GtkMenuItem* menuItem,const char* signal,const char* name)
 {
-	GtkAllocation* alloc = g_new(GtkAllocation,1);
-	gtk_widget_get_allocation(widget,alloc);
-	*width = alloc->width;
-	*height = alloc->height;
-	g_free(alloc);
+	WidgetSignalUserData* wsud = (WidgetSignalUserData*)malloc(sizeof(WidgetSignalUserData));
+	const gchar* namec = gtk_widget_get_name(GTK_WIDGET(menuItem));
+	wsud->name = (char*)malloc(strlen(namec));
+	strcpy(wsud->name,namec);
+	wsud->signal = (char*)malloc(strlen(signal));
+	strcpy(wsud->signal,signal);
+	g_signal_connect(GTK_WIDGET(menuItem),signal,G_CALLBACK(gtkgo_menu_item_signal_c),wsud);
+
 }
+
+
+

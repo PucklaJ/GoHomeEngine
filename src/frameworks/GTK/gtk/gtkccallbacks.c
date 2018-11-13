@@ -94,3 +94,9 @@ void gtkgo_widget_size_allocate_signal_c(GtkWidget* widget, GdkRectangle* alloca
 	gtkgo_widget_signal(widget,wsud->name,wsud->signal);
 }
 
+void gtkgo_menu_item_signal_c(GtkMenuItem* menuItem, gpointer user_data)
+{
+	WidgetSignalUserData* wsud = (WidgetSignalUserData*)user_data;
+	gtkgo_menu_item_signal(menuItem,wsud->name,wsud->signal);
+}
+

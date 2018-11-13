@@ -129,6 +129,16 @@ func GridNew() Grid {
 	return Grid{C.widgetToGrid(C.gtk_grid_new())}
 }
 
+func ListBoxNew() ListBox {
+	return ListBox{C.widgetToListBox(C.gtk_list_box_new())}
+}
+
+func LabelNew(text string) Label {
+	textcs := C.CString(text)
+	defer C.free(unsafe.Pointer(textcs))
+	return Label{C.widgetToLabel(C.gtk_label_new(textcs))}
+}
+
 func CreateGLAreaAndAddToWindow() {
 	C.createGLArea()
 	C.addGLAreaToWindow()
@@ -153,4 +163,8 @@ func GetGLArea() GLArea {
 
 func SetGLArea(area GLArea) {
 	C.GLarea = area.Handle
+}
+
+func MainQuit() {
+	C.gtk_main_quit()
 }

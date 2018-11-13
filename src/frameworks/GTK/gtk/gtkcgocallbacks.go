@@ -338,3 +338,20 @@ func gtkgo_widget_signal(widget *C.GtkWidget, name *C.char, signal *C.char) {
 		}
 	}
 }
+
+//export gtkgo_menu_item_signal
+func gtkgo_menu_item_signal(menuItem *C.GtkMenuItem, name *C.char, signal *C.char) {
+	signalstr := C.GoString(signal)
+	namestr := C.GoString(name)
+	menuItemSignalMap := menuItemSignalCallbacks[namestr]
+	if menuItemSignalMap != nil {
+		for signalname, callback := range menuItemSignalMap {
+			if signalname == signalstr {
+				if callback != nil {
+					callback(MenuItem{menuItem})
+				}
+				return
+			}
+		}
+	}
+}
