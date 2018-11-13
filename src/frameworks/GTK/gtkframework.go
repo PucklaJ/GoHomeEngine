@@ -1,12 +1,13 @@
 package framework
 
 import (
-	"github.com/PucklaMotzer09/gohomeengine/src/frameworks/GTK/gtk"
-	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
-	"github.com/PucklaMotzer09/mathgl/mgl32"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/PucklaMotzer09/gohomeengine/src/frameworks/GTK/gtk"
+	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
+	"github.com/PucklaMotzer09/mathgl/mgl32"
 )
 
 type GTKFramework struct {
@@ -201,4 +202,8 @@ func (*GTKFramework) LoadSound(name, path string) gohome.Sound {
 }
 func (*GTKFramework) LoadMusic(name, path string) gohome.Music {
 	return nil
+}
+
+func (this *GTKFramework) MonitorGetSize() mgl32.Vec2 {
+	return this.WindowGetSize()
 }
