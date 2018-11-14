@@ -291,6 +291,26 @@ GtkGLArea* widgetToGLArea(GtkWidget* widget)
 	return GTK_GL_AREA(widget);
 }
 
+GtkWidget* listBoxToWidget(GtkListBox* listBox)
+{
+	return GTK_WIDGET(listBox);
+}
+
+GtkContainer* listBoxToContainer(GtkListBox* listBox)
+{
+	return GTK_CONTAINER(listBox);
+}
+
+GtkWidget* listBoxRowToWidget(GtkListBoxRow* listBoxRow)
+{
+	return GTK_WIDGET(listBoxRow);
+}
+
+GtkContainer* listBoxRowToContainer(GtkListBoxRow* listBoxRow)
+{
+	return GTK_CONTAINER(listBoxRow);
+}
+
 void widgetGetSize(GtkWidget* widget,gint* width, gint* height)
 {
 	GtkAllocation* alloc = g_new(GtkAllocation,1);
@@ -330,6 +350,28 @@ void signalConnectMenuItem(GtkMenuItem* menuItem,const char* signal,const char* 
 	strcpy(wsud->signal,signal);
 	g_signal_connect(GTK_WIDGET(menuItem),signal,G_CALLBACK(gtkgo_menu_item_signal_c),wsud);
 
+}
+
+void eventSignalConnectWidget(GtkWidget* widget,const char* signal, const char* name)
+{
+	WidgetSignalUserData* wsud = (WidgetSignalUserData*)malloc(sizeof(WidgetSignalUserData));
+	const gchar* namec = gtk_widget_get_name(widget);
+	wsud->name = (char*)malloc(strlen(namec));
+	strcpy(wsud->name,namec);
+	wsud->signal = (char*)malloc(strlen(signal));
+	strcpy(wsud->signal,signal);
+	g_signal_connect(widget,signal,G_CALLBACK(gtkgo_widget_event_signal_c),wsud);
+}
+
+void rowSelectedSignalConnectListBox(GtkListBox* listBox, const char* signal, const char* name)
+{
+	WidgetSignalUserData* wsud = (WidgetSignalUserData*)malloc(sizeof(WidgetSignalUserData));
+	const gchar* namec = gtk_widget_get_name(GTK_WIDGET(listBox));
+	wsud->name = (char*)malloc(strlen(namec));
+	strcpy(wsud->name,namec);
+	wsud->signal = (char*)malloc(strlen(signal));
+	strcpy(wsud->signal,signal);
+	g_signal_connect(GTK_WIDGET(listBox),signal,G_CALLBACK(gtkgo_list_box_row_selected_signal_c),wsud);
 }
 
 

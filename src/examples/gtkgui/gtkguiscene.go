@@ -13,6 +13,7 @@ var gtkf *framework.GTKFramework
 
 type GTKGUIScene struct {
 	cube gohome.Entity3D
+	lb   gtk.ListBox
 }
 
 func (this *GTKGUIScene) InitGUI() {
@@ -21,20 +22,37 @@ func (this *GTKGUIScene) InitGUI() {
 	var box gtk.Box
 	var button gtk.Button
 	var button2 gtk.Button
+	lbl := gtk.LabelNew("I am a label")
+	this.lb = gtk.ListBoxNew()
 	box = gtk.BoxNew(gtk.ORIENTATION_HORIZONTAL, 0)
 	button = gtk.ButtonNewWithLabel("Enter Me")
 	button2 = gtk.ButtonNewWithLabel("Click Me")
 	button.SignalConnect("enter", func(button gtk.Button) {
 		log.Println("Entered Button")
 	})
+	this.lb.ToWidget().SignalConnect("button-press-event", func(widget gtk.Widget, event gtk.Event) {
+		log.Println("Button Pressed Event")
+	})
 	button2.SignalConnect("clicked", func(button gtk.Button) {
 		log.Println("Clicked Button2")
+	})
+	this.lb.SignalConnect("row-selected", func(listBox gtk.ListBox, listBoxRow gtk.ListBoxRow) {
+		lbr := listBoxRow
+		if !lbr.IsNULL() {
+			cont := lbr.ToContainer()
+			lbl := cont.GetChildren().Data().ToWidget().ToLabel()
+			log.Println("Selected row:", lbl.GetText())
+		}
 	})
 	gtk.GetWindow().ToContainer().Add(box.ToWidget())
 
 	box.ToContainer().Add(gtk.GetGLArea().ToWidget())
 	box.ToContainer().Add(button.ToWidget())
 	box.ToContainer().Add(button2.ToWidget())
+	box.ToContainer().Add(this.lb.ToWidget())
+	this.lb.ToContainer().Add(lbl.ToWidget())
+	this.lb.ToContainer().Add(gtk.LabelNew("You are a programmer").ToWidget())
+	this.lb.ToContainer().Add(gtk.LabelNew("This is GTK").ToWidget())
 	gtk.GetGLArea().ToWidget().SetSizeRequest(640/2, 480/2)
 	gtk.GetWindow().ToWidget().ShowAll()
 

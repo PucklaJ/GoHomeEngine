@@ -99,3 +99,15 @@ void gtkgo_menu_item_signal_c(GtkMenuItem* menuItem, gpointer user_data)
 	gtkgo_menu_item_signal(menuItem,wsud->name,wsud->signal);
 }
 
+void gtkgo_widget_event_signal_c(GtkWidget* widget, GdkEvent* event, gpointer user_data)
+{
+	WidgetSignalUserData* wsud = (WidgetSignalUserData*)user_data;
+	gtkgo_widget_event_signal(widget,wsud->name,wsud->signal,event);
+}
+
+void gtkgo_list_box_row_selected_signal_c(GtkListBox* listBox, GtkListBoxRow* listBoxRow, gpointer user_data)
+{
+	WidgetSignalUserData* wsud = (WidgetSignalUserData*)user_data;
+	gtkgo_list_box_row_selected_signal(listBox,wsud->name,wsud->signal,listBoxRow);
+}
+

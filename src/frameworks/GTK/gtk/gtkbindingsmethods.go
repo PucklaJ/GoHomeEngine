@@ -7,6 +7,7 @@ package gtk
 import "C"
 import (
 	"errors"
+	"log"
 	"unsafe"
 )
 
@@ -209,6 +210,30 @@ func (this ListBox) Insert(widget Widget, position int32) {
 	C.gtk_list_box_insert(this.Handle, widget.Handle, C.gint(position))
 }
 
+func (this ListBox) ToWidget() Widget {
+	return Widget{C.listBoxToWidget(this.Handle)}
+}
+
+func (this ListBox) ToContainer() Container {
+	return Container{C.listBoxToContainer(this.Handle)}
+}
+
+func (this ListBox) GetSelectedRow() ListBoxRow {
+	return ListBoxRow{C.gtk_list_box_get_selected_row(this.Handle)}
+}
+
+func (this ListBoxRow) IsNULL() bool {
+	return this.Handle == nil
+}
+
+func (this ListBoxRow) ToWidget() Widget {
+	return Widget{C.listBoxRowToWidget(this.Handle)}
+}
+
+func (this ListBoxRow) ToContainer() Container {
+	return Container{C.listBoxRowToContainer(this.Handle)}
+}
+
 func (this Label) SetText(text string) {
 	textcs := C.CString(text)
 	defer C.free(unsafe.Pointer(textcs))
@@ -217,6 +242,11 @@ func (this Label) SetText(text string) {
 
 func (this Label) ToWidget() Widget {
 	return Widget{C.labelToWidget(this.Handle)}
+}
+
+func (this Label) GetText() string {
+	textcs := C.gtk_label_get_text(this.Handle)
+	return C.GoString(textcs)
 }
 
 func (this MenuItem) ToWidget() Widget {
@@ -246,14 +276,16 @@ func (this Button) SignalConnect(signal string, callback ButtonSignalCallback) {
 	buttonSignalCallbacks[this.ID][signal] = callback
 }
 
-func (this Widget) SignalConnect(signal string, callback WidgetSignalCallback) {
+func (this Widget) signalConnect(signal string, callback WidgetSignalCallback) {
+	name := this.GetName()
 	if widgetSignalCallbacks == nil {
 		widgetSignalCallbacks = make(map[string]map[string]WidgetSignalCallback)
 	}
-	name := this.GetName()
+
 	if widgetSignalCallbacks[name] == nil {
 		widgetSignalCallbacks[name] = make(map[string]WidgetSignalCallback)
 	}
+
 	var alreadyConnected = false
 	if _, ok := widgetSignalCallbacks[name]; ok {
 		if _, ok1 := widgetSignalCallbacks[name][signal]; ok1 {
@@ -271,8 +303,49 @@ func (this Widget) SignalConnect(signal string, callback WidgetSignalCallback) {
 		C.free(unsafe.Pointer(signalcs))
 		C.free(unsafe.Pointer(namecs))
 	}
-
 	widgetSignalCallbacks[name][signal] = callback
+}
+
+func (this Widget) eventSignalConnect(signal string, callback func(widget Widget, event Event)) {
+	name := this.GetName()
+	if widgetEventSignalCallbacks == nil {
+		widgetEventSignalCallbacks = make(map[string]map[string]func(widget Widget, event Event))
+	}
+	if widgetEventSignalCallbacks[name] == nil {
+		widgetEventSignalCallbacks[name] = make(map[string]func(widget Widget, event Event))
+	}
+	log.Println("Checking connected")
+	var alreadyConnected1 = false
+	if _, ok := widgetEventSignalCallbacks[name]; ok {
+		if _, ok1 := widgetEventSignalCallbacks[name][signal]; ok1 {
+			alreadyConnected1 = true
+		}
+	}
+	if !alreadyConnected1 {
+		log.Println("Not connected")
+		signalcs := C.CString(signal)
+		namecs := C.CString(name)
+
+		if signal == "" {
+		} else {
+			log.Println("Connecting:", signal, "to", name)
+			C.eventSignalConnectWidget(this.Handle, signalcs, namecs)
+		}
+
+		C.free(unsafe.Pointer(signalcs))
+		C.free(unsafe.Pointer(namecs))
+	}
+
+	widgetEventSignalCallbacks[name][signal] = callback
+}
+
+func (this Widget) SignalConnect(signal string, callback interface{}) {
+	switch callback.(type) {
+	case WidgetSignalCallback:
+		this.signalConnect(signal, callback.(WidgetSignalCallback))
+	case func(widget Widget, event Event):
+		this.eventSignalConnect(signal, callback.(func(widget Widget, event Event)))
+	}
 }
 
 func (this MenuItem) SignalConnect(signal string, callback MenuItemSignalCallback) {
@@ -304,4 +377,42 @@ func (this MenuItem) SignalConnect(signal string, callback MenuItemSignalCallbac
 	}
 
 	menuItemSignalCallbacks[name][signal] = callback
+}
+
+func (this ListBox) rowSelectedSignalConnect(signal string, callback func(listBox ListBox, listBoxRow ListBoxRow)) {
+	if listBoxRowSelectedSignalCallbacks == nil {
+		listBoxRowSelectedSignalCallbacks = make(map[string]map[string]func(listBox ListBox, listBoxRow ListBoxRow))
+	}
+	name := this.ToWidget().GetName()
+	if listBoxRowSelectedSignalCallbacks[name] == nil {
+		listBoxRowSelectedSignalCallbacks[name] = make(map[string]func(listBox ListBox, listBoxRow ListBoxRow))
+	}
+	var alreadyConnected = false
+	if _, ok := listBoxRowSelectedSignalCallbacks[name]; ok {
+		if _, ok1 := listBoxRowSelectedSignalCallbacks[name][signal]; ok1 {
+			alreadyConnected = true
+		}
+	}
+	if !alreadyConnected {
+		signalcs := C.CString(signal)
+		namecs := C.CString(name)
+
+		if signal == "" {
+
+		} else {
+			C.rowSelectedSignalConnectListBox(this.Handle, signalcs, namecs)
+		}
+
+		C.free(unsafe.Pointer(signalcs))
+		C.free(unsafe.Pointer(namecs))
+	}
+
+	listBoxRowSelectedSignalCallbacks[name][signal] = callback
+}
+
+func (this ListBox) SignalConnect(signal string, callback interface{}) {
+	switch callback.(type) {
+	case func(listBox ListBox, listBoxRow ListBoxRow):
+		this.rowSelectedSignalConnect(signal, callback.(func(listBox ListBox, listBoxRow ListBoxRow)))
+	}
 }
