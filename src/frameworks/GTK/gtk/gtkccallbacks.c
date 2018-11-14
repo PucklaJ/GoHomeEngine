@@ -1,6 +1,7 @@
 #include "gtkccallbacksheader.h"
 #include "_cgo_export.h"
 #include "includes.h"
+#include <stdio.h>
 
 void gtkgo_quit_c()
 {
@@ -16,25 +17,23 @@ gboolean gtkgo_gl_area_render_c(GtkGLArea *area, GdkGLContext *context)
 void gtkgo_gl_area_realize_c(GtkGLArea *area)
 {
 	int err = 0;
-
+	printf("Realizing...\n");
 	gtk_gl_area_make_current(area);
 
 	if(gtk_gl_area_get_error(area) != NULL)
 	{
+		printf("Context error\n");
 		ErrorString = "Couldn't make context current";
 		err = 1;
 	}
 	else
 	{
+		printf("Set auto render false\n");
 		gtk_gl_area_set_auto_render(area,FALSE);
 	}
 
+	printf("Realize callback calling\n");
 	gtkgo_gl_area_realize(area,err);
-
-	if(err != 0)
-	{
-		// gtk_gl_area_queue_render(area);
-	}
 }
 
 gboolean queue_render_idle(gpointer user_data)
@@ -86,5 +85,29 @@ void gtkgo_button_signal_c(GtkButton *button, gpointer user_data)
 {
     ButtonSignalUserData* bsud = (ButtonSignalUserData*)user_data;
     gtkgo_button_signal(button,bsud->id,bsud->signal);
+}
+
+void gtkgo_widget_size_allocate_signal_c(GtkWidget* widget, GdkRectangle* allocation, gpointer user_data)
+{
+	WidgetSignalUserData* wsud = (WidgetSignalUserData*)user_data;
+	gtkgo_widget_signal(widget,wsud->name,wsud->signal);
+}
+
+void gtkgo_menu_item_signal_c(GtkMenuItem* menuItem, gpointer user_data)
+{
+	WidgetSignalUserData* wsud = (WidgetSignalUserData*)user_data;
+	gtkgo_menu_item_signal(menuItem,wsud->name,wsud->signal);
+}
+
+void gtkgo_widget_event_signal_c(GtkWidget* widget, GdkEvent* event, gpointer user_data)
+{
+	WidgetSignalUserData* wsud = (WidgetSignalUserData*)user_data;
+	gtkgo_widget_event_signal(widget,wsud->name,wsud->signal,event);
+}
+
+void gtkgo_list_box_row_selected_signal_c(GtkListBox* listBox, GtkListBoxRow* listBoxRow, gpointer user_data)
+{
+	WidgetSignalUserData* wsud = (WidgetSignalUserData*)user_data;
+	gtkgo_list_box_row_selected_signal(listBox,wsud->name,wsud->signal,listBoxRow);
 }
 

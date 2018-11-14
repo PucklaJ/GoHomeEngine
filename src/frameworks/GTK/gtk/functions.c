@@ -1,6 +1,8 @@
 #include "includes.h"
 #include "gtkccallbacksheader.h"
 #include "_cgo_export.h"
+#include <string.h>
+#include <stdio.h>
 
 GtkWindow* Window = NULL;
 GtkGLArea* GLarea = NULL;
@@ -14,36 +16,67 @@ void initialise(int args,char** argv)
 
 int createWindow(unsigned int width, unsigned int height, const char* title)
 {
-	Window = (GtkWindow*)gtk_window_new(GTK_WINDOW_TOPLEVEL);
-	gtk_widget_set_size_request(GTK_WIDGET(Window),1,1);
-	gtk_window_resize(Window,width,height);
-	gtk_window_set_title(Window,title);
-	gtk_widget_set_events(GTK_WIDGET(Window), GDK_POINTER_MOTION_MASK|GDK_SCROLL_MASK);
-
-	g_signal_connect(GTK_WIDGET(Window),"delete-event",G_CALLBACK(gtkgo_quit_c),NULL);
+	Window = createWindowObject();
+	configureWindowParameters(Window,width,height,title);
+	connectWindowSignals(Window);
 	
-	g_signal_connect(GTK_WIDGET(Window),"key-press-event",G_CALLBACK(gtkgo_gl_area_key_press_c),NULL);
-	g_signal_connect(GTK_WIDGET(Window),"key-release-event",G_CALLBACK(gtkgo_gl_area_key_release_c),NULL);
-	g_signal_connect(GTK_WIDGET(Window),"button-press-event",G_CALLBACK(gtkgo_gl_area_button_press_c),NULL);
-	g_signal_connect(GTK_WIDGET(Window),"button-release-event",G_CALLBACK(gtkgo_gl_area_button_release_c),NULL);
-	g_signal_connect(GTK_WIDGET(Window),"motion-notify-event",G_CALLBACK(gtkgo_gl_area_motion_notify_c),NULL);
-	g_signal_connect(GTK_WIDGET(Window),"scroll-event",G_CALLBACK(gtkgo_gl_area_scroll_c),NULL);
-
     createGLArea();
 
 	gtk_widget_show_all(GTK_WIDGET(Window));
 	return 1;
 }
 
+GtkWindow* createWindowObject()
+{
+	return (GtkWindow*)gtk_window_new(GTK_WINDOW_TOPLEVEL);
+}
+
+void configureWindowParameters(GtkWindow* window,unsigned int width, unsigned int height, const char* title)
+{
+	if(width != 0 && height != 0)
+	{
+		gtk_widget_set_size_request(GTK_WIDGET(window),1,1);
+		gtk_window_resize(window,width,height);
+	}
+	if(strcmp(title,"")!=0)
+		gtk_window_set_title(window,title);
+	gtk_widget_set_events(GTK_WIDGET(window), GDK_POINTER_MOTION_MASK|GDK_SCROLL_MASK);
+}
+
+void connectWindowSignals(GtkWindow* window)
+{
+	g_signal_connect(GTK_WIDGET(window),"delete-event",G_CALLBACK(gtkgo_quit_c),NULL);
+	
+	g_signal_connect(GTK_WIDGET(window),"key-press-event",G_CALLBACK(gtkgo_gl_area_key_press_c),NULL);
+	g_signal_connect(GTK_WIDGET(window),"key-release-event",G_CALLBACK(gtkgo_gl_area_key_release_c),NULL);
+	g_signal_connect(GTK_WIDGET(window),"button-press-event",G_CALLBACK(gtkgo_gl_area_button_press_c),NULL);
+	g_signal_connect(GTK_WIDGET(window),"button-release-event",G_CALLBACK(gtkgo_gl_area_button_release_c),NULL);
+	g_signal_connect(GTK_WIDGET(window),"motion-notify-event",G_CALLBACK(gtkgo_gl_area_motion_notify_c),NULL);
+	g_signal_connect(GTK_WIDGET(window),"scroll-event",G_CALLBACK(gtkgo_gl_area_scroll_c),NULL);
+}
+
 void createGLArea()
 {
 	GLarea = (GtkGLArea*)gtk_gl_area_new();
-	g_signal_connect(GTK_WIDGET(GLarea),"render",G_CALLBACK(gtkgo_gl_area_render_c),NULL);
-	g_signal_connect(GTK_WIDGET(GLarea),"realize",G_CALLBACK(gtkgo_gl_area_realize_c),NULL);
+	configureGLArea(GLarea);
+}
 
-	gtk_gl_area_set_has_depth_buffer(GLarea,TRUE);
+void configureGLArea(GtkGLArea* area)
+{
+	printf("Configuring GLArea ...\n");
+	g_signal_connect(GTK_WIDGET(area),"render",G_CALLBACK(gtkgo_gl_area_render_c),NULL);
+	g_signal_connect(GTK_WIDGET(area),"realize",G_CALLBACK(gtkgo_gl_area_realize_c),NULL);
 
-	gdk_threads_add_idle(queue_render_idle,GLarea);
+	gtk_gl_area_set_has_depth_buffer(area,TRUE);
+
+	gdk_threads_add_idle(queue_render_idle,area);
+
+	if(gtk_widget_get_parent(GTK_WIDGET(area)) != NULL)
+	{
+		printf("Trying to realize GLArea\n");
+		gtk_widget_unrealize(GTK_WIDGET(area));
+		gtk_widget_realize(GTK_WIDGET(area));
+	}
 }
 
 void windowSetSize(float width, float height)
@@ -183,10 +216,163 @@ GtkButton* widgetToButton(GtkWidget* widget)
     return GTK_BUTTON(widget);
 }
 
-void signalConnectButton(GtkButton* button,char* signal, int id)
+GtkWidget* gobjectToWidget(GObject* object)
+{
+	return GTK_WIDGET(object);
+}
+
+GObject* widgetToGObject(GtkWidget* widget)
+{
+	return G_OBJECT(widget);
+}
+
+GtkWindow* widgetToWindow(GtkWidget* widget)
+{
+	return GTK_WINDOW(widget);
+}
+
+GtkWidget* gpointerToWidget(gpointer data)
+{
+	return GTK_WIDGET(data);
+}
+
+GtkContainer* widgetToContainer(GtkWidget* widget)
+{
+	return GTK_CONTAINER(widget);
+}
+
+GtkGrid* widgetToGrid(GtkWidget* widget)
+{
+	return GTK_GRID(widget);
+}
+
+GtkWidget* windowToWidget(GtkWindow* window)
+{
+	return GTK_WIDGET(window);
+}
+
+GtkGLArea* gobjectToGLArea(GObject* object)
+{
+	return GTK_GL_AREA(object);
+}
+
+GtkListBox* widgetToListBox(GtkWidget* widget)
+{
+	return GTK_LIST_BOX(widget);
+}
+
+GtkLabel* widgetToLabel(GtkWidget* widget)
+{
+	return GTK_LABEL(widget);
+}
+
+GtkWidget* labelToWidget(GtkLabel* label) 
+{
+	return GTK_WIDGET(label); 
+}
+
+GtkListBox* gobjectToListBox(GObject* object)
+{
+	return GTK_LIST_BOX(object);
+}
+
+GtkMenuItem* gobjectToMenuItem(GObject* object)
+{
+	return GTK_MENU_ITEM(object);
+}
+
+GtkWidget* menuItemToWidget(GtkMenuItem* menuItem)
+{
+	return GTK_WIDGET(menuItem);
+}
+
+GtkGLArea* widgetToGLArea(GtkWidget* widget)
+{
+	return GTK_GL_AREA(widget);
+}
+
+GtkWidget* listBoxToWidget(GtkListBox* listBox)
+{
+	return GTK_WIDGET(listBox);
+}
+
+GtkContainer* listBoxToContainer(GtkListBox* listBox)
+{
+	return GTK_CONTAINER(listBox);
+}
+
+GtkWidget* listBoxRowToWidget(GtkListBoxRow* listBoxRow)
+{
+	return GTK_WIDGET(listBoxRow);
+}
+
+GtkContainer* listBoxRowToContainer(GtkListBoxRow* listBoxRow)
+{
+	return GTK_CONTAINER(listBoxRow);
+}
+
+void widgetGetSize(GtkWidget* widget,gint* width, gint* height)
+{
+	GtkAllocation* alloc = g_new(GtkAllocation,1);
+	gtk_widget_get_allocation(widget,alloc);
+	*width = alloc->width;
+	*height = alloc->height;
+	g_free(alloc);
+}
+
+void signalConnectButton(GtkButton* button,const char* signal, int id)
 {
     ButtonSignalUserData* bsud = (ButtonSignalUserData*)malloc(sizeof(ButtonSignalUserData));
     bsud->id = id;
-    bsud->signal = signal;
+    bsud->signal = (char*)malloc(strlen(signal));
+	strcpy(bsud->signal,signal);
     g_signal_connect(GTK_WIDGET(button),signal,G_CALLBACK(gtkgo_button_signal_c),bsud);
 }
+
+void sizeAllocateSignalConnectWidget(GtkWidget* widget,const char* signal,const char* name)
+{
+	WidgetSignalUserData* wsud = (WidgetSignalUserData*)malloc(sizeof(WidgetSignalUserData));
+	const gchar* namec = gtk_widget_get_name(widget);
+	wsud->name = (char*)malloc(strlen(namec));
+	strcpy(wsud->name,namec);
+	wsud->signal = (char*)malloc(strlen(signal));
+	strcpy(wsud->signal,signal);
+	g_signal_connect(widget,signal,G_CALLBACK(gtkgo_widget_size_allocate_signal_c),wsud);
+}
+
+void signalConnectMenuItem(GtkMenuItem* menuItem,const char* signal,const char* name)
+{
+	WidgetSignalUserData* wsud = (WidgetSignalUserData*)malloc(sizeof(WidgetSignalUserData));
+	const gchar* namec = gtk_widget_get_name(GTK_WIDGET(menuItem));
+	wsud->name = (char*)malloc(strlen(namec));
+	strcpy(wsud->name,namec);
+	wsud->signal = (char*)malloc(strlen(signal));
+	strcpy(wsud->signal,signal);
+	g_signal_connect(GTK_WIDGET(menuItem),signal,G_CALLBACK(gtkgo_menu_item_signal_c),wsud);
+
+}
+
+void eventSignalConnectWidget(GtkWidget* widget,const char* signal, const char* name)
+{
+	WidgetSignalUserData* wsud = (WidgetSignalUserData*)malloc(sizeof(WidgetSignalUserData));
+	const gchar* namec = gtk_widget_get_name(widget);
+	wsud->name = (char*)malloc(strlen(namec));
+	strcpy(wsud->name,namec);
+	wsud->signal = (char*)malloc(strlen(signal));
+	strcpy(wsud->signal,signal);
+	g_signal_connect(widget,signal,G_CALLBACK(gtkgo_widget_event_signal_c),wsud);
+}
+
+void rowSelectedSignalConnectListBox(GtkListBox* listBox, const char* signal, const char* name)
+{
+	WidgetSignalUserData* wsud = (WidgetSignalUserData*)malloc(sizeof(WidgetSignalUserData));
+	const gchar* namec = gtk_widget_get_name(GTK_WIDGET(listBox));
+	wsud->name = (char*)malloc(strlen(namec));
+	strcpy(wsud->name,namec);
+	wsud->signal = (char*)malloc(strlen(signal));
+	strcpy(wsud->signal,signal);
+	g_signal_connect(GTK_WIDGET(listBox),signal,G_CALLBACK(gtkgo_list_box_row_selected_signal_c),wsud);
+}
+
+
+

@@ -1,11 +1,12 @@
 package renderer
 
 import (
+	"image/color"
+	"strconv"
+
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
 	"github.com/PucklaMotzer09/mathgl/mgl32"
 	"github.com/go-gl/gl/all-core/gl"
-	"image/color"
-	"strconv"
 )
 
 const (
@@ -55,9 +56,9 @@ func (this *OpenGLRenderer) Init() error {
 		return err
 	}
 	version := gl.GoStr(gl.GetString(gl.VERSION))
-	gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_LOG, "Renderer", "OpenGL\t", "Version: "+version)
+	gohome.ErrorMgr.Log("Renderer", "OpenGL\t", "Version: "+version)
 	if this.GetVersioni() < 21 {
-		return &OpenGLError{errorString: "You don't have a graphics card or your graphics card is not supported! Minimum: OpenGL 2.1"}
+		gohome.ErrorMgr.Warning("Renderer", "OpenGL", "You don't have a graphics card or your graphics card is not supported! Minimum: OpenGL 2.1")
 	}
 
 	gl.GenVertexArrays(1, &this.BackBufferVao)
@@ -114,7 +115,9 @@ func (this *OpenGLRenderer) SetWireFrame(b bool) {
 }
 
 func (this *OpenGLRenderer) Terminate() {
-	gl.DeleteVertexArrays(1, &this.BackBufferVao)
+	if this.BackBufferVao != 0 {
+		gl.DeleteVertexArrays(1, &this.BackBufferVao)
+	}
 	if this.backBufferMesh != nil {
 		this.backBufferMesh.Terminate()
 	}

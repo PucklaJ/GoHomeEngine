@@ -1,12 +1,14 @@
 package framework
 
 import (
-	"github.com/PucklaMotzer09/gohomeengine/src/frameworks/GTK/gtk"
-	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
-	"github.com/PucklaMotzer09/mathgl/mgl32"
+	"errors"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/PucklaMotzer09/gohomeengine/src/frameworks/GTK/gtk"
+	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
+	"github.com/PucklaMotzer09/mathgl/mgl32"
 )
 
 type GTKFramework struct {
@@ -18,15 +20,23 @@ type GTKFramework struct {
 	isFullscreen bool
 
 	UseWholeWindowAsGLArea bool
+	UseExternalWindow      bool
 }
 
 func (this *GTKFramework) InitStuff(ml *gohome.MainLoop) {
+	this.DefaultWindowCreation(ml)
+	this.AfterWindowCreation(ml)
+}
+
+func (this *GTKFramework) DefaultWindowCreation(ml *gohome.MainLoop) {
 	ml.InitWindow()
 	gtk.GetWindow().ToContainer().Add(gtk.GetGLArea().ToWidget())
+}
+
+func (this *GTKFramework) AfterWindowCreation(ml *gohome.MainLoop) {
 	ml.InitRenderer()
 	ml.InitManagers()
 	gohome.Render.AfterInit()
-	gohome.RenderMgr.EnableBackBuffer = false
 	gohome.RenderMgr.RenderToScreenFirst = true
 }
 
@@ -37,11 +47,16 @@ func (this *GTKFramework) Init(ml *gohome.MainLoop) error {
 	gtk.OnMotion = gtkgo_gl_area_motion_notify
 	gtk.OnUseWholeScreen = useWholeWindowAsGLArea
 	gtk.Init()
-	if this.UseWholeWindowAsGLArea {
+	if this.UseWholeWindowAsGLArea && !this.UseExternalWindow {
 		this.InitStuff(ml)
+	} else {
+		gohome.ErrorMgr.Init()
 	}
 	gohome.RenderMgr.EnableBackBuffer = false
 	ml.SetupStartScene()
+	if gtk.GetGLArea().ToWidget().GetParent().IsNULL() {
+		return errors.New("GLArea has not been added!")
+	}
 
 	gtk.Main()
 
@@ -54,7 +69,7 @@ func (this *GTKFramework) Update() {
 	gohome.InputMgr.Mouse.DPos[1] = 0
 }
 func (this *GTKFramework) Terminate() {
-
+	gtk.MainQuit()
 }
 func (this *GTKFramework) PollEvents() {
 
@@ -201,4 +216,21 @@ func (*GTKFramework) LoadSound(name, path string) gohome.Sound {
 }
 func (*GTKFramework) LoadMusic(name, path string) gohome.Music {
 	return nil
+}
+
+func (this *GTKFramework) MonitorGetSize() mgl32.Vec2 {
+	return this.WindowGetSize()
+}
+
+func (this *GTKFramework) InitExternalDefault(window *gtk.Window, glarea *gtk.GLArea) {
+	if window != nil {
+		window.ConfigureParameters()
+		window.ConnectSignals()
+		gtk.SetWindow(*window)
+	}
+	if glarea != nil {
+		glarea.Configure()
+		gtk.SetGLArea(*glarea)
+	}
+	this.AfterWindowCreation(&gohome.MainLop)
 }

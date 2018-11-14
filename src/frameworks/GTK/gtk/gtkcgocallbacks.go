@@ -6,8 +6,9 @@ package gtk
 */
 import "C"
 import (
-	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
 	"log"
+
+	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
 )
 
 //export gtkgo_quit
@@ -306,14 +307,82 @@ func useWholeWindowAsGLArea() int {
 }
 
 //export gtkgo_button_signal
-func gtkgo_button_signal(button *C.GtkButton,id int, signal *C.char) {
+func gtkgo_button_signal(button *C.GtkButton, id int, signal *C.char) {
 	signalstr := C.GoString(signal)
 	buttonSignalMap := buttonSignalCallbacks[id]
 	if buttonSignalMap != nil {
-		for signalname,callback := range(buttonSignalMap) {
+		for signalname, callback := range buttonSignalMap {
 			if signalname == signalstr {
 				if callback != nil {
-					callback(Button{button,id})
+					callback(Button{button, id})
+				}
+				return
+			}
+		}
+	}
+}
+
+//export gtkgo_widget_signal
+func gtkgo_widget_signal(widget *C.GtkWidget, name *C.char, signal *C.char) {
+	signalstr := C.GoString(signal)
+	namestr := C.GoString(name)
+	widgetSignalMap := widgetSignalCallbacks[namestr]
+	if widgetSignalMap != nil {
+		for signalname, callback := range widgetSignalMap {
+			if signalname == signalstr {
+				if callback != nil {
+					callback(Widget{widget})
+				}
+				return
+			}
+		}
+	}
+}
+
+//export gtkgo_menu_item_signal
+func gtkgo_menu_item_signal(menuItem *C.GtkMenuItem, name *C.char, signal *C.char) {
+	signalstr := C.GoString(signal)
+	namestr := C.GoString(name)
+	menuItemSignalMap := menuItemSignalCallbacks[namestr]
+	if menuItemSignalMap != nil {
+		for signalname, callback := range menuItemSignalMap {
+			if signalname == signalstr {
+				if callback != nil {
+					callback(MenuItem{menuItem})
+				}
+				return
+			}
+		}
+	}
+}
+
+//export gtkgo_widget_event_signal
+func gtkgo_widget_event_signal(widget *C.GtkWidget, name *C.char, signal *C.char, event *C.GdkEvent) {
+	signalstr := C.GoString(signal)
+	namestr := C.GoString(name)
+	widgetEventSignalMap := widgetEventSignalCallbacks[namestr]
+	if widgetEventSignalMap != nil {
+		for signalname, callback := range widgetEventSignalMap {
+			if signalname == signalstr {
+				if callback != nil {
+					callback(Widget{widget}, Event{event})
+				}
+				return
+			}
+		}
+	}
+}
+
+//export gtkgo_list_box_row_selected_signal
+func gtkgo_list_box_row_selected_signal(listBox *C.GtkListBox, name *C.char, signal *C.char, listBoxRow *C.GtkListBoxRow) {
+	signalstr := C.GoString(signal)
+	namestr := C.GoString(name)
+	listBoxRowSelectedSignalMap := listBoxRowSelectedSignalCallbacks[namestr]
+	if listBoxRowSelectedSignalMap != nil {
+		for signalname, callback := range listBoxRowSelectedSignalMap {
+			if signalname == signalstr {
+				if callback != nil {
+					callback(ListBox{listBox}, ListBoxRow{listBoxRow})
 				}
 				return
 			}

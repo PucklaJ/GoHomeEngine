@@ -1,52 +1,71 @@
 package main
 
 import (
+	"log"
+
 	"github.com/PucklaMotzer09/gohomeengine/src/frameworks/GTK"
 	"github.com/PucklaMotzer09/gohomeengine/src/frameworks/GTK/gtk"
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
 	"github.com/PucklaMotzer09/mathgl/mgl32"
-	"log"
 )
 
 var gtkf *framework.GTKFramework
 
 type GTKGUIScene struct {
 	cube gohome.Entity3D
+	lb   gtk.ListBox
 }
 
 func (this *GTKGUIScene) InitGUI() {
+	gohome.MainLop.InitWindow()
+
 	var box gtk.Box
 	var button gtk.Button
 	var button2 gtk.Button
+	lbl := gtk.LabelNew("I am a label")
+	this.lb = gtk.ListBoxNew()
 	box = gtk.BoxNew(gtk.ORIENTATION_HORIZONTAL, 0)
 	button = gtk.ButtonNewWithLabel("Enter Me")
 	button2 = gtk.ButtonNewWithLabel("Click Me")
 	button.SignalConnect("enter", func(button gtk.Button) {
 		log.Println("Entered Button")
 	})
+	this.lb.ToWidget().SignalConnect("button-press-event", func(widget gtk.Widget, event gtk.Event) {
+		log.Println("Button Pressed Event")
+	})
 	button2.SignalConnect("clicked", func(button gtk.Button) {
 		log.Println("Clicked Button2")
+	})
+	this.lb.SignalConnect("row-selected", func(listBox gtk.ListBox, listBoxRow gtk.ListBoxRow) {
+		lbr := listBoxRow
+		if !lbr.IsNULL() {
+			cont := lbr.ToContainer()
+			lbl := cont.GetChildren().Data().ToWidget().ToLabel()
+			log.Println("Selected row:", lbl.GetText())
+		}
+	})
+	gtk.GetGLArea().ToWidget().SignalConnect("size-allocate", func(widget gtk.Widget) {
+		w, h := widget.GetSize()
+		gohome.Render.SetNativeResolution(uint32(w), uint32(h))
 	})
 	gtk.GetWindow().ToContainer().Add(box.ToWidget())
 
 	box.ToContainer().Add(gtk.GetGLArea().ToWidget())
 	box.ToContainer().Add(button.ToWidget())
 	box.ToContainer().Add(button2.ToWidget())
-
+	box.ToContainer().Add(this.lb.ToWidget())
+	this.lb.ToContainer().Add(lbl.ToWidget())
+	this.lb.ToContainer().Add(gtk.LabelNew("You are a programmer").ToWidget())
+	this.lb.ToContainer().Add(gtk.LabelNew("This is GTK").ToWidget())
 	gtk.GetGLArea().ToWidget().SetSizeRequest(640/2, 480/2)
+	gtk.GetWindow().ToWidget().ShowAll()
+
+	gohome.Framew.(*framework.GTKFramework).AfterWindowCreation(&gohome.MainLop)
+	gohome.RenderMgr.EnableBackBuffer = true
 }
 
 func (this *GTKGUIScene) Init() {
-	gtkf = gohome.Framew.(*framework.GTKFramework)
-	if !gtkf.UseWholeWindowAsGLArea {
-		gohome.MainLop.InitWindow()
-		this.InitGUI()
-		gohome.MainLop.InitRenderer()
-		gohome.MainLop.InitManagers()
-		gohome.Render.AfterInit()
-		gohome.RenderMgr.RenderToScreenFirst = true
-	}
-
+	this.InitGUI()
 	gohome.Init3DShaders()
 	gohome.ResourceMgr.LoadTexture("CubeImage", "cube.png")
 
@@ -58,6 +77,7 @@ func (this *GTKGUIScene) Init() {
 	gohome.RenderMgr.AddObject(&this.cube)
 	gohome.LightMgr.DisableLighting()
 
+	gohome.RenderMgr.UpdateProjectionWithViewport = true
 }
 
 func (this *GTKGUIScene) Update(delta_time float32) {
