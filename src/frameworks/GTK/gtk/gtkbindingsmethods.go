@@ -118,6 +118,10 @@ func (this Widget) Show() {
 	C.gtk_widget_show(this.Handle)
 }
 
+func (this Widget) Unrealize() {
+	C.gtk_widget_unrealize(this.Handle)
+}
+
 func (this Widget) SetSizeRequest(width, height int) {
 	C.gtk_widget_set_size_request(this.Handle, C.gint(width), C.gint(height))
 }

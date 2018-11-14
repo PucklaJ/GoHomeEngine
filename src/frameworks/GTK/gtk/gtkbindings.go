@@ -88,6 +88,14 @@ func CursorDisabled() bool {
 	return int(C.windowCursorDisabled()) == 1
 }
 
+func WindowNew() Window {
+	return Window{C.widgetToWindow(C.gtk_window_new(C.GTK_WINDOW_TOPLEVEL))}
+}
+
+func GLAreaNew() GLArea {
+	return GLArea{C.widgetToGLArea(C.gtk_gl_area_new())}
+}
+
 func BoxNew(orient Orientation, spacing int) Box {
 	var corient C.GtkOrientation
 	switch orient {

@@ -64,6 +64,7 @@ extern GtkWidget* labelToWidget(GtkLabel* label);
 extern GtkListBox* gobjectToListBox(GObject* object);
 extern GtkMenuItem* gobjectToMenuItem(GObject* object);
 extern GtkWidget* menuItemToWidget(GtkMenuItem* menuItem);
+extern GtkGLArea* widgetToGLArea(GtkWidget* widget);
 
 extern void signalConnectButton(GtkButton* button,const char* signal, int id);
 extern void sizeAllocateSignalConnectWidget(GtkWidget* widget,const char* signal,const char* name);

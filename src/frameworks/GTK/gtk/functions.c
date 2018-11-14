@@ -2,6 +2,7 @@
 #include "gtkccallbacksheader.h"
 #include "_cgo_export.h"
 #include <string.h>
+#include <stdio.h>
 
 GtkWindow* Window = NULL;
 GtkGLArea* GLarea = NULL;
@@ -62,6 +63,7 @@ void createGLArea()
 
 void configureGLArea(GtkGLArea* area)
 {
+	printf("Configuring GLArea ...\n");
 	g_signal_connect(GTK_WIDGET(area),"render",G_CALLBACK(gtkgo_gl_area_render_c),NULL);
 	g_signal_connect(GTK_WIDGET(area),"realize",G_CALLBACK(gtkgo_gl_area_realize_c),NULL);
 
@@ -71,6 +73,7 @@ void configureGLArea(GtkGLArea* area)
 
 	if(gtk_widget_get_parent(GTK_WIDGET(area)) != NULL)
 	{
+		printf("Trying to realize GLArea\n");
 		gtk_widget_unrealize(GTK_WIDGET(area));
 		gtk_widget_realize(GTK_WIDGET(area));
 	}
@@ -281,6 +284,11 @@ GtkMenuItem* gobjectToMenuItem(GObject* object)
 GtkWidget* menuItemToWidget(GtkMenuItem* menuItem)
 {
 	return GTK_WIDGET(menuItem);
+}
+
+GtkGLArea* widgetToGLArea(GtkWidget* widget)
+{
+	return GTK_GL_AREA(widget);
 }
 
 void widgetGetSize(GtkWidget* widget,gint* width, gint* height)

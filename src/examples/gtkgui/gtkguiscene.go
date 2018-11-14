@@ -16,6 +16,8 @@ type GTKGUIScene struct {
 }
 
 func (this *GTKGUIScene) InitGUI() {
+	gohome.MainLop.InitWindow()
+
 	var box gtk.Box
 	var button gtk.Button
 	var button2 gtk.Button
@@ -33,19 +35,15 @@ func (this *GTKGUIScene) InitGUI() {
 	box.ToContainer().Add(gtk.GetGLArea().ToWidget())
 	box.ToContainer().Add(button.ToWidget())
 	box.ToContainer().Add(button2.ToWidget())
-
 	gtk.GetGLArea().ToWidget().SetSizeRequest(640/2, 480/2)
+	gtk.GetWindow().ToWidget().ShowAll()
+
+	gohome.Framew.(*framework.GTKFramework).AfterWindowCreation(&gohome.MainLop)
+	gohome.RenderMgr.EnableBackBuffer = true
 }
 
 func (this *GTKGUIScene) Init() {
-	gtkf = gohome.Framew.(*framework.GTKFramework)
-	if !gtkf.UseWholeWindowAsGLArea {
-		gohome.MainLop.InitWindow()
-		this.InitGUI()
-		gtkf.AfterWindowCreation(&gohome.MainLop)
-		gohome.RenderMgr.EnableBackBuffer = true
-	}
-
+	this.InitGUI()
 	gohome.Init3DShaders()
 	gohome.ResourceMgr.LoadTexture("CubeImage", "cube.png")
 
@@ -56,7 +54,6 @@ func (this *GTKGUIScene) Init() {
 
 	gohome.RenderMgr.AddObject(&this.cube)
 	gohome.LightMgr.DisableLighting()
-
 }
 
 func (this *GTKGUIScene) Update(delta_time float32) {

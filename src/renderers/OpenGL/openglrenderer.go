@@ -56,9 +56,9 @@ func (this *OpenGLRenderer) Init() error {
 		return err
 	}
 	version := gl.GoStr(gl.GetString(gl.VERSION))
-	gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_LOG, "Renderer", "OpenGL\t", "Version: "+version)
+	gohome.ErrorMgr.Log("Renderer", "OpenGL\t", "Version: "+version)
 	if this.GetVersioni() < 21 {
-		return &OpenGLError{errorString: "You don't have a graphics card or your graphics card is not supported! Minimum: OpenGL 2.1"}
+		gohome.ErrorMgr.Warning("Renderer", "OpenGL", "You don't have a graphics card or your graphics card is not supported! Minimum: OpenGL 2.1")
 	}
 
 	gl.GenVertexArrays(1, &this.BackBufferVao)
