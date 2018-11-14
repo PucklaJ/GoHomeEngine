@@ -12,7 +12,6 @@ type MotionNotifyCallback func(x, y int16)
 type UseWholeWindowCallback func() bool
 
 type ButtonSignalCallback func(button Button)
-type WidgetSignalCallback func(widget Widget)
 type MenuItemSignalCallback func(menuItem MenuItem)
 
 var OnMotion MotionNotifyCallback
@@ -20,7 +19,7 @@ var OnRender RenderCallback
 var OnUseWholeScreen UseWholeWindowCallback
 
 var buttonSignalCallbacks map[int]map[string]ButtonSignalCallback
-var widgetSignalCallbacks map[string]map[string]WidgetSignalCallback
+var widgetSignalCallbacks map[string]map[string]func(widget Widget)
 var widgetEventSignalCallbacks map[string]map[string]func(widget Widget, event Event)
 var menuItemSignalCallbacks map[string]map[string]MenuItemSignalCallback
 var listBoxRowSelectedSignalCallbacks map[string]map[string]func(listBox ListBox, listBoxRow ListBoxRow)

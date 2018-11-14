@@ -276,14 +276,14 @@ func (this Button) SignalConnect(signal string, callback ButtonSignalCallback) {
 	buttonSignalCallbacks[this.ID][signal] = callback
 }
 
-func (this Widget) signalConnect(signal string, callback WidgetSignalCallback) {
+func (this Widget) signalConnect(signal string, callback func(widget Widget)) {
 	name := this.GetName()
 	if widgetSignalCallbacks == nil {
-		widgetSignalCallbacks = make(map[string]map[string]WidgetSignalCallback)
+		widgetSignalCallbacks = make(map[string]map[string]func(widget Widget))
 	}
 
 	if widgetSignalCallbacks[name] == nil {
-		widgetSignalCallbacks[name] = make(map[string]WidgetSignalCallback)
+		widgetSignalCallbacks[name] = make(map[string]func(widget Widget))
 	}
 
 	var alreadyConnected = false
@@ -341,8 +341,8 @@ func (this Widget) eventSignalConnect(signal string, callback func(widget Widget
 
 func (this Widget) SignalConnect(signal string, callback interface{}) {
 	switch callback.(type) {
-	case WidgetSignalCallback:
-		this.signalConnect(signal, callback.(WidgetSignalCallback))
+	case func(widget Widget):
+		this.signalConnect(signal, callback.(func(widget Widget)))
 	case func(widget Widget, event Event):
 		this.eventSignalConnect(signal, callback.(func(widget Widget, event Event)))
 	}

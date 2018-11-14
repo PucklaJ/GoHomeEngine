@@ -44,6 +44,10 @@ func (this *GTKGUIScene) InitGUI() {
 			log.Println("Selected row:", lbl.GetText())
 		}
 	})
+	gtk.GetGLArea().ToWidget().SignalConnect("size-allocate", func(widget gtk.Widget) {
+		w, h := widget.GetSize()
+		gohome.Render.SetNativeResolution(uint32(w), uint32(h))
+	})
 	gtk.GetWindow().ToContainer().Add(box.ToWidget())
 
 	box.ToContainer().Add(gtk.GetGLArea().ToWidget())
@@ -72,6 +76,8 @@ func (this *GTKGUIScene) Init() {
 
 	gohome.RenderMgr.AddObject(&this.cube)
 	gohome.LightMgr.DisableLighting()
+
+	gohome.RenderMgr.UpdateProjectionWithViewport = true
 }
 
 func (this *GTKGUIScene) Update(delta_time float32) {
