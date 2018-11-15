@@ -113,3 +113,19 @@ func (this MenuItem) ToWidget() Widget {
 func (this ToolButton) ToWidget() Widget {
 	return Widget{C.toolButtonToWidget(this.Handle)}
 }
+
+func (this FileChooserDialog) ToDialog() Dialog {
+	return Dialog{C.fileChooserDialogToDialog(this.Handle)}
+}
+
+func (this FileChooserDialog) ToWidget() Widget {
+	return Widget{C.fileChooserDialogToWidget(this.Handle)}
+}
+
+func (this Dialog) ToWidget() Widget {
+	return Widget{C.dialogToWidget(this.Handle)}
+}
+
+func (this FileChooserDialog) ToFileChooser() FileChooser {
+	return FileChooser{C.fileChooserDialogToFileChooser(this.Handle)}
+}

@@ -7,6 +7,7 @@ package gtk
 import "C"
 
 type Orientation int
+type FileChooserAction int
 type RenderCallback func()
 type MotionNotifyCallback func(x, y int16)
 type UseWholeWindowCallback func() bool
@@ -14,6 +15,18 @@ type UseWholeWindowCallback func() bool
 const (
 	ORIENTATION_HORIZONTAL Orientation = iota
 	ORIENTATION_VERTICAL   Orientation = iota
+)
+
+const (
+	FILE_CHOOSER_ACTION_OPEN          FileChooserAction = iota
+	FILE_CHOOSER_ACTION_SAVE          FileChooserAction = iota
+	FILE_CHOOSER_ACTION_SELECT_FOLDER FileChooserAction = iota
+	FILE_CHOOSER_ACTION_CREATE_FOLDER FileChooserAction = iota
+)
+
+const (
+	RESPONSE_ACCEPT int32 = iota
+	RESPONSE_NONE   int32 = iota
 )
 
 type Box struct {
@@ -83,4 +96,16 @@ type ListBoxRow struct {
 
 type ToolButton struct {
 	Handle *C.GtkToolButton
+}
+
+type FileChooserDialog struct {
+	Handle *C.GtkFileChooserDialog
+}
+
+type Dialog struct {
+	Handle *C.GtkDialog
+}
+
+type FileChooser struct {
+	Handle *C.GtkFileChooser
 }

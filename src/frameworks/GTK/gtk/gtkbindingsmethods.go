@@ -89,6 +89,10 @@ func (this Widget) GetName() string {
 	return C.GoString(name)
 }
 
+func (this Widget) Destroy() {
+	C.gtk_widget_destroy(this.Handle)
+}
+
 func (this Builder) GetObject(name string) GObject {
 	cstr := C.CString(name)
 	defer C.free(unsafe.Pointer(cstr))
@@ -154,4 +158,20 @@ func (this Label) SetText(text string) {
 func (this Label) GetText() string {
 	textcs := C.gtk_label_get_text(this.Handle)
 	return C.GoString(textcs)
+}
+
+func (this Dialog) Run() int32 {
+	switch C.gtk_dialog_run(this.Handle) {
+	case C.GTK_RESPONSE_ACCEPT:
+		return RESPONSE_ACCEPT
+	default:
+		return RESPONSE_NONE
+	}
+}
+
+func (this FileChooser) GetFilename() string {
+	filencs := C.gtk_file_chooser_get_filename(this.Handle)
+	defer C.free(unsafe.Pointer(filencs))
+	filen := C.GoString(filencs)
+	return filen
 }

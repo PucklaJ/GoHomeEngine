@@ -324,6 +324,31 @@ GtkBox* gobjectToBox(GObject* object)
 	return GTK_BOX(object);
 }
 
+GtkFileChooserDialog* widgetToFileChooserDialog(GtkWidget* widget)
+{
+	return GTK_FILE_CHOOSER_DIALOG(widget);
+}
+
+GtkDialog* fileChooserDialogToDialog(GtkFileChooserDialog* fcdialog)
+{
+	return GTK_DIALOG(fcdialog);
+}
+
+GtkWidget* fileChooserDialogToWidget(GtkFileChooserDialog* fcdialog)
+{
+	return GTK_WIDGET(fcdialog);
+}
+
+GtkWidget* dialogToWidget(GtkDialog* dialog)
+{
+	return GTK_WIDGET(dialog);
+}
+
+GtkFileChooser* fileChooserDialogToFileChooser(GtkFileChooserDialog* fcdialog)
+{
+	return GTK_FILE_CHOOSER(fcdialog);
+}
+
 void widgetGetSize(GtkWidget* widget,gint* width, gint* height)
 {
 	GtkAllocation* alloc = g_new(GtkAllocation,1);
@@ -392,7 +417,22 @@ void signalConnectToolButton(GtkToolButton* toolButton, const char* name)
 	char* namec = (char*)malloc(strlen(name));
 	strcpy(namec,name);
 	g_signal_connect(GTK_WIDGET(toolButton),"clicked",G_CALLBACK(gtkgo_tool_button_signal_c),namec);
+}
 
+GtkWidget* gohome_file_chooser_dialog_new(const gchar *title,GtkWindow *parent,GtkFileChooserAction action)
+{
+	GtkWidget* widget;
+	switch(action)
+	{
+		default:
+			widget = gtk_file_chooser_dialog_new(title,parent,action,
+				GTK_STOCK_CANCEL,GTK_RESPONSE_CANCEL,
+				GTK_STOCK_OPEN,GTK_RESPONSE_ACCEPT,
+				NULL
+			);
+			break;
+	}
+	return widget;
 }
 
 

@@ -2,12 +2,12 @@ package loader
 
 import (
 	"bytes"
+	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
 	"io"
 	"log"
 	"os"
 	"strconv"
 	"strings"
-	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
 )
 
 type OBJVertex struct {
@@ -233,10 +233,10 @@ func (this *OBJLoader) loadMaterialFile(path string) error {
 	if this.openMaterialFile == nil {
 		this.openMaterialFile = func(path string) (*gohome.File, error) {
 			gFile := &gohome.File{}
-			osFile,err := os.Open(path)
+			osFile, err := os.Open(path)
 			gFile.ReadSeeker = osFile
 			gFile.Closer = osFile
-			return gFile,err
+			return gFile, err
 		}
 	}
 	for i := 0; i < len(this.materialPaths); i++ {
