@@ -25,5 +25,6 @@
 *tiledmap
 *gui
 *audio
+*gtkbuilder
 *.tmx.
 *.glsl
