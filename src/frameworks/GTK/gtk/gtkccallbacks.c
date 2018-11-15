@@ -17,22 +17,18 @@ gboolean gtkgo_gl_area_render_c(GtkGLArea *area, GdkGLContext *context)
 void gtkgo_gl_area_realize_c(GtkGLArea *area)
 {
 	int err = 0;
-	printf("Realizing...\n");
 	gtk_gl_area_make_current(area);
 
 	if(gtk_gl_area_get_error(area) != NULL)
 	{
-		printf("Context error\n");
 		ErrorString = "Couldn't make context current";
 		err = 1;
 	}
 	else
 	{
-		printf("Set auto render false\n");
 		gtk_gl_area_set_auto_render(area,FALSE);
 	}
 
-	printf("Realize callback calling\n");
 	gtkgo_gl_area_realize(area,err);
 }
 
