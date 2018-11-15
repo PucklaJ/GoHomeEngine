@@ -8,3 +8,7 @@ import (
 func loadLevelOBJ(rsmgr *gohome.ResourceManager, name, path string, preloaded, loadToGPU bool) *gohome.Level {
 	return loader.LoadLevelOBJ(rsmgr, name, path, preloaded, loadToGPU)
 }
+
+func loadLevelOBJString(rsmgr *gohome.ResourceManager, name, contents string, preloaded, loadToGPU bool) *gohome.Level {
+	return loader.LoadLevelOBJString(rsmgr, name, contents, preloaded, loadToGPU)
+}

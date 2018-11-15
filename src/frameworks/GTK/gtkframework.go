@@ -177,6 +177,10 @@ func (this *GTKFramework) LoadLevel(rsmgr *gohome.ResourceManager, name, path st
 	return loadLevelOBJ(rsmgr, name, path, preloaded, loadToGPU)
 }
 
+func (this *GTKFramework) LoadLevelString(rsmgr *gohome.ResourceManager, name, contents string, preloaded, loadToGPU bool) *gohome.Level {
+	return loadLevelOBJString(rsmgr, name, contents, preloaded, loadToGPU)
+}
+
 func (this *GTKFramework) ShowYesNoDialog(title, message string) uint8 {
 	return gohome.DIALOG_CANCELLED
 }

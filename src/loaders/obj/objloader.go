@@ -115,6 +115,21 @@ func (this *OBJLoader) LoadReader(reader io.ReadCloser) error {
 	return nil
 }
 
+func (this *OBJLoader) LoadString(contents string) {
+	var curChar int = 0
+	var finished = false
+	var line string = ""
+	for !finished {
+		line, curChar, finished = readLineString(contents, curChar)
+		if finished {
+			return
+		}
+		if line != "" {
+			this.processTokens(toTokens(line))
+		}
+	}
+}
+
 func (this *OBJLoader) SetMaterialPaths(paths []string) {
 	this.materialPaths = paths
 }
@@ -176,6 +191,25 @@ func readLine(reader io.Reader, prevOverFlow []byte) (string, []byte, error) {
 	lineString := line.String()
 	line.Reset()
 	return lineString, overflow, err
+}
+
+func readLineString(contents string, curChar int) (string, int, bool) {
+	var line string
+	var finished = false
+	var i int
+
+	for i = curChar; i < len(contents); i++ {
+		if i == len(contents)-1 {
+			finished = true
+		}
+		if contents[i] == '\n' || contents[i] == '\r' {
+			i++
+			break
+		}
+		line += string(contents[i])
+	}
+
+	return line, i, finished
 }
 
 func toTokens(line string) []string {

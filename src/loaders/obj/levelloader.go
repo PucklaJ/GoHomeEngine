@@ -50,7 +50,7 @@ func processModel(rsmgr *gohome.ResourceManager, level *gohome.Level, model *OBJ
 	var lvlObjTobj gohome.TransformableObject3D
 	lvlObjTobj.Position = [3]float32{0.0, 0.0, 0.0}
 	lvlObjTobj.Scale = [3]float32{1.0, 1.0, 1.0}
-	lvlObjTobj.Rotation.V = [3]float32{0.0,0.0,-1.0}
+	lvlObjTobj.Rotation.V = [3]float32{0.0, 0.0, -1.0}
 	lvlObjTobj.Rotation.W = 0.0
 	lvlObjTobj.CalculateTransformMatrix(nil, -1)
 	lvlObj.Name = model.Name
@@ -199,6 +199,17 @@ func LoadLevelOBJ(rsmgr *gohome.ResourceManager, name, path string, preloaded, l
 		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "Level", name, "Couldn't load "+path+": "+err.Error())
 		return nil
 	}
+	lvl := toGohomeLevel(rsmgr, name, &objLoader, preloaded, loadToGPU)
+	return lvl
+}
+
+func LoadLevelOBJString(rsmgr *gohome.ResourceManager, name, contents string, preloaded, loadToGPU bool) *gohome.Level {
+	if _, ok := rsmgr.Levels[name]; ok {
+		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_LOG, "Level", name, "Has already been loaded!")
+		return nil
+	}
+	var objLoader OBJLoader
+	objLoader.LoadString(contents)
 	lvl := toGohomeLevel(rsmgr, name, &objLoader, preloaded, loadToGPU)
 	return lvl
 }

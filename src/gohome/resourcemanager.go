@@ -244,15 +244,6 @@ func (rsmgr *ResourceManager) GetTexture(name string) Texture {
 	return t
 }
 
-func (rsmgr *ResourceManager) LoadLevel(name, path string, loadToGPU bool) {
-	level := rsmgr.loadLevel(name, path, false, loadToGPU)
-	if level != nil {
-		rsmgr.Levels[name] = level
-		rsmgr.resourceFileNames[path] = name
-		ErrorMgr.Message(ERROR_LEVEL_LOG, "Level", name, "Finished loading!")
-	}
-}
-
 func (rsmgr *ResourceManager) GetLevel(name string) *Level {
 	l := rsmgr.Levels[name]
 	return l
@@ -353,17 +344,6 @@ func (rsmgr *ResourceManager) PreloadLevel(name, path string, loadToGPU bool) {
 		return
 	}
 	rsmgr.preloader.preloadedLevels = append(rsmgr.preloader.preloadedLevels, level)
-}
-
-func (rsmgr *ResourceManager) loadLevel(name, path string, preloaded, loadToGPU bool) *Level {
-	if !preloaded {
-		if resName, ok := rsmgr.resourceFileNames[path]; ok {
-			rsmgr.Levels[name] = rsmgr.Levels[resName]
-			ErrorMgr.Message(ERROR_LEVEL_WARNING, "Level", name, "Has already been loaded with this or another name!")
-			return nil
-		}
-	}
-	return Framew.LoadLevel(rsmgr, name, path, preloaded, loadToGPU)
 }
 
 func (rsmgr *ResourceManager) loadShader(name, vertex_path, fragment_path, geometry_path, tesselletion_control_path, eveluation_path, compute_path string, preloaded bool) Shader {
@@ -921,6 +901,43 @@ func (rsmgr *ResourceManager) LoadTMXMap(name, path string) {
 
 func (rsmgr *ResourceManager) GetTMXMap(name string) *tmx.Map {
 	return rsmgr.tmxmaps[name]
+}
+
+func (rsmgr *ResourceManager) LoadLevelString(name, contents, fileExtension string, loadToGPU bool) {
+	if fileExtension != "obj" {
+		ErrorMgr.Error("Model", name, "The fileextension is not supported: "+fileExtension)
+		return
+	}
+
+	level := rsmgr.loadLevelString(name, contents, fileExtension, false, loadToGPU)
+	if level != nil {
+		rsmgr.Levels[name] = level
+		ErrorMgr.Log("Level", name, "Finished loading!")
+	}
+}
+
+func (rsmgr *ResourceManager) LoadLevel(name, path string, loadToGPU bool) {
+	level := rsmgr.loadLevel(name, path, false, loadToGPU)
+	if level != nil {
+		rsmgr.Levels[name] = level
+		rsmgr.resourceFileNames[path] = name
+		ErrorMgr.Log("Level", name, "Finished loading!")
+	}
+}
+
+func (rsmgr *ResourceManager) loadLevelString(name, contents, fileextension string, preloaded, loadToGPU bool) *Level {
+	return Framew.LoadLevelString(rsmgr, name, contents, preloaded, loadToGPU)
+}
+
+func (rsmgr *ResourceManager) loadLevel(name, path string, preloaded, loadToGPU bool) *Level {
+	if !preloaded {
+		if resName, ok := rsmgr.resourceFileNames[path]; ok {
+			rsmgr.Levels[name] = rsmgr.Levels[resName]
+			ErrorMgr.Message(ERROR_LEVEL_WARNING, "Level", name, "Has already been loaded with this or another name!")
+			return nil
+		}
+	}
+	return Framew.LoadLevel(rsmgr, name, path, preloaded, loadToGPU)
 }
 
 var ResourceMgr ResourceManager
