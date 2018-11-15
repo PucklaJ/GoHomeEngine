@@ -1,7 +1,5 @@
 ## General
 
-+ Add Graphics Renderer
-    - Line, Polygon, etc.
 + Controller Input
 + Browser support
 + Simple Loading Screen
@@ -10,14 +8,13 @@
 + WorldEditor (3D, 2D)
 + Change Build scripts to programs
 + Add Tween interpreter language
++ Add Parents for TransformableObjects
++ Collada loader
 
 ## 2D
 
 + Instanced Mesh
 + Particle
-+ Physics
-	- [Box2D](https://github.com/ByteArena/box2d)
-+ [TiledMaps](https://github.com/pikkpoiss/tmxgo)
 + Add TextureRenderer
 
 ## 3D
