@@ -17,6 +17,7 @@ extern void gtkgo_widget_size_allocate_signal_c(GtkWidget* widget, GdkRectangle*
 extern void gtkgo_menu_item_signal_c(GtkMenuItem* menuItem, gpointer user_data);
 extern void gtkgo_widget_event_signal_c(GtkWidget* widget, GdkEvent* event, gpointer user_data);
 extern void gtkgo_list_box_row_selected_signal_c(GtkListBox* listBox, GtkListBoxRow* listBoxRow, gpointer user_data);
+extern void gtkgo_tool_button_signal_c(GtkToolButton* toolButton, gpointer user_data);
 
 extern gboolean queue_render_idle(gpointer user_data); 
 

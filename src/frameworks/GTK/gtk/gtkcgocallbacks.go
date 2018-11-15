@@ -389,3 +389,12 @@ func gtkgo_list_box_row_selected_signal(listBox *C.GtkListBox, name *C.char, sig
 		}
 	}
 }
+
+//export gtkgo_tool_button_signal
+func gtkgo_tool_button_signal(toolButton *C.GtkToolButton, name *C.char) {
+	namestr := C.GoString(name)
+	callback := toolButtonSignalCallbacks[namestr]
+	if callback != nil {
+		callback(ToolButton{toolButton})
+	}
+}

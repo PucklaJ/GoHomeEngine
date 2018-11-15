@@ -309,6 +309,21 @@ GtkContainer* listBoxRowToContainer(GtkListBoxRow* listBoxRow)
 	return GTK_CONTAINER(listBoxRow);
 }
 
+GtkWidget* toolButtonToWidget(GtkToolButton* toolButton)
+{
+	return GTK_WIDGET(toolButton);
+}
+
+GtkToolButton* gobjectToToolButton(GObject* object)
+{
+	return GTK_TOOL_BUTTON(object);
+}
+
+GtkBox* gobjectToBox(GObject* object) 
+{
+	return GTK_BOX(object);
+}
+
 void widgetGetSize(GtkWidget* widget,gint* width, gint* height)
 {
 	GtkAllocation* alloc = g_new(GtkAllocation,1);
@@ -370,6 +385,14 @@ void rowSelectedSignalConnectListBox(GtkListBox* listBox, const char* signal, co
 	wsud->signal = (char*)malloc(strlen(signal));
 	strcpy(wsud->signal,signal);
 	g_signal_connect(GTK_WIDGET(listBox),signal,G_CALLBACK(gtkgo_list_box_row_selected_signal_c),wsud);
+}
+
+void signalConnectToolButton(GtkToolButton* toolButton, const char* name)
+{
+	char* namec = (char*)malloc(strlen(name));
+	strcpy(namec,name);
+	g_signal_connect(GTK_WIDGET(toolButton),"clicked",G_CALLBACK(gtkgo_tool_button_signal_c),namec);
+
 }
 
 

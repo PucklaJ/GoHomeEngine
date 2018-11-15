@@ -69,11 +69,15 @@ extern GtkWidget* listBoxToWidget(GtkListBox* listBox);
 extern GtkContainer* listBoxToContainer(GtkListBox* listBox);
 extern GtkWidget* listBoxRowToWidget(GtkListBoxRow* listBoxRow);
 extern GtkContainer* listBoxRowToContainer(GtkListBoxRow* listBoxRow);
+extern GtkWidget* toolButtonToWidget(GtkToolButton* toolButton);
+extern GtkToolButton* gobjectToToolButton(GObject* object);
+extern GtkBox* gobjectToBox(GObject* object);
 
 extern void signalConnectButton(GtkButton* button,const char* signal, int id);
 extern void sizeAllocateSignalConnectWidget(GtkWidget* widget,const char* signal,const char* name);
 extern void signalConnectMenuItem(GtkMenuItem* menuItem,const char* signal,const char* name);
 extern void eventSignalConnectWidget(GtkWidget* widget,const char* signal, const char* name);
 extern void rowSelectedSignalConnectListBox(GtkListBox* listBox, const char* signal, const char* name);
+extern void signalConnectToolButton(GtkToolButton* toolButton, const char* name);
 
 #endif

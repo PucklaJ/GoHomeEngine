@@ -107,3 +107,8 @@ void gtkgo_list_box_row_selected_signal_c(GtkListBox* listBox, GtkListBoxRow* li
 	gtkgo_list_box_row_selected_signal(listBox,wsud->name,wsud->signal,listBoxRow);
 }
 
+void gtkgo_tool_button_signal_c(GtkToolButton* toolButton, gpointer user_data)
+{
+	gtkgo_tool_button_signal(toolButton,(char*)user_data);
+}
+
