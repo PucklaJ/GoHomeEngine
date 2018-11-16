@@ -16,7 +16,7 @@ typedef struct {
 
 extern GtkWindow* Window;
 extern GtkGLArea* GLarea;
-
+extern gboolean mouseInGLarea;
 extern char* ErrorString;
 
 extern void initialise(int args,char** argv);

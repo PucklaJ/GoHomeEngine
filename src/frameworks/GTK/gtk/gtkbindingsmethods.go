@@ -93,6 +93,10 @@ func (this Widget) Destroy() {
 	C.gtk_widget_destroy(this.Handle)
 }
 
+func (this Widget) HasFocus() bool {
+	return C.gtk_widget_has_focus(this.Handle) == C.TRUE
+}
+
 func (this Builder) GetObject(name string) GObject {
 	cstr := C.CString(name)
 	defer C.free(unsafe.Pointer(cstr))
