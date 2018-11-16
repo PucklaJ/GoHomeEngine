@@ -43,12 +43,14 @@ gboolean queue_render_idle(gpointer user_data)
 
 gboolean gtkgo_gl_area_key_press_c(GtkWidget* widget,GdkEvent* event,gpointer user_data)
 {
+	
 	gtkgo_gl_area_key_press(widget,(GdkEventKey*)event);
 	return TRUE;
 }
 
 gboolean gtkgo_gl_area_key_release_c(GtkWidget* widget, GdkEvent* event,gpointer user_data)
 {
+	
 	gtkgo_gl_area_key_release(widget,(GdkEventKey*)event);
 	return TRUE;
 }
@@ -67,6 +69,12 @@ gboolean gtkgo_gl_area_button_release_c(GtkWidget *widget, GdkEvent *event, gpoi
 
 gboolean gtkgo_gl_area_motion_notify_c(GtkWidget *widget, GdkEvent *event, gpointer user_data)
 {
+	GdkEventMotion* motion = (GdkEventMotion*)event;
+	gint posx,posy;
+	gtk_window_get_position(Window,&posx,&posy);
+	gint wx, wy;
+	gtk_widget_translate_coordinates(GTK_WIDGET(GLarea), GTK_WIDGET(Window), 0, 0, &wx, &wy);
+	printf("Adress: %d %d\n",motion->window,gtk_widget_get_parent_window(GTK_WIDGET(GLarea)));
 	gtkgo_gl_area_motion_notify(widget,(GdkEventMotion*)event);
 	return TRUE;
 }

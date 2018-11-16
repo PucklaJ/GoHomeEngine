@@ -40,7 +40,6 @@ void configureWindowParameters(GtkWindow* window,unsigned int width, unsigned in
 	}
 	if(strcmp(title,"")!=0)
 		gtk_window_set_title(window,title);
-	gtk_widget_set_events(GTK_WIDGET(window), GDK_POINTER_MOTION_MASK|GDK_SCROLL_MASK);
 }
 
 void connectWindowSignals(GtkWindow* window)
@@ -53,6 +52,8 @@ void connectWindowSignals(GtkWindow* window)
 	g_signal_connect(GTK_WIDGET(window),"button-release-event",G_CALLBACK(gtkgo_gl_area_button_release_c),NULL);
 	g_signal_connect(GTK_WIDGET(window),"motion-notify-event",G_CALLBACK(gtkgo_gl_area_motion_notify_c),NULL);
 	g_signal_connect(GTK_WIDGET(window),"scroll-event",G_CALLBACK(gtkgo_gl_area_scroll_c),NULL);
+
+	gtk_widget_set_events(GTK_WIDGET(window), GDK_POINTER_MOTION_MASK|GDK_SCROLL_MASK|GDK_ENTER_NOTIFY_MASK);
 }
 
 void createGLArea()
@@ -65,8 +66,9 @@ void configureGLArea(GtkGLArea* area)
 {
 	g_signal_connect(GTK_WIDGET(area),"render",G_CALLBACK(gtkgo_gl_area_render_c),NULL);
 	g_signal_connect(GTK_WIDGET(area),"realize",G_CALLBACK(gtkgo_gl_area_realize_c),NULL);
-
+	
 	gtk_gl_area_set_has_depth_buffer(area,TRUE);
+	gtk_widget_set_events(GTK_WIDGET(area), GDK_POINTER_MOTION_MASK|GDK_SCROLL_MASK|GDK_ENTER_NOTIFY_MASK);
 
 	gdk_threads_add_idle(queue_render_idle,area);
 
