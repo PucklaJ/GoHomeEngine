@@ -175,3 +175,17 @@ func (this FileChooser) GetFilename() string {
 	filen := C.GoString(filencs)
 	return filen
 }
+
+func (this GObject) SetData(key string, data string) {
+	datacs := C.CString(data)
+	keycs := C.CString(key)
+	C.g_object_set_data(this.Handle, keycs, C.gcharToGPointer(datacs))
+	C.free(unsafe.Pointer(keycs))
+}
+
+func (this GObject) GetData(key string) string {
+	keycs := C.CString(key)
+	datacs := C.g_object_get_data(this.Handle, keycs)
+	C.free(unsafe.Pointer(keycs))
+	return C.GoString(C.gpointerToGChar(datacs))
+}

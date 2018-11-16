@@ -349,6 +349,21 @@ GtkFileChooser* fileChooserDialogToFileChooser(GtkFileChooserDialog* fcdialog)
 	return GTK_FILE_CHOOSER(fcdialog);
 }
 
+GObject* labelToGObject(GtkLabel* label)
+{
+	return G_OBJECT(label);
+}
+
+const gchar* gpointerToGChar(const gpointer data)
+{
+	return (const gchar*)data;
+}
+
+const gpointer gcharToGPointer(const gchar* data)
+{
+	return (const gpointer)data;
+}
+
 void widgetGetSize(GtkWidget* widget,gint* width, gint* height)
 {
 	GtkAllocation* alloc = g_new(GtkAllocation,1);

@@ -86,6 +86,10 @@ func (this GPointer) ToWidget() Widget {
 	return Widget{C.gpointerToWidget(this.Handle)}
 }
 
+func (this GPointer) ToLabel() Label {
+	return this.ToWidget().ToLabel()
+}
+
 func (this ListBox) ToWidget() Widget {
 	return Widget{C.listBoxToWidget(this.Handle)}
 }
@@ -104,6 +108,10 @@ func (this ListBoxRow) ToContainer() Container {
 
 func (this Label) ToWidget() Widget {
 	return Widget{C.labelToWidget(this.Handle)}
+}
+
+func (this Label) ToGObject() GObject {
+	return GObject{C.labelToGObject(this.Handle)}
 }
 
 func (this MenuItem) ToWidget() Widget {

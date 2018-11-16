@@ -77,6 +77,9 @@ extern GtkDialog* fileChooserDialogToDialog(GtkFileChooserDialog* fcdialog);
 extern GtkWidget* fileChooserDialogToWidget(GtkFileChooserDialog* fcdialog);
 extern GtkWidget* dialogToWidget(GtkDialog* dialog);
 extern GtkFileChooser* fileChooserDialogToFileChooser(GtkFileChooserDialog* fcdialog);
+extern GObject* labelToGObject(GtkLabel* label);
+extern const gchar* gpointerToGChar(const gpointer data);
+extern const gpointer gcharToGPointer(const gchar* data);
 
 extern void signalConnectButton(GtkButton* button,const char* signal, int id);
 extern void sizeAllocateSignalConnectWidget(GtkWidget* widget,const char* signal,const char* name);
