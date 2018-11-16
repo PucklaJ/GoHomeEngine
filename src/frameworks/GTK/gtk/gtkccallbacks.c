@@ -78,15 +78,18 @@ gboolean gtkgo_gl_area_motion_notify_c(GtkWidget *widget, GdkEvent *event, gpoin
 	gtk_widget_get_allocated_size(GTK_WIDGET(GLarea),&allocation,NULL);
 	mposx = (gint)motion->x_root-posx-wx;
 	mposy = (gint)motion->y_root-posy-wy;
+	motion->x = (gdouble)mposx;
+	motion->y = (gdouble)mposy;
 	if(mposx > 0 && mposx < allocation.width+wx &&
 	   mposy > 0 && mposy < allocation.height+wy)
 	{
 		mouseInGLarea = TRUE;
 		// printf("Coordinates: %d %d; Pos: %d %d; Size: %d %d; Motion: %d %d\n",wx,wy,mposx,mposy,allocation.width,allocation.height,(gint)motion->x,(gint)motion->y);
-		gtkgo_gl_area_motion_notify(widget,(GdkEventMotion*)event);
 	}
 	else
 		mouseInGLarea = FALSE;
+
+	gtkgo_gl_area_motion_notify(widget,(GdkEventMotion*)event);
 	return TRUE;
 }
 

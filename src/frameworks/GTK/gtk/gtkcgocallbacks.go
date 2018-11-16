@@ -288,7 +288,6 @@ func gtkgo_gl_area_scroll(widget *C.GtkWidget, event *C.GdkEventScroll, gdkevent
 	default:
 		break
 	}
-
 	gohome.InputMgr.Mouse.Wheel = wheel
 }
 

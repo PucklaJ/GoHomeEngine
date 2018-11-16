@@ -144,21 +144,11 @@ void windowShowCursor()
 int windowCursorShown()
 {
 	GdkCursor* cursor = gdk_window_get_cursor(gtk_widget_get_window(GTK_WIDGET(Window)));
-	g_print("WindowCursorShown");
-	if(cursor == NULL)
-		g_print("Cursor is null");
-	else if(gdk_cursor_get_cursor_type(cursor) == GDK_BLANK_CURSOR)
-		g_print("Cursor is blank");
 	return cursor != NULL && gdk_cursor_get_cursor_type(cursor) != GDK_BLANK_CURSOR;
 }
 int windowCursorHidden()
 {
 	GdkCursor* cursor = gdk_window_get_cursor(gtk_widget_get_window(GTK_WIDGET(Window)));
-	g_print("WindowCursorHidden");
-	if(cursor != NULL)
-		g_print("Cursor is not null");
-	else if(gdk_cursor_get_cursor_type(cursor) != GDK_BLANK_CURSOR)
-		g_print("Cursor is not blank");
 	return cursor == NULL || gdk_cursor_get_cursor_type(cursor) == GDK_BLANK_CURSOR;
 }
 int windowCursorDisabled()
