@@ -125,7 +125,7 @@ func (this *GTKFramework) OpenFile(file string) (*gohome.File, error) {
 	}
 	gFile := &gohome.File{}
 	gFile.ReadSeeker = osFile
-	gFile.Closer = gFile
+	gFile.Closer = osFile
 	return gFile, nil
 }
 
@@ -177,8 +177,8 @@ func (this *GTKFramework) LoadLevel(rsmgr *gohome.ResourceManager, name, path st
 	return loadLevelOBJ(rsmgr, name, path, preloaded, loadToGPU)
 }
 
-func (this *GTKFramework) LoadLevelString(rsmgr *gohome.ResourceManager, name, contents string, preloaded, loadToGPU bool) *gohome.Level {
-	return loadLevelOBJString(rsmgr, name, contents, preloaded, loadToGPU)
+func (this *GTKFramework) LoadLevelString(rsmgr *gohome.ResourceManager, name, contents, fileName string, preloaded, loadToGPU bool) *gohome.Level {
+	return loadLevelOBJString(rsmgr, name, contents, fileName, preloaded, loadToGPU)
 }
 
 func (this *GTKFramework) ShowYesNoDialog(title, message string) uint8 {

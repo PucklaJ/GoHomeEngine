@@ -903,13 +903,8 @@ func (rsmgr *ResourceManager) GetTMXMap(name string) *tmx.Map {
 	return rsmgr.tmxmaps[name]
 }
 
-func (rsmgr *ResourceManager) LoadLevelString(name, contents, fileExtension string, loadToGPU bool) {
-	if fileExtension != "obj" {
-		ErrorMgr.Error("Model", name, "The fileextension is not supported: "+fileExtension)
-		return
-	}
-
-	level := rsmgr.loadLevelString(name, contents, fileExtension, false, loadToGPU)
+func (rsmgr *ResourceManager) LoadLevelString(name, contents, fileName string, loadToGPU bool) {
+	level := rsmgr.loadLevelString(name, contents, fileName, false, loadToGPU)
 	if level != nil {
 		rsmgr.Levels[name] = level
 		ErrorMgr.Log("Level", name, "Finished loading!")
@@ -925,8 +920,8 @@ func (rsmgr *ResourceManager) LoadLevel(name, path string, loadToGPU bool) {
 	}
 }
 
-func (rsmgr *ResourceManager) loadLevelString(name, contents, fileextension string, preloaded, loadToGPU bool) *Level {
-	return Framew.LoadLevelString(rsmgr, name, contents, preloaded, loadToGPU)
+func (rsmgr *ResourceManager) loadLevelString(name, contents, fileName string, preloaded, loadToGPU bool) *Level {
+	return Framew.LoadLevelString(rsmgr, name, contents, fileName, preloaded, loadToGPU)
 }
 
 func (rsmgr *ResourceManager) loadLevel(name, path string, preloaded, loadToGPU bool) *Level {

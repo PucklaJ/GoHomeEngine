@@ -203,12 +203,15 @@ func LoadLevelOBJ(rsmgr *gohome.ResourceManager, name, path string, preloaded, l
 	return lvl
 }
 
-func LoadLevelOBJString(rsmgr *gohome.ResourceManager, name, contents string, preloaded, loadToGPU bool) *gohome.Level {
+func LoadLevelOBJString(rsmgr *gohome.ResourceManager, name, contents, fileName string, preloaded, loadToGPU bool) *gohome.Level {
 	if _, ok := rsmgr.Levels[name]; ok {
 		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_LOG, "Level", name, "Has already been loaded!")
 		return nil
 	}
 	var objLoader OBJLoader
+	objLoader.SetDirectory(gohome.GetPathFromFile(fileName))
+	objLoader.SetOpenMaterialFile(gohome.Framew.OpenFile)
+	objLoader.SetMaterialPaths(gohome.MATERIAL_PATHS[:])
 	objLoader.LoadString(contents)
 	lvl := toGohomeLevel(rsmgr, name, &objLoader, preloaded, loadToGPU)
 	return lvl

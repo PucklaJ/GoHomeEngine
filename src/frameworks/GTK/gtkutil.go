@@ -9,6 +9,6 @@ func loadLevelOBJ(rsmgr *gohome.ResourceManager, name, path string, preloaded, l
 	return loader.LoadLevelOBJ(rsmgr, name, path, preloaded, loadToGPU)
 }
 
-func loadLevelOBJString(rsmgr *gohome.ResourceManager, name, contents string, preloaded, loadToGPU bool) *gohome.Level {
-	return loader.LoadLevelOBJString(rsmgr, name, contents, preloaded, loadToGPU)
+func loadLevelOBJString(rsmgr *gohome.ResourceManager, name, contents, fileName string, preloaded, loadToGPU bool) *gohome.Level {
+	return loader.LoadLevelOBJString(rsmgr, name, contents, fileName, preloaded, loadToGPU)
 }
