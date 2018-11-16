@@ -49,6 +49,7 @@ gboolean gtkgo_gl_area_key_press_c(GtkWidget* widget,GdkEvent* event,gpointer us
 
 gboolean gtkgo_gl_area_key_release_c(GtkWidget* widget, GdkEvent* event,gpointer user_data)
 {
+	
 	gtkgo_gl_area_key_release(widget,(GdkEventKey*)event);
 	return TRUE;
 }
