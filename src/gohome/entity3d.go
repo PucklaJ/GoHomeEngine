@@ -14,6 +14,7 @@ type Entity3D struct {
 	Model3D             *Model3D
 	Visible             bool
 	NotRelativeToCamera int
+	RenderLast          bool
 
 	Shader     Shader
 	RenderType RenderType
@@ -31,6 +32,7 @@ func (this *Entity3D) commonInit() {
 
 	this.Visible = true
 	this.NotRelativeToCamera = -1
+	this.RenderLast = false
 	this.RenderType = TYPE_3D_NORMAL
 	this.Shader = ResourceMgr.GetShader(ENTITY3D_SHADER_NAME)
 	if this.Model3D != nil && !this.Model3D.HasUV() {
@@ -143,4 +145,8 @@ func (this *Entity3D) GetTransformableObject() TransformableObject {
 
 func (this *Entity3D) GetTransform3D() *TransformableObject3D {
 	return this.Transform
+}
+
+func (this *Entity3D) RendersLast() bool {
+	return this.RenderLast
 }
