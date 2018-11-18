@@ -19,6 +19,7 @@ type Mesh3D interface {
 	CalculateTangents()
 	HasUV() bool
 	AABB() AxisAlignedBoundingBox
+	Copy() Mesh3D
 }
 
 func Box(name string, size mgl32.Vec3) Mesh3D {

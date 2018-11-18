@@ -289,3 +289,19 @@ func (oglm *OpenGLMesh3D) AABB() gohome.AxisAlignedBoundingBox {
 func (oglm *OpenGLMesh3D) HasUV() bool {
 	return oglm.hasUV
 }
+
+func (oglm *OpenGLMesh3D) Copy() gohome.Mesh3D {
+	var oglm1 OpenGLMesh3D
+	oglm1.Name = oglm.Name + " Copy"
+	oglm1.vao = oglm.vao
+	oglm1.buffer = oglm.buffer
+	mat := *oglm.Material
+	oglm1.Material = &mat
+	oglm1.tangentsCalculated = oglm.tangentsCalculated
+	oglm1.numIndices = oglm.numIndices
+	oglm1.numVertices = oglm.numVertices
+	oglm1.hasUV = oglm.hasUV
+	oglm1.canUseVAOs = oglm.canUseVAOs
+	oglm1.aabb = oglm.aabb
+	return &oglm1
+}
