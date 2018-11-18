@@ -90,6 +90,7 @@ type RenderObject interface {
 	SetTransformableObject(tobj TransformableObject)
 	GetTransformableObject() TransformableObject
 	RendersLast() bool
+	HasDepthTesting() bool
 }
 
 type NilRenderObject struct {
@@ -125,4 +126,7 @@ func (*NilRenderObject) GetTransformableObject() TransformableObject {
 }
 func (*NilRenderObject) RendersLast() bool {
 	return false
+}
+func (*NilRenderObject) HasDepthTesting() bool {
+	return true
 }

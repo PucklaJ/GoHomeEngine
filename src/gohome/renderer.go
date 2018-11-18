@@ -33,6 +33,7 @@ type Renderer interface {
 	RenderBackBuffer()
 
 	SetBacckFaceCulling(b bool)
+	SetDepthTesting(b bool)
 	GetMaxTextures() int32
 	NextTextureUnit() uint32
 	DecrementTextureUnit(amount uint32)

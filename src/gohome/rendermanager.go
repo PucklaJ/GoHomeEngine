@@ -418,7 +418,13 @@ func (rmgr *RenderManager) renderInnerLoop(rtype RenderType, robj RenderObject, 
 		return
 	}
 	Render.PreRender()
+	if !robj.HasDepthTesting() {
+		Render.SetDepthTesting(false)
+	}
 	rmgr.renderRenderObject(robj, lightCollectionIndex)
+	if !robj.HasDepthTesting() {
+		Render.SetDepthTesting(true)
+	}
 	Render.AfterRender()
 }
 

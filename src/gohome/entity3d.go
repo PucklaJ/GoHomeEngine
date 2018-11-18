@@ -15,12 +15,14 @@ type Entity3D struct {
 	Visible             bool
 	NotRelativeToCamera int
 	RenderLast          bool
+	DepthTesting        bool
 
 	Shader     Shader
 	RenderType RenderType
 
 	Transform *TransformableObject3D
 	transform TransformableObject
+	parent    interface{}
 }
 
 func (this *Entity3D) commonInit() {
@@ -33,6 +35,7 @@ func (this *Entity3D) commonInit() {
 	this.Visible = true
 	this.NotRelativeToCamera = -1
 	this.RenderLast = false
+	this.DepthTesting = true
 	this.RenderType = TYPE_3D_NORMAL
 	this.Shader = ResourceMgr.GetShader(ENTITY3D_SHADER_NAME)
 	if this.Model3D != nil && !this.Model3D.HasUV() {
@@ -115,6 +118,9 @@ func (this *Entity3D) Terminate() {
 }
 
 func (this *Entity3D) IsVisible() bool {
+	if robj, ok := this.parent.(RenderObject); ok && !robj.IsVisible() {
+		return false
+	}
 	return this.Visible
 }
 
@@ -149,4 +155,19 @@ func (this *Entity3D) GetTransform3D() *TransformableObject3D {
 
 func (this *Entity3D) RendersLast() bool {
 	return this.RenderLast
+}
+
+func (this *Entity3D) SetParent(parent interface{}) {
+	this.parent = parent
+	if tobj, ok := parent.(TweenableObject3D); ok {
+		this.Transform.Parent = tobj
+	}
+}
+
+func (this *Entity3D) GetParent() interface{} {
+	return this.parent
+}
+
+func (this *Entity3D) HasDepthTesting() bool {
+	return this.DepthTesting
 }

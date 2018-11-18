@@ -435,3 +435,11 @@ func (this *OpenGLRenderer) CreateShape2DInterface(name string) gohome.Shape2DIn
 		Name: name,
 	}
 }
+
+func (this *OpenGLRenderer) SetDepthTesting(b bool) {
+	if b {
+		gl.Enable(gl.DEPTH_TEST)
+	} else {
+		gl.Disable(gl.DEPTH_TEST)
+	}
+}
