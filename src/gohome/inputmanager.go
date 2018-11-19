@@ -60,6 +60,67 @@ func (this *Mouse) ToScreenPosition() (vec mgl32.Vec2) {
 	return
 }
 
+func (this *Mouse) ToRay() mgl32.Vec3 {
+	return this.ToRayAdv(0, 0)
+}
+
+func (this *Mouse) ToRayAdv(viewportIndex, cameraIndex int32) mgl32.Vec3 {
+	// Screen position
+	mpos := this.ToScreenPosition()
+	var vppos mgl32.Vec2
+	if viewportIndex >= int32(len(RenderMgr.viewport3Ds)) {
+		vppos = [2]float32{0.0, 0.0}
+	} else {
+		viewport := RenderMgr.viewport3Ds[viewportIndex]
+		if viewport == nil {
+			vppos = [2]float32{0.0, 0.0}
+		} else {
+			vppos[0], vppos[1] = float32(viewport.X), float32(viewport.Y)
+		}
+	}
+	mpos = mpos.Sub(vppos)
+	var nres mgl32.Vec2
+	if RenderMgr.EnableBackBuffer {
+		nres = Render.GetNativeResolution()
+	} else {
+		nres = Framew.WindowGetSize()
+	}
+	// Normalized device coordinates
+	mpos[0] = (2.0*mpos[0])/nres[0] - 1.0
+	mpos[1] = ((2.0*mpos[1])/nres[1] - 1.0) * -1.0
+	// Clipspace
+	clippos := mgl32.Vec4{mpos[0], mpos[1], -1.0, 1.0}
+	// Viewspace
+	var invprojmat mgl32.Mat4
+	if RenderMgr.Projection3D == nil {
+		invprojmat = mgl32.Ident4()
+	} else {
+		RenderMgr.Projection3D.CalculateProjectionMatrix()
+		invprojmat = RenderMgr.Projection3D.GetProjectionMatrix().Inv()
+	}
+	viewpos := invprojmat.Mul4x1(clippos)
+	viewpos[2], viewpos[3] = -1.0, 0.0
+	// Worldspace
+	var invviewmat mgl32.Mat4
+	if cameraIndex == -1 {
+		invviewmat = mgl32.Ident4()
+	} else {
+		if cameraIndex >= int32(len(RenderMgr.camera3Ds)) {
+			invviewmat = mgl32.Ident4()
+		} else {
+			cam := RenderMgr.camera3Ds[cameraIndex]
+			if cam == nil {
+				invviewmat = mgl32.Ident4()
+			} else {
+				cam.CalculateViewMatrix()
+				invviewmat = cam.GetInverseViewMatrix()
+			}
+		}
+	}
+	worldpos := invviewmat.Mul4x1(viewpos).Vec3()
+	return worldpos.Normalize()
+}
+
 type Touch struct {
 	ID   uint8
 	Pos  [2]int16

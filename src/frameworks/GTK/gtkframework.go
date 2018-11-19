@@ -21,6 +21,7 @@ type GTKFramework struct {
 
 	UseWholeWindowAsGLArea bool
 	UseExternalWindow      bool
+	MenuBarFix             bool
 }
 
 func (this *GTKFramework) InitStuff(ml *gohome.MainLoop) {
@@ -89,7 +90,8 @@ func (this *GTKFramework) WindowSetSize(size mgl32.Vec2) {
 }
 
 func (this *GTKFramework) WindowGetSize() mgl32.Vec2 {
-	return gtk.WindowGetSize()
+	w, h := gtk.GetGLArea().ToWidget().GetSize()
+	return [2]float32{float32(w), float32(h)}
 }
 func (this *GTKFramework) WindowSetFullscreen(b bool) {
 	gtk.WindowSetFullscreen(b)
