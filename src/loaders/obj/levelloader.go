@@ -94,6 +94,11 @@ func toGohomeColor(color OBJColor) *gohome.Color {
 
 func loadMaterialTexture(directory string, path string, preloaded bool) gohome.Texture {
 	var rv gohome.Texture
+	defer func() {
+		if !preloaded && rv != nil {
+			rv.SetWrapping(gohome.WRAPPING_REPEAT)
+		}
+	}()
 	if !preloaded {
 		gohome.ResourceMgr.LoadTexture(path, directory+path)
 		if rv = gohome.ResourceMgr.GetTexture(path); rv == nil {
@@ -174,7 +179,9 @@ func processMesh(objLoader *OBJLoader, mesh3d gohome.Mesh3D, mesh *OBJMesh, prel
 	mat.InitDefault()
 	processMaterial(objLoader, &mat, mesh.Material, preloaded, loadToGPU)
 	mesh3d.SetMaterial(&mat)
-	mesh3d.AddVertices(vertices, mesh.Indices)
+	if len(vertices) != 0 && len(mesh.Indices) != 0 {
+		mesh3d.AddVertices(vertices, mesh.Indices)
+	}
 	if !preloaded {
 		if loadToGPU {
 			mesh3d.Load()

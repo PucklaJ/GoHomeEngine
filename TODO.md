@@ -11,6 +11,7 @@
 + Add Parents for TransformableObjects
 + Collada loader
 + Parent System
++ OBJLoader load non-triangulate faces
 
 ## 2D
 

@@ -122,6 +122,10 @@ func (this *OBJLoader) LoadString(contents string) {
 	for !finished {
 		line, curChar, finished = readLineString(contents, curChar)
 		if finished {
+			log.Println("OBJLoader:", this.directory)
+			log.Println("Positions:", len(this.positions))
+			log.Println("Normals:", len(this.normals))
+			log.Println("UVs:", len(this.texCoords))
 			return
 		}
 		if line != "" {
@@ -321,6 +325,9 @@ func (this *OBJLoader) processTokens(tokens []string) {
 		} else if tokens[0] == "o" {
 			this.Models = append(this.Models, OBJModel{Name: tokens[1]})
 		} else if tokens[0] == "usemtl" {
+			if len(this.Models) == 0 {
+				this.Models = append(this.Models, OBJModel{Name: "Default"})
+			}
 			this.Models[len(this.Models)-1].Meshes = append(this.Models[len(this.Models)-1].Meshes, OBJMesh{})
 			this.processMaterial(tokens[1])
 		}
@@ -343,6 +350,10 @@ func (this *OBJLoader) processMaterial(token string) {
 }
 
 func (this *OBJLoader) processFace(tokens []string) error {
+	if len(tokens) != 3 {
+		return &OBJError{"Face type not supported! Use triangles!"}
+	}
+
 	if len(this.Models) == 0 {
 		this.Models = append(this.Models, OBJModel{Name: "Default"})
 	}
@@ -351,8 +362,9 @@ func (this *OBJLoader) processFace(tokens []string) error {
 	}
 
 	this.faceMethod = 0
-	var elements [3][]string
-	for i := 0; i < 3; i++ {
+	var elements [][]string
+	elements = make([][]string, len(tokens))
+	for i := 0; i < len(tokens); i++ {
 		elements[i] = strings.Split(tokens[i], "/")
 	}
 	if len(elements[0]) == 1 {
@@ -379,7 +391,7 @@ func (this *OBJLoader) processFace(tokens []string) error {
 
 	vertices := this.processFaceData(elements)
 
-	for i := 0; i < 3; i++ {
+	for i := 0; i < len(vertices); i++ {
 		index, isNew := this.searchIndex(vertices[i])
 		if isNew {
 			this.Models[len(this.Models)-1].Meshes[len(this.Models[len(this.Models)-1].Meshes)-1].Vertices = append(this.Models[len(this.Models)-1].Meshes[len(this.Models[len(this.Models)-1].Meshes)-1].Vertices, vertices[i])
@@ -404,22 +416,8 @@ func (this *OBJLoader) searchIndex(vertex OBJVertex) (uint32, bool) {
 	return 0, true
 }
 
-func (this *OBJLoader) processFaceData(elements [3][]string) [3]OBJVertex {
-	var rv [3]OBJVertex
-	var posIndices [3]uint32
-	var normalIndices [3]uint32
-	var texCoordIndices [3]uint32
-
-	switch this.faceMethod {
-	case 1:
-		posIndices[0], posIndices[1], posIndices[2] = processFaceData1(elements)
-	case 2:
-		posIndices[0], texCoordIndices[0], posIndices[1], texCoordIndices[1], posIndices[2], texCoordIndices[2] = processFaceData2(elements)
-	case 3:
-		posIndices[0], normalIndices[0], posIndices[1], normalIndices[1], posIndices[2], normalIndices[2] = processFaceData3(elements)
-	case 4:
-		posIndices[0], texCoordIndices[0], normalIndices[0], posIndices[1], texCoordIndices[1], normalIndices[1], posIndices[2], texCoordIndices[2], normalIndices[2] = processFaceData4(elements)
-	}
+func (this *OBJLoader) processTriangleFace(posIndices, normalIndices, texCoordIndices []uint32) (rv []OBJVertex) {
+	rv = make([]OBJVertex, 3)
 	for i := 0; i < 3; i++ {
 		rv[i].Position = this.positions[posIndices[i]-1]
 		if this.texCoordsLoaded {
@@ -429,32 +427,63 @@ func (this *OBJLoader) processFaceData(elements [3][]string) [3]OBJVertex {
 			rv[i].Normal = this.normals[normalIndices[i]-1]
 		}
 	}
-
-	return rv
+	return
 }
 
-func processFaceData1(elements [3][]string) (uint32, uint32, uint32) {
-	var rv [3]uint32
-	for i := 0; i < 3; i++ {
+func (this *OBJLoader) processFaceData(elements [][]string) (rv []OBJVertex) {
+	var posIndices []uint32
+	var normalIndices []uint32
+	var texCoordIndices []uint32
+
+	switch this.faceMethod {
+	case 1:
+		posIndices = processFaceData1(elements)
+	case 2:
+		posIndices, texCoordIndices = processFaceData2(elements)
+	case 3:
+		posIndices, normalIndices = processFaceData3(elements)
+	case 4:
+		posIndices, texCoordIndices, normalIndices = processFaceData4(elements)
+	}
+	if len(elements) == 3 {
+		rv = this.processTriangleFace(posIndices, normalIndices, texCoordIndices)
+	}
+
+	return
+}
+
+func processFaceData1(elements [][]string) (rv []uint32) {
+	rv = make([]uint32, len(elements))
+	for i := 0; i < len(rv); i++ {
 		temp, _ := strconv.ParseUint(elements[i][0], 10, 32)
 		rv[i] = uint32(temp)
 	}
-	return rv[0], rv[1], rv[2]
+	return
 }
 
-func processFaceData2(elements [3][]string) (uint32, uint32, uint32, uint32, uint32, uint32) {
-	var rv [6]uint32
+func processFaceData2(elements [][]string) (pos []uint32, tex []uint32) {
+	rv := make([]uint32, len(elements)*2)
+	pos = make([]uint32, len(elements))
+	tex = make([]uint32, len(elements))
 	for i := 0; i < 3; i++ {
 		for j := 0; j < 2; j++ {
 			temp, _ := strconv.ParseUint(elements[i][j], 10, 32)
 			rv[i*2+j] = uint32(temp)
 		}
 	}
-	return rv[0], rv[1], rv[2], rv[3], rv[4], rv[5]
+
+	for i := 0; i < len(elements); i++ {
+		pos[i] = rv[i*2]
+		tex[i] = rv[i*2+1]
+	}
+
+	return
 }
 
-func processFaceData3(elements [3][]string) (uint32, uint32, uint32, uint32, uint32, uint32) {
-	var rv [6]uint32
+func processFaceData3(elements [][]string) (pos []uint32, norm []uint32) {
+	rv := make([]uint32, len(elements)*2)
+	pos = make([]uint32, len(elements))
+	norm = make([]uint32, len(elements))
 	var readIndex uint32
 	for i := 0; i < 3; i++ {
 		for j := 0; j < 2; j++ {
@@ -467,18 +496,34 @@ func processFaceData3(elements [3][]string) (uint32, uint32, uint32, uint32, uin
 			rv[i*2+j] = uint32(temp)
 		}
 	}
-	return rv[0], rv[1], rv[2], rv[3], rv[4], rv[5]
+
+	for i := 0; i < len(elements); i++ {
+		pos[i] = rv[i*2]
+		norm[i] = rv[i*2+1]
+	}
+
+	return
 }
 
-func processFaceData4(elements [3][]string) (uint32, uint32, uint32, uint32, uint32, uint32, uint32, uint32, uint32) {
-	var rv [9]uint32
+func processFaceData4(elements [][]string) (pos []uint32, tex []uint32, norm []uint32) {
+	rv := make([]uint32, len(elements)*3)
+	pos = make([]uint32, len(elements))
+	tex = make([]uint32, len(elements))
+	norm = make([]uint32, len(elements))
 	for i := 0; i < 3; i++ {
 		for j := 0; j < 3; j++ {
 			temp, _ := strconv.ParseUint(elements[i][j], 10, 32)
 			rv[i*3+j] = uint32(temp)
 		}
 	}
-	return rv[0], rv[1], rv[2], rv[3], rv[4], rv[5], rv[6], rv[7], rv[8]
+
+	for i := 0; i < len(elements); i++ {
+		pos[i] = rv[i*3]
+		tex[i] = rv[i*3+1]
+		norm[i] = rv[i*3+2]
+	}
+
+	return
 }
 
 func process3Floats(tokens []string) [3]float32 {
