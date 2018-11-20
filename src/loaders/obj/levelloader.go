@@ -227,7 +227,10 @@ func LoadLevelOBJString(rsmgr *gohome.ResourceManager, name, contents, fileName 
 	objLoader.SetDirectory(gohome.GetPathFromFile(fileName))
 	objLoader.SetOpenMaterialFile(gohome.Framew.OpenFile)
 	objLoader.SetMaterialPaths(gohome.MATERIAL_PATHS[:])
-	objLoader.LoadString(contents)
+	if err := objLoader.LoadString(contents); err != nil {
+		gohome.ErrorMgr.MessageError(gohome.ERROR_LEVEL_ERROR, "Level", name, err)
+		return nil
+	}
 	lvl := toGohomeLevel(rsmgr, name, &objLoader, preloaded, loadToGPU)
 	return lvl
 }
