@@ -463,3 +463,30 @@ func remove(index uint32, reflex *[]uint32) {
 		}
 	}
 }
+
+type PolygonMath2D []mgl32.Vec2
+
+func (this *PolygonMath2D) Intersects(other PolygonMath2D) bool {
+	// Seperating axis theorem
+	return AreIntersecting(this, &other)
+}
+
+func (this *PolygonMath2D) IntersectsPoint(point mgl32.Vec2) bool {
+	return AreIntersectingPoint(this, point)
+}
+
+type QuadMath2D [4]mgl32.Vec2
+
+func (this *QuadMath2D) Intersects(other QuadMath2D) bool {
+	pm2d := this.ToPolygon()
+	return pm2d.Intersects(other.ToPolygon())
+}
+
+func (this *QuadMath2D) IntersectsPoint(point mgl32.Vec2) bool {
+	pm2d := this.ToPolygon()
+	return pm2d.IntersectsPoint(point)
+}
+
+func (this *QuadMath2D) ToPolygon() PolygonMath2D {
+	return PolygonMath2D((*this)[:])
+}
