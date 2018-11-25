@@ -8,9 +8,9 @@
 + WorldEditor (3D, 2D)
 + Change Build scripts to programs
 + Add Tween interpreter language
-+ Add Parents for TransformableObjects
++ Add Parents for TransformableObjects2D
 + Collada loader
-+ Parent System
++ Parent System for Sprite2D
 + OBJLoader load non-triangulate faces
 
 ## 2D

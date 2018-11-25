@@ -161,6 +161,8 @@ func (this *Entity3D) SetParent(parent interface{}) {
 	this.parent = parent
 	if tobj, ok := parent.(TweenableObject3D); ok {
 		this.Transform.Parent = tobj
+	} else {
+		this.Transform.Parent = nil
 	}
 }
 
