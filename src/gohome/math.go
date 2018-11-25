@@ -550,3 +550,8 @@ func ScreenPositionToRayAdv(point mgl32.Vec2, viewportIndex, cameraIndex int32) 
 	worldpos := invviewmat.Mul4x1(viewpos).Vec3()
 	return worldpos.Normalize()
 }
+
+type PlaneMath3D struct {
+	Normal mgl32.Vec3
+	Point  mgl32.Vec3
+}
