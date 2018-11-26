@@ -124,13 +124,13 @@ func (this *OBJLoader) LoadString(contents string) error {
 	var line string = ""
 	for !finished {
 		line, curChar, finished = readLineString(contents, curChar)
-		if finished {
-			break
-		}
 		if line != "" {
 			if err := this.processTokens(toTokens(line)); err != nil {
 				return err
 			}
+		}
+		if finished {
+			break
 		}
 	}
 
