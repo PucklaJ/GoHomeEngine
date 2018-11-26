@@ -37,13 +37,13 @@ func (this *Mouse) ToWorldPosition2DAdv(cameraIndex int32, viewportIndex uint32)
 		projMatrix = projection.GetProjectionMatrix()
 	}
 	normalizedPosV3 := normalizedPos.Vec3(-1.0)
-	projectedPos := Mat4MulVec3(projMatrix.Inv(), normalizedPosV3)
+	projectedPos := projMatrix.Inv().Mul4x1(normalizedPosV3.Vec4(1)).Vec3()
 
 	if len(RenderMgr.camera2Ds)-1 >= int(cameraIndex) {
 		cam := RenderMgr.camera2Ds[cameraIndex]
 		cam.CalculateViewMatrix()
 		invViewMatrix := cam.GetInverseViewMatrix()
-		projectedPos = Mat4MulVec3(invViewMatrix.Mat4(), projectedPos)
+		projectedPos = invViewMatrix.Mat4().Mul4x1(projectedPos.Vec4(1)).Vec3()
 	}
 
 	return projectedPos.Vec2()
