@@ -173,11 +173,33 @@ func (this Dialog) Run() int32 {
 	}
 }
 
+func (this FileChooser) SetSelectMultiple(select_multiple bool) {
+	var b C.gboolean
+	if select_multiple {
+		b = C.TRUE
+	} else {
+		b = C.FALSE
+	}
+	C.gtk_file_chooser_set_select_multiple(this.Handle, b)
+}
+
+func (this FileChooser) GetFilenames() (files []string) {
+	list := C.gtk_file_chooser_get_filenames(this.Handle)
+	for file := list; file != nil; file = file.next {
+		files = append(files, C.GoString(C.gpointerToGChar(file.data)))
+	}
+	return
+}
+
 func (this FileChooser) GetFilename() string {
 	filencs := C.gtk_file_chooser_get_filename(this.Handle)
 	defer C.free(unsafe.Pointer(filencs))
 	filen := C.GoString(filencs)
 	return filen
+}
+
+func (this FileChooser) SetFilter(filter FileFilter) {
+	C.gtk_file_chooser_set_filter(this.Handle, filter.Handle)
 }
 
 func (this GObject) SetData(key string, data string) {
@@ -192,4 +214,10 @@ func (this GObject) GetData(key string) string {
 	datacs := C.g_object_get_data(this.Handle, keycs)
 	C.free(unsafe.Pointer(keycs))
 	return C.GoString(C.gpointerToGChar(datacs))
+}
+
+func (this FileFilter) AddPattern(pattern string) {
+	cp := C.CString(pattern)
+	C.gtk_file_filter_add_pattern(this.Handle, cp)
+	C.free(unsafe.Pointer(cp))
 }

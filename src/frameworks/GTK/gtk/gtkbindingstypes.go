@@ -109,3 +109,7 @@ type Dialog struct {
 type FileChooser struct {
 	Handle *C.GtkFileChooser
 }
+
+type FileFilter struct {
+	Handle *C.GtkFileFilter
+}

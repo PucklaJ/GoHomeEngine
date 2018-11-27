@@ -434,8 +434,8 @@ GtkWidget* gohome_file_chooser_dialog_new(const gchar *title,GtkWindow *parent,G
 	{
 		default:
 			widget = gtk_file_chooser_dialog_new(title,parent,action,
-				GTK_STOCK_CANCEL,GTK_RESPONSE_CANCEL,
-				GTK_STOCK_OPEN,GTK_RESPONSE_ACCEPT,
+				"gtk-cancel",GTK_RESPONSE_CANCEL,
+				"gtk-open",GTK_RESPONSE_ACCEPT,
 				NULL
 			);
 			break;

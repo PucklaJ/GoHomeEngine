@@ -247,6 +247,7 @@ func (this *DirectionalLight) InitShadowmap(width, height uint32) {
 		this.ShadowMap = Render.CreateRenderTexture("DirectionallightShadowmap", width, height, 1, true, false, true, false)
 		this.ShadowMap.SetBorderDepth(1.0)
 		this.ShadowMap.SetWrapping(WRAPPING_CLAMP_TO_BORDER)
+		this.ShadowMap.SetFiltering(FILTERING_LINEAR)
 	}
 }
 
@@ -355,7 +356,7 @@ func (this *DirectionalLight) RenderShadowMap() {
 	if this.lightCam.LookDirection[0] == 0.0 && this.lightCam.LookDirection[1] == 0.0 && this.lightCam.LookDirection[2] == 0.0 {
 		this.lightCam.Init()
 	}
-	RenderMgr.SetCamera3D(&this.lightCam, 6)
+	RenderMgr.SetCamera3D(&this.lightCam, 0)
 
 	prevProjection := RenderMgr.Projection3D
 
@@ -368,13 +369,14 @@ func (this *DirectionalLight) RenderShadowMap() {
 	Render.SetBacckFaceCulling(false)
 
 	RenderMgr.ForceShader3D = ResourceMgr.GetShader(SHADOWMAP_SHADER_NAME)
-	RenderMgr.Render(TYPE_3D_NORMAL, 6, -1, -1)
+	RenderMgr.Render(TYPE_3D_NORMAL, 0, -1, -1)
 
 	RenderMgr.ForceShader3D = ResourceMgr.GetShader(SHADOWMAP_INSTANCED_SHADER_NAME)
-	RenderMgr.Render(TYPE_3D_INSTANCED, 6, -1, -1)
+	RenderMgr.Render(TYPE_3D_INSTANCED, 0, -1, -1)
 
 	Render.SetBacckFaceCulling(true)
 	this.ShadowMap.UnsetAsTarget()
+	RenderMgr.SetCamera3D(prevCamera, 0)
 
 	RenderMgr.ForceShader3D = nil
 

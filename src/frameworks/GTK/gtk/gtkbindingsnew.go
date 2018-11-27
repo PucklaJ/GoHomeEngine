@@ -90,3 +90,7 @@ func FileChooserDialogNew(title string, parent Window, action FileChooserAction)
 		titlecs, parent.Handle, faction,
 	))}
 }
+
+func FileFilterNew() FileFilter {
+	return FileFilter{C.gtk_file_filter_new()}
+}
