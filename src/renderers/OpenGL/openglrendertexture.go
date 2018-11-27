@@ -8,6 +8,7 @@ import (
 )
 
 var currentlyBoundRT *OpenGLRenderTexture
+var screenFramebuffer int32
 
 type OpenGLRenderTexture struct {
 	Name         string
@@ -186,6 +187,9 @@ func (this *OpenGLRenderTexture) GetName() string {
 }
 
 func (this *OpenGLRenderTexture) SetAsTarget() {
+	if currentlyBoundRT == nil {
+		gl.GetIntegerv(gl.DRAW_FRAMEBUFFER_BINDING, &screenFramebuffer)
+	}
 	this.prevRT = currentlyBoundRT
 	currentlyBoundRT = this
 	gl.BindFramebuffer(gl.FRAMEBUFFER, this.fbo)
@@ -199,7 +203,7 @@ func (this *OpenGLRenderTexture) UnsetAsTarget() {
 		gl.BindFramebuffer(gl.FRAMEBUFFER, this.prevRT.fbo)
 		currentlyBoundRT = this.prevRT
 	} else {
-		gl.BindFramebuffer(gl.FRAMEBUFFER, 0)
+		gl.BindFramebuffer(gl.FRAMEBUFFER, uint32(screenFramebuffer))
 		currentlyBoundRT = nil
 	}
 	handleOpenGLError("RenderTexture", this.Name, "glBindFramebuffer in UnsetAsTarget")

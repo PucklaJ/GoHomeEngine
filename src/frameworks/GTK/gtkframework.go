@@ -38,7 +38,6 @@ func (this *GTKFramework) AfterWindowCreation(ml *gohome.MainLoop) {
 	ml.InitRenderer()
 	ml.InitManagers()
 	gohome.Render.AfterInit()
-	gohome.RenderMgr.RenderToScreenFirst = true
 }
 
 func (this *GTKFramework) Init(ml *gohome.MainLoop) error {
