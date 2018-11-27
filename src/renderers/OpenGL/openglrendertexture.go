@@ -347,3 +347,10 @@ func (this *OpenGLRenderTexture) SetModColor(col color.Color) {
 		this.textures[i].SetModColor(col)
 	}
 }
+
+func (this *OpenGLRenderTexture) GetData() ([]byte, int, int) {
+	if len(this.textures) == 0 {
+		return nil, 0, 0
+	}
+	return this.textures[0].GetData()
+}

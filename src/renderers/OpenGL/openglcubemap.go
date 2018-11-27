@@ -5,6 +5,7 @@ import (
 	"github.com/go-gl/gl/all-core/gl"
 	"image"
 	"image/color"
+	"unsafe"
 )
 
 type OpenGLCubeMap struct {
@@ -143,4 +144,14 @@ func (this *OpenGLCubeMap) SetKeyColor(col color.Color) {
 
 func (this *OpenGLCubeMap) SetModColor(col color.Color) {
 
+}
+
+func (this *OpenGLCubeMap) GetData() (data []byte, width int, height int) {
+	width = this.GetWidth()
+	height = this.GetHeight()
+	data = make([]byte, width*height*4)
+	gl.BindTexture(gl.TEXTURE_CUBE_MAP_POSITIVE_X, this.oglName)
+	gl.GetTexImage(gl.TEXTURE_CUBE_MAP_POSITIVE_X, 0, gl.RGBA, gl.UNSIGNED_BYTE, unsafe.Pointer(&data[0]))
+	gl.BindTexture(gl.TEXTURE_CUBE_MAP_POSITIVE_X, 0)
+	return
 }

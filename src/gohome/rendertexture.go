@@ -26,4 +26,5 @@ type RenderTexture interface {
 	SetBorderDepth(depth float32)
 	SetKeyColor(col color.Color)
 	SetModColor(col color.Color)
+	GetData() ([]byte, int, int)
 }

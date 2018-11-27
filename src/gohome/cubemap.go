@@ -22,4 +22,5 @@ type CubeMap interface {
 	SetKeyColor(col color.Color)
 	SetModColor(col color.Color)
 	GetName() string
+	GetData() ([]byte, int, int)
 }

@@ -269,3 +269,13 @@ func (ogltex *OpenGLTexture) GetModColor() color.Color {
 func (ogltex *OpenGLTexture) GetName() string {
 	return ogltex.name
 }
+
+func (ogltex *OpenGLTexture) GetData() (data []byte, width int, height int) {
+	width = ogltex.GetWidth()
+	height = ogltex.GetHeight()
+	data = make([]byte, width*height*4)
+	gl.BindTexture(gl.TEXTURE_2D, ogltex.oglName)
+	gl.GetTexImage(gl.TEXTURE_2D, 0, gl.RGBA, gl.UNSIGNED_BYTE, unsafe.Pointer(&data[0]))
+	gl.BindTexture(gl.TEXTURE_2D, 0)
+	return
+}
