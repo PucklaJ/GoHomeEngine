@@ -137,3 +137,7 @@ func (this Dialog) ToWidget() Widget {
 func (this FileChooserDialog) ToFileChooser() FileChooser {
 	return FileChooser{C.fileChooserDialogToFileChooser(this.Handle)}
 }
+
+func (this Image) ToWidget() Widget {
+	return Widget{C.imageToWidget(this.Handle)}
+}

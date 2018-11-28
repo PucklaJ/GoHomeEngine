@@ -94,3 +94,30 @@ func FileChooserDialogNew(title string, parent Window, action FileChooserAction)
 func FileFilterNew() FileFilter {
 	return FileFilter{C.gtk_file_filter_new()}
 }
+
+func PixbufNewFromBytes(data []byte, colorspace Colorspace, has_alpha bool, bits_per_sample, width, height, rowstride int) Pixbuf {
+	var csp C.GdkColorspace
+	csp = C.GDK_COLORSPACE_RGB
+	var alpha C.gboolean
+	if has_alpha {
+		alpha = C.TRUE
+	} else {
+		alpha = C.FALSE
+	}
+
+	return Pixbuf{
+		C.gdk_pixbuf_new_from_bytes(
+			unsafe.Pointer(&data[0]),
+			csp,
+			alpha,
+			C.int(bits_per_sample),
+			C.int(width),
+			C.int(height),
+			C.int(rowstride),
+		),
+	}
+}
+
+func ImageNewFromPixbuf(pixbuf Pixbuf) Image {
+	return Image{C.widgetToImage(C.gtk_image_new_from_pixbuf(pixbuf.Handle))}
+}

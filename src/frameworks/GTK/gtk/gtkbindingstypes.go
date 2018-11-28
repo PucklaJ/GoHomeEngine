@@ -8,6 +8,7 @@ import "C"
 
 type Orientation int
 type FileChooserAction int
+type Colorspace int
 type RenderCallback func()
 type MotionNotifyCallback func(x, y int16)
 type UseWholeWindowCallback func() bool
@@ -27,6 +28,10 @@ const (
 const (
 	RESPONSE_ACCEPT int32 = iota
 	RESPONSE_NONE   int32 = iota
+)
+
+const (
+	COLORSPACE Colorspace = iota
 )
 
 type Box struct {
@@ -112,4 +117,12 @@ type FileChooser struct {
 
 type FileFilter struct {
 	Handle *C.GtkFileFilter
+}
+
+type Pixbuf struct {
+	Handle *C.GdkPixbuf
+}
+
+type Image struct {
+	Handle *C.GtkImage
 }

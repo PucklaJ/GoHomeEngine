@@ -357,6 +357,16 @@ const gpointer gcharToGPointer(const gchar* data)
 	return (const gpointer)data;
 }
 
+GtkWidget* imageToWidget(GtkImage* img)
+{
+	return GTK_WIDGET(img);
+}
+
+GtkImage* widgetToImage(GtkWidget* widget)
+{
+	return GTK_IMAGE(widget);
+}
+
 void widgetGetSize(GtkWidget* widget,gint* width, gint* height)
 {
 	GtkAllocation* alloc = g_new(GtkAllocation,1);

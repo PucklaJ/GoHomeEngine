@@ -80,6 +80,8 @@ extern GtkFileChooser* fileChooserDialogToFileChooser(GtkFileChooserDialog* fcdi
 extern GObject* labelToGObject(GtkLabel* label);
 extern const gchar* gpointerToGChar(const gpointer data);
 extern const gpointer gcharToGPointer(const gchar* data);
+extern GtkWidget* imageToWidget(GtkImage* img);
+extern GtkImage* widgetToImage(GtkWidget* widget);
 
 extern void signalConnectButton(GtkButton* button,const char* signal, int id);
 extern void sizeAllocateSignalConnectWidget(GtkWidget* widget,const char* signal,const char* name);
