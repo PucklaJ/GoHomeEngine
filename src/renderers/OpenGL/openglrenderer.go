@@ -76,10 +76,6 @@ func (this *OpenGLRenderer) Init() error {
 }
 
 func (this *OpenGLRenderer) AfterInit() {
-	if this.version < 30 {
-		gohome.RenderMgr.EnableBackBuffer = false
-	}
-
 	gl.Enable(gl.MULTISAMPLE)
 	gl.DepthFunc(gl.LEQUAL)
 	gl.Enable(gl.DEPTH_CLAMP)
