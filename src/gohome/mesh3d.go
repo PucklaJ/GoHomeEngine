@@ -22,7 +22,7 @@ type Mesh3D interface {
 	Copy() Mesh3D
 }
 
-func Box(name string, size mgl32.Vec3) Mesh3D {
+func Box(name string, size mgl32.Vec3, loadToGPU bool) Mesh3D {
 
 	boxMesh := Render.CreateMesh3D(name)
 
@@ -268,7 +268,9 @@ func Box(name string, size mgl32.Vec3) Mesh3D {
 	vertices[23][VertexTexCoordIndex(1)] = 0.0
 
 	boxMesh.AddVertices(vertices, indices)
-	boxMesh.Load()
+	if loadToGPU {
+		boxMesh.Load()
+	}
 	mat := &Material{}
 	mat.InitDefault()
 	boxMesh.SetMaterial(mat)
@@ -276,7 +278,7 @@ func Box(name string, size mgl32.Vec3) Mesh3D {
 	return boxMesh
 }
 
-func Plane(name string, size mgl32.Vec2, textures float32) Mesh3D {
+func Plane(name string, size mgl32.Vec2, textures float32, loadToGPU bool) Mesh3D {
 	// xAxis := up.Cross([3]float32{0.0, 0.0, 1.0})
 	// yAxis := up
 	// zAxis := up.Cross([3]float32{1.0, 0.0, 0.0}).Mul(-1.0)
@@ -350,7 +352,9 @@ func Plane(name string, size mgl32.Vec2, textures float32) Mesh3D {
 	indices[5] = 0
 
 	mesh.AddVertices(vertices, indices)
-	mesh.Load()
+	if loadToGPU {
+		mesh.Load()
+	}
 	mat := &Material{}
 	mat.InitDefault()
 	mesh.SetMaterial(mat)

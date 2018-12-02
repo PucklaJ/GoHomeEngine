@@ -1,7 +1,6 @@
 package renderer
 
 import (
-	// "fmt"
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
 	"github.com/PucklaMotzer09/mathgl/mgl32"
 	"github.com/go-gl/gl/all-core/gl"
@@ -338,6 +337,10 @@ func (this *OpenGLInstancedMesh3D) Render() {
 		return
 	}
 	if gohome.RenderMgr.CurrentShader != nil {
+		if this.Material == nil {
+			this.Material = &gohome.Material{}
+			this.Material.InitDefault()
+		}
 		gohome.RenderMgr.CurrentShader.SetUniformMaterial(*this.Material)
 	}
 	gl.BindVertexArray(this.vao)
@@ -557,4 +560,14 @@ func (this *OpenGLInstancedMesh3D) GetIndices() []uint32 {
 
 func (this *OpenGLInstancedMesh3D) SetName(index uint32, value_type uint32, value string) {
 	// Nothing
+}
+
+func (this *OpenGLInstancedMesh3D) HasUV() bool {
+	return false
+}
+func (this *OpenGLInstancedMesh3D) AABB() gohome.AxisAlignedBoundingBox {
+	return gohome.AxisAlignedBoundingBox{}
+}
+func (this *OpenGLInstancedMesh3D) Copy() gohome.Mesh3D {
+	return nil
 }

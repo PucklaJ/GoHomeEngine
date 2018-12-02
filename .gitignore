@@ -26,5 +26,6 @@
 *gui
 *audio
 *gtkbuilder
+*instancing
 *.tmx.
 *.glsl
