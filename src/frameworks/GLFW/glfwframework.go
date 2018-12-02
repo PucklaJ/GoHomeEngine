@@ -646,3 +646,7 @@ func (gfw *GLFWFramework) MonitorGetSize() mgl32.Vec2 {
 		return gfw.WindowGetSize()
 	}
 }
+
+func (gfw *GLFWFramework) LoadLevelString(rsmgr *gohome.ResourceManager, name, contents, fileName string, preloaded, loadToGPU bool) *gohome.Level {
+	return loadLevelOBJString(rsmgr, name, contents, fileName, preloaded, loadToGPU)
+}

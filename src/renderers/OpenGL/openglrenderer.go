@@ -1,11 +1,12 @@
 package renderer
 
 import (
+	"image/color"
+	"strconv"
+
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
 	"github.com/PucklaMotzer09/mathgl/mgl32"
 	"github.com/go-gl/gl/all-core/gl"
-	"image/color"
-	"strconv"
 )
 
 const (
@@ -55,9 +56,9 @@ func (this *OpenGLRenderer) Init() error {
 		return err
 	}
 	version := gl.GoStr(gl.GetString(gl.VERSION))
-	gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_LOG, "Renderer", "OpenGL\t", "Version: "+version)
+	gohome.ErrorMgr.Log("Renderer", "OpenGL\t", "Version: "+version)
 	if this.GetVersioni() < 21 {
-		return &OpenGLError{errorString: "You don't have a graphics card or your graphics card is not supported! Minimum: OpenGL 2.1"}
+		gohome.ErrorMgr.Warning("Renderer", "OpenGL", "You don't have a graphics card or your graphics card is not supported! Minimum: OpenGL 2.1")
 	}
 
 	gl.GenVertexArrays(1, &this.BackBufferVao)
@@ -75,10 +76,6 @@ func (this *OpenGLRenderer) Init() error {
 }
 
 func (this *OpenGLRenderer) AfterInit() {
-	if this.version < 30 {
-		gohome.RenderMgr.EnableBackBuffer = false
-	}
-
 	gl.Enable(gl.MULTISAMPLE)
 	gl.DepthFunc(gl.LEQUAL)
 	gl.Enable(gl.DEPTH_CLAMP)
@@ -114,7 +111,9 @@ func (this *OpenGLRenderer) SetWireFrame(b bool) {
 }
 
 func (this *OpenGLRenderer) Terminate() {
-	gl.DeleteVertexArrays(1, &this.BackBufferVao)
+	if this.BackBufferVao != 0 {
+		gl.DeleteVertexArrays(1, &this.BackBufferVao)
+	}
 	if this.backBufferMesh != nil {
 		this.backBufferMesh.Terminate()
 	}
@@ -423,12 +422,27 @@ func (this *OpenGLRenderer) GetBackgroundColor() color.Color {
 func handleOpenGLError(tag, objectName, errorPrefix string) {
 	err := gl.GetError()
 	if err != gl.NO_ERROR {
-		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, tag, objectName, errorPrefix+"ErrorCode: "+strconv.Itoa(int(err)))
+		var errString string
+		switch err {
+		case gl.INVALID_OPERATION:
+			errString = "INVALID_OPERATION"
+		default:
+			errString = strconv.Itoa(int(err))
+		}
+		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, tag, objectName, errorPrefix+"ErrorCode: "+errString)
 	}
 }
 
 func (this *OpenGLRenderer) CreateShape2DInterface(name string) gohome.Shape2DInterface {
 	return &OpenGLShape2DInterface{
 		Name: name,
+	}
+}
+
+func (this *OpenGLRenderer) SetDepthTesting(b bool) {
+	if b {
+		gl.Enable(gl.DEPTH_TEST)
+	} else {
+		gl.Disable(gl.DEPTH_TEST)
 	}
 }

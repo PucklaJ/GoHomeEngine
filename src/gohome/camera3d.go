@@ -13,12 +13,10 @@ type Camera3D struct {
 	Position      mgl32.Vec3
 	LookDirection mgl32.Vec3
 	Up            mgl32.Vec3
-	Tilt          float32
 	rotation      mgl32.Vec2
 
 	oldPosition      mgl32.Vec3
 	oldLookDirection mgl32.Vec3
-	oldTilt          float32
 	oldUp            mgl32.Vec3
 	oldrotation      mgl32.Vec2
 
@@ -38,7 +36,7 @@ func (cam *Camera3D) Init() {
 }
 
 func (cam *Camera3D) valuesChanged() bool {
-	return cam.Position != cam.oldPosition || cam.LookDirection != cam.oldLookDirection || cam.Tilt != cam.oldTilt || cam.Up != cam.oldUp
+	return cam.Position != cam.oldPosition || cam.LookDirection != cam.oldLookDirection || cam.Up != cam.oldUp
 }
 
 func (cam *Camera3D) CalculateViewMatrix() {
@@ -52,7 +50,6 @@ func (cam *Camera3D) CalculateViewMatrix() {
 
 	cam.oldPosition = cam.Position
 	cam.oldLookDirection = cam.LookDirection
-	cam.oldTilt = cam.Tilt
 	cam.oldUp = cam.Up
 }
 
@@ -115,4 +112,11 @@ func (cam *Camera3D) AddPositionRelative(pos mgl32.Vec3) {
 	worldPos = worldPos.Sub(cam.Position)
 
 	cam.Position = cam.Position.Add(worldPos.Normalize().Mul(pos.Len()))
+}
+
+func (cam *Camera3D) LookAt(position, center, up mgl32.Vec3) {
+	cam.Position = position
+	cam.LookDirection = center.Sub(position).Normalize()
+	cam.Up = up
+	cam.rotation = [2]float32{0.0, 0.0}
 }

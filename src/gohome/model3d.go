@@ -3,7 +3,7 @@ package gohome
 type Model3D struct {
 	Name   string
 	meshes []Mesh3D
-	AABB AxisAlignedBoundingBox
+	AABB   AxisAlignedBoundingBox
 }
 
 func (this *Model3D) AddMesh3D(m Mesh3D) {
@@ -44,7 +44,7 @@ func (this *Model3D) GetMeshIndex(index uint32) Mesh3D {
 }
 
 func (this *Model3D) checkAABB(m Mesh3D) {
-	for i:=0;i<3;i++ {
+	for i := 0; i < 3; i++ {
 		if m.AABB().Max[i] > this.AABB.Max[i] {
 			this.AABB.Max[i] = m.AABB().Max[i]
 		}
@@ -55,10 +55,21 @@ func (this *Model3D) checkAABB(m Mesh3D) {
 }
 
 func (this *Model3D) HasUV() bool {
-	for i:=0;i<len(this.meshes);i++ {
+	for i := 0; i < len(this.meshes); i++ {
 		if !this.meshes[i].HasUV() {
 			return false
 		}
 	}
 	return true
+}
+
+func (this *Model3D) Copy() *Model3D {
+	var model Model3D
+	model.Name = this.Name + " Copy"
+	model.meshes = make([]Mesh3D, len(this.meshes))
+	for i := 0; i < len(this.meshes); i++ {
+		model.meshes[i] = this.meshes[i].Copy()
+	}
+	model.AABB = this.AABB
+	return &model
 }

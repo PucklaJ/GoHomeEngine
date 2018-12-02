@@ -21,6 +21,9 @@ func gtkgo_gl_area_render() {
 
 func gtkgo_gl_area_motion_notify(x, y int16) {
 	framew := gohome.Framew.(*GTKFramework)
+	if framew.MenuBarFix {
+		y -= 30
+	}
 	gohome.InputMgr.Mouse.Pos[0] = x
 	gohome.InputMgr.Mouse.Pos[1] = y
 	gohome.InputMgr.Mouse.DPos[0] = x - framew.prevMousePos[0]

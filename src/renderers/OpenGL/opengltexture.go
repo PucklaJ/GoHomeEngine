@@ -81,9 +81,9 @@ func (ogltex *OpenGLTexture) Load(data []byte, width, height int, shadowMap bool
 
 	gl.BindTexture(ogltex.bindingPoint(), ogltex.oglName)
 
-	gl.TexParameterf(ogltex.bindingPoint(), gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
-	gl.TexParameterf(ogltex.bindingPoint(), gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
-	gl.TexParameterf(ogltex.bindingPoint(), gl.TEXTURE_WRAP_R, gl.CLAMP_TO_EDGE)
+	gl.TexParameterf(ogltex.bindingPoint(), gl.TEXTURE_WRAP_S, gl.REPEAT)
+	gl.TexParameterf(ogltex.bindingPoint(), gl.TEXTURE_WRAP_T, gl.REPEAT)
+	gl.TexParameterf(ogltex.bindingPoint(), gl.TEXTURE_WRAP_R, gl.REPEAT)
 	gl.TexParameterf(ogltex.bindingPoint(), gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR)
 	gl.TexParameterf(ogltex.bindingPoint(), gl.TEXTURE_MIN_FILTER, gl.LINEAR)
 	gl.TexParameterf(ogltex.bindingPoint(), gl.TEXTURE_MAG_FILTER, gl.LINEAR)
@@ -268,4 +268,14 @@ func (ogltex *OpenGLTexture) GetModColor() color.Color {
 
 func (ogltex *OpenGLTexture) GetName() string {
 	return ogltex.name
+}
+
+func (ogltex *OpenGLTexture) GetData() (data []byte, width int, height int) {
+	width = ogltex.GetWidth()
+	height = ogltex.GetHeight()
+	data = make([]byte, width*height*4)
+	gl.BindTexture(gl.TEXTURE_2D, ogltex.oglName)
+	gl.GetTexImage(gl.TEXTURE_2D, 0, gl.RGBA, gl.UNSIGNED_BYTE, unsafe.Pointer(&data[0]))
+	gl.BindTexture(gl.TEXTURE_2D, 0)
+	return
 }

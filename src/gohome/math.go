@@ -463,3 +463,95 @@ func remove(index uint32, reflex *[]uint32) {
 		}
 	}
 }
+
+type PolygonMath2D []mgl32.Vec2
+
+func (this *PolygonMath2D) Intersects(other PolygonMath2D) bool {
+	// Seperating axis theorem
+	return AreIntersecting(this, &other)
+}
+
+func (this *PolygonMath2D) IntersectsPoint(point mgl32.Vec2) bool {
+	return AreIntersectingPoint(this, point)
+}
+
+type QuadMath2D [4]mgl32.Vec2
+
+func (this *QuadMath2D) Intersects(other QuadMath2D) bool {
+	pm2d := this.ToPolygon()
+	return pm2d.Intersects(other.ToPolygon())
+}
+
+func (this *QuadMath2D) IntersectsPoint(point mgl32.Vec2) bool {
+	pm2d := this.ToPolygon()
+	return pm2d.IntersectsPoint(point)
+}
+
+func (this *QuadMath2D) ToPolygon() PolygonMath2D {
+	return PolygonMath2D((*this)[:])
+}
+
+func ScreenPositionToRay(point mgl32.Vec2) mgl32.Vec3 {
+	return ScreenPositionToRayAdv(point, 0, 0)
+}
+
+func ScreenPositionToRayAdv(point mgl32.Vec2, viewportIndex, cameraIndex int32) mgl32.Vec3 {
+	// Screen position
+	var vppos mgl32.Vec2
+	if viewportIndex >= int32(len(RenderMgr.viewport3Ds)) {
+		vppos = [2]float32{0.0, 0.0}
+	} else {
+		viewport := RenderMgr.viewport3Ds[viewportIndex]
+		if viewport == nil {
+			vppos = [2]float32{0.0, 0.0}
+		} else {
+			vppos[0], vppos[1] = float32(viewport.X), float32(viewport.Y)
+		}
+	}
+	point = point.Sub(vppos)
+	var nres mgl32.Vec2
+	if RenderMgr.EnableBackBuffer {
+		nres = Render.GetNativeResolution()
+	} else {
+		nres = Framew.WindowGetSize()
+	}
+	// Normalized device coordinates
+	point[0] = (2.0*point[0])/nres[0] - 1.0
+	point[1] = ((2.0*point[1])/nres[1] - 1.0) * -1.0
+	// Clipspace
+	clippos := mgl32.Vec4{point[0], point[1], -1.0, 1.0}
+	// Viewspace
+	var invprojmat mgl32.Mat4
+	if RenderMgr.Projection3D == nil {
+		invprojmat = mgl32.Ident4()
+	} else {
+		RenderMgr.Projection3D.CalculateProjectionMatrix()
+		invprojmat = RenderMgr.Projection3D.GetProjectionMatrix().Inv()
+	}
+	viewpos := invprojmat.Mul4x1(clippos)
+	viewpos[2], viewpos[3] = -1.0, 0.0
+	// Worldspace
+	var invviewmat mgl32.Mat4
+	if cameraIndex == -1 {
+		invviewmat = mgl32.Ident4()
+	} else {
+		if cameraIndex >= int32(len(RenderMgr.camera3Ds)) {
+			invviewmat = mgl32.Ident4()
+		} else {
+			cam := RenderMgr.camera3Ds[cameraIndex]
+			if cam == nil {
+				invviewmat = mgl32.Ident4()
+			} else {
+				cam.CalculateViewMatrix()
+				invviewmat = cam.GetInverseViewMatrix()
+			}
+		}
+	}
+	worldpos := invviewmat.Mul4x1(viewpos).Vec3()
+	return worldpos.Normalize()
+}
+
+type PlaneMath3D struct {
+	Normal mgl32.Vec3
+	Point  mgl32.Vec3
+}

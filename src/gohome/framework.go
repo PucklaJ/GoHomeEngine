@@ -42,6 +42,7 @@ type Framework interface {
 
 	OpenFile(file string) (*File, error)
 	LoadLevel(rsmgr *ResourceManager, name, path string, preloaded, loadToGPU bool) *Level
+	LoadLevelString(rsmgr *ResourceManager, name, contents, fileName string, preloaded, loadToGPU bool) *Level
 	LoadSound(name, path string) Sound
 	LoadMusic(name, path string) Music
 

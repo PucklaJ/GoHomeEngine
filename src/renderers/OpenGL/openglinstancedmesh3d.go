@@ -1,18 +1,23 @@
 package renderer
 
 import (
-	// "fmt"
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
 	"github.com/PucklaMotzer09/mathgl/mgl32"
 	"github.com/go-gl/gl/all-core/gl"
 	"strconv"
 	"sync"
+	"unsafe"
 )
 
 type valueTypeIndexOffset struct {
 	valueType uint32
 	index     uint32
 	offset    uint32
+}
+
+type indexValueType struct {
+	index     uint32
+	valueType uint32
 }
 
 type OpenGLInstancedMesh3D struct {
@@ -22,8 +27,12 @@ type OpenGLInstancedMesh3D struct {
 	numIndices   uint32
 	numInstances uint32
 
-	vao                        uint32
-	vertexIndexInstancedBuffer uint32
+	vao             uint32
+	buffer          uint32
+	canUseVAOs      bool
+	canUseInstanced bool
+	hasUV           bool
+	aabb            gohome.AxisAlignedBoundingBox
 
 	Name     string
 	Material *gohome.Material
@@ -32,17 +41,37 @@ type OpenGLInstancedMesh3D struct {
 	customValues          []uint32
 	valueTypeIndexOffsets []valueTypeIndexOffset
 	instancedSize         uint32
+	sizePerInstance       uint32
+
+	floats        [][]float32
+	vec2s         [][]mgl32.Vec2
+	vec3s         [][]mgl32.Vec3
+	vec4s         [][]mgl32.Vec4
+	mat2s         [][]mgl32.Mat2
+	mat3s         [][]mgl32.Mat3
+	mat4s         [][]mgl32.Mat4
+	namesForIndex map[indexValueType]string
 }
 
 func CreateOpenGLInstancedMesh3D(name string) *OpenGLInstancedMesh3D {
-	return &OpenGLInstancedMesh3D{
-		Name: name,
+	mesh := &OpenGLInstancedMesh3D{
+		Name:               name,
+		tangentsCalculated: false,
 	}
+	render, _ := gohome.Render.(*OpenGLRenderer)
+	mesh.canUseVAOs = render.hasFunctionAvailable("VERTEX_ARRAY")
+	mesh.canUseInstanced = render.hasFunctionAvailable("INSTANCED")
+	if !mesh.canUseInstanced {
+		mesh.namesForIndex = make(map[indexValueType]string)
+	}
+
+	return mesh
 }
 
 func (this *OpenGLInstancedMesh3D) AddVertices(vertices []gohome.Mesh3DVertex, indices []uint32) {
 	this.vertices = append(this.vertices, vertices...)
 	this.indices = append(this.indices, indices...)
+	this.checkAABB()
 }
 
 func (this *OpenGLInstancedMesh3D) CalculateTangentsRoutine(startIndex, maxIndex uint32, wg *sync.WaitGroup) {
@@ -74,6 +103,10 @@ func (this *OpenGLInstancedMesh3D) CalculateTangentsRoutine(startIndex, maxIndex
 		t1 = mgl32.Vec2{(*vertices)[indices[i+1]][6], (*vertices)[indices[i+1]][7]}
 		t2 = mgl32.Vec2{(*vertices)[indices[i+2]][6], (*vertices)[indices[i+2]][7]}
 
+		if t0.X() == 0.0 && t0.Y() == 0.0 && t1.X() == 0.0 && t1.Y() == 0.0 && t2.X() == 0.0 && t2.Y() == 0.0 {
+			this.hasUV = false
+			continue
+		}
 		normal = mgl32.Vec3{(*vertices)[indices[i]][3], (*vertices)[indices[i]][4], (*vertices)[indices[i]][5]}
 
 		deltaPos1 = p1.Sub(p0)
@@ -278,6 +311,23 @@ func (this *OpenGLInstancedMesh3D) calculateOffsets() {
 	}
 }
 
+func (this *OpenGLInstancedMesh3D) attributePointer() {
+	gl.BindBuffer(gl.ARRAY_BUFFER, this.buffer)
+	gl.VertexAttribPointer(0, 3, gl.FLOAT, false, int32(MESH3DVERTEX_SIZE), gl.PtrOffset(0))
+	gl.VertexAttribPointer(1, 3, gl.FLOAT, false, int32(MESH3DVERTEX_SIZE), gl.PtrOffset(3*4))
+	gl.VertexAttribPointer(2, 2, gl.FLOAT, false, int32(MESH3DVERTEX_SIZE), gl.PtrOffset(3*4+3*4))
+	gl.VertexAttribPointer(3, 3, gl.FLOAT, false, int32(MESH3DVERTEX_SIZE), gl.PtrOffset(3*4+3*4+2*4))
+	this.instancedVertexAttribPointer(this.numVertices*MESH3DVERTEX_SIZE, this.numIndices*gohome.INDEX_SIZE, this.sizePerInstance)
+
+	gl.EnableVertexAttribArray(0)
+	gl.EnableVertexAttribArray(1)
+	gl.EnableVertexAttribArray(2)
+	gl.EnableVertexAttribArray(3)
+	this.instancedEnableVertexAttribArray()
+
+	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.buffer)
+}
+
 func (this *OpenGLInstancedMesh3D) Load() {
 	this.numVertices = uint32(len(this.vertices))
 	this.numIndices = uint32(len(this.indices))
@@ -293,61 +343,179 @@ func (this *OpenGLInstancedMesh3D) Load() {
 
 	var verticesSize uint32 = this.numVertices * MESH3DVERTEX_SIZE
 	var indicesSize uint32 = this.numIndices * gohome.INDEX_SIZE
-	this.instancedSize = this.getInstancedSize() * this.numInstances
+	if this.canUseInstanced {
+		this.instancedSize = this.getInstancedSize() * this.numInstances
+	}
+	var bufferSize int
+	if this.canUseInstanced {
+		bufferSize = int(verticesSize) + int(indicesSize) + int(this.instancedSize)
+	} else {
+		bufferSize = int(verticesSize) + int(indicesSize)
+	}
 
 	this.CalculateTangents()
 
-	gl.GenVertexArrays(1, &this.vao)
-	gl.GenBuffers(1, &this.vertexIndexInstancedBuffer)
+	if this.canUseVAOs {
+		gl.GenVertexArrays(1, &this.vao)
+	}
+	gl.GenBuffers(1, &this.buffer)
+	handleOpenGLError("InstancedMesh3D", this.Name, "GenBuffer: ")
 
-	gl.BindBuffer(gl.ARRAY_BUFFER, this.vertexIndexInstancedBuffer)
-	gl.BufferData(gl.ARRAY_BUFFER, int(verticesSize+indicesSize+this.instancedSize), nil, gl.STATIC_DRAW)
-	gl.BufferSubData(gl.ARRAY_BUFFER, 0, int(verticesSize), gl.Ptr(&this.vertices[0][0]))
+	gl.BindBuffer(gl.ARRAY_BUFFER, this.buffer)
+	gl.BufferData(gl.ARRAY_BUFFER, bufferSize, nil, gl.STATIC_DRAW)
+	handleOpenGLError("InstancedMesh3D", this.Name, "BufferData: ")
+
+	gl.BufferSubData(gl.ARRAY_BUFFER, 0, int(verticesSize), unsafe.Pointer(&this.vertices[0]))
+	handleOpenGLError("InstancedMesh3D", this.Name, "BufferSubData Vertices: ")
 	gl.BindBuffer(gl.ARRAY_BUFFER, 0)
 
-	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.vertexIndexInstancedBuffer)
-	gl.BufferSubData(gl.ELEMENT_ARRAY_BUFFER, int(verticesSize), int(indicesSize), gl.Ptr(&this.indices[0]))
+	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.buffer)
+	gl.BufferSubData(gl.ELEMENT_ARRAY_BUFFER, int(verticesSize), int(indicesSize), unsafe.Pointer(&this.indices[0]))
+	handleOpenGLError("InstancedMesh3D", this.Name, "BufferSubData Indices: ")
 	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, 0)
 
-	gl.BindVertexArray(this.vao)
+	if this.canUseInstanced {
+		this.sizePerInstance = this.instancedSize / this.numInstances
+	}
 
-	gl.BindBuffer(gl.ARRAY_BUFFER, this.vertexIndexInstancedBuffer)
-	gl.VertexAttribPointer(0, 3, gl.FLOAT, false, int32(MESH3DVERTEX_SIZE), gl.PtrOffset(0))
-	gl.VertexAttribPointer(1, 3, gl.FLOAT, false, int32(MESH3DVERTEX_SIZE), gl.PtrOffset(3*4))
-	gl.VertexAttribPointer(2, 2, gl.FLOAT, false, int32(MESH3DVERTEX_SIZE), gl.PtrOffset(3*4+3*4))
-	gl.VertexAttribPointer(3, 3, gl.FLOAT, false, int32(MESH3DVERTEX_SIZE), gl.PtrOffset(3*4+3*4+2*4))
-	this.instancedVertexAttribPointer(verticesSize, indicesSize, this.instancedSize/this.numInstances)
-
-	gl.EnableVertexAttribArray(0)
-	gl.EnableVertexAttribArray(1)
-	gl.EnableVertexAttribArray(2)
-	gl.EnableVertexAttribArray(3)
-	this.instancedEnableVertexAttribArray()
-
-	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.vertexIndexInstancedBuffer)
-
-	gl.BindVertexArray(0)
-
-	this.instancedSize /= this.numInstances
+	if this.canUseVAOs {
+		gl.BindVertexArray(this.vao)
+		this.attributePointer()
+		gl.BindVertexArray(0)
+	}
 
 	this.deleteElements()
-	this.calculateOffsets()
+	if this.canUseInstanced {
+		this.calculateOffsets()
+	}
 }
 func (this *OpenGLInstancedMesh3D) Render() {
 	if this.numVertices == 0 || this.numIndices == 0 {
+		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "InstancedMesh", this.Name, "No Vertices or Indices have been loaded!")
 		return
 	}
 	if gohome.RenderMgr.CurrentShader != nil {
+		if this.Material == nil {
+			this.Material = &gohome.Material{}
+			this.Material.InitDefault()
+		}
 		gohome.RenderMgr.CurrentShader.SetUniformMaterial(*this.Material)
 	}
-	gl.BindVertexArray(this.vao)
-	gl.DrawElementsInstanced(gl.TRIANGLES, int32(this.numIndices), gl.UNSIGNED_INT, gl.PtrOffset(int(this.numVertices*MESH3DVERTEX_SIZE)), int32(this.numInstances))
-	gl.BindVertexArray(0)
+	if this.canUseVAOs {
+		gl.BindVertexArray(this.vao)
+	} else {
+		this.attributePointer()
+	}
+	if this.canUseInstanced {
+		gl.GetError()
+		gl.DrawElementsInstanced(gl.TRIANGLES, int32(this.numIndices), gl.UNSIGNED_INT, gl.PtrOffset(int(this.numVertices*MESH3DVERTEX_SIZE)), int32(this.numInstances))
+		handleOpenGLError("InstancedMesh3D", this.Name, "RenderError: ")
+	} else {
+		for i := uint32(0); i < this.numInstances; i++ {
+			this.setInstancedValuesUniforms(i)
+			gl.DrawElements(gl.TRIANGLES, int32(this.numIndices), gl.UNSIGNED_INT, gl.PtrOffset(int(this.numVertices*MESH3DVERTEX_SIZE)))
+			handleOpenGLError("InstancedMesh3D", this.Name, "RenderError: ")
+		}
+	}
 
+	if this.canUseVAOs {
+		gl.BindVertexArray(0)
+	} else {
+		gl.BindBuffer(gl.ARRAY_BUFFER, 0)
+		gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, 0)
+	}
 }
+
+func (this *OpenGLInstancedMesh3D) setInstancedValuesUniforms(instance uint32) {
+	shader := gohome.RenderMgr.CurrentShader
+	var ivt indexValueType
+	if shader == nil {
+		return
+	}
+	ivt.valueType = gohome.VALUE_FLOAT
+	for i := 0; i < len(this.floats); i++ {
+		ivt.index = uint32(i)
+		value := this.floats[i][instance]
+		name, ok := this.namesForIndex[ivt]
+		if ok {
+			shader.SetUniformF(name, value)
+		} else {
+			gohome.ErrorMgr.Error("InstancedMesh3D", this.Name, "No Name has been specified for Float "+strconv.FormatUint(uint64(ivt.index), 10))
+		}
+	}
+	ivt.valueType = gohome.VALUE_VEC2
+	for i := 0; i < len(this.vec2s); i++ {
+		ivt.index = uint32(i)
+		value := this.vec2s[i][instance]
+		name, ok := this.namesForIndex[ivt]
+		if ok {
+			shader.SetUniformV2(name, value)
+		} else {
+			gohome.ErrorMgr.Error("InstancedMesh3D", this.Name, "No Name has been specified for Vec2 "+strconv.FormatUint(uint64(ivt.index), 10))
+		}
+	}
+	ivt.valueType = gohome.VALUE_VEC3
+	for i := 0; i < len(this.vec3s); i++ {
+		ivt.index = uint32(i)
+		value := this.vec3s[i][instance]
+		name, ok := this.namesForIndex[ivt]
+		if ok {
+			shader.SetUniformV3(name, value)
+		} else {
+			gohome.ErrorMgr.Error("InstancedMesh3D", this.Name, "No Name has been specified for Vec3 "+strconv.FormatUint(uint64(ivt.index), 10))
+		}
+	}
+	ivt.valueType = gohome.VALUE_VEC4
+	for i := 0; i < len(this.vec4s); i++ {
+		ivt.index = uint32(i)
+		value := this.vec4s[i][instance]
+		name, ok := this.namesForIndex[ivt]
+		if ok {
+			shader.SetUniformV4(name, value)
+		} else {
+			gohome.ErrorMgr.Error("InstancedMesh3D", this.Name, "No Name has been specified for Vec4 "+strconv.FormatUint(uint64(ivt.index), 10))
+		}
+	}
+	ivt.valueType = gohome.VALUE_MAT2
+	for i := 0; i < len(this.mat2s); i++ {
+		ivt.index = uint32(i)
+		value := this.mat2s[i][instance]
+		name, ok := this.namesForIndex[ivt]
+		if ok {
+			shader.SetUniformM2(name, value)
+		} else {
+			gohome.ErrorMgr.Error("InstancedMesh3D", this.Name, "No Name has been specified for Mat2 "+strconv.FormatUint(uint64(ivt.index), 10))
+		}
+	}
+	ivt.valueType = gohome.VALUE_MAT3
+	for i := 0; i < len(this.mat3s); i++ {
+		ivt.index = uint32(i)
+		value := this.mat3s[i][instance]
+		name, ok := this.namesForIndex[ivt]
+		if ok {
+			shader.SetUniformM3(name, value)
+		} else {
+			gohome.ErrorMgr.Error("InstancedMesh3D", this.Name, "No Name has been specified for Mat3 "+strconv.FormatUint(uint64(ivt.index), 10))
+		}
+	}
+	ivt.valueType = gohome.VALUE_MAT4
+	for i := 0; i < len(this.mat4s); i++ {
+		ivt.index = uint32(i)
+		value := this.mat4s[i][instance]
+		name, ok := this.namesForIndex[ivt]
+		if ok {
+			shader.SetUniformM4(name, value)
+		} else {
+			gohome.ErrorMgr.Error("InstancedMesh3D", this.Name, "No Name has been specified for Mat4 "+strconv.FormatUint(uint64(ivt.index), 10))
+		}
+	}
+}
+
 func (this *OpenGLInstancedMesh3D) Terminate() {
-	defer gl.DeleteVertexArrays(1, &this.vao)
-	defer gl.DeleteBuffers(1, &this.vertexIndexInstancedBuffer)
+	if this.canUseVAOs {
+		defer gl.DeleteVertexArrays(1, &this.vao)
+	}
+	defer gl.DeleteBuffers(1, &this.buffer)
 }
 
 func (this *OpenGLInstancedMesh3D) SetMaterial(mat *gohome.Material) {
@@ -393,8 +561,27 @@ func (this *OpenGLInstancedMesh3D) addValueTypeIndexOffset(valueType uint32) {
 }
 
 func (this *OpenGLInstancedMesh3D) AddValue(valueType uint32) {
-	this.customValues = append(this.customValues, valueType)
-	this.addValueTypeIndexOffset(valueType)
+	if this.canUseInstanced {
+		this.customValues = append(this.customValues, valueType)
+		this.addValueTypeIndexOffset(valueType)
+	} else {
+		switch valueType {
+		case gohome.VALUE_FLOAT:
+			this.floats = append(this.floats, nil)
+		case gohome.VALUE_VEC2:
+			this.vec2s = append(this.vec2s, nil)
+		case gohome.VALUE_VEC3:
+			this.vec3s = append(this.vec3s, nil)
+		case gohome.VALUE_VEC4:
+			this.vec4s = append(this.vec4s, nil)
+		case gohome.VALUE_MAT2:
+			this.mat2s = append(this.mat2s, nil)
+		case gohome.VALUE_MAT3:
+			this.mat3s = append(this.mat3s, nil)
+		case gohome.VALUE_MAT4:
+			this.mat4s = append(this.mat4s, nil)
+		}
+	}
 }
 
 func (this *OpenGLInstancedMesh3D) getOffset(valueType, index uint32) uint32 {
@@ -408,145 +595,175 @@ func (this *OpenGLInstancedMesh3D) getOffset(valueType, index uint32) uint32 {
 }
 
 func (this *OpenGLInstancedMesh3D) SetF(index uint32, value []float32) {
-	offset := this.getOffset(gohome.VALUE_FLOAT, index)
-	if offset == 0 {
-		return
-	}
-	if uint32(len(value)) < this.numInstances {
-		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "InstancedMesh", this.Name, "Float value "+strconv.Itoa(int(index))+" is too small!")
-		return
+	if this.canUseInstanced {
+		offset := this.getOffset(gohome.VALUE_FLOAT, index)
+		if offset == 0 {
+			return
+		}
+		if uint32(len(value)) < this.numInstances {
+			gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "InstancedMesh", this.Name, "Float value "+strconv.Itoa(int(index))+" is too small!")
+			return
+		}
+
+		gl.BindBuffer(gl.ARRAY_BUFFER, this.buffer)
+
+		var i uint32
+		for i = 0; i < this.numInstances; i++ {
+			gl.BufferSubData(gl.ARRAY_BUFFER, int(offset), int(getSize(gohome.VALUE_FLOAT)), gl.Ptr(&value[i]))
+			offset += this.sizePerInstance
+		}
+
+		gl.BindBuffer(gl.ARRAY_BUFFER, 0)
+	} else {
+		this.floats[index] = value
 	}
 
-	gl.BindBuffer(gl.ARRAY_BUFFER, this.vertexIndexInstancedBuffer)
-
-	var i uint32
-	for i = 0; i < this.numInstances; i++ {
-		gl.BufferSubData(gl.ARRAY_BUFFER, int(offset), int(getSize(gohome.VALUE_FLOAT)), gl.Ptr(&value[i]))
-		offset += this.instancedSize
-	}
-
-	gl.BindBuffer(gl.ARRAY_BUFFER, 0)
 }
 func (this *OpenGLInstancedMesh3D) SetV2(index uint32, value []mgl32.Vec2) {
-	offset := this.getOffset(gohome.VALUE_VEC2, index)
-	if offset == 0 {
-		return
-	}
-	if uint32(len(value)) < this.numInstances {
-		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "InstancedMesh", this.Name, "Vec2 value "+strconv.Itoa(int(index))+" is too small!")
-		return
-	}
+	if this.canUseInstanced {
+		offset := this.getOffset(gohome.VALUE_VEC2, index)
+		if offset == 0 {
+			return
+		}
+		if uint32(len(value)) < this.numInstances {
+			gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "InstancedMesh", this.Name, "Vec2 value "+strconv.Itoa(int(index))+" is too small!")
+			return
+		}
 
-	gl.BindBuffer(gl.ARRAY_BUFFER, this.vertexIndexInstancedBuffer)
+		gl.BindBuffer(gl.ARRAY_BUFFER, this.buffer)
 
-	var i uint32
-	for i = 0; i < this.numInstances; i++ {
-		gl.BufferSubData(gl.ARRAY_BUFFER, int(offset), int(getSize(gohome.VALUE_VEC2)), gl.Ptr(&value[i][0]))
-		offset += this.instancedSize
+		var i uint32
+		for i = 0; i < this.numInstances; i++ {
+			gl.BufferSubData(gl.ARRAY_BUFFER, int(offset), int(getSize(gohome.VALUE_VEC2)), gl.Ptr(&value[i][0]))
+			offset += this.sizePerInstance
+		}
+
+		gl.BindBuffer(gl.ARRAY_BUFFER, 0)
+	} else {
+		this.vec2s[index] = value
 	}
-
-	gl.BindBuffer(gl.ARRAY_BUFFER, 0)
 }
 
 func (this *OpenGLInstancedMesh3D) SetV3(index uint32, value []mgl32.Vec3) {
-	offset := this.getOffset(gohome.VALUE_VEC3, index)
-	if offset == 0 {
-		return
-	}
-	if uint32(len(value)) < this.numInstances {
-		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "InstancedMesh", this.Name, "Vec3 value "+strconv.Itoa(int(index))+" is too small!")
-		return
-	}
+	if this.canUseInstanced {
+		offset := this.getOffset(gohome.VALUE_VEC3, index)
+		if offset == 0 {
+			return
+		}
+		if uint32(len(value)) < this.numInstances {
+			gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "InstancedMesh", this.Name, "Vec3 value "+strconv.Itoa(int(index))+" is too small!")
+			return
+		}
 
-	gl.BindBuffer(gl.ARRAY_BUFFER, this.vertexIndexInstancedBuffer)
+		gl.BindBuffer(gl.ARRAY_BUFFER, this.buffer)
 
-	var i uint32
-	for i = 0; i < this.numInstances; i++ {
-		gl.BufferSubData(gl.ARRAY_BUFFER, int(offset), int(getSize(gohome.VALUE_VEC3)), gl.Ptr(&value[i][0]))
-		offset += this.instancedSize
+		var i uint32
+		for i = 0; i < this.numInstances; i++ {
+			gl.BufferSubData(gl.ARRAY_BUFFER, int(offset), int(getSize(gohome.VALUE_VEC3)), gl.Ptr(&value[i][0]))
+			offset += this.sizePerInstance
+		}
+
+		gl.BindBuffer(gl.ARRAY_BUFFER, 0)
+	} else {
+		this.vec3s[index] = value
 	}
-
-	gl.BindBuffer(gl.ARRAY_BUFFER, 0)
 }
 func (this *OpenGLInstancedMesh3D) SetV4(index uint32, value []mgl32.Vec4) {
-	offset := this.getOffset(gohome.VALUE_VEC4, index)
-	if offset == 0 {
-		return
-	}
-	if uint32(len(value)) < this.numInstances {
-		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "InstancedMesh", this.Name, "Vec4 value "+strconv.Itoa(int(index))+" is too small!")
-		return
-	}
+	if this.canUseInstanced {
+		offset := this.getOffset(gohome.VALUE_VEC4, index)
+		if offset == 0 {
+			return
+		}
+		if uint32(len(value)) < this.numInstances {
+			gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "InstancedMesh", this.Name, "Vec4 value "+strconv.Itoa(int(index))+" is too small!")
+			return
+		}
 
-	gl.BindBuffer(gl.ARRAY_BUFFER, this.vertexIndexInstancedBuffer)
+		gl.BindBuffer(gl.ARRAY_BUFFER, this.buffer)
 
-	var i uint32
-	for i = 0; i < this.numInstances; i++ {
-		gl.BufferSubData(gl.ARRAY_BUFFER, int(offset), int(getSize(gohome.VALUE_VEC4)), gl.Ptr(&value[i][0]))
-		offset += this.instancedSize
+		var i uint32
+		for i = 0; i < this.numInstances; i++ {
+			gl.BufferSubData(gl.ARRAY_BUFFER, int(offset), int(getSize(gohome.VALUE_VEC4)), gl.Ptr(&value[i][0]))
+			offset += this.sizePerInstance
+		}
+
+		gl.BindBuffer(gl.ARRAY_BUFFER, 0)
+	} else {
+		this.vec4s[index] = value
 	}
-
-	gl.BindBuffer(gl.ARRAY_BUFFER, 0)
 }
 func (this *OpenGLInstancedMesh3D) SetM2(index uint32, value []mgl32.Mat2) {
-	offset := this.getOffset(gohome.VALUE_MAT2, index)
-	if offset == 0 {
-		return
-	}
-	if uint32(len(value)) < this.numInstances {
-		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "InstancedMesh", this.Name, "Mat2 value "+strconv.Itoa(int(index))+" is too small!")
-		return
-	}
+	if this.canUseInstanced {
+		offset := this.getOffset(gohome.VALUE_MAT2, index)
+		if offset == 0 {
+			return
+		}
+		if uint32(len(value)) < this.numInstances {
+			gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "InstancedMesh", this.Name, "Mat2 value "+strconv.Itoa(int(index))+" is too small!")
+			return
+		}
 
-	gl.BindBuffer(gl.ARRAY_BUFFER, this.vertexIndexInstancedBuffer)
+		gl.BindBuffer(gl.ARRAY_BUFFER, this.buffer)
 
-	var i uint32
-	for i = 0; i < this.numInstances; i++ {
-		gl.BufferSubData(gl.ARRAY_BUFFER, int(offset), int(getSize(gohome.VALUE_MAT2)), gl.Ptr(&value[i][0]))
-		offset += this.instancedSize
+		var i uint32
+		for i = 0; i < this.numInstances; i++ {
+			gl.BufferSubData(gl.ARRAY_BUFFER, int(offset), int(getSize(gohome.VALUE_MAT2)), gl.Ptr(&value[i][0]))
+			offset += this.sizePerInstance
+		}
+
+		gl.BindBuffer(gl.ARRAY_BUFFER, 0)
+	} else {
+		this.mat2s[index] = value
 	}
-
-	gl.BindBuffer(gl.ARRAY_BUFFER, 0)
 }
 func (this *OpenGLInstancedMesh3D) SetM3(index uint32, value []mgl32.Mat3) {
-	offset := this.getOffset(gohome.VALUE_MAT3, index)
-	if offset == 0 {
-		return
-	}
-	if uint32(len(value)) < this.numInstances {
-		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "InstancedMesh", this.Name, "Mat3 value "+strconv.Itoa(int(index))+" is too small!")
-		return
+	if this.canUseInstanced {
+		offset := this.getOffset(gohome.VALUE_MAT3, index)
+		if offset == 0 {
+			return
+		}
+		if uint32(len(value)) < this.numInstances {
+			gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "InstancedMesh", this.Name, "Mat3 value "+strconv.Itoa(int(index))+" is too small!")
+			return
+		}
+
+		gl.BindBuffer(gl.ARRAY_BUFFER, this.buffer)
+
+		var i uint32
+		for i = 0; i < this.numInstances; i++ {
+			gl.BufferSubData(gl.ARRAY_BUFFER, int(offset), int(getSize(gohome.VALUE_MAT3)), gl.Ptr(&value[i][0]))
+			offset += this.sizePerInstance
+		}
+
+		gl.BindBuffer(gl.ARRAY_BUFFER, 0)
+	} else {
+		this.mat3s[index] = value
 	}
 
-	gl.BindBuffer(gl.ARRAY_BUFFER, this.vertexIndexInstancedBuffer)
-
-	var i uint32
-	for i = 0; i < this.numInstances; i++ {
-		gl.BufferSubData(gl.ARRAY_BUFFER, int(offset), int(getSize(gohome.VALUE_MAT3)), gl.Ptr(&value[i][0]))
-		offset += this.instancedSize
-	}
-
-	gl.BindBuffer(gl.ARRAY_BUFFER, 0)
 }
 func (this *OpenGLInstancedMesh3D) SetM4(index uint32, value []mgl32.Mat4) {
-	offset := this.getOffset(gohome.VALUE_MAT4, index)
-	if offset == 0 {
-		return
-	}
-	if uint32(len(value)) < this.numInstances {
-		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "InstancedMesh", this.Name, "Mat4 value "+strconv.Itoa(int(index))+" is too small!")
-		return
-	}
+	if this.canUseInstanced {
+		offset := this.getOffset(gohome.VALUE_MAT4, index)
+		if offset == 0 {
+			return
+		}
+		if uint32(len(value)) < this.numInstances {
+			gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "InstancedMesh", this.Name, "Mat4 value "+strconv.Itoa(int(index))+" is too small!")
+			return
+		}
 
-	gl.BindBuffer(gl.ARRAY_BUFFER, this.vertexIndexInstancedBuffer)
+		gl.BindBuffer(gl.ARRAY_BUFFER, this.buffer)
 
-	var i uint32
-	for i = 0; i < this.numInstances; i++ {
-		gl.BufferSubData(gl.ARRAY_BUFFER, int(offset), int(getSize(gohome.VALUE_MAT4)), gl.Ptr(&value[i][0]))
-		offset += this.instancedSize
+		var i uint32
+		for i = 0; i < this.numInstances; i++ {
+			gl.BufferSubData(gl.ARRAY_BUFFER, int(offset), int(getSize(gohome.VALUE_MAT4)), gl.Ptr(&value[i][0]))
+			offset += this.sizePerInstance
+		}
+
+		gl.BindBuffer(gl.ARRAY_BUFFER, 0)
+	} else {
+		this.mat4s[index] = value
 	}
-
-	gl.BindBuffer(gl.ARRAY_BUFFER, 0)
 }
 func (this *OpenGLInstancedMesh3D) GetVertices() []gohome.Mesh3DVertex {
 	return this.vertices
@@ -556,5 +773,47 @@ func (this *OpenGLInstancedMesh3D) GetIndices() []uint32 {
 }
 
 func (this *OpenGLInstancedMesh3D) SetName(index uint32, value_type uint32, value string) {
-	// Nothing
+	if this.canUseInstanced {
+		return
+	}
+
+	var ivt indexValueType
+	ivt.index = index
+	ivt.valueType = value_type
+
+	this.namesForIndex[ivt] = value
+}
+
+func (this *OpenGLInstancedMesh3D) HasUV() bool {
+	return this.hasUV
+}
+func (this *OpenGLInstancedMesh3D) AABB() gohome.AxisAlignedBoundingBox {
+	return this.aabb
+}
+func (this *OpenGLInstancedMesh3D) Copy() gohome.Mesh3D {
+	return nil
+}
+
+func (this *OpenGLInstancedMesh3D) checkAABB() {
+	var max, min mgl32.Vec3 = [3]float32{this.vertices[0][0], this.vertices[0][1], this.vertices[0][2]}, [3]float32{this.vertices[0][0], this.vertices[0][1], this.vertices[0][2]}
+	var current gohome.Mesh3DVertex
+	for i := 0; i < len(this.vertices); i++ {
+		current = this.vertices[i]
+		for j := 0; j < 3; j++ {
+			if current[j] > max[j] {
+				max[j] = current[j]
+			} else if current[j] < min[j] {
+				min[j] = current[j]
+			}
+		}
+	}
+
+	for i := 0; i < 3; i++ {
+		if max[i] > this.aabb.Max[i] {
+			this.aabb.Max[i] = max[i]
+		}
+		if min[i] < this.aabb.Min[i] {
+			this.aabb.Min[i] = min[i]
+		}
+	}
 }

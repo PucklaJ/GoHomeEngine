@@ -40,7 +40,7 @@ func loadFileWithPaths(path string, paths []string, objLoader *OBJLoader) error 
 	return nil
 }
 
-func processModel(rsmgr *gohome.ResourceManager, level *gohome.Level, model *OBJModel, preloaded, loadToGPU bool) {
+func processModel(rsmgr *gohome.ResourceManager, level *gohome.Level, objLoader *OBJLoader, model *OBJModel, preloaded, loadToGPU bool) {
 	if _, ok := rsmgr.Models[model.Name]; !rsmgr.LoadModelsWithSameName && ok {
 		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_LOG, "Model", model.Name, "It has already been loaded!")
 		return
@@ -50,7 +50,7 @@ func processModel(rsmgr *gohome.ResourceManager, level *gohome.Level, model *OBJ
 	var lvlObjTobj gohome.TransformableObject3D
 	lvlObjTobj.Position = [3]float32{0.0, 0.0, 0.0}
 	lvlObjTobj.Scale = [3]float32{1.0, 1.0, 1.0}
-	lvlObjTobj.Rotation.V = [3]float32{0.0,0.0,-1.0}
+	lvlObjTobj.Rotation.V = [3]float32{0.0, 0.0, -1.0}
 	lvlObjTobj.Rotation.W = 0.0
 	lvlObjTobj.CalculateTransformMatrix(nil, -1)
 	lvlObj.Name = model.Name
@@ -59,7 +59,7 @@ func processModel(rsmgr *gohome.ResourceManager, level *gohome.Level, model *OBJ
 	model3d.Name = model.Name
 	for i := 0; i < len(model.Meshes); i++ {
 		mesh3d := gohome.Render.CreateMesh3D(model.Meshes[i].Name)
-		processMesh(mesh3d, &model.Meshes[i], preloaded, loadToGPU)
+		processMesh(objLoader, mesh3d, &model.Meshes[i], preloaded, loadToGPU)
 		model3d.AddMesh3D(mesh3d)
 	}
 	lvlObj.Model3D = &model3d
@@ -92,41 +92,54 @@ func toGohomeColor(color OBJColor) *gohome.Color {
 	return &rv
 }
 
-func loadMaterialTexture(path string, preloaded bool) gohome.Texture {
+func loadMaterialTexture(directory string, path string, preloaded bool) gohome.Texture {
 	var rv gohome.Texture
-	if !preloaded {
-		for i := 0; i < len(gohome.TEXTURE_PATHS); i++ {
-			gohome.ResourceMgr.LoadTexture(path, gohome.TEXTURE_PATHS[i]+path)
-			if rv = gohome.ResourceMgr.GetTexture(path); rv == nil {
-				gohome.ResourceMgr.LoadTexture(path, gohome.TEXTURE_PATHS[i]+gohome.GetFileFromPath(path))
-				if rv = gohome.ResourceMgr.GetTexture(path); rv != nil {
-					return rv
-				}
-			} else {
-				return rv
-			}
+	defer func() {
+		if !preloaded && rv != nil {
+			rv.SetWrapping(gohome.WRAPPING_REPEAT)
 		}
-		for i := 0; i < len(gohome.MATERIAL_PATHS); i++ {
-			gohome.ResourceMgr.LoadTexture(path, gohome.MATERIAL_PATHS[i]+path)
+	}()
+	if !preloaded {
+		gohome.ResourceMgr.LoadTexture(path, directory+path)
+		if rv = gohome.ResourceMgr.GetTexture(path); rv == nil {
+			gohome.ResourceMgr.LoadTexture(path, directory+gohome.GetFileFromPath(path))
 			if rv = gohome.ResourceMgr.GetTexture(path); rv == nil {
-				gohome.ResourceMgr.LoadTexture(path, gohome.MATERIAL_PATHS[i]+gohome.GetFileFromPath(path))
-				if rv = gohome.ResourceMgr.GetTexture(path); rv != nil {
-					return rv
+				for i := 0; i < len(gohome.TEXTURE_PATHS); i++ {
+					gohome.ResourceMgr.LoadTexture(path, gohome.TEXTURE_PATHS[i]+path)
+					if rv = gohome.ResourceMgr.GetTexture(path); rv == nil {
+						gohome.ResourceMgr.LoadTexture(path, gohome.TEXTURE_PATHS[i]+gohome.GetFileFromPath(path))
+						if rv = gohome.ResourceMgr.GetTexture(path); rv != nil {
+							return rv
+						}
+					} else {
+						return rv
+					}
 				}
-			} else {
-				return rv
+				for i := 0; i < len(gohome.MATERIAL_PATHS); i++ {
+					gohome.ResourceMgr.LoadTexture(path, gohome.MATERIAL_PATHS[i]+path)
+					if rv = gohome.ResourceMgr.GetTexture(path); rv == nil {
+						gohome.ResourceMgr.LoadTexture(path, gohome.MATERIAL_PATHS[i]+gohome.GetFileFromPath(path))
+						if rv = gohome.ResourceMgr.GetTexture(path); rv != nil {
+							return rv
+						}
+					} else {
+						return rv
+					}
+				}
 			}
 		}
 	} else {
-		rv = gohome.ResourceMgr.LoadTextureFunction(path, path, true)
-		if rv == nil {
-			for i := 0; i < len(gohome.MATERIAL_PATHS); i++ {
-				if rv = gohome.ResourceMgr.LoadTextureFunction(path, path, true); rv == nil {
-					if rv = gohome.ResourceMgr.LoadTextureFunction(path, path, true); rv != nil {
+		if rv = gohome.ResourceMgr.LoadTextureFunction(path, directory+path, true); rv == nil {
+			rv = gohome.ResourceMgr.LoadTextureFunction(path, path, true)
+			if rv == nil {
+				for i := 0; i < len(gohome.MATERIAL_PATHS); i++ {
+					if rv = gohome.ResourceMgr.LoadTextureFunction(path, path, true); rv == nil {
+						if rv = gohome.ResourceMgr.LoadTextureFunction(path, gohome.GetFileFromPath(path), true); rv != nil {
+							return rv
+						}
+					} else {
 						return rv
 					}
-				} else {
-					return rv
 				}
 			}
 		}
@@ -135,7 +148,7 @@ func loadMaterialTexture(path string, preloaded bool) gohome.Texture {
 	return rv
 }
 
-func processMaterial(material *gohome.Material, mat *OBJMaterial, preloaded, loadToGPU bool) {
+func processMaterial(objLoader *OBJLoader, material *gohome.Material, mat *OBJMaterial, preloaded, loadToGPU bool) {
 	if mat == nil {
 		material.InitDefault()
 		return
@@ -145,18 +158,18 @@ func processMaterial(material *gohome.Material, mat *OBJMaterial, preloaded, loa
 	material.SpecularColor = toGohomeColor(mat.SpecularColor)
 	material.SetShinyness(mat.SpecularExponent)
 	if mat.DiffuseTexture != "" {
-		material.DiffuseTexture = loadMaterialTexture(mat.DiffuseTexture, preloaded)
+		material.DiffuseTexture = loadMaterialTexture(objLoader.directory, mat.DiffuseTexture, preloaded)
 	}
 	if mat.SpecularTexture != "" {
-		material.SpecularTexture = loadMaterialTexture(mat.SpecularTexture, preloaded)
+		material.SpecularTexture = loadMaterialTexture(objLoader.directory, mat.SpecularTexture, preloaded)
 	}
 	if mat.NormalMap != "" {
-		material.NormalMap = loadMaterialTexture(mat.NormalMap, preloaded)
+		material.NormalMap = loadMaterialTexture(objLoader.directory, mat.NormalMap, preloaded)
 	}
 
 }
 
-func processMesh(mesh3d gohome.Mesh3D, mesh *OBJMesh, preloaded, loadToGPU bool) {
+func processMesh(objLoader *OBJLoader, mesh3d gohome.Mesh3D, mesh *OBJMesh, preloaded, loadToGPU bool) {
 	var vertices []gohome.Mesh3DVertex
 	vertices = make([]gohome.Mesh3DVertex, len(mesh.Vertices))
 	for i := 0; i < len(vertices); i++ {
@@ -164,9 +177,11 @@ func processMesh(mesh3d gohome.Mesh3D, mesh *OBJMesh, preloaded, loadToGPU bool)
 	}
 	var mat gohome.Material
 	mat.InitDefault()
-	processMaterial(&mat, mesh.Material, preloaded, loadToGPU)
+	processMaterial(objLoader, &mat, mesh.Material, preloaded, loadToGPU)
 	mesh3d.SetMaterial(&mat)
-	mesh3d.AddVertices(vertices, mesh.Indices)
+	if len(vertices) != 0 && len(mesh.Indices) != 0 {
+		mesh3d.AddVertices(vertices, mesh.Indices)
+	}
 	if !preloaded {
 		if loadToGPU {
 			mesh3d.Load()
@@ -184,7 +199,7 @@ func processMesh(mesh3d gohome.Mesh3D, mesh *OBJMesh, preloaded, loadToGPU bool)
 func toGohomeLevel(rsmgr *gohome.ResourceManager, name string, objLoader *OBJLoader, preloaded, loadToGPU bool) *gohome.Level {
 	level := &gohome.Level{Name: name}
 	for i := 0; i < len(objLoader.Models); i++ {
-		processModel(rsmgr, level, &objLoader.Models[i], preloaded, loadToGPU)
+		processModel(rsmgr, level, objLoader, &objLoader.Models[i], preloaded, loadToGPU)
 	}
 	return level
 }
@@ -197,6 +212,23 @@ func LoadLevelOBJ(rsmgr *gohome.ResourceManager, name, path string, preloaded, l
 	var objLoader OBJLoader
 	if err := loadFileWithPaths(path, gohome.LEVEL_PATHS[:], &objLoader); err != nil {
 		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "Level", name, "Couldn't load "+path+": "+err.Error())
+		return nil
+	}
+	lvl := toGohomeLevel(rsmgr, name, &objLoader, preloaded, loadToGPU)
+	return lvl
+}
+
+func LoadLevelOBJString(rsmgr *gohome.ResourceManager, name, contents, fileName string, preloaded, loadToGPU bool) *gohome.Level {
+	if _, ok := rsmgr.Levels[name]; ok {
+		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_LOG, "Level", name, "Has already been loaded!")
+		return nil
+	}
+	var objLoader OBJLoader
+	objLoader.SetDirectory(gohome.GetPathFromFile(fileName))
+	objLoader.SetOpenMaterialFile(gohome.Framew.OpenFile)
+	objLoader.SetMaterialPaths(gohome.MATERIAL_PATHS[:])
+	if err := objLoader.LoadString(contents); err != nil {
+		gohome.ErrorMgr.MessageError(gohome.ERROR_LEVEL_ERROR, "Level", name, err)
 		return nil
 	}
 	lvl := toGohomeLevel(rsmgr, name, &objLoader, preloaded, loadToGPU)

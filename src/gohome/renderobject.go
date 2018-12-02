@@ -1,77 +1,19 @@
 package gohome
 
-type RenderType uint8
+type RenderType uint16
 
 const (
-	TYPE_2D           RenderType = iota
-	TYPE_3D           RenderType = iota
-	TYPE_3D_NORMAL    RenderType = iota
-	TYPE_2D_NORMAL    RenderType = iota
-	TYPE_3D_INSTANCED RenderType = iota
-	TYPE_2D_INSTANCED RenderType = iota
-	TYPE_EVERYTHING   RenderType = iota
+	TYPE_3D_NORMAL    RenderType = (1 << 1)
+	TYPE_2D_NORMAL    RenderType = (1 << 2)
+	TYPE_3D_INSTANCED RenderType = (1 << 3)
+	TYPE_2D_INSTANCED RenderType = (1 << 4)
+	TYPE_2D           RenderType = TYPE_2D_NORMAL | TYPE_2D_INSTANCED
+	TYPE_3D           RenderType = TYPE_3D_NORMAL | TYPE_3D_INSTANCED
+	TYPE_EVERYTHING   RenderType = (1 << 16) - 1
 )
 
 func (this RenderType) Compatible(rtype RenderType) bool {
-	if this == TYPE_EVERYTHING || rtype == TYPE_EVERYTHING {
-		return true
-	}
-	switch this {
-	case TYPE_2D:
-		switch rtype {
-		case TYPE_2D:
-			return true
-		case TYPE_2D_NORMAL:
-			return true
-		case TYPE_2D_INSTANCED:
-			return true
-		}
-		break
-	case TYPE_3D:
-		switch rtype {
-		case TYPE_3D:
-			return true
-		case TYPE_3D_NORMAL:
-			return true
-		case TYPE_3D_INSTANCED:
-			return true
-		}
-		break
-	case TYPE_3D_NORMAL:
-		switch rtype {
-		case TYPE_3D:
-			return true
-		case TYPE_3D_NORMAL:
-			return true
-		}
-		break
-	case TYPE_2D_NORMAL:
-		switch rtype {
-		case TYPE_2D:
-			return true
-		case TYPE_2D_NORMAL:
-			return true
-		}
-		break
-	case TYPE_3D_INSTANCED:
-		switch rtype {
-		case TYPE_3D:
-			return true
-		case TYPE_3D_INSTANCED:
-			return true
-		}
-		break
-	case TYPE_2D_INSTANCED:
-		switch rtype {
-		case TYPE_2D:
-			return true
-		case TYPE_2D_INSTANCED:
-			return true
-		}
-		break
-	}
-
-	return false
+	return (this & rtype) != 0
 }
 
 type TransformableObject interface {
@@ -90,6 +32,7 @@ type RenderObject interface {
 	SetTransformableObject(tobj TransformableObject)
 	GetTransformableObject() TransformableObject
 	RendersLast() bool
+	HasDepthTesting() bool
 }
 
 type NilRenderObject struct {
@@ -125,4 +68,7 @@ func (*NilRenderObject) GetTransformableObject() TransformableObject {
 }
 func (*NilRenderObject) RendersLast() bool {
 	return false
+}
+func (*NilRenderObject) HasDepthTesting() bool {
+	return true
 }

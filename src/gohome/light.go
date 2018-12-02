@@ -1,7 +1,6 @@
 package gohome
 
 import (
-	// "fmt"
 	"github.com/PucklaMotzer09/mathgl/mgl32"
 	"image/color"
 	"math"
@@ -248,21 +247,8 @@ func (this *DirectionalLight) InitShadowmap(width, height uint32) {
 		this.ShadowMap = Render.CreateRenderTexture("DirectionallightShadowmap", width, height, 1, true, false, true, false)
 		this.ShadowMap.SetBorderDepth(1.0)
 		this.ShadowMap.SetWrapping(WRAPPING_CLAMP_TO_BORDER)
+		this.ShadowMap.SetFiltering(FILTERING_LINEAR)
 	}
-}
-
-func Mat4MulVec3(matrix mgl32.Mat4, vec mgl32.Vec3) mgl32.Vec3 {
-	vec4 := vec.Vec4(1.0)
-	temp := vec4
-
-	temp[0] = matrix.At(0, 0)*vec4[0] + matrix.At(0, 1)*vec4[1] + matrix.At(0, 2)*vec4[2] + matrix.At(0, 3)*vec4[3]
-	temp[1] = matrix.At(1, 0)*vec4[0] + matrix.At(1, 1)*vec4[1] + matrix.At(1, 2)*vec4[2] + matrix.At(1, 3)*vec4[3]
-	temp[2] = matrix.At(2, 0)*vec4[0] + matrix.At(2, 1)*vec4[1] + matrix.At(2, 2)*vec4[2] + matrix.At(2, 3)*vec4[3]
-	temp[3] = matrix.At(3, 0)*vec4[0] + matrix.At(3, 1)*vec4[1] + matrix.At(3, 2)*vec4[2] + matrix.At(3, 3)*vec4[3]
-
-	vec4 = temp
-
-	return vec4.Vec3()
 }
 
 func calculateDirectionalLightShadowMapProjection(cam *Camera3D, lightCam *Camera3D, proj Projection, dl *DirectionalLight) Ortho3DProjection {
@@ -311,7 +297,7 @@ func calculateDirectionalLightShadowMapProjection(cam *Camera3D, lightCam *Camer
 			}
 
 		}
-		pointsLightViewSpace[i] = Mat4MulVec3(lightViewMatrix, Mat4MulVec3(inverseViewMatrix, pointsViewSpace[i]))
+		pointsLightViewSpace[i] = lightViewMatrix.Mul4(inverseViewMatrix).Mul4x1(pointsViewSpace[i].Vec4(1)).Vec3()
 		if i == 0 {
 			minX = pointsLightViewSpace[i][0]
 			minY = pointsLightViewSpace[i][1]
@@ -336,7 +322,7 @@ func calculateDirectionalLightShadowMapProjection(cam *Camera3D, lightCam *Camer
 	center[1] = (minY + maxY) / 2.0
 	center[2] = (minZ + maxZ) / 2.0
 
-	lightCam.Position = Mat4MulVec3(lightViewMatrix.Inv(), center)
+	lightCam.Position = lightViewMatrix.Inv().Mul4x1(center.Vec4(1)).Vec3()
 	lightCam.LookDirection = dl.Direction.Add(mgl32.Vec3{1e-19, 1e-19, 1e-19})
 	lightCam.CalculateViewMatrix()
 	lightViewMatrix = lightCam.GetViewMatrix()
@@ -370,7 +356,7 @@ func (this *DirectionalLight) RenderShadowMap() {
 	if this.lightCam.LookDirection[0] == 0.0 && this.lightCam.LookDirection[1] == 0.0 && this.lightCam.LookDirection[2] == 0.0 {
 		this.lightCam.Init()
 	}
-	RenderMgr.SetCamera3D(&this.lightCam, 6)
+	RenderMgr.SetCamera3D(&this.lightCam, 0)
 
 	prevProjection := RenderMgr.Projection3D
 
@@ -383,13 +369,14 @@ func (this *DirectionalLight) RenderShadowMap() {
 	Render.SetBacckFaceCulling(false)
 
 	RenderMgr.ForceShader3D = ResourceMgr.GetShader(SHADOWMAP_SHADER_NAME)
-	RenderMgr.Render(TYPE_3D_NORMAL, 6, -1, -1)
+	RenderMgr.Render(TYPE_3D_NORMAL, 0, -1, -1)
 
 	RenderMgr.ForceShader3D = ResourceMgr.GetShader(SHADOWMAP_INSTANCED_SHADER_NAME)
-	RenderMgr.Render(TYPE_3D_INSTANCED, 6, -1, -1)
+	RenderMgr.Render(TYPE_3D_INSTANCED, 0, -1, -1)
 
 	Render.SetBacckFaceCulling(true)
 	this.ShadowMap.UnsetAsTarget()
+	RenderMgr.SetCamera3D(prevCamera, 0)
 
 	RenderMgr.ForceShader3D = nil
 

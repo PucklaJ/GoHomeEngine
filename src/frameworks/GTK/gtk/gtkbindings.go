@@ -6,53 +6,11 @@ package gtk
 */
 import "C"
 import (
-	"github.com/PucklaMotzer09/mathgl/mgl32"
 	"os"
 	"unsafe"
+
+	"github.com/PucklaMotzer09/mathgl/mgl32"
 )
-
-type Orientation int
-type RenderCallback func()
-type MotionNotifyCallback func(x, y int16)
-type UseWholeWindowCallback func() bool
-
-type ButtonSignalCallback func(button Button)
-
-var OnMotion MotionNotifyCallback
-var OnRender RenderCallback
-var OnUseWholeScreen UseWholeWindowCallback
-
-var buttonSignalCallbacks map[int]map[string]ButtonSignalCallback
-
-const (
-	ORIENTATION_HORIZONTAL Orientation = iota
-	ORIENTATION_VERTICAL   Orientation = iota
-)
-
-type Box struct {
-	Handle *C.GtkBox
-}
-
-type Window struct {
-	Handle *C.GtkWindow
-}
-
-type Container struct {
-	Handle *C.GtkContainer
-}
-
-type Widget struct {
-	Handle *C.GtkWidget
-}
-
-type GLArea struct {
-	Handle *C.GtkGLArea
-}
-
-type Button struct {
-	Handle *C.GtkButton
-	ID     int
-}
 
 func Init() {
 	argv := os.Args
@@ -77,6 +35,14 @@ func CreateWindow(windowWidth, windowHeight uint32, title string) error {
 		return nil
 	}
 	return nil
+}
+
+func CreateWindowObject() Window {
+	return Window{C.createWindowObject()}
+}
+
+func CreateGLArea() {
+	C.createGLArea()
 }
 
 func WindowSetSize(size mgl32.Vec2) {
@@ -122,39 +88,6 @@ func CursorDisabled() bool {
 	return int(C.windowCursorDisabled()) == 1
 }
 
-func BoxNew(orient Orientation, spacing int) Box {
-	var corient C.GtkOrientation
-	switch orient {
-	case ORIENTATION_HORIZONTAL:
-		corient = C.GTK_ORIENTATION_HORIZONTAL
-	default:
-		corient = C.GTK_ORIENTATION_VERTICAL
-	}
-
-	gtkWidget := C.gtk_box_new(corient, C.gint(spacing))
-	var this Box
-	this.Handle = C.widgetToBox(gtkWidget)
-	return this
-}
-
-var buttonID int = 0
-
-func ButtonNew() Button {
-	defer func() {
-		buttonID++
-	}()
-	return Button{C.widgetToButton(C.gtk_button_new()), buttonID}
-}
-
-func ButtonNewWithLabel(label string) Button {
-	defer func() {
-		buttonID++
-	}()
-	cs := C.CString(label)
-	defer C.free(unsafe.Pointer(cs))
-	return Button{C.widgetToButton(C.gtk_button_new_with_label(cs)), buttonID}
-}
-
 func CreateGLAreaAndAddToWindow() {
 	C.createGLArea()
 	C.addGLAreaToWindow()
@@ -169,69 +102,18 @@ func GetWindow() Window {
 	return Window{C.Window}
 }
 
-func (this Container) Add(widget Widget) {
-	C.gtk_container_add(this.Handle, widget.Handle)
-	C.gtk_widget_show(widget.Handle)
-}
-
-func (this Container) Remove(widget Widget) {
-	C.gtk_container_remove(this.Handle, widget.Handle)
-}
-
-func (this Box) ToContainer() Container {
-	return Container{C.boxToContainer(this.Handle)}
-}
-
-func (this Button) ToContainer() Container {
-	return Container{C.buttonToContainer(this.Handle)}
-}
-
-func (this Box) ToWidget() Widget {
-	return Widget{C.boxToWidget(this.Handle)}
-}
-
-func (this GLArea) ToWidget() Widget {
-	return Widget{C.glareaToWidget(this.Handle)}
-}
-
-func (this Button) ToWidget() Widget {
-	return Widget{C.buttonToWidget(this.Handle)}
-}
-
-func (this Widget) ToBox() Box {
-	return Box{C.widgetToBox(this.Handle)}
-}
-
-func (this Window) ToContainer() Container {
-	return Container{C.windowToContainer(this.Handle)}
+func SetWindow(window Window) {
+	C.Window = window.Handle
 }
 
 func GetGLArea() GLArea {
 	return GLArea{C.GLarea}
 }
 
-func (this Widget) SetSizeRequest(width, height int) {
-	C.gtk_widget_set_size_request(this.Handle, C.gint(width), C.gint(height))
+func SetGLArea(area GLArea) {
+	C.GLarea = area.Handle
 }
 
-func (this Button) SignalConnect(signal string, callback ButtonSignalCallback) {
-
-	if buttonSignalCallbacks == nil {
-		buttonSignalCallbacks = make(map[int]map[string]ButtonSignalCallback)
-	}
-	if buttonSignalCallbacks[this.ID] == nil {
-		buttonSignalCallbacks[this.ID] = make(map[string]ButtonSignalCallback)
-	}
-	var alreadyConnected bool = false
-	if _, ok := buttonSignalCallbacks[this.ID]; ok {
-		if _, ok1 := buttonSignalCallbacks[this.ID][signal]; ok1 {
-			alreadyConnected = true
-		}
-	}
-	if !alreadyConnected {
-		signalcs := C.CString(signal)
-		C.signalConnectButton(this.Handle, signalcs, C.int(this.ID))
-	}
-
-	buttonSignalCallbacks[this.ID][signal] = callback
+func MainQuit() {
+	C.gtk_main_quit()
 }

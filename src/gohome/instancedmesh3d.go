@@ -14,6 +14,26 @@ const (
 	VALUE_MAT4  uint32 = iota
 )
 
+/*
+type Mesh3D interface {
+	AddVertices(vertices []Mesh3DVertex, indices []uint32)
+	Load()
+	Render()
+	Terminate()
+	SetMaterial(mat *Material)
+	GetMaterial() *Material
+	GetName() string
+	GetNumVertices() uint32
+	GetNumIndices() uint32
+	GetVertices() []Mesh3DVertex
+	GetIndices() []uint32
+	CalculateTangents()
+	HasUV() bool
+	AABB() AxisAlignedBoundingBox
+	Copy() Mesh3D
+}
+*/
+
 type InstancedMesh3D interface {
 	AddVertices(vertices []Mesh3DVertex, indices []uint32)
 	Load()
@@ -24,11 +44,14 @@ type InstancedMesh3D interface {
 	GetName() string
 	GetNumVertices() uint32
 	GetNumIndices() uint32
-	CalculateTangents()
-	SetNumInstances(n uint32)
-	GetNumInstances() uint32
 	GetVertices() []Mesh3DVertex
 	GetIndices() []uint32
+	CalculateTangents()
+	HasUV() bool
+	AABB() AxisAlignedBoundingBox
+	Copy() Mesh3D
+	SetNumInstances(n uint32)
+	GetNumInstances() uint32
 	AddValue(valueType uint32)
 	SetF(index uint32, value []float32)
 	SetV2(index uint32, value []mgl32.Vec2)

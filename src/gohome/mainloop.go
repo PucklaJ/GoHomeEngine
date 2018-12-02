@@ -19,7 +19,6 @@ func (ml *MainLoop) Run(fw Framework, r Renderer, ww, wh uint32, wt string, star
 }
 
 func (this *MainLoop) Init(fw Framework, r Renderer, ww, wh uint32, wt string, start_scene Scene) bool {
-	var err error
 
 	Framew = fw
 	Render = r
@@ -27,8 +26,8 @@ func (this *MainLoop) Init(fw Framework, r Renderer, ww, wh uint32, wt string, s
 	this.windowHeight = wh
 	this.windowTitle = wt
 	this.startScene = start_scene
-	if err = Framew.Init(this); err != nil {
-		ErrorMgr.MessageError(ERROR_LEVEL_FATAL, "FrameworkInitialisation", "", err)
+	if err := Framew.Init(this); err != nil {
+		ErrorMgr.MessageError(ERROR_LEVEL_FATAL, "Framework", "Initialisation", err)
 		return false
 	}
 
@@ -49,7 +48,7 @@ func (this *MainLoop) SetupStartScene() {
 	if this.startScene != nil {
 		SceneMgr.SwitchScene(this.startScene)
 	} else {
-		ErrorMgr.Message(ERROR_LEVEL_LOG, "Scene", "", "Please specify a start scene!")
+		ErrorMgr.Message(ERROR_LEVEL_ERROR, "Scene", "", "Please specify a start scene!")
 	}
 }
 

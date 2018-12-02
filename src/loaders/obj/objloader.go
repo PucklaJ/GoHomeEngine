@@ -2,12 +2,11 @@ package loader
 
 import (
 	"bytes"
+	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
 	"io"
-	"log"
 	"os"
 	"strconv"
 	"strings"
-	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
 )
 
 type OBJVertex struct {
@@ -97,6 +96,8 @@ func (this *OBJLoader) Load(path string) error {
 }
 
 func (this *OBJLoader) LoadReader(reader io.ReadCloser) error {
+	defer reader.Close()
+
 	var prevOverFlow []byte
 	var err error
 	var line string
@@ -107,10 +108,31 @@ func (this *OBJLoader) LoadReader(reader io.ReadCloser) error {
 			return err
 		}
 		if line != "" {
-			this.processTokens(toTokens(line))
+			if err = this.processTokens(toTokens(line)); err != nil {
+				return err
+			}
 		}
 	}
 	reader.Close()
+
+	return nil
+}
+
+func (this *OBJLoader) LoadString(contents string) error {
+	var curChar int = 0
+	var finished = false
+	var line string = ""
+	for !finished {
+		line, curChar, finished = readLineString(contents, curChar)
+		if line != "" {
+			if err := this.processTokens(toTokens(line)); err != nil {
+				return err
+			}
+		}
+		if finished {
+			break
+		}
+	}
 
 	return nil
 }
@@ -178,6 +200,25 @@ func readLine(reader io.Reader, prevOverFlow []byte) (string, []byte, error) {
 	return lineString, overflow, err
 }
 
+func readLineString(contents string, curChar int) (string, int, bool) {
+	var line string
+	var finished = false
+	var i int
+
+	for i = curChar; i < len(contents); i++ {
+		if i == len(contents)-1 {
+			finished = true
+		}
+		if contents[i] == '\n' || contents[i] == '\r' {
+			i++
+			break
+		}
+		line += string(contents[i])
+	}
+
+	return line, i, finished
+}
+
 func toTokens(line string) []string {
 	var curByte byte
 	var readToken bool = false
@@ -233,10 +274,10 @@ func (this *OBJLoader) loadMaterialFile(path string) error {
 	if this.openMaterialFile == nil {
 		this.openMaterialFile = func(path string) (*gohome.File, error) {
 			gFile := &gohome.File{}
-			osFile,err := os.Open(path)
+			osFile, err := os.Open(path)
 			gFile.ReadSeeker = osFile
 			gFile.Closer = osFile
-			return gFile,err
+			return gFile, err
 		}
 	}
 	for i := 0; i < len(this.materialPaths); i++ {
@@ -262,35 +303,45 @@ func (this *OBJLoader) loadMaterialFile(path string) error {
 	return err
 }
 
-func (this *OBJLoader) processTokens(tokens []string) {
+func (this *OBJLoader) processTokens(tokens []string) error {
 	length := len(tokens)
-
-	if length == 4 {
-		if tokens[0] == "v" {
-			this.positions = append(this.positions, process3Floats(tokens[1:length]))
-		} else if tokens[0] == "vn" {
-			this.normals = append(this.normals, process3Floats(tokens[1:length]))
-		} else if tokens[0] == "f" {
-			this.processFace(tokens[1:length])
-		}
-	} else if length == 3 {
-		if tokens[0] == "vt" {
-			uv := process2Floats(tokens[1:length])
-			uv[1] = 1.0 - uv[1]
-			this.texCoords = append(this.texCoords, uv)
-		}
-	} else if length == 2 {
-		if tokens[0] == "mtllib" {
-			if err := this.loadMaterialFile(tokens[1]); err != nil {
-				log.Println("OBJLoader: Couldn't load material file", tokens[1], ":", err)
+	if length != 0 {
+		if tokens[0] == "f" {
+			if err := this.processFace(tokens[1:length]); err != nil {
+				return err
 			}
-		} else if tokens[0] == "o" {
-			this.Models = append(this.Models, OBJModel{Name: tokens[1]})
-		} else if tokens[0] == "usemtl" {
-			this.Models[len(this.Models)-1].Meshes = append(this.Models[len(this.Models)-1].Meshes, OBJMesh{})
-			this.processMaterial(tokens[1])
+		} else {
+			if length == 4 {
+				if tokens[0] == "v" {
+					this.positions = append(this.positions, process3Floats(tokens[1:length]))
+				} else if tokens[0] == "vn" {
+					this.normals = append(this.normals, process3Floats(tokens[1:length]))
+				}
+			} else if length == 3 {
+				if tokens[0] == "vt" {
+					uv := process2Floats(tokens[1:length])
+					uv[1] = 1.0 - uv[1]
+					this.texCoords = append(this.texCoords, uv)
+				}
+			} else if length == 2 {
+				if tokens[0] == "mtllib" {
+					if err := this.loadMaterialFile(tokens[1]); err != nil {
+						return &OBJError{"Couldn't load material file " + tokens[1] + ": " + err.Error()}
+					}
+				} else if tokens[0] == "o" {
+					this.Models = append(this.Models, OBJModel{Name: tokens[1]})
+				} else if tokens[0] == "usemtl" {
+					if len(this.Models) == 0 {
+						this.Models = append(this.Models, OBJModel{Name: "Default"})
+					}
+					this.Models[len(this.Models)-1].Meshes = append(this.Models[len(this.Models)-1].Meshes, OBJMesh{})
+					this.processMaterial(tokens[1])
+				}
+			}
 		}
 	}
+
+	return nil
 }
 
 func (this *OBJLoader) getMaterial(name string) *OBJMaterial {
@@ -309,6 +360,10 @@ func (this *OBJLoader) processMaterial(token string) {
 }
 
 func (this *OBJLoader) processFace(tokens []string) error {
+	if len(tokens) != 3 && len(tokens) != 4 {
+		return &OBJError{"Face type not supported: " + strconv.FormatInt(int64(len(tokens)), 10) + "! Use triangles or quads!"}
+	}
+
 	if len(this.Models) == 0 {
 		this.Models = append(this.Models, OBJModel{Name: "Default"})
 	}
@@ -317,8 +372,9 @@ func (this *OBJLoader) processFace(tokens []string) error {
 	}
 
 	this.faceMethod = 0
-	var elements [3][]string
-	for i := 0; i < 3; i++ {
+	var elements [][]string
+	elements = make([][]string, len(tokens))
+	for i := 0; i < len(tokens); i++ {
 		elements[i] = strings.Split(tokens[i], "/")
 	}
 	if len(elements[0]) == 1 {
@@ -345,7 +401,7 @@ func (this *OBJLoader) processFace(tokens []string) error {
 
 	vertices := this.processFaceData(elements)
 
-	for i := 0; i < 3; i++ {
+	for i := 0; i < len(vertices); i++ {
 		index, isNew := this.searchIndex(vertices[i])
 		if isNew {
 			this.Models[len(this.Models)-1].Meshes[len(this.Models[len(this.Models)-1].Meshes)-1].Vertices = append(this.Models[len(this.Models)-1].Meshes[len(this.Models[len(this.Models)-1].Meshes)-1].Vertices, vertices[i])
@@ -370,22 +426,8 @@ func (this *OBJLoader) searchIndex(vertex OBJVertex) (uint32, bool) {
 	return 0, true
 }
 
-func (this *OBJLoader) processFaceData(elements [3][]string) [3]OBJVertex {
-	var rv [3]OBJVertex
-	var posIndices [3]uint32
-	var normalIndices [3]uint32
-	var texCoordIndices [3]uint32
-
-	switch this.faceMethod {
-	case 1:
-		posIndices[0], posIndices[1], posIndices[2] = processFaceData1(elements)
-	case 2:
-		posIndices[0], texCoordIndices[0], posIndices[1], texCoordIndices[1], posIndices[2], texCoordIndices[2] = processFaceData2(elements)
-	case 3:
-		posIndices[0], normalIndices[0], posIndices[1], normalIndices[1], posIndices[2], normalIndices[2] = processFaceData3(elements)
-	case 4:
-		posIndices[0], texCoordIndices[0], normalIndices[0], posIndices[1], texCoordIndices[1], normalIndices[1], posIndices[2], texCoordIndices[2], normalIndices[2] = processFaceData4(elements)
-	}
+func (this *OBJLoader) processTriangleFace(posIndices, normalIndices, texCoordIndices []uint32) (rv []OBJVertex) {
+	rv = make([]OBJVertex, 3)
 	for i := 0; i < 3; i++ {
 		rv[i].Position = this.positions[posIndices[i]-1]
 		if this.texCoordsLoaded {
@@ -395,32 +437,92 @@ func (this *OBJLoader) processFaceData(elements [3][]string) [3]OBJVertex {
 			rv[i].Normal = this.normals[normalIndices[i]-1]
 		}
 	}
-
-	return rv
+	return
 }
 
-func processFaceData1(elements [3][]string) (uint32, uint32, uint32) {
-	var rv [3]uint32
-	for i := 0; i < 3; i++ {
+func (this *OBJLoader) processQuadFace(posIndices, normalIndices, texCoordIndices []uint32) (rv []OBJVertex) {
+	rv = make([]OBJVertex, 6)
+	rv[0].Position = this.positions[posIndices[0]-1]
+	rv[1].Position = this.positions[posIndices[1]-1]
+	rv[2].Position = this.positions[posIndices[2]-1]
+	rv[3].Position = this.positions[posIndices[2]-1]
+	rv[4].Position = this.positions[posIndices[3]-1]
+	rv[5].Position = this.positions[posIndices[0]-1]
+	if this.texCoordsLoaded {
+		rv[0].TextureCoord = this.texCoords[texCoordIndices[0]-1]
+		rv[1].TextureCoord = this.texCoords[texCoordIndices[1]-1]
+		rv[2].TextureCoord = this.texCoords[texCoordIndices[2]-1]
+		rv[3].TextureCoord = this.texCoords[texCoordIndices[2]-1]
+		rv[4].TextureCoord = this.texCoords[texCoordIndices[3]-1]
+		rv[5].TextureCoord = this.texCoords[texCoordIndices[0]-1]
+	}
+	if this.normalsLoaded {
+		rv[0].Normal = this.normals[normalIndices[0]-1]
+		rv[1].Normal = this.normals[normalIndices[1]-1]
+		rv[2].Normal = this.normals[normalIndices[2]-1]
+		rv[3].Normal = this.normals[normalIndices[2]-1]
+		rv[4].Normal = this.normals[normalIndices[3]-1]
+		rv[5].Normal = this.normals[normalIndices[0]-1]
+	}
+
+	return
+}
+
+func (this *OBJLoader) processFaceData(elements [][]string) (rv []OBJVertex) {
+	var posIndices []uint32
+	var normalIndices []uint32
+	var texCoordIndices []uint32
+	switch this.faceMethod {
+	case 1:
+		posIndices = processFaceData1(elements)
+	case 2:
+		posIndices, texCoordIndices = processFaceData2(elements)
+	case 3:
+		posIndices, normalIndices = processFaceData3(elements)
+	case 4:
+		posIndices, texCoordIndices, normalIndices = processFaceData4(elements)
+	}
+	if len(elements) == 3 {
+		rv = this.processTriangleFace(posIndices, normalIndices, texCoordIndices)
+	} else if len(elements) == 4 {
+		rv = this.processQuadFace(posIndices, normalIndices, texCoordIndices)
+	}
+
+	return
+}
+
+func processFaceData1(elements [][]string) (rv []uint32) {
+	rv = make([]uint32, len(elements))
+	for i := 0; i < len(rv); i++ {
 		temp, _ := strconv.ParseUint(elements[i][0], 10, 32)
 		rv[i] = uint32(temp)
 	}
-	return rv[0], rv[1], rv[2]
+	return
 }
 
-func processFaceData2(elements [3][]string) (uint32, uint32, uint32, uint32, uint32, uint32) {
-	var rv [6]uint32
+func processFaceData2(elements [][]string) (pos []uint32, tex []uint32) {
+	rv := make([]uint32, len(elements)*2)
+	pos = make([]uint32, len(elements))
+	tex = make([]uint32, len(elements))
 	for i := 0; i < 3; i++ {
 		for j := 0; j < 2; j++ {
 			temp, _ := strconv.ParseUint(elements[i][j], 10, 32)
 			rv[i*2+j] = uint32(temp)
 		}
 	}
-	return rv[0], rv[1], rv[2], rv[3], rv[4], rv[5]
+
+	for i := 0; i < len(elements); i++ {
+		pos[i] = rv[i*2]
+		tex[i] = rv[i*2+1]
+	}
+
+	return
 }
 
-func processFaceData3(elements [3][]string) (uint32, uint32, uint32, uint32, uint32, uint32) {
-	var rv [6]uint32
+func processFaceData3(elements [][]string) (pos []uint32, norm []uint32) {
+	rv := make([]uint32, len(elements)*2)
+	pos = make([]uint32, len(elements))
+	norm = make([]uint32, len(elements))
 	var readIndex uint32
 	for i := 0; i < 3; i++ {
 		for j := 0; j < 2; j++ {
@@ -433,18 +535,34 @@ func processFaceData3(elements [3][]string) (uint32, uint32, uint32, uint32, uin
 			rv[i*2+j] = uint32(temp)
 		}
 	}
-	return rv[0], rv[1], rv[2], rv[3], rv[4], rv[5]
+
+	for i := 0; i < len(elements); i++ {
+		pos[i] = rv[i*2]
+		norm[i] = rv[i*2+1]
+	}
+
+	return
 }
 
-func processFaceData4(elements [3][]string) (uint32, uint32, uint32, uint32, uint32, uint32, uint32, uint32, uint32) {
-	var rv [9]uint32
-	for i := 0; i < 3; i++ {
+func processFaceData4(elements [][]string) (pos []uint32, tex []uint32, norm []uint32) {
+	rv := make([]uint32, len(elements)*3)
+	pos = make([]uint32, len(elements))
+	tex = make([]uint32, len(elements))
+	norm = make([]uint32, len(elements))
+	for i := 0; i < len(elements); i++ {
 		for j := 0; j < 3; j++ {
 			temp, _ := strconv.ParseUint(elements[i][j], 10, 32)
 			rv[i*3+j] = uint32(temp)
 		}
 	}
-	return rv[0], rv[1], rv[2], rv[3], rv[4], rv[5], rv[6], rv[7], rv[8]
+
+	for i := 0; i < len(elements); i++ {
+		pos[i] = rv[i*3]
+		tex[i] = rv[i*3+1]
+		norm[i] = rv[i*3+2]
+	}
+
+	return
 }
 
 func process3Floats(tokens []string) [3]float32 {
@@ -527,36 +645,48 @@ func (this *MTLLoader) checkCurrentMaterial() {
 	}
 }
 
+func addAllTokens(tokens []string, start int) (str string) {
+	for i := start; i < len(tokens); i++ {
+		if i == start {
+			str += " "
+		}
+		str += tokens[i]
+	}
+	return
+}
+
 func (this *MTLLoader) processTokens(tokens []string) {
 	length := len(tokens)
-
-	if length == 2 {
+	if length > 0 {
 		if tokens[0] == "newmtl" {
-			this.Materials = append(this.Materials, OBJMaterial{Name: tokens[1]})
+			this.Materials = append(this.Materials, OBJMaterial{Name: tokens[1] + addAllTokens(tokens, 2)})
 			this.currentMaterial = &this.Materials[len(this.Materials)-1]
-		} else if tokens[0] == "Ns" {
-			this.checkCurrentMaterial()
-			this.currentMaterial.SpecularExponent = process1Float(tokens[1])
-		} else if tokens[0] == "d" {
-			this.checkCurrentMaterial()
-			this.currentMaterial.Transperancy = process1Float(tokens[1])
 		} else if tokens[0] == "map_Kd" {
 			this.checkCurrentMaterial()
-			this.currentMaterial.DiffuseTexture = tokens[1]
+			this.currentMaterial.DiffuseTexture = tokens[1] + addAllTokens(tokens, 2)
 		} else if tokens[0] == "map_Ks" {
 			this.checkCurrentMaterial()
-			this.currentMaterial.SpecularTexture = tokens[1]
+			this.currentMaterial.SpecularTexture = tokens[1] + addAllTokens(tokens, 2)
 		} else if tokens[0] == "norm" {
 			this.checkCurrentMaterial()
-			this.currentMaterial.NormalMap = tokens[1]
+			this.currentMaterial.NormalMap = tokens[1] + addAllTokens(tokens, 2)
 		}
-	} else if length == 4 {
-		if tokens[0] == "Kd" {
-			this.checkCurrentMaterial()
-			this.currentMaterial.DiffuseColor = process3Floats(tokens[1:])
-		} else if tokens[0] == "Ks" {
-			this.checkCurrentMaterial()
-			this.currentMaterial.SpecularColor = process3Floats(tokens[1:])
+		if length == 2 {
+			if tokens[0] == "Ns" {
+				this.checkCurrentMaterial()
+				this.currentMaterial.SpecularExponent = process1Float(tokens[1])
+			} else if tokens[0] == "d" {
+				this.checkCurrentMaterial()
+				this.currentMaterial.Transperancy = process1Float(tokens[1])
+			}
+		} else if length == 4 {
+			if tokens[0] == "Kd" {
+				this.checkCurrentMaterial()
+				this.currentMaterial.DiffuseColor = process3Floats(tokens[1:])
+			} else if tokens[0] == "Ks" {
+				this.checkCurrentMaterial()
+				this.currentMaterial.SpecularColor = process3Floats(tokens[1:])
+			}
 		}
 	}
 }

@@ -21,11 +21,11 @@ func (this *CubeScene) Init() {
 	gohome.RenderMgr.AddObject(&this.cube)
 	gohome.LightMgr.DisableLighting()
 
+	gohome.RenderMgr.UpdateProjectionWithViewport = true
 }
 
 func (this *CubeScene) Update(delta_time float32) {
-	this.cube.Transform.Rotation = this.cube.Transform.Rotation.Mul(mgl32.QuatRotate(mgl32.DegToRad(30.0)*delta_time, mgl32.Vec3{1.0, 0.0, 0.0}))
-	this.cube.Transform.Rotation = this.cube.Transform.Rotation.Mul(mgl32.QuatRotate(mgl32.DegToRad(30.0)*delta_time, mgl32.Vec3{0.0, 1.0, 0.0}))
+	this.cube.Transform.Rotation = this.cube.Transform.Rotation.Mul(mgl32.QuatRotate(mgl32.DegToRad(30.0)*delta_time, mgl32.Vec3{0.0, 1.0, 0.0})).Mul(mgl32.QuatRotate(mgl32.DegToRad(30.0)*delta_time, mgl32.Vec3{1.0, 0.0, 0.0}))
 }
 
 func (this *CubeScene) Terminate() {
