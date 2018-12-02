@@ -22,6 +22,7 @@ func (this *InstancingScene) Init() {
 		cubeInstanced.AddVertices(cubeMesh.GetVertices(), cubeMesh.GetIndices())
 		cubeInstanced.SetNumInstances(uint32(SIZE * SIZE * SIZE))
 		cubeInstanced.AddValue(gohome.VALUE_MAT4)
+		cubeInstanced.SetName(0, gohome.VALUE_MAT4, "transformMatrix3D")
 		cubeInstanced.Load()
 		var transforms [SIZE * SIZE * SIZE]mgl32.Mat4
 		for x := 0; x < SIZE; x++ {
@@ -33,6 +34,7 @@ func (this *InstancingScene) Init() {
 		}
 		cubeInstanced.SetM4(0, transforms[:])
 		this.ent.InitMesh(cubeInstanced)
+		this.ent.Transform.Position = mgl32.Vec3{3.0, 0.0, 0.0}
 		this.ent.SetShader(gohome.ResourceMgr.GetShader("3D Instanced"))
 		this.ent.SetType(gohome.TYPE_3D_INSTANCED)
 		gohome.RenderMgr.AddObject(&this.ent)

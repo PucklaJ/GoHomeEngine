@@ -422,7 +422,14 @@ func (this *OpenGLRenderer) GetBackgroundColor() color.Color {
 func handleOpenGLError(tag, objectName, errorPrefix string) {
 	err := gl.GetError()
 	if err != gl.NO_ERROR {
-		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, tag, objectName, errorPrefix+"ErrorCode: "+strconv.Itoa(int(err)))
+		var errString string
+		switch err {
+		case gl.INVALID_OPERATION:
+			errString = "INVALID_OPERATION"
+		default:
+			errString = strconv.Itoa(int(err))
+		}
+		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, tag, objectName, errorPrefix+"ErrorCode: "+errString)
 	}
 }
 

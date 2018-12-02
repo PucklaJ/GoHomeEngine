@@ -228,6 +228,10 @@ func (oglm *OpenGLMesh3D) Render() {
 		return
 	}
 	if gohome.RenderMgr.CurrentShader != nil {
+		if oglm.Material == nil {
+			oglm.Material = &gohome.Material{}
+			oglm.Material.InitDefault()
+		}
 		gohome.RenderMgr.CurrentShader.SetUniformMaterial(*oglm.Material)
 	}
 	if oglm.canUseVAOs {
