@@ -6,7 +6,7 @@ import (
 	"golang.org/x/image/colornames"
 )
 
-const SIZE int = 10
+const SIZE int = 50
 const USE_INSTANCING = true
 
 type InstancingScene struct {
@@ -26,6 +26,8 @@ func (this *InstancingScene) Init() {
 				}
 			}
 		}
+		this.ent.UpdateInstancedValues()
+		this.ent.StopUpdatingInstancedValues = true
 		gohome.RenderMgr.AddObject(&this.ent)
 	} else {
 		gohome.Init3DShaders()

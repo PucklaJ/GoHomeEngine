@@ -2960,6 +2960,8 @@ void main()
 
 attribute vec3 vertex;
 attribute vec3 normal;
+attribute vec2 texCoord;
+attribute vec3 tangent;
 attribute mat4 transformMatrix3D;
 
 varying vec3 fragPos;

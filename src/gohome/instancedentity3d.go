@@ -12,12 +12,13 @@ const (
 
 type InstancedEntity3D struct {
 	NilRenderObject
-	Name                string
-	Model3D             *InstancedModel3D
-	Visible             bool
-	NotRelativeToCamera int
-	RenderLast          bool
-	DepthTesting        bool
+	Name                        string
+	Model3D                     *InstancedModel3D
+	Visible                     bool
+	NotRelativeToCamera         int
+	RenderLast                  bool
+	DepthTesting                bool
+	StopUpdatingInstancedValues bool
 
 	Shader     Shader
 	RenderType RenderType
@@ -52,6 +53,11 @@ func (this *InstancedEntity3D) commonInit() {
 					ResourceMgr.SetShader(ENTITY_3D_INSTANCED_NOUV_SHADER_NAME, ENTITY_3D_INSTANCED_NOUV_NO_SHADOWS_SHADER_NAME)
 				}
 			}
+		}
+	} else {
+		if this.Shader == nil {
+			ResourceMgr.LoadShaderSource(ENTITY_3D_INSTANCED_SHADER_NAME, ENTITY_3D_INSTANCED_SHADER_VERTEX_SOURCE_OPENGL, ENTITY_3D_SHADER_FRAGMENT_SOURCE_OPENGL, "", "", "", "")
+			this.Shader = ResourceMgr.GetShader(ENTITY_3D_INSTANCED_SHADER_NAME)
 		}
 	}
 
@@ -96,7 +102,9 @@ func (this *InstancedEntity3D) GetType() RenderType {
 }
 
 func (this *InstancedEntity3D) Render() {
-	this.UpdateInstancedValues()
+	if !this.StopUpdatingInstancedValues {
+		this.UpdateInstancedValues()
+	}
 	if this.Model3D != nil {
 		this.Model3D.Render()
 	}
