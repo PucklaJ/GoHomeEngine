@@ -6,7 +6,7 @@ import (
 	"golang.org/x/image/colornames"
 )
 
-const SIZE int = 50
+const SIZE int = 2
 const USE_INSTANCING = true
 
 type InstancingScene struct {
@@ -35,8 +35,8 @@ func (this *InstancingScene) Init() {
 		cubeInstanced.SetM4(0, transforms[:])
 		this.ent.InitMesh(cubeInstanced)
 		this.ent.Transform.Position = mgl32.Vec3{3.0, 0.0, 0.0}
-		this.ent.SetShader(gohome.ResourceMgr.GetShader("3D Instanced"))
-		this.ent.SetType(gohome.TYPE_3D_INSTANCED)
+		//this.ent.SetShader(gohome.ResourceMgr.GetShader("3D Instanced"))
+		//this.ent.SetType(gohome.TYPE_3D_INSTANCED)
 		gohome.RenderMgr.AddObject(&this.ent)
 	} else {
 		gohome.Init3DShaders()

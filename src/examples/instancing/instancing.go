@@ -7,5 +7,5 @@ import (
 )
 
 func main() {
-	gohome.MainLop.Run(&framework.GLFWFramework{}, &renderer.OpenGLRenderer{}, 1280, 720, "Instancing", &InstancingScene{})
+	gohome.MainLop.Run(&framework.GLFWFramework{}, &renderer.OpenGLRenderer{}, 640, 480, "Instancing", &InstancingScene{})
 }
