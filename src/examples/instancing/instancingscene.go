@@ -6,7 +6,7 @@ import (
 	"golang.org/x/image/colornames"
 )
 
-const SIZE int = 2
+const SIZE int = 10
 const USE_INSTANCING = true
 
 type InstancingScene struct {
@@ -17,18 +17,15 @@ type InstancingScene struct {
 func (this *InstancingScene) Init() {
 	cubeMesh := gohome.Box("Box", [3]float32{1.0, 1.0, 1.0}, false)
 	if USE_INSTANCING {
-		gohome.ResourceMgr.LoadShaderSource("3D Instanced", gohome.ENTITY_3D_INSTANCED_SHADER_VERTEX_SOURCE_OPENGL, gohome.ENTITY_3D_NOUV_NO_SHADOWS_SHADER_FRAGMENT_SOURCE_OPENGL, "", "", "", "")
 		cubeInstanced := gohome.InstancedMesh3DFromMesh3D(cubeMesh)
-		var transforms [SIZE * SIZE * SIZE]mgl32.Mat4
+		this.ent.InitMesh(cubeInstanced, uint32(SIZE*SIZE*SIZE))
 		for x := 0; x < SIZE; x++ {
 			for y := 0; y < SIZE; y++ {
 				for z := 0; z < SIZE; z++ {
-					transforms[x+y*SIZE+z*SIZE*SIZE] = mgl32.Translate3D(float32(x)*2.0, float32(y)*2.0, float32(z)*2.0)
+					this.ent.Transforms[x+y*SIZE+z*SIZE*SIZE].Position = mgl32.Vec3{float32(x) * 2.0, float32(y) * 2.0, float32(z) * 2.0}
 				}
 			}
 		}
-		this.ent.InitMesh(cubeInstanced, uint32(SIZE*SIZE*SIZE))
-		cubeInstanced.SetM4(0, transforms[:])
 		gohome.RenderMgr.AddObject(&this.ent)
 	} else {
 		gohome.Init3DShaders()

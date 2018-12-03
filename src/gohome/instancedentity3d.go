@@ -96,6 +96,7 @@ func (this *InstancedEntity3D) GetType() RenderType {
 }
 
 func (this *InstancedEntity3D) Render() {
+	this.UpdateInstancedValues()
 	if this.Model3D != nil {
 		this.Model3D.Render()
 	}
@@ -129,4 +130,13 @@ func (this *InstancedEntity3D) RendersLast() bool {
 
 func (this *InstancedEntity3D) HasDepthTesting() bool {
 	return this.DepthTesting
+}
+
+func (this *InstancedEntity3D) UpdateInstancedValues() {
+	mats := make([]mgl32.Mat4, len(this.Transforms))
+	for i, t := range this.Transforms {
+		t.CalculateTransformMatrix(&RenderMgr, this.NotRelativeToCamera)
+		mats[i] = t.GetTransformMatrix()
+	}
+	this.Model3D.SetM4(0, mats)
 }
