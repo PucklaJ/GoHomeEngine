@@ -4,9 +4,11 @@ import (
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
 	"github.com/PucklaMotzer09/mathgl/mgl32"
 	"golang.org/x/image/colornames"
+	"log"
+	"sync"
 )
 
-const SIZE int = 50
+const SIZE int = 20
 const USE_INSTANCING = true
 
 type InstancingScene struct {
@@ -26,6 +28,7 @@ func (this *InstancingScene) Init() {
 				}
 			}
 		}
+
 		this.ent.UpdateInstancedValues()
 		this.ent.StopUpdatingInstancedValues = true
 		gohome.RenderMgr.AddObject(&this.ent)
@@ -63,10 +66,48 @@ func (this *InstancingScene) Init() {
 	gohome.RenderMgr.SetCamera3D(&this.cam, 0)
 }
 
-func (this *InstancingScene) Update(delta_time float32) {
+var addedRows int = 1
+var removedRows int = 0
 
+func (this *InstancingScene) addBoxes() {
+	this.ent.SetNumInstances(uint32((SIZE + addedRows) * (SIZE + addedRows) * (SIZE + addedRows)))
+	var wg sync.WaitGroup
+	wg.Add((SIZE + addedRows) * (SIZE + addedRows) * (SIZE + addedRows))
+	for x := 0; x < SIZE+addedRows; x++ {
+		for y := 0; y < SIZE+addedRows; y++ {
+			for z := 0; z < SIZE+addedRows; z++ {
+				go func(_x, _y, _z int) {
+					this.ent.Transforms[_x+_y*(SIZE+addedRows)+_z*(SIZE+addedRows)*(SIZE+addedRows)].Position = mgl32.Vec3{float32(_x) * 2.0, float32(_y) * 2.0, float32(_z) * 2.0}
+					wg.Done()
+				}(x, y, z)
+			}
+		}
+	}
+	wg.Wait()
+	this.ent.UpdateInstancedValues()
+	addedRows++
+	removedRows = 0
+}
+
+func (this *InstancingScene) Update(delta_time float32) {
+	if !USE_INSTANCING {
+		return
+	}
+	if gohome.InputMgr.JustPressed(gohome.KeyH) {
+		this.addBoxes()
+		log.Println("Size:", SIZE+addedRows)
+	} else if gohome.InputMgr.JustPressed(gohome.KeyJ) {
+		if addedRows < 2 {
+			return
+		}
+		addedRows -= 2
+		this.addBoxes()
+		log.Println("Size:", SIZE+addedRows)
+	} else if gohome.InputMgr.JustPressed(gohome.KeyK) {
+		this.ent.SetNumUsedInstances(this.ent.Model3D.GetNumUsedInstances() - 1)
+	}
 }
 
 func (this *InstancingScene) Terminate() {
-
+	this.ent.Terminate()
 }

@@ -141,6 +141,20 @@ func (this *InstancedModel3D) GetNumInstances() uint32 {
 	}
 }
 
+func (this *InstancedModel3D) SetNumUsedInstances(n uint32) {
+	for _, m := range this.meshes {
+		m.SetNumUsedInstances(n)
+	}
+}
+
+func (this *InstancedModel3D) GetNumUsedInstances() uint32 {
+	if len(this.meshes) == 0 {
+		return 0
+	} else {
+		return this.meshes[0].GetNumUsedInstances()
+	}
+}
+
 func InstancedModel3DFromModel3D(m *Model3D) (im *InstancedModel3D) {
 	im = &InstancedModel3D{}
 	im.meshes = make([]InstancedMesh3D, len(m.meshes))

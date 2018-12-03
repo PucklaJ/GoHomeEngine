@@ -148,3 +148,27 @@ func (this *InstancedEntity3D) UpdateInstancedValues() {
 	}
 	this.Model3D.SetM4(0, mats)
 }
+
+func (this *InstancedEntity3D) SetNumInstances(n uint32) {
+	prev := this.Model3D.GetNumInstances()
+	this.Model3D.SetNumInstances(n)
+	if prev != n {
+		if n > prev {
+			this.Transforms = append(this.Transforms, make([]*TransformableObject3D, n-prev)...)
+			for i := prev; i < n; i++ {
+				this.Transforms[i] = &TransformableObject3D{}
+				this.Transforms[i].Scale = [3]float32{1.0, 1.0, 1.0}
+				this.Transforms[i].Rotation = mgl32.QuatRotate(0.0, [3]float32{0.0, 1.0, 0.0})
+			}
+		} else {
+			this.Transforms = this.Transforms[:n]
+		}
+		if !this.StopUpdatingInstancedValues {
+			this.UpdateInstancedValues()
+		}
+	}
+}
+
+func (this *InstancedEntity3D) SetNumUsedInstances(n uint32) {
+	this.Model3D.SetNumUsedInstances(n)
+}
