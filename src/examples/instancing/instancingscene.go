@@ -52,7 +52,7 @@ func (this *InstancingScene) Init() {
 		&gohome.DirectionalLight{
 			Direction:     mgl32.Vec3{1.0, -1.0, -1.0},
 			DiffuseColor:  colornames.White,
-			SpecularColor: colornames.Black,
+			SpecularColor: colornames.Lime,
 			CastsShadows:  0,
 		}, 0,
 	)
