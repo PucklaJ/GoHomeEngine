@@ -10,7 +10,7 @@ const SIZE int = 2
 const USE_INSTANCING = true
 
 type InstancingScene struct {
-	ent gohome.Entity3D
+	ent gohome.InstancedEntity3D
 	cam gohome.Camera3D
 }
 
@@ -18,12 +18,7 @@ func (this *InstancingScene) Init() {
 	cubeMesh := gohome.Box("Box", [3]float32{1.0, 1.0, 1.0}, false)
 	if USE_INSTANCING {
 		gohome.ResourceMgr.LoadShaderSource("3D Instanced", gohome.ENTITY_3D_INSTANCED_SHADER_VERTEX_SOURCE_OPENGL, gohome.ENTITY_3D_NOUV_NO_SHADOWS_SHADER_FRAGMENT_SOURCE_OPENGL, "", "", "", "")
-		cubeInstanced := gohome.Render.CreateInstancedMesh3D("Instanced Box")
-		cubeInstanced.AddVertices(cubeMesh.GetVertices(), cubeMesh.GetIndices())
-		cubeInstanced.SetNumInstances(uint32(SIZE * SIZE * SIZE))
-		cubeInstanced.AddValue(gohome.VALUE_MAT4)
-		cubeInstanced.SetName(0, gohome.VALUE_MAT4, "transformMatrix3D")
-		cubeInstanced.Load()
+		cubeInstanced := gohome.InstancedMesh3DFromMesh3D(cubeMesh)
 		var transforms [SIZE * SIZE * SIZE]mgl32.Mat4
 		for x := 0; x < SIZE; x++ {
 			for y := 0; y < SIZE; y++ {
@@ -32,11 +27,8 @@ func (this *InstancingScene) Init() {
 				}
 			}
 		}
+		this.ent.InitMesh(cubeInstanced, uint32(SIZE*SIZE*SIZE))
 		cubeInstanced.SetM4(0, transforms[:])
-		this.ent.InitMesh(cubeInstanced)
-		this.ent.Transform.Position = mgl32.Vec3{3.0, 0.0, 0.0}
-		//this.ent.SetShader(gohome.ResourceMgr.GetShader("3D Instanced"))
-		//this.ent.SetType(gohome.TYPE_3D_INSTANCED)
 		gohome.RenderMgr.AddObject(&this.ent)
 	} else {
 		gohome.Init3DShaders()

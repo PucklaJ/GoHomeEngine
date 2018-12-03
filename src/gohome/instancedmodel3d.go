@@ -1,5 +1,9 @@
 package gohome
 
+import (
+	"github.com/PucklaMotzer09/mathgl/mgl32"
+)
+
 type InstancedModel3D struct {
 	Name   string
 	meshes []InstancedMesh3D
@@ -79,4 +83,71 @@ func (this *InstancedModel3D) SetF(index uint32, value []float32) {
 	for _, m := range this.meshes {
 		m.SetF(index, value)
 	}
+}
+
+func (this *InstancedModel3D) SetV2(index uint32, value []mgl32.Vec2) {
+	for _, m := range this.meshes {
+		m.SetV2(index, value)
+	}
+}
+
+func (this *InstancedModel3D) SetV3(index uint32, value []mgl32.Vec3) {
+	for _, m := range this.meshes {
+		m.SetV3(index, value)
+	}
+}
+
+func (this *InstancedModel3D) SetV4(index uint32, value []mgl32.Vec4) {
+	for _, m := range this.meshes {
+		m.SetV4(index, value)
+	}
+}
+
+func (this *InstancedModel3D) SetM2(index uint32, value []mgl32.Mat2) {
+	for _, m := range this.meshes {
+		m.SetM2(index, value)
+	}
+}
+
+func (this *InstancedModel3D) SetM3(index uint32, value []mgl32.Mat3) {
+	for _, m := range this.meshes {
+		m.SetM3(index, value)
+	}
+}
+
+func (this *InstancedModel3D) SetM4(index uint32, value []mgl32.Mat4) {
+	for _, m := range this.meshes {
+		m.SetM4(index, value)
+	}
+}
+
+func (this *InstancedModel3D) Load() {
+	for _, m := range this.meshes {
+		m.Load()
+	}
+}
+
+func (this *InstancedModel3D) SetNumInstances(n uint32) {
+	for _, m := range this.meshes {
+		m.SetNumInstances(n)
+	}
+}
+
+func (this *InstancedModel3D) GetNumInstances() uint32 {
+	if len(this.meshes) == 0 {
+		return 0
+	} else {
+		return this.meshes[0].GetNumInstances()
+	}
+}
+
+func InstancedModel3DFromModel3D(m *Model3D) (im *InstancedModel3D) {
+	im = &InstancedModel3D{}
+	im.meshes = make([]InstancedMesh3D, len(m.meshes))
+	for i := 0; i < len(m.meshes); i++ {
+		im.meshes[i] = InstancedMesh3DFromMesh3D(m.meshes[i])
+	}
+	im.Name = m.Name
+	im.AABB = m.AABB
+	return
 }

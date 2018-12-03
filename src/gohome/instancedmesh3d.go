@@ -62,3 +62,12 @@ type InstancedMesh3D interface {
 	SetM4(index uint32, value []mgl32.Mat4)
 	SetName(index uint32, value_type uint32, value string)
 }
+
+func InstancedMesh3DFromMesh3D(mesh Mesh3D) (imesh InstancedMesh3D) {
+	imesh = Render.CreateInstancedMesh3D(mesh.GetName())
+	imesh.AddVertices(mesh.GetVertices(), mesh.GetIndices())
+	mat := mesh.GetMaterial()
+	mats := *mat
+	imesh.SetMaterial(&mats)
+	return
+}

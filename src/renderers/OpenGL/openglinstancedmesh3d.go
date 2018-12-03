@@ -32,6 +32,7 @@ type OpenGLInstancedMesh3D struct {
 	canUseVAOs      bool
 	canUseInstanced bool
 	hasUV           bool
+	loaded          bool
 	aabb            gohome.AxisAlignedBoundingBox
 
 	Name     string
@@ -329,6 +330,12 @@ func (this *OpenGLInstancedMesh3D) attributePointer() {
 }
 
 func (this *OpenGLInstancedMesh3D) Load() {
+	if this.loaded {
+		return
+	}
+	defer func() {
+		this.loaded = true
+	}()
 	this.numVertices = uint32(len(this.vertices))
 	this.numIndices = uint32(len(this.indices))
 
