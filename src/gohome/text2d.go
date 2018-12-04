@@ -69,6 +69,7 @@ func (this *Text2D) Init(font string, fontSize uint32, str string) {
 	this.Depth = 0
 	this.Color = colornames.White
 	this.Flip = FLIP_NONE
+	this.renderType = TYPE_2D_NORMAL
 
 	this.updateText()
 }
