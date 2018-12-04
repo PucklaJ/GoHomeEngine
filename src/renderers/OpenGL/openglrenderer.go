@@ -450,10 +450,26 @@ func handleOpenGLError(tag, objectName, errorPrefix string) {
 		switch err {
 		case gl.INVALID_OPERATION:
 			errString = "INVALID_OPERATION"
+		case gl.INVALID_VALUE:
+			errString = "INVALID_VALUE"
+		case gl.INVALID_ENUM:
+			errString = "INVALID_ENUM"
+		case gl.STACK_OVERFLOW:
+			errString = "STACK_OVERFLOW"
+		case gl.STACK_UNDERFLOW:
+			errString = "STACK_UNDERFLOW"
+		case gl.OUT_OF_MEMORY:
+			errString = "OUT_OF_MEMORY"
+		case gl.INVALID_FRAMEBUFFER_OPERATION:
+			errString = "INVALID_FRAMEBUFFER_OPERATION"
+		case gl.CONTEXT_LOST:
+			errString = "CONTEXT_LOST"
+		case 0x8031:
+			errString = "TABLE_TOO_LARGE"
 		default:
 			errString = strconv.Itoa(int(err))
 		}
-		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, tag, objectName, errorPrefix+"ErrorCode: "+errString)
+		gohome.ErrorMgr.Error(tag, objectName, errorPrefix+" ErrorCode: "+errString)
 	}
 }
 
