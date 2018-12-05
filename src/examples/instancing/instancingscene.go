@@ -93,7 +93,12 @@ func (this *InstancingScene) Update(delta_time float32) {
 	if !USE_INSTANCING {
 		return
 	}
-	if gohome.InputMgr.JustPressed(gohome.KeyH) {
+	if gohome.InputMgr.IsPressed(gohome.KeyI) {
+		for _, t := range this.ent.Transforms {
+			t.Position[0] += 0.5 * delta_time
+		}
+		this.ent.UpdateInstancedValues()
+	} else if gohome.InputMgr.JustPressed(gohome.KeyH) {
 		this.addBoxes()
 		log.Println("Size:", SIZE+addedRows)
 	} else if gohome.InputMgr.JustPressed(gohome.KeyJ) {

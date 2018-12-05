@@ -1,6 +1,9 @@
 package gohome
 
-import "github.com/PucklaMotzer09/mathgl/mgl32"
+import (
+	"github.com/PucklaMotzer09/mathgl/mgl32"
+	"sync"
+)
 
 const (
 	ENTITY_3D_INSTANCED_SHADER_NAME                 string = "3D Instanced"
@@ -23,16 +26,19 @@ type InstancedEntity3D struct {
 	Shader     Shader
 	RenderType RenderType
 
-	Transforms []*TransformableObject3D
+	Transforms        []*TransformableObjectInstanced3D
+	transformMatrices []mgl32.Mat4
 }
 
 func (this *InstancedEntity3D) commonInit() {
-	this.Transforms = make([]*TransformableObject3D, this.Model3D.GetNumInstances())
+	this.Transforms = make([]*TransformableObjectInstanced3D, this.Model3D.GetNumInstances())
+	this.transformMatrices = make([]mgl32.Mat4, this.Model3D.GetNumInstances())
 	for i, t := range this.Transforms {
-		this.Transforms[i] = &TransformableObject3D{}
+		this.Transforms[i] = &TransformableObjectInstanced3D{}
 		t = this.Transforms[i]
 		t.Scale = [3]float32{1.0, 1.0, 1.0}
 		t.Rotation = mgl32.QuatRotate(0.0, mgl32.Vec3{0.0, 1.0, 0.0})
+		t.SetTransformMatrixPointer(&this.transformMatrices[i])
 	}
 
 	this.Visible = true
@@ -141,12 +147,22 @@ func (this *InstancedEntity3D) HasDepthTesting() bool {
 }
 
 func (this *InstancedEntity3D) UpdateInstancedValues() {
-	mats := make([]mgl32.Mat4, len(this.Transforms))
-	for i, t := range this.Transforms {
-		t.CalculateTransformMatrix(&RenderMgr, this.NotRelativeToCamera)
-		mats[i] = t.GetTransformMatrix()
+	var changed = false
+	var wg sync.WaitGroup
+	wg.Add(int(this.Model3D.GetNumInstances()))
+	for _, t := range this.Transforms {
+		go func(_t *TransformableObjectInstanced3D) {
+			if _t.valuesChanged() {
+				changed = true
+				_t.CalculateTransformMatrix(&RenderMgr, this.NotRelativeToCamera)
+			}
+			wg.Done()
+		}(t)
 	}
-	this.Model3D.SetM4(0, mats)
+	wg.Wait()
+	if changed {
+		this.Model3D.SetM4(0, this.transformMatrices)
+	}
 }
 
 func (this *InstancedEntity3D) SetNumInstances(n uint32) {
@@ -154,14 +170,19 @@ func (this *InstancedEntity3D) SetNumInstances(n uint32) {
 	this.Model3D.SetNumInstances(n)
 	if prev != n {
 		if n > prev {
-			this.Transforms = append(this.Transforms, make([]*TransformableObject3D, n-prev)...)
-			for i := prev; i < n; i++ {
-				this.Transforms[i] = &TransformableObject3D{}
-				this.Transforms[i].Scale = [3]float32{1.0, 1.0, 1.0}
-				this.Transforms[i].Rotation = mgl32.QuatRotate(0.0, [3]float32{0.0, 1.0, 0.0})
+			this.Transforms = append(this.Transforms, make([]*TransformableObjectInstanced3D, n-prev)...)
+			this.transformMatrices = append(this.transformMatrices, make([]mgl32.Mat4, n-prev)...)
+			for i := uint32(0); i < n; i++ {
+				if i >= prev {
+					this.Transforms[i] = &TransformableObjectInstanced3D{}
+					this.Transforms[i].Scale = [3]float32{1.0, 1.0, 1.0}
+					this.Transforms[i].Rotation = mgl32.QuatRotate(0.0, [3]float32{0.0, 1.0, 0.0})
+				}
+				this.Transforms[i].SetTransformMatrixPointer(&this.transformMatrices[i])
 			}
 		} else {
 			this.Transforms = this.Transforms[:n]
+			this.transformMatrices = this.transformMatrices[:n]
 		}
 		if !this.StopUpdatingInstancedValues {
 			this.UpdateInstancedValues()
