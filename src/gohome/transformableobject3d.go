@@ -110,6 +110,10 @@ func (tobj *TransformableObject3D) GetPosition() mgl32.Vec3 {
 	return ptransform.Mul4x1(tobj.Position.Vec4(1.0)).Vec3()
 }
 
+func (tobj *TransformableObject3D) GetTransform3D() *TransformableObject3D {
+	return tobj
+}
+
 func DefaultTransformableObject3D() *TransformableObject3D {
 	transform := TransformableObject3D{
 		Scale: [3]float32{1.0, 1.0, 1.0},

@@ -94,9 +94,15 @@ func (this *InstancingScene) Update(delta_time float32) {
 		return
 	}
 	if gohome.InputMgr.IsPressed(gohome.KeyI) {
+		var wg sync.WaitGroup
+		wg.Add(len(this.ent.Transforms))
 		for _, t := range this.ent.Transforms {
-			t.Position[0] += 0.5 * delta_time
+			go func(_t *gohome.TransformableObjectInstanced3D) {
+				_t.Position[0] += 0.5 * delta_time
+				wg.Done()
+			}(t)
 		}
+		wg.Wait()
 		this.ent.UpdateInstancedValues()
 	} else if gohome.InputMgr.JustPressed(gohome.KeyH) {
 		this.addBoxes()
