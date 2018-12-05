@@ -112,7 +112,6 @@ func (MainLoop) InnerLoop() {
 	LightMgr.Update()
 	InputMgr.Update(FPSLimit.DeltaTime)
 	RenderMgr.Update()
-	Framew.WindowSwap()
 	Framew.Update()
 }
 
