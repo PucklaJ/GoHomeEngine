@@ -50,6 +50,7 @@ type InstancedMesh3D interface {
 	HasUV() bool
 	AABB() AxisAlignedBoundingBox
 	Copy() Mesh3D
+	LoadedToGPU() bool
 	SetNumInstances(n uint32)
 	GetNumInstances() uint32
 	SetNumUsedInstances(n uint32)
@@ -66,10 +67,16 @@ type InstancedMesh3D interface {
 }
 
 func InstancedMesh3DFromMesh3D(mesh Mesh3D) (imesh InstancedMesh3D) {
-	imesh = Render.CreateInstancedMesh3D(mesh.GetName())
-	imesh.AddVertices(mesh.GetVertices(), mesh.GetIndices())
+	if !mesh.LoadedToGPU() {
+		imesh = Render.CreateInstancedMesh3D(mesh.GetName())
+		imesh.AddVertices(mesh.GetVertices(), mesh.GetIndices())
+	} else {
+		imesh = Render.InstancedMesh3DFromLoadedMesh3D(mesh)
+	}
+
 	mat := mesh.GetMaterial()
 	mats := *mat
 	imesh.SetMaterial(&mats)
+
 	return
 }

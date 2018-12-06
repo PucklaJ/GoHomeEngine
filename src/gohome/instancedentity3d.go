@@ -30,17 +30,7 @@ type InstancedEntity3D struct {
 	transformMatrices []mgl32.Mat4
 }
 
-func (this *InstancedEntity3D) commonInit() {
-	this.Transforms = make([]*TransformableObjectInstanced3D, this.Model3D.GetNumInstances())
-	this.transformMatrices = make([]mgl32.Mat4, this.Model3D.GetNumInstances())
-	for i, t := range this.Transforms {
-		this.Transforms[i] = &TransformableObjectInstanced3D{}
-		t = this.Transforms[i]
-		t.Scale = [3]float32{1.0, 1.0, 1.0}
-		t.Rotation = mgl32.QuatRotate(0.0, mgl32.Vec3{0.0, 1.0, 0.0})
-		t.SetTransformMatrixPointer(&this.transformMatrices[i])
-	}
-
+func (this *InstancedEntity3D) commonInit(numInstances uint32) {
 	this.Visible = true
 	this.NotRelativeToCamera = -1
 	this.RenderLast = false
@@ -69,7 +59,22 @@ func (this *InstancedEntity3D) commonInit() {
 
 	this.Model3D.AddValue(VALUE_MAT4)
 	this.Model3D.SetName(0, VALUE_MAT4, "transformMatrix3D")
-	this.Model3D.Load()
+	if this.Model3D.LoadedToGPU() {
+		this.Model3D.SetNumInstances(numInstances)
+	} else {
+		this.Model3D.SetNumInstances(numInstances)
+		this.Model3D.Load()
+	}
+
+	this.Transforms = make([]*TransformableObjectInstanced3D, this.Model3D.GetNumInstances())
+	this.transformMatrices = make([]mgl32.Mat4, this.Model3D.GetNumInstances())
+	for i, t := range this.Transforms {
+		this.Transforms[i] = &TransformableObjectInstanced3D{}
+		t = this.Transforms[i]
+		t.Scale = [3]float32{1.0, 1.0, 1.0}
+		t.Rotation = mgl32.QuatRotate(0.0, mgl32.Vec3{0.0, 1.0, 0.0})
+		t.SetTransformMatrixPointer(&this.transformMatrices[i])
+	}
 }
 
 func (this *InstancedEntity3D) InitMesh(mesh InstancedMesh3D, numInstances uint32) {
@@ -78,8 +83,7 @@ func (this *InstancedEntity3D) InitMesh(mesh InstancedMesh3D, numInstances uint3
 	}
 	this.Model3D.AddMesh3D(mesh)
 	this.Name = mesh.GetName()
-	this.Model3D.SetNumInstances(numInstances)
-	this.commonInit()
+	this.commonInit(numInstances)
 }
 
 func (this *InstancedEntity3D) InitModel(model *InstancedModel3D, numInstances uint32) {
@@ -87,8 +91,7 @@ func (this *InstancedEntity3D) InitModel(model *InstancedModel3D, numInstances u
 	if model != nil {
 		this.Name = model.Name
 	}
-	this.Model3D.SetNumInstances(numInstances)
-	this.commonInit()
+	this.commonInit(numInstances)
 }
 
 func (this *InstancedEntity3D) GetShader() Shader {

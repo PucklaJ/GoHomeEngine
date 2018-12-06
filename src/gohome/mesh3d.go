@@ -20,6 +20,7 @@ type Mesh3D interface {
 	HasUV() bool
 	AABB() AxisAlignedBoundingBox
 	Copy() Mesh3D
+	LoadedToGPU() bool
 }
 
 func Box(name string, size mgl32.Vec3, loadToGPU bool) Mesh3D {

@@ -155,6 +155,15 @@ func (this *InstancedModel3D) GetNumUsedInstances() uint32 {
 	}
 }
 
+func (this *InstancedModel3D) LoadedToGPU() bool {
+	for _, m := range this.meshes {
+		if !m.LoadedToGPU() {
+			return false
+		}
+	}
+	return true
+}
+
 func InstancedModel3DFromModel3D(m *Model3D) (im *InstancedModel3D) {
 	im = &InstancedModel3D{}
 	im.meshes = make([]InstancedMesh3D, len(m.meshes))

@@ -940,3 +940,67 @@ func (this *OpenGLInstancedMesh3D) SetNumUsedInstances(n uint32) {
 func (this *OpenGLInstancedMesh3D) GetNumUsedInstances() uint32 {
 	return this.numUsedInstances
 }
+
+func (this *OpenGLInstancedMesh3D) LoadedToGPU() bool {
+	return this.loaded
+}
+
+func (this *OpenGLRenderer) InstancedMesh3DFromLoadedMesh3D(mesh gohome.Mesh3D) gohome.InstancedMesh3D {
+	oglmesh := mesh.(*OpenGLMesh3D)
+	ioglmesh := CreateOpenGLInstancedMesh3D(oglmesh.Name)
+	ioglmesh.numVertices = oglmesh.numVertices
+	ioglmesh.numIndices = oglmesh.numIndices
+
+	ioglmesh.numInstances = 0
+
+	var verticesSize uint32 = ioglmesh.numVertices * MESH3DVERTEX_SIZE
+	var indicesSize uint32 = ioglmesh.numIndices * gohome.INDEX_SIZE
+	if ioglmesh.canUseInstanced {
+		ioglmesh.instancedSize = 0
+	}
+	bufferSize := int(verticesSize) + int(indicesSize)
+	var usage uint32
+	if ioglmesh.canUseInstanced {
+		usage = gl.DYNAMIC_DRAW
+	} else {
+		usage = gl.STATIC_DRAW
+	}
+
+	if ioglmesh.canUseVAOs {
+		gl.GenVertexArrays(1, &ioglmesh.vao)
+	}
+	gl.GenBuffers(1, &ioglmesh.buffer)
+	handleOpenGLError("InstancedMesh3D", ioglmesh.Name, "GenBuffer: ")
+
+	gl.BindBuffer(gl.ARRAY_BUFFER, ioglmesh.buffer)
+	gl.BufferData(gl.ARRAY_BUFFER, bufferSize, nil, usage)
+	handleOpenGLError("InstancedMesh3D", ioglmesh.Name, "BufferData: ")
+
+	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, oglmesh.buffer)
+	gl.CopyBufferSubData(gl.ELEMENT_ARRAY_BUFFER, gl.ARRAY_BUFFER, 0, 0, bufferSize)
+	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, 0)
+	gl.BindBuffer(gl.ARRAY_BUFFER, 0)
+
+	if ioglmesh.canUseInstanced {
+		ioglmesh.sizePerInstance = 0
+	}
+	ioglmesh.numUsedInstances = 0
+
+	if ioglmesh.canUseVAOs {
+		gl.BindVertexArray(ioglmesh.vao)
+		ioglmesh.attributePointer()
+		gl.BindVertexArray(0)
+	}
+
+	ioglmesh.deleteElements()
+	if ioglmesh.canUseInstanced {
+		ioglmesh.calculateOffsets()
+	}
+	ioglmesh.loaded = true
+
+	ioglmesh.aabb = oglmesh.aabb
+	ioglmesh.hasUV = oglmesh.hasUV
+	ioglmesh.tangentsCalculated = true
+
+	return ioglmesh
+}

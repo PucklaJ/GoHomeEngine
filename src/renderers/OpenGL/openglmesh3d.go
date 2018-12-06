@@ -29,6 +29,7 @@ type OpenGLMesh3D struct {
 	tangentsCalculated bool
 	canUseVAOs         bool
 	hasUV              bool
+	loaded             bool
 
 	aabb gohome.AxisAlignedBoundingBox
 }
@@ -184,7 +185,9 @@ func (oglm *OpenGLMesh3D) attributePointer() {
 }
 
 func (oglm *OpenGLMesh3D) Load() {
-
+	if oglm.loaded {
+		return
+	}
 	oglm.numVertices = uint32(len(oglm.vertices))
 	oglm.numIndices = uint32(len(oglm.indices))
 
@@ -220,6 +223,7 @@ func (oglm *OpenGLMesh3D) Load() {
 	}
 
 	oglm.deleteElements()
+	oglm.loaded = true
 }
 
 func (oglm *OpenGLMesh3D) Render() {
@@ -308,4 +312,8 @@ func (oglm *OpenGLMesh3D) Copy() gohome.Mesh3D {
 	oglm1.canUseVAOs = oglm.canUseVAOs
 	oglm1.aabb = oglm.aabb
 	return &oglm1
+}
+
+func (oglm *OpenGLMesh3D) LoadedToGPU() bool {
+	return oglm.loaded
 }
