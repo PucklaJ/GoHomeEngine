@@ -57,7 +57,7 @@ func (this *InstancedEntity3D) commonInit(numInstances uint32) {
 		}
 	}
 
-	this.Model3D.AddValue(VALUE_MAT4)
+	this.Model3D.AddValueFront(VALUE_MAT4)
 	this.Model3D.SetName(0, VALUE_MAT4, "transformMatrix3D")
 	if this.Model3D.LoadedToGPU() {
 		this.Model3D.SetNumInstances(numInstances)

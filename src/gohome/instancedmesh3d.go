@@ -56,6 +56,7 @@ type InstancedMesh3D interface {
 	SetNumUsedInstances(n uint32)
 	GetNumUsedInstances() uint32
 	AddValue(valueType uint32)
+	AddValueFront(valueType uint32)
 	SetF(index uint32, value []float32)
 	SetV2(index uint32, value []mgl32.Vec2)
 	SetV3(index uint32, value []mgl32.Vec3)

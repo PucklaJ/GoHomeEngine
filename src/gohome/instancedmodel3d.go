@@ -73,6 +73,12 @@ func (this *InstancedModel3D) AddValue(valueType uint32) {
 	}
 }
 
+func (this *InstancedModel3D) AddValueFront(valueType uint32) {
+	for _, m := range this.meshes {
+		m.AddValueFront(valueType)
+	}
+}
+
 func (this *InstancedModel3D) SetName(index, valueType uint32, value string) {
 	for _, m := range this.meshes {
 		m.SetName(index, valueType, value)

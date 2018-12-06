@@ -169,17 +169,17 @@ func getSize(valueType uint32) uint32 {
 	case gohome.VALUE_FLOAT:
 		return 4
 	case gohome.VALUE_VEC2:
-		return 4 * 2
+		return getSize(gohome.VALUE_FLOAT) * 2
 	case gohome.VALUE_VEC3:
-		return 4 * 3
+		return getSize(gohome.VALUE_FLOAT) * 3
 	case gohome.VALUE_VEC4:
-		return 4 * 4
+		return getSize(gohome.VALUE_FLOAT) * 4
 	case gohome.VALUE_MAT2:
-		return 4 * 2 * 2
+		return getSize(gohome.VALUE_VEC2) * 2
 	case gohome.VALUE_MAT3:
-		return 4 * 3 * 3
+		return getSize(gohome.VALUE_VEC3) * 3
 	case gohome.VALUE_MAT4:
-		return 4 * 4 * 4
+		return getSize(gohome.VALUE_VEC4) * 4
 	}
 
 	return 0
@@ -673,6 +673,33 @@ func (this *OpenGLInstancedMesh3D) addValueTypeIndexOffset(valueType uint32) {
 		index:     maxIndex,
 		offset:    0,
 	})
+}
+
+func (this *OpenGLInstancedMesh3D) addValueTypeIndexOffsetFront(valueType uint32) {
+	var maxIndex uint32 = 0
+	for i := 0; i < len(this.valueTypeIndexOffsets); i++ {
+		if this.valueTypeIndexOffsets[i].valueType == valueType {
+			if this.valueTypeIndexOffsets[i].index >= maxIndex {
+				maxIndex = this.valueTypeIndexOffsets[i].index + 1
+			}
+		}
+	}
+	this.valueTypeIndexOffsets = append([]valueTypeIndexOffset{
+		valueTypeIndexOffset{
+			valueType: valueType,
+			index:     maxIndex,
+			offset:    0,
+		},
+	}, this.valueTypeIndexOffsets...)
+}
+
+func (this *OpenGLInstancedMesh3D) AddValueFront(valueType uint32) {
+	if this.canUseInstanced {
+		this.customValues = append(this.customValues, valueType)
+		this.addValueTypeIndexOffsetFront(valueType)
+	} else {
+		this.AddValue(valueType)
+	}
 }
 
 func (this *OpenGLInstancedMesh3D) AddValue(valueType uint32) {

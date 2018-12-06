@@ -5,7 +5,6 @@ import (
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
 	"golang.org/x/mobile/exp/f32"
 	"golang.org/x/mobile/gl"
-	// "log"
 )
 
 type OpenGLESMesh2D struct {

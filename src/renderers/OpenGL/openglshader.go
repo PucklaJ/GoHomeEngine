@@ -15,6 +15,7 @@ type OpenGLShader struct {
 	shaders             [6]uint32
 	uniform_locations   map[string]int32
 	attribute_locations map[string]uint32
+	attribute_sizes     map[string]uint32
 	validated           bool
 }
 
@@ -79,7 +80,18 @@ func toShaderTypeName(shader_type uint32) string {
 	return getShaderTypeName(toGohomeShaderType(shader_type))
 }
 
-func getAttributeNames(program uint32, src string) []string {
+func getAttributeSizeForType(atype string) uint32 {
+	switch atype {
+	case "mat3":
+		return 3
+	case "mat4":
+		return 4
+	}
+
+	return 1
+}
+
+func (s *OpenGLShader) getAttributeNames(program uint32, src string) []string {
 	var line bytes.Buffer
 	var lineString string
 	var attributeNames []string
@@ -91,6 +103,8 @@ func getAttributeNames(program uint32, src string) []string {
 	var wordsString []string
 	var readWord bool = false
 	var version uint32 = 0
+
+	s.attribute_sizes = make(map[string]uint32)
 
 	for curIndex < uint32(len(src)) {
 		for curChar = ' '; curChar != '\n' && curChar != 13; curChar = src[curIndex] {
@@ -106,7 +120,7 @@ func getAttributeNames(program uint32, src string) []string {
 		curWord = 0
 		for curWordIndex = 0; curWordIndex < uint32(len(lineString)); curWordIndex++ {
 			curChar = lineString[curWordIndex]
-			if curChar == ' ' {
+			if curChar == ' ' || curChar == '\t' {
 				if readWord {
 					wordsString[curWord] = wordBuffer.String()
 					wordBuffer.Reset()
@@ -138,6 +152,7 @@ func getAttributeNames(program uint32, src string) []string {
 					wordsString[2] = wordsString[2][:len(wordsString[2])-1]
 				}
 				attributeNames = append(attributeNames, wordsString[2])
+				s.attribute_sizes[wordsString[2]] = getAttributeSizeForType(wordsString[1])
 			}
 		}
 		wordsString = append(wordsString[len(wordsString):], wordsString[:0]...)
@@ -146,15 +161,17 @@ func getAttributeNames(program uint32, src string) []string {
 	return attributeNames
 }
 
-func bindAttributesFromFile(program uint32, src string) {
-	attributeNames := getAttributeNames(program, src)
+func (s *OpenGLShader) bindAttributesFromFile(program uint32, src string) {
+	attributeNames := s.getAttributeNames(program, src)
 
+	var index uint32 = 0
 	for i := 0; i < len(attributeNames); i++ {
-		gl.BindAttribLocation(program, uint32(i), gl.Str(attributeNames[i]+"\x00"))
+		gl.BindAttribLocation(program, index, gl.Str(attributeNames[i]+"\x00"))
+		index += s.attribute_sizes[attributeNames[i]]
 	}
 }
 
-func compileOpenGLShader(shader_name string, shader_type uint32, src **uint8, program uint32) (uint32, error) {
+func (s *OpenGLShader) compileOpenGLShader(shader_name string, shader_type uint32, src **uint8, program uint32) (uint32, error) {
 	shader := gl.CreateShader(shader_type)
 	gl.ShaderSource(shader, 1, src, nil)
 	gl.CompileShader(shader)
@@ -176,7 +193,7 @@ func compileOpenGLShader(shader_name string, shader_type uint32, src **uint8, pr
 		return 0, &OpenGLError{errorString: "Couldn't attach " + toShaderTypeName(shader_type) + " of " + shader_name + ": ErrorCode: " + strconv.Itoa(int(err))}
 	}
 	if shader_type == gl.VERTEX_SHADER {
-		bindAttributesFromFile(program, gl.GoStr(*src))
+		s.bindAttributesFromFile(program, gl.GoStr(*src))
 	}
 
 	return shader, nil
@@ -196,17 +213,17 @@ func (s *OpenGLShader) AddShader(shader_type uint8, src string) error {
 	var shaderName uint32
 	switch shader_type {
 	case gohome.VERTEX:
-		shaderName, err = compileOpenGLShader(s.name, gl.VERTEX_SHADER, csource, s.program)
+		shaderName, err = s.compileOpenGLShader(s.name, gl.VERTEX_SHADER, csource, s.program)
 	case gohome.FRAGMENT:
-		shaderName, err = compileOpenGLShader(s.name, gl.FRAGMENT_SHADER, csource, s.program)
+		shaderName, err = s.compileOpenGLShader(s.name, gl.FRAGMENT_SHADER, csource, s.program)
 	case gohome.GEOMETRY:
-		shaderName, err = compileOpenGLShader(s.name, gl.GEOMETRY_SHADER, csource, s.program)
+		shaderName, err = s.compileOpenGLShader(s.name, gl.GEOMETRY_SHADER, csource, s.program)
 	case gohome.TESSELLETION:
-		shaderName, err = compileOpenGLShader(s.name, gl.TESS_CONTROL_SHADER, csource, s.program)
+		shaderName, err = s.compileOpenGLShader(s.name, gl.TESS_CONTROL_SHADER, csource, s.program)
 	case gohome.EVELUATION:
-		shaderName, err = compileOpenGLShader(s.name, gl.TESS_EVALUATION_SHADER, csource, s.program)
+		shaderName, err = s.compileOpenGLShader(s.name, gl.TESS_EVALUATION_SHADER, csource, s.program)
 	case gohome.COMPUTE:
-		shaderName, err = compileOpenGLShader(s.name, gl.COMPUTE_SHADER, csource, s.program)
+		shaderName, err = s.compileOpenGLShader(s.name, gl.COMPUTE_SHADER, csource, s.program)
 	}
 
 	if err != nil {
