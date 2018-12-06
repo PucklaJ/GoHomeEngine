@@ -24,7 +24,7 @@ func CreateOpenGLMesh2D(name string) *OpenGLMesh2D {
 	}
 
 	render, _ := gohome.Render.(*OpenGLRenderer)
-	mesh.canUseVAOs = render.hasFunctionAvailable("VERTEX_ARRAY")
+	mesh.canUseVAOs = render.HasFunctionAvailable("VERTEX_ARRAY")
 
 	return &mesh
 }

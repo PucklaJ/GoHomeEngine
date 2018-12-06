@@ -21,7 +21,7 @@ type OpenGLShape2DInterface struct {
 
 func (this *OpenGLShape2DInterface) Init() {
 	render := gohome.Render.(*OpenGLRenderer)
-	this.canUseVaos = render.hasFunctionAvailable("VERTEX_ARRAY")
+	this.canUseVaos = render.HasFunctionAvailable("VERTEX_ARRAY")
 	this.loaded = false
 	this.openglDrawMode = gl.POINTS
 }

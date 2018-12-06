@@ -159,7 +159,7 @@ func CreateOpenGLMesh3D(name string) *OpenGLMesh3D {
 		tangentsCalculated: false,
 	}
 	render, _ := gohome.Render.(*OpenGLRenderer)
-	mesh.canUseVAOs = render.hasFunctionAvailable("VERTEX_ARRAY")
+	mesh.canUseVAOs = render.HasFunctionAvailable("VERTEX_ARRAY")
 
 	return &mesh
 }

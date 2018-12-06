@@ -68,7 +68,7 @@ func (this *OpenGLRenderer) Init() error {
 	this.availableFunctions = make(map[string]bool)
 	this.gatherAvailableFunctions()
 
-	if !this.hasFunctionAvailable("VERTEX_ID") || !this.hasFunctionAvailable("MULTISAMPLE") {
+	if !this.HasFunctionAvailable("VERTEX_ID") || !this.HasFunctionAvailable("MULTISAMPLE") {
 		this.createBackBufferMesh()
 	}
 
@@ -346,14 +346,14 @@ func (this *OpenGLRenderer) gatherAvailableFunctions() {
 	}
 }
 
-func (this *OpenGLRenderer) hasFunctionAvailable(function string) bool {
+func (this *OpenGLRenderer) HasFunctionAvailable(function string) bool {
 	v, ok := this.availableFunctions[function]
 	return ok && v
 }
 
 func (this *OpenGLRenderer) FilterShaderFiles(name, file, shader_type string) string {
 	if name == "BackBufferShader" {
-		if !this.hasFunctionAvailable("MULTISAMPLE") {
+		if !this.HasFunctionAvailable("MULTISAMPLE") {
 			if shader_type == "Vertex File" {
 				file = "backBufferShaderNoMSVert.glsl"
 			} else if shader_type == "Fragment File" {
@@ -361,7 +361,7 @@ func (this *OpenGLRenderer) FilterShaderFiles(name, file, shader_type string) st
 			}
 		}
 	} else if name == "PostProcessingShader" {
-		if !this.hasFunctionAvailable("MULTISAMPLE") {
+		if !this.HasFunctionAvailable("MULTISAMPLE") {
 			if shader_type == "Vertex File" {
 				file = "postProcessingShaderNoMSVert.glsl"
 			} else if shader_type == "Fragment File" {
@@ -369,7 +369,7 @@ func (this *OpenGLRenderer) FilterShaderFiles(name, file, shader_type string) st
 			}
 		}
 	} else if name == "RenderScreenShader" {
-		if !this.hasFunctionAvailable("MULTISAMPLE") {
+		if !this.HasFunctionAvailable("MULTISAMPLE") {
 			if shader_type == "Vertex File" {
 				file = "postProcessingShaderNoMSVert.glsl"
 			} else if shader_type == "Fragment File" {
@@ -383,7 +383,7 @@ func (this *OpenGLRenderer) FilterShaderFiles(name, file, shader_type string) st
 
 func (this *OpenGLRenderer) FilterShaderSource(name, source, shader_type string) string {
 	if name == "BackBufferShader" {
-		if !this.hasFunctionAvailable("MULTISAMPLE") {
+		if !this.HasFunctionAvailable("MULTISAMPLE") {
 			if shader_type == "Vertex File" {
 				source = gohome.BACKBUFFER_NOMS_SHADER_VERTEX_SOURCE_OPENGL
 			} else if shader_type == "Fragment File" {
@@ -391,7 +391,7 @@ func (this *OpenGLRenderer) FilterShaderSource(name, source, shader_type string)
 			}
 		}
 	} else if name == "PostProcessingShader" {
-		if !this.hasFunctionAvailable("MULTISAMPLE") {
+		if !this.HasFunctionAvailable("MULTISAMPLE") {
 			if shader_type == "Vertex File" {
 				source = gohome.POST_PROCESSING_SHADER_NOMS_VERTEX_SOURCE_OPENGL
 			} else if shader_type == "Fragment File" {
@@ -399,7 +399,7 @@ func (this *OpenGLRenderer) FilterShaderSource(name, source, shader_type string)
 			}
 		}
 	} else if name == "RenderScreenShader" {
-		if !this.hasFunctionAvailable("MULTISAMPLE") {
+		if !this.HasFunctionAvailable("MULTISAMPLE") {
 			if shader_type == "Vertex File" {
 				source = gohome.POST_PROCESSING_SHADER_NOMS_VERTEX_SOURCE_OPENGL
 			} else if shader_type == "Fragment File" {
@@ -407,25 +407,25 @@ func (this *OpenGLRenderer) FilterShaderSource(name, source, shader_type string)
 			}
 		}
 	} else if name == gohome.ENTITY_3D_INSTANCED_SHADER_NAME {
-		if !this.hasFunctionAvailable("INSTANCED") {
+		if !this.HasFunctionAvailable("INSTANCED") {
 			if shader_type == "Vertex File" {
 				source = gohome.ENTITY_3D_SHADER_VERTEX_SOURCE_OPENGL
 			}
 		}
 	} else if name == gohome.ENTITY_3D_INSTANCED_NOUV_SHADER_NAME {
-		if !this.hasFunctionAvailable("INSTANCED") {
+		if !this.HasFunctionAvailable("INSTANCED") {
 			if shader_type == "Vertex File" {
 				source = gohome.ENTITY_3D_NOUV_SHADER_VERTEX_SOURCE_OPENGL
 			}
 		}
 	} else if name == gohome.ENTITY_3D_INSTANCED_NO_SHADOWS_SHADER_NAME {
-		if !this.hasFunctionAvailable("INSTANCED") {
+		if !this.HasFunctionAvailable("INSTANCED") {
 			if shader_type == "Vertex File" {
 				source = gohome.ENTITY_3D_NO_SHADOWS_SHADER_VERTEX_SOURCE_OPENGL
 			}
 		}
 	} else if name == gohome.ENTITY_3D_INSTANCED_NOUV_NO_SHADOWS_SHADER_NAME {
-		if !this.hasFunctionAvailable("INSTANCED") {
+		if !this.HasFunctionAvailable("INSTANCED") {
 			if shader_type == "Vertex File" {
 				source = gohome.ENTITY_3D_NOUV_SHADER_VERTEX_SOURCE_OPENGL
 			}

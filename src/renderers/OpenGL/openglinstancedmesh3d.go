@@ -61,8 +61,8 @@ func CreateOpenGLInstancedMesh3D(name string) *OpenGLInstancedMesh3D {
 		tangentsCalculated: false,
 	}
 	render, _ := gohome.Render.(*OpenGLRenderer)
-	mesh.canUseVAOs = render.hasFunctionAvailable("VERTEX_ARRAY")
-	mesh.canUseInstanced = render.hasFunctionAvailable("INSTANCED")
+	mesh.canUseVAOs = render.HasFunctionAvailable("VERTEX_ARRAY")
+	mesh.canUseInstanced = render.HasFunctionAvailable("INSTANCED")
 	if !mesh.canUseInstanced {
 		mesh.namesForIndex = make(map[indexValueType]string)
 	}

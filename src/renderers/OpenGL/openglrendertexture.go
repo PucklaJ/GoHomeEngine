@@ -58,7 +58,7 @@ func (this *OpenGLRenderTexture) loadTextures(width, height, textures uint32, cu
 		}
 		if this.shadowMap {
 			if cubeMap {
-				if render.hasFunctionAvailable("FRAMEBUFFER_TEXTURE") {
+				if render.HasFunctionAvailable("FRAMEBUFFER_TEXTURE") {
 					gl.GetError()
 					gl.FramebufferTexture(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, oglcubemap.oglName, 0)
 					handleOpenGLError("RenderTexture", this.Name, "glFramebufferTexture with depthBuffer and CubeMap")
@@ -74,7 +74,7 @@ func (this *OpenGLRenderTexture) loadTextures(width, height, textures uint32, cu
 			}
 		} else {
 			if cubeMap {
-				if render.hasFunctionAvailable("FRAMEBUFFER_TEXTURE") {
+				if render.HasFunctionAvailable("FRAMEBUFFER_TEXTURE") {
 					gl.GetError()
 					gl.FramebufferTexture(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0+i, oglcubemap.oglName, 0)
 					handleOpenGLError("RenderTexture", this.Name, "glFramebufferTexture with CubeMap")
@@ -135,7 +135,7 @@ func (this *OpenGLRenderTexture) Create(name string, width, height, textures uin
 
 	this.Name = name
 	this.shadowMap = shadowMap
-	this.multiSampled = multiSampled && render.hasFunctionAvailable("MULTISAMPLE")
+	this.multiSampled = multiSampled && render.HasFunctionAvailable("MULTISAMPLE")
 	this.depthBuffer = depthBuffer && !shadowMap
 	this.cubeMap = cubeMap
 

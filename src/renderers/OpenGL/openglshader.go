@@ -185,7 +185,7 @@ func compileOpenGLShader(shader_name string, shader_type uint32, src **uint8, pr
 func (s *OpenGLShader) AddShader(shader_type uint8, src string) error {
 	if shader_type == gohome.GEOMETRY {
 		render, _ := gohome.Render.(*OpenGLRenderer)
-		if !render.hasFunctionAvailable("GEOMETRY_SHADER") {
+		if !render.HasFunctionAvailable("GEOMETRY_SHADER") {
 			return &OpenGLError{errorString: "Geometry shaders are not supported by this implementation"}
 		}
 	}
@@ -516,7 +516,7 @@ func (s *OpenGLShader) validate() error {
 	s.Unuse()
 	s.validated = true
 	var vao uint32
-	if render.hasFunctionAvailable("VERTEX_ARRAY") {
+	if render.HasFunctionAvailable("VERTEX_ARRAY") {
 		gl.CreateVertexArrays(1, &vao)
 		gl.BindVertexArray(vao)
 		defer gl.DeleteVertexArrays(1, &vao)
