@@ -12,7 +12,6 @@ type ModelScene struct {
 func (this *ModelScene) Init() {
 	gohome.ErrorMgr.DuplicateMessages = false
 	gohome.ErrorMgr.ErrorLevel = gohome.ERROR_LEVEL_WARNING
-
 	gohome.Init3DShaders()
 	gohome.ResourceMgr.PreloadLevel("Gopher", "gopher.obj", true)
 	gohome.ResourceMgr.LoadPreloadedResources()
