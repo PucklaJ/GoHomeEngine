@@ -330,6 +330,7 @@ func (this *OpenGLRenderer) gatherAvailableFunctions() {
 	if combined >= 30 {
 		this.availableFunctions["VERTEX_ID"] = true
 		this.availableFunctions["VERTEX_ARRAY"] = true
+		this.availableFunctions["BLIT_FRAMEBUFFER"] = true
 	}
 	if combined >= 31 {
 		this.availableFunctions["INSTANCED"] = true

@@ -276,21 +276,24 @@ func (rmgr *RenderManager) renderToScreen() {
 	if !rmgr.EnableBackBuffer {
 		return
 	}
-
-	if rmgr.BackBufferShader != nil {
-		rmgr.BackBufferShader.Use()
-		rmgr.BackBufferShader.SetUniformI("BackBuffer", 0)
-		rmgr.BackBufferShader.SetUniformF("depth", -1.0)
-	}
-	if rmgr.BackBufferMS != nil {
-		rmgr.BackBufferMS.Bind(0)
-	}
-	Render.RenderBackBuffer()
-	if rmgr.BackBufferMS != nil {
-		rmgr.BackBufferMS.Unbind(0)
-	}
-	if rmgr.BackBufferShader != nil {
-		rmgr.BackBufferShader.Unuse()
+	if !Render.HasFunctionAvailable("MULTISAMPLE") && Render.HasFunctionAvailable("BLIT_FRAMEBUFFER") {
+		rmgr.BackBufferMS.Blit(nil)
+	} else {
+		if rmgr.BackBufferShader != nil {
+			rmgr.BackBufferShader.Use()
+			rmgr.BackBufferShader.SetUniformI("BackBuffer", 0)
+			rmgr.BackBufferShader.SetUniformF("depth", -1.0)
+		}
+		if rmgr.BackBufferMS != nil {
+			rmgr.BackBufferMS.Bind(0)
+		}
+		Render.RenderBackBuffer()
+		if rmgr.BackBufferMS != nil {
+			rmgr.BackBufferMS.Unbind(0)
+		}
+		if rmgr.BackBufferShader != nil {
+			rmgr.BackBufferShader.Unuse()
+		}
 	}
 }
 

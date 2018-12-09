@@ -211,18 +211,22 @@ func (this *OpenGLRenderTexture) UnsetAsTarget() {
 }
 
 func (this *OpenGLRenderTexture) Blit(rtex gohome.RenderTexture) {
+	var ortex *OpenGLRenderTexture
+	if rtex != nil {
+		ortex = rtex.(*OpenGLRenderTexture)
+	}
 	var width int32
 	var height int32
 	var x int32
 	var y int32
 	if rtex != nil {
-		rtex.SetAsTarget()
+		gl.BindFramebuffer(gl.DRAW_FRAMEBUFFER, ortex.fbo)
 		width = int32(rtex.GetWidth())
 		height = int32(rtex.GetHeight())
 		x = 0
 		y = 0
 	} else {
-		gl.BindFramebuffer(gl.DRAW_FRAMEBUFFER, 0)
+		gl.BindFramebuffer(gl.DRAW_FRAMEBUFFER, uint32(screenFramebuffer))
 		handleOpenGLError("RenderTexture", this.Name, "glBindFramebuffer with GL_DRAW_FRAMEBUFFER in Blit")
 		width = int32(this.prevViewport.Width)
 		height = int32(this.prevViewport.Height)
@@ -233,14 +237,11 @@ func (this *OpenGLRenderTexture) Blit(rtex gohome.RenderTexture) {
 	handleOpenGLError("RenderTexture", this.Name, "glBindFramebuffer with GL_READ_FRAMEBUFFER in Blit")
 	gl.BlitFramebuffer(0, 0, int32(this.GetWidth()), int32(this.GetHeight()), x, y, width, height, gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT|gl.STENCIL_BUFFER_BIT, gl.NEAREST)
 	handleOpenGLError("RenderTexture", this.Name, "glBlitFramebuffer")
-	if rtex != nil {
-		rtex.UnsetAsTarget()
-	} else {
-		gl.BindFramebuffer(gl.READ_FRAMEBUFFER, 0)
-		handleOpenGLError("RenderTexture", this.Name, "glBindFramebuffer with GL_READ_FRAMEBUFFER and 0 in Blit")
-		gl.BindFramebuffer(gl.DRAW_FRAMEBUFFER, 0)
-		handleOpenGLError("RenderTexture", this.Name, "glBindFramebuffer with GL_DRAW_FRAMEBUFFER and 0 in Blit")
-	}
+
+	gl.BindFramebuffer(gl.READ_FRAMEBUFFER, 0)
+	handleOpenGLError("RenderTexture", this.Name, "glBindFramebuffer with GL_READ_FRAMEBUFFER and 0 in Blit")
+	gl.BindFramebuffer(gl.DRAW_FRAMEBUFFER, 0)
+	handleOpenGLError("RenderTexture", this.Name, "glBindFramebuffer with GL_DRAW_FRAMEBUFFER and 0 in Blit")
 }
 
 func (this *OpenGLRenderTexture) Bind(unit uint32) {
