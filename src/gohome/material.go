@@ -1,7 +1,6 @@
 package gohome
 
 import (
-	// "fmt"
 	"github.com/PucklaMotzer09/mathgl/mgl32"
 	"image/color"
 	"math"
@@ -18,6 +17,7 @@ const (
 	MATERIAL_SPECULAR_TEXTURE_LOADED_UNIFORM_NAME string = "SpecularTextureLoaded"
 	MATERIAL_NORMALMAP_LOADED_UNIFORM_NAME        string = "NormalMapLoaded"
 	MATERIAL_NORMALMAP_UNIFORM_NAME               string = "normalMap"
+	MATERIAL_TRANSPARENCY_UNIFORM_NAME            string = "transparency"
 
 	MAX_SPECULAR_EXPONENT float64 = 50.0
 	MIN_SPECULAR_EXPONENT float64 = 5.0
@@ -60,7 +60,8 @@ type Material struct {
 	SpecularTexture Texture
 	NormalMap       Texture
 
-	Shinyness float32
+	Shinyness    float32
+	Transparency float32
 
 	DiffuseTextureLoaded  uint8
 	SpecularTextureLoaded uint8
@@ -73,6 +74,7 @@ func (mat *Material) InitDefault() {
 	mat.SpecularColor = &Color{255, 255, 255, 255}
 
 	mat.Shinyness = 0.5
+	mat.Transparency = 1.0
 }
 
 func (mat *Material) SetTextures(diffuse, specular, normalMap string) {

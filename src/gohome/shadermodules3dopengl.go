@@ -824,12 +824,13 @@ var (
 				bool NormalMapLoaded;
 
 				float shinyness;
+				float transparency;
 			}`, "", "material"},
 		},
 		Name: "materialCalculation",
-		Body: `finalDiffuseColor *= vec4(material.diffuseColor,1.0);
-			   finalSpecularColor *= vec4(material.specularColor,1.0);
-			   finalAmbientColor *= vec4(material.diffuseColor,1.0);`,
+		Body: `finalDiffuseColor *= vec4(material.diffuseColor,material.transparency);
+			   finalSpecularColor *= vec4(material.specularColor,0.0);
+			   finalAmbientColor *= vec4(material.diffuseColor,0.0);`,
 	}
 
 	DiffuseTextureModule3D = glslgen.Module{

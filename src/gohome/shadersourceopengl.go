@@ -386,20 +386,24 @@ uniform float farPlane;
 uniform struct Material
 {
 	bool DiffuseTextureLoaded;
+	float transparency;
 } material;
 uniform	sampler2D materialdiffuseTexture;
 
 
 vec4 fetchColor()
-{
+{	
+	vec4 col;
 	if(material.DiffuseTextureLoaded)
 	{
-		return texture2D(materialdiffuseTexture,fragTexCoord);
+		col = texture2D(materialdiffuseTexture,fragTexCoord);
 	}
 	else
 	{
-		return vec4(1.0,1.0,1.0,1.0);
+		col = vec4(1.0,1.0,1.0,1.0);
 	}
+
+	col.w *= material.transparency;
 }
 
 void main()
@@ -502,6 +506,7 @@ varying	vec2 fragTexCoord;
 uniform struct Material
 {
 	bool DiffuseTextureLoaded;
+	float transparency;
 } material;
 uniform sampler2D materialdiffuseTexture;
 
@@ -520,6 +525,7 @@ vec4 getDiffuseTexture()
 void main()
 {
 	vec4 texDifCol = getDiffuseTexture();
+	texDifCol.w *= material.transparency;
 
 	if(texDifCol.a < 0.1)
 	{

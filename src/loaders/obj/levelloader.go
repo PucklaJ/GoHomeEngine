@@ -150,7 +150,6 @@ func loadMaterialTexture(directory string, path string, preloaded bool) gohome.T
 
 func processMaterial(objLoader *OBJLoader, material *gohome.Material, mat *OBJMaterial, preloaded, loadToGPU bool) {
 	if mat == nil {
-		material.InitDefault()
 		return
 	}
 	material.Name = mat.Name
@@ -166,6 +165,7 @@ func processMaterial(objLoader *OBJLoader, material *gohome.Material, mat *OBJMa
 	if mat.NormalMap != "" {
 		material.NormalMap = loadMaterialTexture(objLoader.directory, mat.NormalMap, preloaded)
 	}
+	material.Transparency = mat.Transperancy
 
 }
 
