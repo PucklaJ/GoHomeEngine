@@ -36,26 +36,7 @@ func (this *InstancedEntity3D) commonInit(numInstances uint32) {
 	this.RenderLast = false
 	this.DepthTesting = true
 	this.RenderType = TYPE_3D_INSTANCED
-	this.Shader = ResourceMgr.GetShader(ENTITY_3D_INSTANCED_SHADER_NAME)
-	if this.Model3D != nil && !this.Model3D.HasUV() {
-		this.Shader = ResourceMgr.GetShader(ENTITY_3D_INSTANCED_NOUV_SHADER_NAME)
-		if this.Shader == nil {
-			LoadGeneratedShader3D(SHADER_FLAG_INSTANCED | SHADER_FLAG_NOUV)
-			this.Shader = ResourceMgr.GetShader(ENTITY_3D_INSTANCED_NOUV_SHADER_NAME)
-			if this.Shader == nil {
-				LoadGeneratedShader3D(SHADER_FLAG_INSTANCED | SHADER_FLAG_NOUV | SHADER_FLAG_NO_SHADOWS)
-				this.Shader = ResourceMgr.GetShader(ENTITY_3D_INSTANCED_NOUV_NO_SHADOWS_SHADER_NAME)
-				if this.Shader != nil {
-					ResourceMgr.SetShader(ENTITY_3D_INSTANCED_NOUV_SHADER_NAME, ENTITY_3D_INSTANCED_NOUV_NO_SHADOWS_SHADER_NAME)
-				}
-			}
-		}
-	} else {
-		if this.Shader == nil {
-			LoadGeneratedShader3D(SHADER_FLAG_INSTANCED)
-			this.Shader = ResourceMgr.GetShader(ENTITY_3D_INSTANCED_SHADER_NAME)
-		}
-	}
+	this.configureShader()
 
 	this.Model3D.AddValueFront(VALUE_MAT4)
 	this.Model3D.SetName(0, VALUE_MAT4, "transformMatrix3D")
@@ -74,6 +55,62 @@ func (this *InstancedEntity3D) commonInit(numInstances uint32) {
 		t.Scale = [3]float32{1.0, 1.0, 1.0}
 		t.Rotation = mgl32.QuatRotate(0.0, mgl32.Vec3{0.0, 1.0, 0.0})
 		t.SetTransformMatrixPointer(&this.transformMatrices[i])
+	}
+}
+
+func (this *InstancedEntity3D) configureShaderFlags() uint32 {
+	var flags uint32 = SHADER_FLAG_INSTANCED
+	if !this.Model3D.HasUV() {
+		flags |= SHADER_FLAG_NOUV
+	}
+	if LightMgr.CurrentLightCollection == -1 {
+		flags |= SHADER_FLAG_NO_LIGHTING
+	}
+	if this.Model3D.HasUV() {
+		var hasDif, hasSpec, hasNorm = false, false, false
+		for i := 0; i < len(this.Model3D.meshes); i++ {
+			m := this.Model3D.meshes[i]
+			mat := m.GetMaterial()
+			if mat.DiffuseColor != nil {
+				hasDif = true
+			}
+			if mat.SpecularTexture != nil {
+				hasSpec = true
+			}
+			if mat.NormalMap != nil {
+				hasNorm = true
+			}
+		}
+		if !hasDif {
+			flags |= SHADER_FLAG_NO_DIFTEX
+		}
+		if !hasSpec {
+			flags |= SHADER_FLAG_NO_SPECTEX
+		}
+		if !hasNorm {
+			flags |= SHADER_FLAG_NO_NORMAP
+		}
+	}
+
+	return flags
+}
+
+func (this *InstancedEntity3D) configureShader() {
+	flags := this.configureShaderFlags()
+	name := GetShaderName3D(flags)
+	this.Shader = ResourceMgr.GetShader(name)
+	if this.Shader == nil {
+		LoadGeneratedShader3D(flags)
+		this.Shader = ResourceMgr.GetShader(name)
+		if this.Shader == nil {
+			flags |= SHADER_FLAG_NO_SHADOWS
+			name = GetShaderName3D(flags)
+			this.Shader = ResourceMgr.GetShader(name)
+			if this.Shader == nil {
+				LoadGeneratedShader3D(flags)
+				this.Shader = ResourceMgr.GetShader(name)
+			}
+		}
 	}
 }
 

@@ -1,6 +1,8 @@
 package gohome
 
-import "github.com/PucklaMotzer09/mathgl/mgl32"
+import (
+	"github.com/PucklaMotzer09/mathgl/mgl32"
+)
 
 const (
 	ENTITY3D_SHADER_NAME                  string = "3D"
@@ -37,18 +39,60 @@ func (this *Entity3D) commonInit() {
 	this.RenderLast = false
 	this.DepthTesting = true
 	this.RenderType = TYPE_3D_NORMAL
-	this.Shader = ResourceMgr.GetShader(ENTITY3D_SHADER_NAME)
-	if this.Model3D != nil && !this.Model3D.HasUV() {
-		this.Shader = ResourceMgr.GetShader(ENTITY3D_NO_UV_SHADER_NAME)
+	this.configureShader()
+}
+
+func (this *Entity3D) configureShaderFlags() uint32 {
+	var flags uint32 = 0
+	if !this.Model3D.HasUV() {
+		flags |= SHADER_FLAG_NOUV
+	}
+	if LightMgr.CurrentLightCollection == -1 {
+		flags |= SHADER_FLAG_NO_LIGHTING
+	}
+	if this.Model3D.HasUV() {
+		var hasDif, hasSpec, hasNorm = false, false, false
+		for i := 0; i < len(this.Model3D.meshes); i++ {
+			m := this.Model3D.meshes[i]
+			mat := m.GetMaterial()
+			if mat.DiffuseColor != nil {
+				hasDif = true
+			}
+			if mat.SpecularTexture != nil {
+				hasSpec = true
+			}
+			if mat.NormalMap != nil {
+				hasNorm = true
+			}
+		}
+		if !hasDif {
+			flags |= SHADER_FLAG_NO_DIFTEX
+		}
+		if !hasSpec {
+			flags |= SHADER_FLAG_NO_SPECTEX
+		}
+		if !hasNorm {
+			flags |= SHADER_FLAG_NO_NORMAP
+		}
+	}
+
+	return flags
+}
+
+func (this *Entity3D) configureShader() {
+	flags := this.configureShaderFlags()
+	name := GetShaderName3D(flags)
+	this.Shader = ResourceMgr.GetShader(name)
+	if this.Shader == nil {
+		LoadGeneratedShader3D(flags)
+		this.Shader = ResourceMgr.GetShader(name)
 		if this.Shader == nil {
-			LoadGeneratedShader3D(SHADER_FLAG_NOUV)
-			this.Shader = ResourceMgr.GetShader(ENTITY3D_NO_UV_SHADER_NAME)
+			flags |= SHADER_FLAG_NO_SHADOWS
+			name = GetShaderName3D(flags)
+			this.Shader = ResourceMgr.GetShader(name)
 			if this.Shader == nil {
-				LoadGeneratedShader3D(SHADER_FLAG_NOUV | SHADER_FLAG_NO_SHADOWS)
-				this.Shader = ResourceMgr.GetShader(ENTITY3D_NO_UV_NO_SHADOWS_SHADER_NAME)
-				if this.Shader != nil {
-					ResourceMgr.SetShader(ENTITY3D_NO_UV_SHADER_NAME, ENTITY3D_NO_UV_NO_SHADOWS_SHADER_NAME)
-				}
+				LoadGeneratedShader3D(flags)
+				this.Shader = ResourceMgr.GetShader(name)
 			}
 		}
 	}

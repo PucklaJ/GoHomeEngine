@@ -920,6 +920,16 @@ var (
 	}
 )
 
+func GetShaderName3D(flags uint32) string {
+	var n = "3D"
+	for i := uint32(0); i < NUM_FLAGS; i++ {
+		if flags&(1<<i) != 0 {
+			n += " " + FLAG_NAMES_3D[i]
+		}
+	}
+	return n
+}
+
 func GenerateShader3D(flags uint32) (n, v, f string) {
 	startFlags := flags
 	if !Render.HasFunctionAvailable("INSTANCED") {
@@ -1012,12 +1022,7 @@ func GenerateShader3D(flags uint32) (n, v, f string) {
 
 	v = vertex.String()
 	f = fragment.String()
-	n = "3D"
-	for i := uint32(0); i < NUM_FLAGS; i++ {
-		if startFlags&(1<<i) != 0 {
-			n += " " + FLAG_NAMES_3D[i]
-		}
-	}
+	n = GetShaderName3D(startFlags)
 
 	return
 }
