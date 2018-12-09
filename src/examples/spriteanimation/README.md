@@ -1,4 +1,6 @@
-## License
+# SpriteAnimation
+
+![Screenshot](image.png)
 
 The images used for this example are created by [Balmer](https://opengameart.org/users/balmer) of opengameart.org under<br>
 <a href="http://creativecommons.org/licenses/by/3.0/" target="_blank">
