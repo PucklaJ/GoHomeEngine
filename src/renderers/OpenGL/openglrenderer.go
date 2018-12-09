@@ -406,30 +406,6 @@ func (this *OpenGLRenderer) FilterShaderSource(name, source, shader_type string)
 				source = gohome.RENDER_SCREEN_NOMS_SHADER_FRAGMENT_SOURCE_OPENGL
 			}
 		}
-	} else if name == gohome.ENTITY_3D_INSTANCED_SHADER_NAME {
-		if !this.HasFunctionAvailable("INSTANCED") {
-			if shader_type == "Vertex File" {
-				source = gohome.ENTITY_3D_SHADER_VERTEX_SOURCE_OPENGL
-			}
-		}
-	} else if name == gohome.ENTITY_3D_INSTANCED_NOUV_SHADER_NAME {
-		if !this.HasFunctionAvailable("INSTANCED") {
-			if shader_type == "Vertex File" {
-				source = gohome.ENTITY_3D_NOUV_SHADER_VERTEX_SOURCE_OPENGL
-			}
-		}
-	} else if name == gohome.ENTITY_3D_INSTANCED_NO_SHADOWS_SHADER_NAME {
-		if !this.HasFunctionAvailable("INSTANCED") {
-			if shader_type == "Vertex File" {
-				source = gohome.ENTITY_3D_NO_SHADOWS_SHADER_VERTEX_SOURCE_OPENGL
-			}
-		}
-	} else if name == gohome.ENTITY_3D_INSTANCED_NOUV_NO_SHADOWS_SHADER_NAME {
-		if !this.HasFunctionAvailable("INSTANCED") {
-			if shader_type == "Vertex File" {
-				source = gohome.ENTITY_3D_NOUV_SHADER_VERTEX_SOURCE_OPENGL
-			}
-		}
 	}
 
 	return source

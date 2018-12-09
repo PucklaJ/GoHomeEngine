@@ -41,10 +41,10 @@ func (this *Entity3D) commonInit() {
 	if this.Model3D != nil && !this.Model3D.HasUV() {
 		this.Shader = ResourceMgr.GetShader(ENTITY3D_NO_UV_SHADER_NAME)
 		if this.Shader == nil {
-			ResourceMgr.LoadShaderSource(ENTITY3D_NO_UV_SHADER_NAME, ENTITY_3D_NOUV_SHADER_VERTEX_SOURCE_OPENGL, ENTITY_3D_NOUV_SHADER_FRAGMENT_SOURCE_OPENGL, "", "", "", "")
+			LoadGeneratedShader3D(SHADER_FLAG_NOUV)
 			this.Shader = ResourceMgr.GetShader(ENTITY3D_NO_UV_SHADER_NAME)
 			if this.Shader == nil {
-				ResourceMgr.LoadShaderSource(ENTITY3D_NO_UV_NO_SHADOWS_SHADER_NAME, ENTITY_3D_NOUV_SHADER_VERTEX_SOURCE_OPENGL, ENTITY_3D_NOUV_NO_SHADOWS_SHADER_FRAGMENT_SOURCE_OPENGL, "", "", "", "")
+				LoadGeneratedShader3D(SHADER_FLAG_NOUV | SHADER_FLAG_NO_SHADOWS)
 				this.Shader = ResourceMgr.GetShader(ENTITY3D_NO_UV_NO_SHADOWS_SHADER_NAME)
 				if this.Shader != nil {
 					ResourceMgr.SetShader(ENTITY3D_NO_UV_SHADER_NAME, ENTITY3D_NO_UV_NO_SHADOWS_SHADER_NAME)

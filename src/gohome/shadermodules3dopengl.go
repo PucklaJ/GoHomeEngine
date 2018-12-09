@@ -103,7 +103,7 @@ var (
 
 	InitialiseModuleFragment3D = glslgen.Module{
 		Name: "initialise",
-		Body: `finalDiffuseColor = vec4(0.0,0.0,0.0,1.0);
+		Body: `finalDiffuseColor = vec4(1.0,1.0,1.0,1.0);
 			   finalSpecularColor = vec4(0.0);
 			   finalAmbientColor = vec4(0.0);`,
 	}
@@ -426,7 +426,8 @@ var (
 			},
 		},
 		Name: "calculateLights",
-		Body: `finalAmbientColor = vec4(ambientLight,1.0);
+		Body: `finalDiffuseColor = vec4(0.0,0.0,0.0,1.0);
+			   finalAmbientColor = vec4(ambientLight,1.0);
 			   calculateAllLights();`,
 	}
 
@@ -747,7 +748,7 @@ var (
 		},
 	}
 
-	LightCalculationNoVModule3D = glslgen.Module{
+	LightCalculationNoUVModule3D = glslgen.Module{
 		Functions: []glslgen.Function{
 			glslgen.Function{
 				"void calculatePointLight(PointLight pl,int index)",
@@ -875,93 +876,147 @@ var (
 	}
 )
 
+func LoadGeneratedShader3D(flags uint32) {
+	n, v, f := GenerateShader3D(flags)
+	ls(n, v, f)
+}
+
 func GenerateShaderSource3D() {
-	var entity3DVertex glslgen.VertexGenerator
-	var entity3DFragment glslgen.FragmentGenerator
-	var entity3DNoUVVertex glslgen.VertexGenerator
-	var entity3DNoUVFragment glslgen.FragmentGenerator
-	var entity3DInstancedVertex glslgen.VertexGenerator
-	var entity3DInstancedNoUVVertex glslgen.VertexGenerator
+	n, v, f := GenerateShader3D(0)
+	ls(n, v, f)
+	n, v, f = GenerateShader3D(SHADER_FLAG_NOUV)
+	ls(n, v, f)
+	n, v, f = GenerateShader3D(SHADER_FLAG_INSTANCED)
+	ls(n, v, f)
+	n, v, f = GenerateShader3D(SHADER_FLAG_INSTANCED | SHADER_FLAG_NOUV)
+	ls(n, v, f)
+}
 
-	entity3DVertex.SetVersion(ShaderVersion)
-	entity3DVertex.AddAttributes(Attributes3D)
-	entity3DVertex.AddOutputs(InputsFragment3D)
-	entity3DVertex.AddOutputs(InputsNormalFragment3D)
-	entity3DVertex.AddModule(UniformModuleVertex3D)
-	entity3DVertex.AddModule(UniformNormalModuleVertex3D)
-	entity3DVertex.AddModule(CalculatePositionModule3D)
-	entity3DVertex.AddModule(SetOutputsModuleVertex3D)
-	entity3DVertex.AddModule(SetOutputsNormalModuleVertex3D)
+func ls(n, v, f string) {
+	ResourceMgr.LoadShaderSource(n, v, f, "", "", "", "")
+}
 
-	entity3DInstancedVertex.SetVersion(ShaderVersion)
-	entity3DInstancedVertex.AddAttributes(Attributes3D)
-	entity3DInstancedVertex.AddAttributes(AttributesInstanced3D)
-	entity3DInstancedVertex.AddOutputs(InputsFragment3D)
-	entity3DInstancedVertex.AddOutputs(InputsNormalFragment3D)
-	entity3DInstancedVertex.AddModule(UniformModuleVertex3D)
-	entity3DInstancedVertex.AddModule(CalculatePositionModule3D)
-	entity3DInstancedVertex.AddModule(SetOutputsModuleVertex3D)
-	entity3DInstancedVertex.AddModule(SetOutputsNormalModuleVertex3D)
+const (
+	SHADER_FLAG_INSTANCED   uint32 = (1 << 0)
+	SHADER_FLAG_NOUV        uint32 = (1 << 1)
+	SHADER_FLAG_NO_SHADOWS  uint32 = (1 << 2)
+	SHADER_FLAG_NO_LIGHTING uint32 = (1 << 3)
+	SHADER_FLAG_NO_DIFTEX   uint32 = (1 << 4)
+	SHADER_FLAG_NO_SPECTEX  uint32 = (1 << 5)
+	SHADER_FLAG_NO_NORMAP   uint32 = (1 << 6)
+	NUM_FLAGS               uint32 = 7
+)
 
-	entity3DNoUVVertex.SetVersion(ShaderVersion)
-	entity3DNoUVVertex.AddAttributes(Attributes3D)
-	entity3DNoUVVertex.AddOutputs(InputsFragment3D)
-	entity3DNoUVVertex.AddModule(UniformModuleVertex3D)
-	entity3DNoUVVertex.AddModule(UniformNormalModuleVertex3D)
-	entity3DNoUVVertex.AddModule(CalculatePositionModule3D)
-	entity3DNoUVVertex.AddModule(SetOutputsModuleVertex3D)
-	entity3DNoUVVertex.AddModule(SetOutputsNoUVModuleVertex3D)
+var (
+	FLAG_NAMES_3D = [NUM_FLAGS]string{
+		"Instanced",
+		"NoUV",
+		"NoShadows",
+		"NoShadows NoLighting",
+		"NoDiftex",
+		"NoSpectex",
+		"NoNormap",
+	}
+)
 
-	entity3DInstancedNoUVVertex.SetVersion(ShaderVersion)
-	entity3DInstancedNoUVVertex.AddAttributes(Attributes3D)
-	entity3DInstancedNoUVVertex.AddAttributes(AttributesInstanced3D)
-	entity3DInstancedNoUVVertex.AddOutputs(InputsFragment3D)
-	entity3DInstancedNoUVVertex.AddModule(UniformModuleVertex3D)
-	entity3DInstancedNoUVVertex.AddModule(CalculatePositionModule3D)
-	entity3DInstancedNoUVVertex.AddModule(SetOutputsModuleVertex3D)
-	entity3DInstancedNoUVVertex.AddModule(SetOutputsNoUVModuleVertex3D)
+func GenerateShader3D(flags uint32) (n, v, f string) {
+	startFlags := flags
+	if !Render.HasFunctionAvailable("INSTANCED") {
+		flags &= ^SHADER_FLAG_INSTANCED
+	}
+	if flags&SHADER_FLAG_NO_LIGHTING != 0 {
+		flags |= SHADER_FLAG_NO_SHADOWS
+	}
+	if flags&SHADER_FLAG_NOUV != 0 {
+		flags |= SHADER_FLAG_NO_DIFTEX | SHADER_FLAG_NO_SPECTEX | SHADER_FLAG_NO_NORMAP
+	}
 
-	entity3DFragment.SetVersion(ShaderVersion)
-	entity3DFragment.AddMakros(LightMakrosFragment3D)
-	entity3DFragment.AddGlobals(GlobalsFragment3D)
-	entity3DFragment.AddGlobals(LightsAndShadowsGlobalsFragment3D)
-	entity3DFragment.AddInputs(InputsFragment3D)
-	entity3DFragment.AddInputs(InputsNormalFragment3D)
-	entity3DFragment.AddModule(InitialiseModuleFragment3D)
-	entity3DFragment.AddModule(InitialiseNormalModuleFragment3D)
-	entity3DFragment.AddModule(NormalMapModule3D)
-	entity3DFragment.AddModule(LightUniformsModule3D)
-	entity3DFragment.AddModule(LightCalcSpotAmountNormalModule3D)
-	entity3DFragment.AddModule(LightsAndShadowsFunctions3D)
-	entity3DFragment.AddModule(LightsAndShadowsCalculationModule3D)
-	entity3DFragment.AddModule(MaterialModule3D)
-	entity3DFragment.AddModule(DiffuseTextureModule3D)
-	entity3DFragment.AddModule(SpecularTextureModule3D)
-	entity3DFragment.AddModule(FinalModuleFragment3D)
+	var vertex glslgen.VertexGenerator
+	var fragment glslgen.FragmentGenerator
 
-	entity3DNoUVFragment.SetVersion(ShaderVersion)
-	entity3DNoUVFragment.AddMakros(LightMakrosFragment3D)
-	entity3DNoUVFragment.AddGlobals(GlobalsFragment3D)
-	entity3DNoUVFragment.AddGlobals(LightsAndShadowsGlobalsFragment3D)
-	entity3DNoUVFragment.AddInputs(InputsFragment3D)
-	entity3DNoUVFragment.AddModule(InitialiseModuleFragment3D)
-	entity3DNoUVFragment.AddModule(InitialiseNoUVModuleFragment3D)
-	entity3DNoUVFragment.AddModule(LightUniformsModule3D)
-	entity3DNoUVFragment.AddModule(LightCalcSpotAmountNoUVModule3D)
-	entity3DNoUVFragment.AddModule(LightsAndShadowsFunctions3D)
-	entity3DNoUVFragment.AddModule(LightsAndShadowsCalculationNoUVModule3D)
-	entity3DNoUVFragment.AddModule(MaterialModule3D)
-	entity3DNoUVFragment.AddModule(FinalModuleFragment3D)
+	vertex.SetVersion(ShaderVersion)
+	vertex.AddAttributes(Attributes3D)
+	if flags&SHADER_FLAG_INSTANCED != 0 {
+		vertex.AddAttributes(AttributesInstanced3D)
+	}
+	vertex.AddOutputs(InputsFragment3D)
+	if flags&SHADER_FLAG_NOUV == 0 {
+		vertex.AddOutputs(InputsNormalFragment3D)
+	}
+	vertex.AddModule(UniformModuleVertex3D)
+	if flags&SHADER_FLAG_INSTANCED == 0 {
+		vertex.AddModule(UniformNormalModuleVertex3D)
+	}
+	vertex.AddModule(CalculatePositionModule3D)
+	vertex.AddModule(SetOutputsModuleVertex3D)
+	if flags&SHADER_FLAG_NOUV == 0 {
+		vertex.AddModule(SetOutputsNormalModuleVertex3D)
+	} else {
+		vertex.AddModule(SetOutputsNoUVModuleVertex3D)
+	}
 
-	v := entity3DVertex.String()
-	f := entity3DFragment.String()
-	vnu := entity3DNoUVVertex.String()
-	fnu := entity3DNoUVFragment.String()
-	vi := entity3DInstancedVertex.String()
-	vinu := entity3DInstancedNoUVVertex.String()
+	lightFlag := flags & (SHADER_FLAG_NO_SHADOWS | SHADER_FLAG_NO_LIGHTING)
 
-	ResourceMgr.LoadShaderSource("3D", v, f, "", "", "", "")
-	ResourceMgr.LoadShaderSource("3D NoUV", vnu, fnu, "", "", "", "")
-	ResourceMgr.LoadShaderSource("3D Instanced", vi, f, "", "", "", "")
-	ResourceMgr.LoadShaderSource("3D Instanced NoUV", vinu, fnu, "", "", "", "")
+	fragment.SetVersion(ShaderVersion)
+	if flags&SHADER_FLAG_NO_LIGHTING == 0 {
+		fragment.AddMakros(LightMakrosFragment3D)
+	}
+	fragment.AddGlobals(GlobalsFragment3D)
+	if lightFlag == 0 {
+		fragment.AddGlobals(LightsAndShadowsGlobalsFragment3D)
+	}
+	fragment.AddInputs(InputsFragment3D)
+	if flags&SHADER_FLAG_NOUV == 0 {
+		fragment.AddInputs(InputsNormalFragment3D)
+	}
+	fragment.AddModule(InitialiseModuleFragment3D)
+	if flags&SHADER_FLAG_NOUV == 0 {
+		fragment.AddModule(InitialiseNormalModuleFragment3D)
+	} else {
+		fragment.AddModule(InitialiseNoUVModuleFragment3D)
+	}
+	if flags&(SHADER_FLAG_NO_NORMAP|SHADER_FLAG_NOUV) == 0 {
+		fragment.AddModule(NormalMapModule3D)
+	}
+	if flags&SHADER_FLAG_NO_LIGHTING == 0 {
+		fragment.AddModule(LightUniformsModule3D)
+		if flags&SHADER_FLAG_NOUV == 0 {
+			fragment.AddModule(LightCalcSpotAmountNormalModule3D)
+		} else {
+			fragment.AddModule(LightCalcSpotAmountNoUVModule3D)
+		}
+		if flags&SHADER_FLAG_NO_SHADOWS == 0 {
+			fragment.AddModule(LightsAndShadowsFunctions3D)
+			if flags&SHADER_FLAG_NOUV == 0 {
+				fragment.AddModule(LightsAndShadowsCalculationModule3D)
+			} else {
+				fragment.AddModule(LightsAndShadowsCalculationNoUVModule3D)
+			}
+		} else {
+			if flags&SHADER_FLAG_NOUV == 0 {
+				fragment.AddModule(LightCalculationModel3D)
+			} else {
+				fragment.AddModule(LightCalculationNoUVModule3D)
+			}
+		}
+	}
+	fragment.AddModule(MaterialModule3D)
+	if flags&SHADER_FLAG_NO_DIFTEX == 0 {
+		fragment.AddModule(DiffuseTextureModule3D)
+	}
+	if flags&SHADER_FLAG_NO_SPECTEX == 0 {
+		fragment.AddModule(SpecularTextureModule3D)
+	}
+	fragment.AddModule(FinalModuleFragment3D)
+
+	v = vertex.String()
+	f = fragment.String()
+	n = "3D"
+	for i := uint32(0); i < NUM_FLAGS; i++ {
+		if startFlags&(1<<i) != 0 {
+			n += " " + FLAG_NAMES_3D[i]
+		}
+	}
+
+	return
 }

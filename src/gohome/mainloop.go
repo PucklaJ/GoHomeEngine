@@ -134,16 +134,16 @@ func (this *MainLoop) Quit() {
 }
 
 func Init3DShaders() {
-	ResourceMgr.LoadShaderSource(ENTITY3D_SHADER_NAME, ENTITY_3D_SHADER_VERTEX_SOURCE_OPENGL, ENTITY_3D_SHADER_FRAGMENT_SOURCE_OPENGL, "", "", "", "")
+	LoadGeneratedShader3D(0)
 	if ResourceMgr.GetShader(ENTITY3D_SHADER_NAME) == nil {
-		ResourceMgr.LoadShaderSource("3D No Shadows", ENTITY_3D_NO_SHADOWS_SHADER_VERTEX_SOURCE_OPENGL, ENTITY_3D_NO_SHADOWS_SHADER_FRAGMENT_SOURCE_OPENGL, "", "", "", "")
-		if ResourceMgr.GetShader("3D No Shadows") == nil {
-			ResourceMgr.LoadShaderSource("3D Simple", ENTITY_3D_NO_SHADOWS_SHADER_VERTEX_SOURCE_OPENGL, ENTITY_3D_SIMPLE_SHADER_FRAGMENT_SOURCE_OPENGL, "", "", "", "")
-			if ResourceMgr.GetShader("3D Simple") != nil {
-				ResourceMgr.SetShader(ENTITY3D_SHADER_NAME, "3D Simple")
+		LoadGeneratedShader3D(SHADER_FLAG_NO_SHADOWS)
+		if ResourceMgr.GetShader("3D NoShadows") == nil {
+			LoadGeneratedShader3D(SHADER_FLAG_NO_SHADOWS | SHADER_FLAG_NOUV)
+			if ResourceMgr.GetShader("3D NoUV NoShadows") != nil {
+				ResourceMgr.SetShader(ENTITY3D_SHADER_NAME, "3D NoUV NoShadows")
 			}
 		} else {
-			ResourceMgr.SetShader(ENTITY3D_SHADER_NAME, "3D No Shadows")
+			ResourceMgr.SetShader(ENTITY3D_SHADER_NAME, "3D NoShadows")
 		}
 	}
 }

@@ -39,6 +39,7 @@ type Renderer interface {
 	DecrementTextureUnit(amount uint32)
 	FilterShaderFiles(name, file, shader_type string) string
 	FilterShaderSource(name, source, shader_type string) string
+	HasFunctionAvailable(name string) bool
 
 	InstancedMesh3DFromLoadedMesh3D(mesh Mesh3D) InstancedMesh3D
 }
