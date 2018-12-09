@@ -3,7 +3,7 @@
 [![License: Zlib](https://img.shields.io/badge/License-Zlib-green.svg)](https://github.com/PucklaMotzer09/GoHomeEngine/blob/master/LICENSE.md)
 [![GitHub last commit](https://img.shields.io/github/last-commit/PucklaMotzer09/GoHomeEngine.svg)](https://github.com/PucklaMotzer09/GoHomeEngine/commits/master)
 <br>
-A game engine for 2D and 3D games written in go
+A Game Engine for 2D/3D Games written in go
 
 ## Dependencies
 
@@ -13,11 +13,10 @@ A game engine for 2D and 3D games written in go
 + [go-openal](https://github.com/timshannon/go-openal) ([License](https://github.com/timshannon/go-openal/blob/master/LICENSE))
 + [go-wav](https://github.com/PucklaMotzer09/go-wav) ([Forked from here](https://github.com/sdobz/go-wav)) ([License](https://github.com/verdverm/go-wav/blob/master/LICENSE.md))
 + [go-mp3](https://github.com/hajimehoshi/go-mp3) ([License](https://github.com/hajimehoshi/go-mp3/blob/master/LICENSE))
-+ [box2d](https://github.com/BxteArena/box2d) ([License](https://github.com/ByteArena/box2d/blob/master/LICENSE.md))
++ [box2d](https://github.com/ByteArena/box2d) ([License](https://github.com/ByteArena/box2d/blob/master/LICENSE.md))
 + [tmx](https://github.com/PucklaMotzer09/tmx) ([Forked from here](https://github.com/elliotmr/tmx)) ([License](https://github.com/PucklaMotzer09/tmx/blob/master/LICENSE))
 
 ##### GLFWFramework
-+ [assimp](https://github.com/assimp/assimp) ([License](https://github.com/assimp/assimp/blob/master/LICENSE))
 + [glfw](https://github.com/glfw/glfw) ([License](https://github.com/glfw/glfw/blob/master/LICENSE.md))
 
 ##### GTKFramework
@@ -44,14 +43,18 @@ A game engine for 2D and 3D games written in go
 
 ##### General
 * Loading Shaders
-* Multiple Viewports
+* Dynamic Shader Generation
+* Multiple Viewports/Cameras
 * Tweens
 * Audio (.wav and .mp3)
+* GUI with [GTK](https://www.gtk.org)
+* Simple OnScreen GUI
+* Instancing
 
 ##### 3D
 * Rendering 3D Models
 * Camera
-* Loading 3D Models (with [assimp](http://assimp.org/))
+* Loading 3D Models (.obj)
 * Materials
 * SpecularMaps
 * NormalMaps
@@ -59,17 +62,22 @@ A game engine for 2D and 3D games written in go
 * DirectionalLights
 * SpotLights
 * Shadows of all three lighttypes
+* Ray Casting
+* [Level Editor](https://github.com/PucklaMotzer09/GoHomeEdit) (in development)
 
 ##### 2D
 * Rendering 2D Sprites
 * Camera (Translating, Rotating and Zooming) 
 * Sprite Animation
+* Rendering 2D Shapes (Point,Line,Rectangle,Polygon, etc.)
+* [Physics](https://box2d.org)
+* [TiledMaps](https://www.mapeditor.org)
 
 ## Installation
 1. Install the c-Dependencies:<br>
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	// For Desktop (The windows assimp library is provided with this repository)
-	sudo apt-get install libassimp-dev libx11-dev libxrandr-dev libxcursor-dev libxinerama-dev libpthread-stubs0-dev zlib1g-dev libglfw3-dev libgl1-mesa-dev libxi-dev
+	// For Desktop (Most of them should already be installed)
+	sudo apt-get install libx11-dev libxrandr-dev libxcursor-dev libxinerama-dev libpthread-stubs0-dev zlib1g-dev libglfw3-dev libgl1-mesa-dev libxi-dev
 	// For GTK
 	sudo apt-get install libgtk-3-dev
 	// On Windows use msys and execute one of the following commands
@@ -81,18 +89,21 @@ A game engine for 2D and 3D games written in go
 	// For Desktop
 	go get -u github.com/go-gl/gl/all-core
 	go get -u github.com/go-gl/glfw/v3.2
-	go get -u github.com/raedatoui/assimp
+	go get -u github.com/PucklaMotzer09/mathgl
 	go get -u github.com/phf/go-openal
 	go get -u github.com/PucklaMotzer09/go-wav
 	go get -u github.com/hajimehoshi/go-mp3
+	go get -u github.com/PucklaMotzer09/tmx
+	go get -u github.com/ByteArena/box2d
+	go get -u github.com/PucklaMotzer09/GLSLGenerator
 	// For Mobile
 	go get -u golang.org/x/mobile/cmd/gomobile
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 3. Compile one of the examples to test:<br>
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	cd $GOPATH/src/github.com/PucklaMotzer09/gohomeengine/src/examples/basic
-	$GOPATH/src/github.com/PucklaMotzer09/gohomeengine/build.sh -linux -run
-	// You should see a gopher in the middle (use -windows instead of -linux on windows)
+	cd $GOPATH/src/github.com/PucklaMotzer09/GoHomeEngine/src/examples/basic
+	go build && ./basic
+	// You should see a gopher in the middle
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ## Tutorial
@@ -103,9 +114,9 @@ The following code describes what is needed to write a game with GoHome
 package main
 
 import (
-	"github.com/PucklaMotzer09/gohomeengine/src/frameworks/GLFW"
-	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
-	"github.com/PucklaMotzer09/gohomeengine/src/renderers/OpenGL"
+	"github.com/PucklaMotzer09/GoHomeEngine/src/frameworks/GLFW"
+	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
+	"github.com/PucklaMotzer09/GoHomeEngine/src/renderers/OpenGL"
 )
 
 type StartScene struct {
