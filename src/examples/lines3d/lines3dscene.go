@@ -81,8 +81,6 @@ func (this *Lines3DScene) Init() {
 	this.lines.Load()
 
 	gohome.RenderMgr.AddObject(&this.lines)
-
-	gohome.RenderMgr.EnableBackBuffer = false
 }
 
 func (this *Lines3DScene) Update(delta_time float32) {
