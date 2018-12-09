@@ -353,5 +353,19 @@ func (this *OpenGLRenderTexture) GetData() ([]byte, int, int) {
 	if len(this.textures) == 0 {
 		return nil, 0, 0
 	}
+	if tex, ok := this.textures[0].(*OpenGLTexture); ok {
+		if !tex.multiSampled {
+			return tex.GetData()
+		} else {
+			if gohome.Render.HasFunctionAvailable("BLIT_FRAMEBUFFER") {
+				rtex := CreateOpenGLRenderTexture("Temp", uint32(this.GetWidth()), uint32(this.GetHeight()), 1, false, false, false, false)
+				this.Blit(rtex)
+				data, width, height := rtex.GetData()
+				rtex.Terminate()
+				return data, width, height
+			}
+		}
+	}
+
 	return this.textures[0].GetData()
 }

@@ -274,8 +274,14 @@ func (ogltex *OpenGLTexture) GetData() (data []byte, width int, height int) {
 	width = ogltex.GetWidth()
 	height = ogltex.GetHeight()
 	data = make([]byte, width*height*4)
-	gl.BindTexture(gl.TEXTURE_2D, ogltex.oglName)
-	gl.GetTexImage(gl.TEXTURE_2D, 0, gl.RGBA, gl.UNSIGNED_BYTE, unsafe.Pointer(&data[0]))
-	gl.BindTexture(gl.TEXTURE_2D, 0)
+	var target uint32
+	if ogltex.multiSampled {
+		target = gl.TEXTURE_2D_MULTISAMPLE
+	} else {
+		target = gl.TEXTURE_2D
+	}
+	gl.BindTexture(target, ogltex.oglName)
+	gl.GetTexImage(target, 0, gl.RGBA, gl.UNSIGNED_BYTE, unsafe.Pointer(&data[0]))
+	gl.BindTexture(target, 0)
 	return
 }

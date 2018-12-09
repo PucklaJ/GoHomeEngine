@@ -11,6 +11,7 @@
 *fsreplacer
 *basic
 *3dmodel
+!image.png
 *cube
 *gtkgui
 *lines3d
@@ -29,3 +30,4 @@
 *instancing
 *.tmx.
 *.glsl
+screenshot.png

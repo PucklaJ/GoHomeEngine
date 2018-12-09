@@ -11,8 +11,7 @@ type ModelScene struct {
 
 func (this *ModelScene) Init() {
 	gohome.ErrorMgr.DuplicateMessages = false
-	gohome.ErrorMgr.ErrorLevel = gohome.ERROR_LEVEL_WARNING
-	gohome.Init3DShaders()
+	gohome.LightMgr.DisableLighting()
 	gohome.ResourceMgr.PreloadLevel("Gopher", "gopher.obj", true)
 	gohome.ResourceMgr.LoadPreloadedResources()
 
@@ -22,10 +21,6 @@ func (this *ModelScene) Init() {
 	this.gopher.Transform.Scale = [3]float32{0.75, 0.75, 0.75}
 
 	gohome.RenderMgr.AddObject(&this.gopher)
-
-	gohome.LightMgr.CurrentLightCollection = -1
-	gohome.RenderMgr.EnableBackBuffer = false
-
 }
 
 func (this *ModelScene) Update(delta_time float32) {

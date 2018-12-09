@@ -5,40 +5,6 @@
 <br>
 A Game Engine for 2D/3D Games written in go
 
-## Dependencies
-
-##### General
-+ [mathgl](https://github.com/PucklaMotzer09/mathgl) ([Forked from here](https://github.com/go-gl/mathgl))([License](https://github.com/PucklaMotzer09/mathgl/blob/master/LICENSE))
-+ [tga](https://github.com/blezek/tga) ([License](https://github.com/blezek/tga/blob/master/LICENSE.MIT))
-+ [go-openal](https://github.com/timshannon/go-openal) ([License](https://github.com/timshannon/go-openal/blob/master/LICENSE))
-+ [go-wav](https://github.com/PucklaMotzer09/go-wav) ([Forked from here](https://github.com/sdobz/go-wav)) ([License](https://github.com/verdverm/go-wav/blob/master/LICENSE.md))
-+ [go-mp3](https://github.com/hajimehoshi/go-mp3) ([License](https://github.com/hajimehoshi/go-mp3/blob/master/LICENSE))
-+ [box2d](https://github.com/ByteArena/box2d) ([License](https://github.com/ByteArena/box2d/blob/master/LICENSE.md))
-+ [tmx](https://github.com/PucklaMotzer09/tmx) ([Forked from here](https://github.com/elliotmr/tmx)) ([License](https://github.com/PucklaMotzer09/tmx/blob/master/LICENSE))
-
-##### GLFWFramework
-+ [glfw](https://github.com/glfw/glfw) ([License](https://github.com/glfw/glfw/blob/master/LICENSE.md))
-
-##### GTKFramework
-+ [gtk](https://gtk.org) ([License](http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html))
-
-##### AndroidFramework
-+ [AndroidSDK](https://developer.android.com/studio/) ([License](https://developer.android.com/studio/terms))
-+ [gomobile](https://github.com/golang/mobile) ([License](https://github.com/golang/mobile/blob/master/LICENSE))
-
-##### OpenGLRenderer
-+ [go-gl/gl](https://github.com/go-gl/gl) ([License](https://github.com/go-gl/gl/blob/master/LICENSE))
-
-##### OpenGLESRenderer
-+ [gomobile/gles](https://github.com/golang/mobile/tree/master/gl) ([License](https://github.com/golang/mobile/blob/master/LICENSE))
-
-## Platforms
-
-|				|Windows| Linux		| Mac		| Android 	| iOS	| Browser |
-|---------------|-------|-----------|-----------|-----------|-------|---------|
-|Tested 		|	Yes |	Yes		|	No 		|	Yes		|	No 	|	No    |
-|Implemented  	|   Yes |   Yes		|	Yes		|   Yes		|   Yes |   No    |
-
 ## Features
 
 ##### General
@@ -73,6 +39,40 @@ A Game Engine for 2D/3D Games written in go
 * [Physics](https://box2d.org)
 * [TiledMaps](https://www.mapeditor.org)
 
+## Dependencies
+
+##### General
++ [mathgl](https://github.com/PucklaMotzer09/mathgl) ([Forked from here](https://github.com/go-gl/mathgl))([License](https://github.com/PucklaMotzer09/mathgl/blob/master/LICENSE))
++ [tga](https://github.com/blezek/tga) ([License](https://github.com/blezek/tga/blob/master/LICENSE.MIT))
++ [go-openal](https://github.com/timshannon/go-openal) ([Forked from here](https://github.com/phf/go-openal)) ([License](https://github.com/timshannon/go-openal/blob/master/LICENSE))
++ [go-wav](https://github.com/PucklaMotzer09/go-wav) ([Forked from here](https://github.com/sdobz/go-wav)) ([License](https://github.com/verdverm/go-wav/blob/master/LICENSE.md))
++ [go-mp3](https://github.com/hajimehoshi/go-mp3) ([License](https://github.com/hajimehoshi/go-mp3/blob/master/LICENSE))
++ [box2d](https://github.com/ByteArena/box2d) ([License](https://github.com/ByteArena/box2d/blob/master/LICENSE.md))
++ [tmx](https://github.com/PucklaMotzer09/tmx) ([Forked from here](https://github.com/elliotmr/tmx)) ([License](https://github.com/PucklaMotzer09/tmx/blob/master/LICENSE))
+
+##### GLFWFramework
++ [glfw](https://github.com/glfw/glfw) ([License](https://github.com/glfw/glfw/blob/master/LICENSE.md))
+
+##### GTKFramework
++ [gtk](https://gtk.org) ([License](http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html))
+
+##### AndroidFramework
++ [AndroidSDK](https://developer.android.com/studio/) ([License](https://developer.android.com/studio/terms))
++ [gomobile](https://github.com/golang/mobile) ([License](https://github.com/golang/mobile/blob/master/LICENSE))
+
+##### OpenGLRenderer
++ [go-gl/gl](https://github.com/go-gl/gl) ([License](https://github.com/go-gl/gl/blob/master/LICENSE))
+
+##### OpenGLESRenderer
++ [gomobile/gles](https://github.com/golang/mobile/tree/master/gl) ([License](https://github.com/golang/mobile/blob/master/LICENSE))
+
+## Platforms
+
+|				|Windows| Linux		| Mac		| Android 	| iOS	| Browser |
+|---------------|-------|-----------|-----------|-----------|-------|---------|
+|Tested 		|	Yes |	Yes		|	No 		|	Yes		|	No 	|	No    |
+|Implemented  	|   Yes |   Yes		|	Yes		|   Yes		|   Yes |   No    |
+
 ## Installation
 1. Install the c-Dependencies:<br>
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -90,7 +90,7 @@ A Game Engine for 2D/3D Games written in go
 	go get -u github.com/go-gl/gl/all-core
 	go get -u github.com/go-gl/glfw/v3.2
 	go get -u github.com/PucklaMotzer09/mathgl
-	go get -u github.com/phf/go-openal
+	go get -u github.com/timshannon/go-openal/openal
 	go get -u github.com/PucklaMotzer09/go-wav
 	go get -u github.com/hajimehoshi/go-mp3
 	go get -u github.com/PucklaMotzer09/tmx

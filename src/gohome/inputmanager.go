@@ -2,6 +2,8 @@ package gohome
 
 import (
 	"github.com/PucklaMotzer09/mathgl/mgl32"
+	"image/png"
+	"os"
 )
 
 type Mouse struct {
@@ -158,6 +160,19 @@ func (inmgr *InputManager) TimeHeld(key Key) float32 {
 }
 
 func (inmgr *InputManager) Update(delta_time float32) {
+	if inmgr.JustPressed(KeyF12) {
+		img := TextureToImage(RenderMgr.GetBackBuffer(), false, true)
+		file, err := os.Create("screenshot.png")
+		if err != nil {
+			ErrorMgr.Error("Screenshot", "Failed", err.Error())
+		} else {
+			err = png.Encode(file, img)
+			if err != nil {
+				ErrorMgr.Error("Screenshot", "Failed", err.Error())
+			}
+		}
+	}
+
 	for k, v := range inmgr.currentKeys {
 		inmgr.prevKeys[k] = v
 	}
