@@ -35,19 +35,15 @@ func (this *GTKBuilderScene) Init() {
 	this.lb = gtk.LabelNew("Hello Programmer")
 	lb_assets.ToContainer().Add(this.lb.ToWidget())
 
-	gohome.Init3DShaders()
+	gohome.LightMgr.DisableLighting()
 	gohome.ResourceMgr.LoadTexture("CubeImage", "cube.png")
 
-	mesh := gohome.Box("Cube", [3]float32{1.0, 1.0, 1.0})
+	mesh := gohome.Box("Cube", [3]float32{1.0, 1.0, 1.0}, true)
 	mesh.GetMaterial().SetTextures("CubeImage", "", "")
 	this.cube.InitMesh(mesh)
 	this.cube.Transform.Position = [3]float32{0.0, 0.0, -3.0}
 
 	gohome.RenderMgr.AddObject(&this.cube)
-	gohome.LightMgr.DisableLighting()
-
-	gohome.RenderMgr.UpdateProjectionWithViewport = true
-	gohome.RenderMgr.EnableBackBuffer = true
 }
 
 func (this *GTKBuilderScene) Update(delta_time float32) {

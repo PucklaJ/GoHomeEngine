@@ -29,7 +29,9 @@
 *gui
 *audio
 *gtkbuilder
+!image.png
 *instancing
 *.tmx.
 *.glsl
 screenshot.png
+*~
