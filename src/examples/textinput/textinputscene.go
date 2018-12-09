@@ -9,16 +9,12 @@ type TextInputScene struct {
 }
 
 func (this *TextInputScene) Init() {
-	gohome.ErrorMgr.ErrorLevel = gohome.ERROR_LEVEL_WARNING
 	gohome.Init2DShaders()
 
 	gohome.ResourceMgr.LoadFont("Font", "FreeMonoBold.ttf")
 
 	this.text.Init("Font", 30, "Write:")
 	gohome.RenderMgr.AddObject(&this.text)
-
-	gohome.RenderMgr.EnableBackBuffer = false
-	gohome.LightMgr.CurrentLightCollection = -1
 
 	gohome.Framew.StartTextInput()
 }
