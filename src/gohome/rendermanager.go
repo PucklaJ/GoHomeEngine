@@ -24,13 +24,10 @@ type RenderManager struct {
 	ForceShader2D      Shader
 
 	BackBufferMS RenderTexture
-	BackBuffer   RenderTexture
 	BackBuffer2D RenderTexture
 	BackBuffer3D RenderTexture
 
-	BackBufferShader     Shader
-	PostProcessingShader Shader
-	renderScreenShader   Shader
+	BackBufferShader Shader
 
 	currentCamera2D *Camera2D
 	currentCamera3D *Camera3D
@@ -49,15 +46,10 @@ func (rmgr *RenderManager) Init() {
 
 	rmgr.CurrentShader = nil
 	rmgr.BackBufferMS = Render.CreateRenderTexture("BackBufferMS", uint32(windowSize[0]), uint32(windowSize[1]), 1, true, true, false, false)
-	rmgr.BackBuffer = Render.CreateRenderTexture("BackBuffer", uint32(windowSize[0]), uint32(windowSize[1]), 1, true, false, false, false)
 	rmgr.BackBuffer2D = Render.CreateRenderTexture("BackBuffer2D", uint32(windowSize[0]), uint32(windowSize[1]), 1, true, true, false, false)
 	rmgr.BackBuffer3D = Render.CreateRenderTexture("BackBuffer3D", uint32(windowSize[0]), uint32(windowSize[1]), 1, true, true, false, false)
 	ResourceMgr.LoadShaderSource("BackBufferShader", BACKBUFFER_SHADER_VERTEX_SOURCE_OPENGL, BACKBUFFER_SHADER_FRAGMENT_SOURCE_OPENGL, "", "", "", "")
-	ResourceMgr.LoadShaderSource("PostProcessingShader", POST_PROCESSING_SHADER_VERTEX_SOURCE_OPENGL, POST_PROCESSING_SHADER_FRAGMENT_SOURCE_OPENGL, "", "", "", "")
-	ResourceMgr.LoadShaderSource("RenderScreenShader", POST_PROCESSING_SHADER_VERTEX_SOURCE_OPENGL, RENDER_SCREEN_SHADER_FRAGMENT_SOURCE_OPENGL, "", "", "", "")
 	rmgr.BackBufferShader = ResourceMgr.GetShader("BackBufferShader")
-	rmgr.PostProcessingShader = ResourceMgr.GetShader("PostProcessingShader")
-	rmgr.renderScreenShader = ResourceMgr.GetShader("RenderScreenShader")
 
 	rmgr.AddViewport2D(&Viewport{
 		0,
@@ -212,7 +204,7 @@ func (rmgr *RenderManager) updateLights(lightCollectionIndex int32, rtype Render
 }
 
 func (rmgr *RenderManager) GetBackBuffer() RenderTexture {
-	return rmgr.BackBuffer
+	return rmgr.BackBufferMS
 }
 
 func (rmgr *RenderManager) render3D() {
@@ -280,19 +272,15 @@ func (rmgr *RenderManager) renderBackBuffers() {
 	}
 }
 
-func (rmgr *RenderManager) renderPostProcessing() {
+func (rmgr *RenderManager) renderToScreen() {
 	if !rmgr.EnableBackBuffer {
 		return
 	}
 
-	if rmgr.BackBuffer != nil {
-		rmgr.BackBuffer.SetAsTarget()
-		Render.ClearScreen(Color{0, 0, 0, 0})
-	}
-
-	if rmgr.PostProcessingShader != nil {
-		rmgr.PostProcessingShader.Use()
-		rmgr.PostProcessingShader.SetUniformI("BackBuffer", 0)
+	if rmgr.BackBufferShader != nil {
+		rmgr.BackBufferShader.Use()
+		rmgr.BackBufferShader.SetUniformI("BackBuffer", 0)
+		rmgr.BackBufferShader.SetUniformF("depth", -1.0)
 	}
 	if rmgr.BackBufferMS != nil {
 		rmgr.BackBufferMS.Bind(0)
@@ -301,33 +289,8 @@ func (rmgr *RenderManager) renderPostProcessing() {
 	if rmgr.BackBufferMS != nil {
 		rmgr.BackBufferMS.Unbind(0)
 	}
-	if rmgr.PostProcessingShader != nil {
-		rmgr.PostProcessingShader.Unuse()
-	}
-
-	if rmgr.BackBuffer != nil {
-		rmgr.BackBuffer.UnsetAsTarget()
-	}
-}
-
-func (rmgr *RenderManager) renderToScreen() {
-	if !rmgr.EnableBackBuffer {
-		return
-	}
-
-	if rmgr.renderScreenShader != nil {
-		rmgr.renderScreenShader.Use()
-		rmgr.renderScreenShader.SetUniformI("BackBuffer", 0)
-	}
-	if rmgr.BackBuffer != nil {
-		rmgr.BackBuffer.Bind(0)
-	}
-	Render.RenderBackBuffer()
-	if rmgr.BackBuffer != nil {
-		rmgr.BackBuffer.Unbind(0)
-	}
-	if rmgr.renderScreenShader != nil {
-		rmgr.renderScreenShader.Unuse()
+	if rmgr.BackBufferShader != nil {
+		rmgr.BackBufferShader.Unuse()
 	}
 }
 
@@ -345,7 +308,6 @@ func (rmgr *RenderManager) Update() {
 	rmgr.render3D()
 	rmgr.render2D()
 	rmgr.renderBackBuffers()
-	rmgr.renderPostProcessing()
 	if !rmgr.RenderToScreenFirst {
 		rmgr.renderToScreen()
 	}
@@ -561,9 +523,6 @@ func (rmgr *RenderManager) SetProjection3D(proj Projection) {
 func (rmgr *RenderManager) Terminate() {
 	if rmgr.BackBufferMS != nil {
 		rmgr.BackBufferMS.Terminate()
-	}
-	if rmgr.BackBuffer != nil {
-		rmgr.BackBuffer.Terminate()
 	}
 	if rmgr.BackBuffer2D != nil {
 		rmgr.BackBuffer2D.Terminate()

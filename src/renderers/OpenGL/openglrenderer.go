@@ -255,31 +255,29 @@ func (this *OpenGLRenderer) SetNativeResolution(width, height uint32) {
 	previous := gohome.Viewport{
 		X:      0,
 		Y:      0,
-		Width:  gohome.RenderMgr.BackBuffer.GetWidth(),
-		Height: gohome.RenderMgr.BackBuffer.GetHeight(),
+		Width:  gohome.RenderMgr.BackBufferMS.GetWidth(),
+		Height: gohome.RenderMgr.BackBufferMS.GetHeight(),
 	}
 
 	gohome.RenderMgr.BackBufferMS.ChangeSize(width, height)
-	gohome.RenderMgr.BackBuffer.ChangeSize(width, height)
 	gohome.RenderMgr.BackBuffer2D.ChangeSize(width, height)
 	gohome.RenderMgr.BackBuffer3D.ChangeSize(width, height)
 
 	gohome.RenderMgr.BackBufferMS.SetFiltering(gohome.FILTERING_LINEAR)
-	gohome.RenderMgr.BackBuffer.SetFiltering(gohome.FILTERING_LINEAR)
 	gohome.RenderMgr.BackBuffer2D.SetFiltering(gohome.FILTERING_LINEAR)
 	gohome.RenderMgr.BackBuffer3D.SetFiltering(gohome.FILTERING_LINEAR)
 
 	current := gohome.Viewport{
 		X:      0,
 		Y:      0,
-		Width:  gohome.RenderMgr.BackBuffer.GetWidth(),
-		Height: gohome.RenderMgr.BackBuffer.GetHeight(),
+		Width:  gohome.RenderMgr.BackBufferMS.GetWidth(),
+		Height: gohome.RenderMgr.BackBufferMS.GetHeight(),
 	}
 
 	gohome.RenderMgr.UpdateViewports(current, previous)
 }
 func (this *OpenGLRenderer) GetNativeResolution() mgl32.Vec2 {
-	return [2]float32{float32(gohome.RenderMgr.BackBuffer.GetWidth()), float32(gohome.RenderMgr.BackBuffer.GetHeight())}
+	return [2]float32{float32(gohome.RenderMgr.BackBufferMS.GetWidth()), float32(gohome.RenderMgr.BackBufferMS.GetHeight())}
 }
 func (this *OpenGLRenderer) OnResize(newWidth, newHeight uint32) {
 	gl.Viewport(0, 0, int32(newWidth), int32(newHeight))
@@ -360,22 +358,6 @@ func (this *OpenGLRenderer) FilterShaderFiles(name, file, shader_type string) st
 				file = "backBufferShaderNoMSFrag.glsl"
 			}
 		}
-	} else if name == "PostProcessingShader" {
-		if !this.HasFunctionAvailable("MULTISAMPLE") {
-			if shader_type == "Vertex File" {
-				file = "postProcessingShaderNoMSVert.glsl"
-			} else if shader_type == "Fragment File" {
-				file = "postProcessingShaderNoMSFrag.glsl"
-			}
-		}
-	} else if name == "RenderScreenShader" {
-		if !this.HasFunctionAvailable("MULTISAMPLE") {
-			if shader_type == "Vertex File" {
-				file = "postProcessingShaderNoMSVert.glsl"
-			} else if shader_type == "Fragment File" {
-				file = "renderScreenNoMSFrag.glsl"
-			}
-		}
 	}
 
 	return file
@@ -388,22 +370,6 @@ func (this *OpenGLRenderer) FilterShaderSource(name, source, shader_type string)
 				source = gohome.BACKBUFFER_NOMS_SHADER_VERTEX_SOURCE_OPENGL
 			} else if shader_type == "Fragment File" {
 				source = gohome.BACKBUFFER_NOMS_SHADER_FRAGMENT_SOURCE_OPENGL
-			}
-		}
-	} else if name == "PostProcessingShader" {
-		if !this.HasFunctionAvailable("MULTISAMPLE") {
-			if shader_type == "Vertex File" {
-				source = gohome.POST_PROCESSING_SHADER_NOMS_VERTEX_SOURCE_OPENGL
-			} else if shader_type == "Fragment File" {
-				source = gohome.POST_PROCESSING_SHADER_NOMS_FRAGMENT_SOURCE_OPENGL
-			}
-		}
-	} else if name == "RenderScreenShader" {
-		if !this.HasFunctionAvailable("MULTISAMPLE") {
-			if shader_type == "Vertex File" {
-				source = gohome.POST_PROCESSING_SHADER_NOMS_VERTEX_SOURCE_OPENGL
-			} else if shader_type == "Fragment File" {
-				source = gohome.RENDER_SCREEN_NOMS_SHADER_FRAGMENT_SOURCE_OPENGL
 			}
 		}
 	}

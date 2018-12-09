@@ -4,8 +4,8 @@ import (
 	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
 	"golang.org/x/mobile/gl"
 	"image/color"
-	"strconv"
 	"log"
+	"strconv"
 )
 
 type OpenGLESError struct {
@@ -30,16 +30,16 @@ func (this *OpenGLESRenderer) createBackBufferMesh() {
 		/*X,Y
 		  U,V
 		*/
-		  {-1.0, -1.0, // LEFT-DOWN
+		{-1.0, -1.0, // LEFT-DOWN
 			0.0, 0.0},
 
-		   {1.0, -1.0, // RIGHT-DOWN
+		{1.0, -1.0, // RIGHT-DOWN
 			1.0, 0.0},
 
-		   {1.0, 1.0, // RIGHT-UP
+		{1.0, 1.0, // RIGHT-UP
 			1.0, 1.0},
 
-		  {-1.0, 1.0, // LEFT-UP
+		{-1.0, 1.0, // LEFT-UP
 			0.0, 1.0},
 	}
 
@@ -61,7 +61,7 @@ func (this *OpenGLESRenderer) Init() error {
 
 	this.createBackBufferMesh()
 
-	log.Println("GLESViewport:",this.GetViewport())
+	log.Println("GLESViewport:", this.GetViewport())
 
 	return nil
 }
@@ -70,7 +70,7 @@ func (this *OpenGLESRenderer) AfterInit() {
 	this.gles.DepthFunc(gl.LEQUAL)
 	this.gles.Enable(gl.DEPTH_TEST)
 	this.gles.Enable(gl.CULL_FACE)
-	this.gles.BlendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA)
+	this.gles.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
 	this.gles.Enable(gl.BLEND)
 }
 
@@ -183,27 +183,26 @@ func (this *OpenGLESRenderer) GetViewport() gohome.Viewport {
 	return viewport
 }
 func (this *OpenGLESRenderer) SetNativeResolution(width, height uint32) {
-	if gohome.RenderMgr.BackBuffer2D == nil || gohome.RenderMgr.BackBuffer3D == nil || gohome.RenderMgr.BackBufferMS == nil || gohome.RenderMgr.BackBuffer == nil {
+	if gohome.RenderMgr.BackBuffer2D == nil || gohome.RenderMgr.BackBuffer3D == nil || gohome.RenderMgr.BackBufferMS == nil {
 		return
 	}
 
 	previous := gohome.Viewport{
 		X:      0,
 		Y:      0,
-		Width:  gohome.RenderMgr.BackBuffer.GetWidth(),
-		Height: gohome.RenderMgr.BackBuffer.GetHeight(),
+		Width:  gohome.RenderMgr.BackBufferMS.GetWidth(),
+		Height: gohome.RenderMgr.BackBufferMS.GetHeight(),
 	}
 
 	gohome.RenderMgr.BackBuffer2D.ChangeSize(width, height)
 	gohome.RenderMgr.BackBuffer3D.ChangeSize(width, height)
 	gohome.RenderMgr.BackBufferMS.ChangeSize(width, height)
-	gohome.RenderMgr.BackBuffer.ChangeSize(width, height)
 
 	current := gohome.Viewport{
 		X:      0,
 		Y:      0,
-		Width:  gohome.RenderMgr.BackBuffer.GetWidth(),
-		Height: gohome.RenderMgr.BackBuffer.GetHeight(),
+		Width:  gohome.RenderMgr.BackBufferMS.GetWidth(),
+		Height: gohome.RenderMgr.BackBufferMS.GetHeight(),
 	}
 
 	gohome.RenderMgr.UpdateViewports(current, previous)
@@ -219,7 +218,7 @@ func (this *OpenGLESRenderer) GetNativeResolution() (uint32, uint32) {
 func (this *OpenGLESRenderer) OnResize(newWidth, newHeight uint32) {
 	if this.gles != nil {
 		this.gles.Viewport(0, 0, int(newWidth), int(newHeight))
-		this.SetNativeResolution(newWidth,newHeight)
+		this.SetNativeResolution(newWidth, newHeight)
 	}
 }
 func (this *OpenGLESRenderer) PreRender() {
