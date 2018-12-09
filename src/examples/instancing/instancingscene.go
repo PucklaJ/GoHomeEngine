@@ -33,7 +33,6 @@ func (this *InstancingScene) Init() {
 		this.ent.StopUpdatingInstancedValues = true
 		gohome.RenderMgr.AddObject(&this.ent)
 	} else {
-		gohome.Init3DShaders()
 		cubeMesh.Load()
 		for x := 0; x < SIZE; x++ {
 			for y := 0; y < SIZE; y++ {
