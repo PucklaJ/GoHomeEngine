@@ -20,8 +20,6 @@ func (this *MultipleTouchesScene) Init() {
 		this.targets[i].Visible = false
 		gohome.RenderMgr.AddObject(&this.targets[i])
 	}
-
-	gohome.RenderMgr.EnableBackBuffer = false
 }
 
 func (this *MultipleTouchesScene) Update(delta_time float32) {
