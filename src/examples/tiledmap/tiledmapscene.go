@@ -18,7 +18,6 @@ func (this *TiledMapScene) Init() {
 	gohome.RenderMgr.AddObject(&this.tiledMap)
 
 	gohome.RenderMgr.UpdateProjectionWithViewport = true
-	gohome.RenderMgr.EnableBackBuffer = false
 
 	w := this.tiledMap.Texture.GetWidth()
 	h := this.tiledMap.Texture.GetHeight()
