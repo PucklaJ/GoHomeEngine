@@ -61,22 +61,19 @@ func (this *GTKGUIScene) InitGUI() {
 	gtk.GetWindow().ToWidget().ShowAll()
 
 	gohome.Framew.(*framework.GTKFramework).AfterWindowCreation(&gohome.MainLop)
-	gohome.RenderMgr.EnableBackBuffer = true
 }
 
 func (this *GTKGUIScene) Init() {
 	this.InitGUI()
-	gohome.Init3DShaders()
+	gohome.LightMgr.DisableLighting()
 	gohome.ResourceMgr.LoadTexture("CubeImage", "cube.png")
 
-	mesh := gohome.Box("Cube", [3]float32{1.0, 1.0, 1.0})
+	mesh := gohome.Box("Cube", [3]float32{1.0, 1.0, 1.0}, true)
 	mesh.GetMaterial().SetTextures("CubeImage", "", "")
 	this.cube.InitMesh(mesh)
 	this.cube.Transform.Position = [3]float32{0.0, 0.0, -3.0}
 
 	gohome.RenderMgr.AddObject(&this.cube)
-	gohome.LightMgr.DisableLighting()
-
 	gohome.RenderMgr.UpdateProjectionWithViewport = true
 }
 
