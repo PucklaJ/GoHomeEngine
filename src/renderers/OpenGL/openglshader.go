@@ -532,7 +532,7 @@ func (s *OpenGLShader) validate() error {
 	s.validated = true
 	var vao uint32
 	if render.HasFunctionAvailable("VERTEX_ARRAY") {
-		gl.CreateVertexArrays(1, &vao)
+		gl.GenVertexArrays(1, &vao)
 		gl.BindVertexArray(vao)
 		defer gl.DeleteVertexArrays(1, &vao)
 		defer gl.BindVertexArray(0)
