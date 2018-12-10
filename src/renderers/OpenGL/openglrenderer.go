@@ -56,12 +56,14 @@ func (this *OpenGLRenderer) Init() error {
 		return err
 	}
 	version := gl.GoStr(gl.GetString(gl.VERSION))
+	versioni := this.GetVersioni()
+	if version == "" {
+		version = strconv.FormatUint(uint64(versioni), 10)
+	}
 	gohome.ErrorMgr.Log("Renderer", "OpenGL\t", "Version: "+version)
-	if this.GetVersioni() < 21 {
+	if versioni < 21 {
 		gohome.ErrorMgr.Warning("Renderer", "OpenGL", "You don't have a graphics card or your graphics card is not supported! Minimum: OpenGL 2.1")
 	}
-
-	gl.GenVertexArrays(1, &this.BackBufferVao)
 
 	this.CurrentTextureUnit = 0
 
@@ -70,6 +72,8 @@ func (this *OpenGLRenderer) Init() error {
 
 	if !this.HasFunctionAvailable("VERTEX_ID") || !this.HasFunctionAvailable("MULTISAMPLE") {
 		this.createBackBufferMesh()
+	} else {
+		gl.GenVertexArrays(1, &this.BackBufferVao)
 	}
 
 	return nil
