@@ -725,10 +725,26 @@ func (rsmgr *ResourceManager) checkPreloadedTexture(texture *preloadedTexture) b
 	return true
 }
 
+func getNameForAlreadyLoadedLevel(rsmgr *ResourceManager, name string) string {
+	var alreadyLoaded = true
+	var count = 1
+	var newName string
+	for alreadyLoaded {
+		newName = name + strconv.FormatInt(int64(count), 10)
+		_, alreadyLoaded = rsmgr.Levels[newName]
+		count++
+	}
+	return newName
+}
+
 func (rsmgr *ResourceManager) checkPreloadedLevel(level *preloadedLevel) bool {
-	if _, ok := rsmgr.Levels[level.Name]; ok {
+	var alreadyLoaded = false
+	if _, alreadyLoaded = rsmgr.Levels[level.Name]; alreadyLoaded && !rsmgr.LoadModelsWithSameName {
 		ErrorMgr.Message(ERROR_LEVEL_LOG, "Level", level.Name, "Has already been loaded!")
 		return false
+	}
+	if alreadyLoaded {
+		(*level).Name = getNameForAlreadyLoadedLevel(rsmgr, level.Name)
 	}
 	if resName, ok := rsmgr.resourceFileNames[level.Path]; ok {
 		rsmgr.textures[level.Name] = rsmgr.textures[resName]
@@ -903,21 +919,23 @@ func (rsmgr *ResourceManager) GetTMXMap(name string) *tmx.Map {
 	return rsmgr.tmxmaps[name]
 }
 
-func (rsmgr *ResourceManager) LoadLevelString(name, contents, fileName string, loadToGPU bool) {
+func (rsmgr *ResourceManager) LoadLevelString(name, contents, fileName string, loadToGPU bool) *Level {
 	level := rsmgr.loadLevelString(name, contents, fileName, false, loadToGPU)
 	if level != nil {
-		rsmgr.Levels[name] = level
-		ErrorMgr.Log("Level", name, "Finished loading!")
+		rsmgr.Levels[level.Name] = level
+		ErrorMgr.Log("Level", level.Name, "Finished loading!")
 	}
+	return level
 }
 
-func (rsmgr *ResourceManager) LoadLevel(name, path string, loadToGPU bool) {
+func (rsmgr *ResourceManager) LoadLevel(name, path string, loadToGPU bool) *Level {
 	level := rsmgr.loadLevel(name, path, false, loadToGPU)
 	if level != nil {
-		rsmgr.Levels[name] = level
-		rsmgr.resourceFileNames[path] = name
-		ErrorMgr.Log("Level", name, "Finished loading!")
+		rsmgr.Levels[level.Name] = level
+		rsmgr.resourceFileNames[path] = level.Name
+		ErrorMgr.Log("Level", level.Name, "Finished loading!")
 	}
+	return level
 }
 
 func (rsmgr *ResourceManager) loadLevelString(name, contents, fileName string, preloaded, loadToGPU bool) *Level {
