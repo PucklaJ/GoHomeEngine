@@ -164,19 +164,20 @@ func loadShader(path, name_shader, name string) (string, bool) {
 	path = Render.FilterShaderFiles(name_shader, path, name)
 	contents, err := loadShaderFile(path)
 	if err != nil {
-		ErrorMgr.Message(ERROR_LEVEL_ERROR, "Shader", name_shader, "Couldn't load "+name+": "+err.Error())
+		ErrorMgr.Error("Shader", name_shader, "Couldn't load "+name+": "+err.Error())
 		return "", true
 	}
 	return contents, false
 }
 
-func (rsmgr *ResourceManager) LoadShader(name, vertex_path, fragment_path, geometry_path, tesselletion_control_path, eveluation_path, compute_path string) {
+func (rsmgr *ResourceManager) LoadShader(name, vertex_path, fragment_path, geometry_path, tesselletion_control_path, eveluation_path, compute_path string) Shader {
 
 	shader := rsmgr.loadShader(name, vertex_path, fragment_path, geometry_path, tesselletion_control_path, eveluation_path, compute_path, false)
 	if shader != nil {
 		rsmgr.shaders[name] = shader
-		ErrorMgr.Message(ERROR_LEVEL_LOG, "Shader", name, "Finished loading!")
+		ErrorMgr.Log("Shader", name, "Finished loading!")
 	}
+	return shader
 }
 
 func filterShaderSource(name, vertex, fragment, geometry, tesselletion_control, eveluation, compute string) (string, string, string, string, string, string) {
@@ -190,19 +191,20 @@ func filterShaderSource(name, vertex, fragment, geometry, tesselletion_control, 
 	return vertex, fragment, geometry, tesselletion_control, eveluation, compute
 }
 
-func (rsmgr *ResourceManager) LoadShaderSource(name, vertex, fragment, geometry, tesselletion_control, eveluation, compute string) {
+func (rsmgr *ResourceManager) LoadShaderSource(name, vertex, fragment, geometry, tesselletion_control, eveluation, compute string) Shader {
 	if _, ok := rsmgr.shaders[name]; ok {
 		ErrorMgr.Error("Shader", name, "Has already been loaded")
-		return
+		return rsmgr.shaders[name]
 	}
 	vertex, fragment, geometry, tesselletion_control, eveluation, compute = filterShaderSource(name, vertex, fragment, geometry, tesselletion_control, eveluation, compute)
 	shader, err := Render.LoadShader(name, vertex, fragment, geometry, tesselletion_control, eveluation, compute)
 	if err != nil {
 		ErrorMgr.Error("Shader", name, "Loading source: "+err.Error())
-		return
+		return nil
 	}
 	rsmgr.shaders[name] = shader
 	ErrorMgr.Log("Shader", name, "Finished Loading!")
+	return shader
 }
 
 func (rsmgr *ResourceManager) GetShader(name string) Shader {
@@ -230,13 +232,14 @@ func loadImageData(img_data *[]byte, img image.Image, start_width, end_width, ma
 	}
 }
 
-func (rsmgr *ResourceManager) LoadTexture(name, path string) {
+func (rsmgr *ResourceManager) LoadTexture(name, path string) Texture {
 	tex := rsmgr.LoadTextureFunction(name, path, false)
 	if tex != nil {
 		rsmgr.textures[name] = tex
 		rsmgr.resourceFileNames[path] = name
 		ErrorMgr.Message(ERROR_LEVEL_LOG, "Texture", name, "Finished loading! W: "+strconv.Itoa(tex.GetWidth())+" H: "+strconv.Itoa(tex.GetHeight()))
 	}
+	return tex
 }
 
 func (rsmgr *ResourceManager) GetTexture(name string) Texture {
@@ -431,33 +434,33 @@ func (rsmgr *ResourceManager) PreloadFont(name, path string) {
 	}
 }
 
-func (rsmgr *ResourceManager) LoadFont(name, path string) {
-	rsmgr.loadFont(name, path, false)
+func (rsmgr *ResourceManager) LoadFont(name, path string) *Font {
+	return rsmgr.loadFont(name, path, false)
 }
 
-func (rsmgr *ResourceManager) loadFont(name, path string, preloaded bool) {
+func (rsmgr *ResourceManager) loadFont(name, path string, preloaded bool) *Font {
 	if !preloaded {
 		if !rsmgr.checkFont(name, path) {
-			return
+			return nil
 		}
 	}
 
 	reader, _, err := OpenFileWithPaths(path, FONT_PATHS[:])
 	if err != nil {
-		ErrorMgr.Message(ERROR_LEVEL_ERROR, "Font", name, "Couldn't load: "+err.Error())
-		return
+		ErrorMgr.Error("Font", name, "Couldn't load: "+err.Error())
+		return nil
 	}
 
 	data, err := ioutil.ReadAll(reader)
 	if err != nil {
-		ErrorMgr.Message(ERROR_LEVEL_ERROR, "Font", name, "Couldn't read: "+err.Error())
-		return
+		ErrorMgr.Error("Font", name, "Couldn't read: "+err.Error())
+		return nil
 	}
 
 	ttf, err := freetype.ParseFont(data)
 	if err != nil {
-		ErrorMgr.Message(ERROR_LEVEL_ERROR, "Font", name, "Couldn't parse: "+err.Error())
-		return
+		ErrorMgr.Error("Font", name, "Couldn't parse: "+err.Error())
+		return nil
 	}
 
 	var font Font
@@ -467,6 +470,7 @@ func (rsmgr *ResourceManager) loadFont(name, path string, preloaded bool) {
 		rsmgr.fonts[name] = &font
 		rsmgr.resourceFileNames[path] = name
 		ErrorMgr.Log("Font", name, "Finished Loading!")
+		return &font
 	} else {
 		rsmgr.preloader.preloadedFontChan <- preloadedFontData{
 			preloadedFont{
@@ -476,6 +480,8 @@ func (rsmgr *ResourceManager) loadFont(name, path string, preloaded bool) {
 			font,
 		}
 	}
+
+	return nil
 }
 
 func (rsmgr *ResourceManager) checkMusic(name, path string) bool {
@@ -510,14 +516,14 @@ func (rsmgr *ResourceManager) PreloadMusic(name, path string) {
 	}
 }
 
-func (rsmgr *ResourceManager) LoadMusic(name, path string) {
-	rsmgr.loadMusic(name, path, false)
+func (rsmgr *ResourceManager) LoadMusic(name, path string) Music {
+	return rsmgr.loadMusic(name, path, false)
 }
 
-func (rsmgr *ResourceManager) loadMusic(name, path string, preloaded bool) {
+func (rsmgr *ResourceManager) loadMusic(name, path string, preloaded bool) Music {
 	if !preloaded {
 		if !rsmgr.checkMusic(name, path) {
-			return
+			return nil
 		}
 	}
 
@@ -528,6 +534,7 @@ func (rsmgr *ResourceManager) loadMusic(name, path string, preloaded bool) {
 			rsmgr.musics[name] = music
 			rsmgr.resourceFileNames[path] = name
 			ErrorMgr.Log("Music", name, "Finished Loading!")
+			return music
 		} else {
 			rsmgr.preloadedMusicChan <- preloadedMusicData{
 				preloadedMusic{
@@ -538,6 +545,8 @@ func (rsmgr *ResourceManager) loadMusic(name, path string, preloaded bool) {
 			}
 		}
 	}
+
+	return nil
 }
 
 func (rsmgr *ResourceManager) checkSound(name, path string) bool {
@@ -572,14 +581,14 @@ func (rsmgr *ResourceManager) PreloadSound(name, path string) {
 	}
 }
 
-func (rsmgr *ResourceManager) LoadSound(name, path string) {
-	rsmgr.loadSound(name, path, false)
+func (rsmgr *ResourceManager) LoadSound(name, path string) Sound {
+	return rsmgr.loadSound(name, path, false)
 }
 
-func (rsmgr *ResourceManager) loadSound(name, path string, preloaded bool) {
+func (rsmgr *ResourceManager) loadSound(name, path string, preloaded bool) Sound {
 	if !preloaded {
 		if !rsmgr.checkSound(name, path) {
-			return
+			return nil
 		}
 	}
 	sound := Framew.LoadSound(name, path)
@@ -589,6 +598,7 @@ func (rsmgr *ResourceManager) loadSound(name, path string, preloaded bool) {
 			rsmgr.sounds[name] = sound
 			rsmgr.resourceFileNames[path] = name
 			ErrorMgr.Log("Sound", name, "Finished Loading!")
+			return sound
 		} else {
 			rsmgr.preloadedSoundChan <- preloadedSoundData{
 				preloadedSound{
@@ -599,6 +609,8 @@ func (rsmgr *ResourceManager) loadSound(name, path string, preloaded bool) {
 			}
 		}
 	}
+
+	return nil
 }
 
 func (rsmgr *ResourceManager) LoadTextureFunction(name, path string, preloaded bool) Texture {
@@ -892,27 +904,28 @@ func (rsmgr *ResourceManager) checkTMXMap(name, path string) bool {
 	return true
 }
 
-func (rsmgr *ResourceManager) LoadTMXMap(name, path string) {
+func (rsmgr *ResourceManager) LoadTMXMap(name, path string) *tmx.Map {
 	if !rsmgr.checkTMXMap(name, path) {
-		return
+		return nil
 	}
 
 	file, fileName, err := OpenFileWithPaths(path, TMX_MAP_PATHS[:])
 	if err != nil {
 		ErrorMgr.MessageError(ERROR_LEVEL_ERROR, "TMXMap", name, err)
-		return
+		return nil
 	}
 
 	tmxmap, err := tmx.LoadReader(file, fileName)
 	if err != nil {
 		ErrorMgr.MessageError(ERROR_LEVEL_ERROR, "TMXMap", name, err)
-		return
+		return nil
 	}
 
 	rsmgr.tmxmaps[name] = tmxmap
 	rsmgr.resourceFileNames[path] = name
 
 	ErrorMgr.Log("TMXMap", name, "Finished Loading!")
+	return tmxmap
 }
 
 func (rsmgr *ResourceManager) GetTMXMap(name string) *tmx.Map {
