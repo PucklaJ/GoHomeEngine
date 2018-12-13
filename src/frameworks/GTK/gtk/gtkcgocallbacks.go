@@ -8,7 +8,7 @@ import "C"
 import (
 	"log"
 
-	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
+	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
 )
 
 //export gtkgo_quit

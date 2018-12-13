@@ -1,7 +1,7 @@
 package loader
 
 import (
-	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
+	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
 	"github.com/PucklaMotzer09/mathgl/mgl32"
 	"github.com/raedatoui/assimp"
 	"log"

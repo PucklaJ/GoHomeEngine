@@ -1,10 +1,10 @@
 package framework
 
 import (
-	"github.com/PucklaMotzer09/gohomeengine/src/audio"
-	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
-	loadmp3 "github.com/PucklaMotzer09/gohomeengine/src/loaders/mp3"
-	loadwav "github.com/PucklaMotzer09/gohomeengine/src/loaders/wav"
+	"github.com/PucklaMotzer09/GoHomeEngine/src/audio"
+	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
+	loadmp3 "github.com/PucklaMotzer09/GoHomeEngine/src/loaders/mp3"
+	loadwav "github.com/PucklaMotzer09/GoHomeEngine/src/loaders/wav"
 	"github.com/PucklaMotzer09/mathgl/mgl32"
 	"github.com/go-gl/glfw/v3.2/glfw"
 	"log"

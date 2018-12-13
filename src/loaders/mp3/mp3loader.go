@@ -2,7 +2,7 @@ package loader
 
 import (
 	"github.com/hajimehoshi/go-mp3"
-	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
+	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
 	"io/ioutil"
 )
 

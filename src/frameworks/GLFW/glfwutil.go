@@ -1,8 +1,8 @@
 package framework
 
 import (
-	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
-	"github.com/PucklaMotzer09/gohomeengine/src/loaders/obj"
+	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
+	"github.com/PucklaMotzer09/GoHomeEngine/src/loaders/obj"
 )
 
 func loadLevelOBJ(rsmgr *gohome.ResourceManager, name, path string, preloaded, loadToGPU bool) *gohome.Level {

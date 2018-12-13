@@ -2,7 +2,7 @@ package renderer
 
 import (
 	// "fmt"
-	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
+	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
 	"github.com/go-gl/gl/all-core/gl"
 	"image"
 	"image/color"

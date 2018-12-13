@@ -2,7 +2,7 @@ package loader
 
 import (
 	"github.com/PucklaMotzer09/go-wav"
-	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
+	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
 )
 
 func LoadWAVFile(fileName string) (*wav.WavData, error) {

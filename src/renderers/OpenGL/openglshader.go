@@ -2,7 +2,7 @@ package renderer
 
 import (
 	"bytes"
-	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
+	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
 	"github.com/PucklaMotzer09/mathgl/mgl32"
 	"github.com/go-gl/gl/all-core/gl"
 	"strconv"

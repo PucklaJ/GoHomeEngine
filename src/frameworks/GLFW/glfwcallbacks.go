@@ -1,7 +1,7 @@
 package framework
 
 import (
-	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
+	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
 	"github.com/go-gl/glfw/v3.2/glfw"
 )
 
