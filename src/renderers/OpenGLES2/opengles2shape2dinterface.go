@@ -6,7 +6,7 @@ import (
 	"unsafe"
 )
 
-type OpenGLESShape2DInterface struct {
+type OpenGLES2Shape2DInterface struct {
 	Name   string
 	vbo    uint32
 	loaded bool
@@ -18,12 +18,12 @@ type OpenGLESShape2DInterface struct {
 	lineWidth      float32
 }
 
-func (this *OpenGLESShape2DInterface) Init() {
+func (this *OpenGLES2Shape2DInterface) Init() {
 	this.loaded = false
 	this.openglDrawMode = gl.POINTS
 }
 
-func (this *OpenGLESShape2DInterface) checkVertices() bool {
+func (this *OpenGLES2Shape2DInterface) checkVertices() bool {
 	if this.loaded {
 		gohome.ErrorMgr.Warning("Shape2DInterface", this.Name, "It has already been loaded to the GPU! You can't add any vertices anymore!")
 		return false
@@ -31,7 +31,7 @@ func (this *OpenGLESShape2DInterface) checkVertices() bool {
 	return true
 }
 
-func (this *OpenGLESShape2DInterface) AddLines(lines []gohome.Line2D) {
+func (this *OpenGLES2Shape2DInterface) AddLines(lines []gohome.Line2D) {
 	if this.checkVertices() {
 		for i := 0; i < len(lines); i++ {
 			this.points = append(this.points, lines[i][:]...)
@@ -39,13 +39,13 @@ func (this *OpenGLESShape2DInterface) AddLines(lines []gohome.Line2D) {
 	}
 }
 
-func (this *OpenGLESShape2DInterface) AddPoints(points []gohome.Shape2DVertex) {
+func (this *OpenGLES2Shape2DInterface) AddPoints(points []gohome.Shape2DVertex) {
 	if this.checkVertices() {
 		this.points = append(this.points, points...)
 	}
 }
 
-func (this *OpenGLESShape2DInterface) AddTriangles(tris []gohome.Triangle2D) {
+func (this *OpenGLES2Shape2DInterface) AddTriangles(tris []gohome.Triangle2D) {
 	if this.checkVertices() {
 		for i := 0; i < len(tris); i++ {
 			this.points = append(this.points, tris[i][:]...)
@@ -53,11 +53,11 @@ func (this *OpenGLESShape2DInterface) AddTriangles(tris []gohome.Triangle2D) {
 	}
 }
 
-func (this *OpenGLESShape2DInterface) GetPoints() []gohome.Shape2DVertex {
+func (this *OpenGLES2Shape2DInterface) GetPoints() []gohome.Shape2DVertex {
 	return this.points
 }
 
-func (this *OpenGLESShape2DInterface) attributePointer() {
+func (this *OpenGLES2Shape2DInterface) attributePointer() {
 	offset0 := 0
 	offset1 := 2 * 4
 
@@ -69,7 +69,7 @@ func (this *OpenGLESShape2DInterface) attributePointer() {
 	gl.EnableVertexAttribArray(1)
 }
 
-func (this *OpenGLESShape2DInterface) Load() {
+func (this *OpenGLES2Shape2DInterface) Load() {
 	if this.loaded {
 		return
 	}
@@ -91,7 +91,7 @@ func (this *OpenGLESShape2DInterface) Load() {
 	this.loaded = true
 }
 
-func (this *OpenGLESShape2DInterface) Render() {
+func (this *OpenGLES2Shape2DInterface) Render() {
 	hasLoaded := this.loaded
 	if !hasLoaded {
 		this.Load()
@@ -118,7 +118,7 @@ func (this *OpenGLESShape2DInterface) Render() {
 		this.Terminate()
 	}
 }
-func (this *OpenGLESShape2DInterface) Terminate() {
+func (this *OpenGLES2Shape2DInterface) Terminate() {
 	var buf [1]uint32
 	buf[0] = this.vbo
 	defer gl.DeleteBuffers(1, buf[:])
@@ -128,7 +128,7 @@ func (this *OpenGLESShape2DInterface) Terminate() {
 	this.openglDrawMode = gl.POINTS
 }
 
-func (this *OpenGLESShape2DInterface) SetDrawMode(mode uint8) {
+func (this *OpenGLES2Shape2DInterface) SetDrawMode(mode uint8) {
 	switch mode {
 	case gohome.DRAW_MODE_POINTS:
 		this.openglDrawMode = gl.POINTS
@@ -141,9 +141,9 @@ func (this *OpenGLESShape2DInterface) SetDrawMode(mode uint8) {
 	}
 }
 
-func (this *OpenGLESShape2DInterface) SetPointSize(size float32) {
+func (this *OpenGLES2Shape2DInterface) SetPointSize(size float32) {
 	this.pointSize = size
 }
-func (this *OpenGLESShape2DInterface) SetLineWidth(width float32) {
+func (this *OpenGLES2Shape2DInterface) SetLineWidth(width float32) {
 	this.lineWidth = width
 }

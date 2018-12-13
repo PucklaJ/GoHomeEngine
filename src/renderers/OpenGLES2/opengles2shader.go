@@ -8,7 +8,7 @@ import (
 	"strconv"
 )
 
-type OpenGLESShader struct {
+type OpenGLES2Shader struct {
 	program             uint32
 	name                string
 	shaders             [6]uint32
@@ -18,8 +18,8 @@ type OpenGLESShader struct {
 	validated           bool
 }
 
-func CreateOpenGLESShader(name string) (*OpenGLESShader, error) {
-	shader := &OpenGLESShader{
+func CreateOpenGLES2Shader(name string) (*OpenGLES2Shader, error) {
+	shader := &OpenGLES2Shader{
 		program:             0,
 		name:                name,
 		shaders:             [6]uint32{0, 0, 0, 0, 0, 0},
@@ -82,7 +82,7 @@ func getAttributeSizeForType(atype string) uint32 {
 	return 1
 }
 
-func (s *OpenGLESShader) getAttributeNames(program uint32, src string) []string {
+func (s *OpenGLES2Shader) getAttributeNames(program uint32, src string) []string {
 	var line bytes.Buffer
 	var lineString string
 	var attributeNames []string
@@ -152,7 +152,7 @@ func (s *OpenGLESShader) getAttributeNames(program uint32, src string) []string 
 	return attributeNames
 }
 
-func (s *OpenGLESShader) bindAttributesFromFile(program uint32, src string) {
+func (s *OpenGLES2Shader) bindAttributesFromFile(program uint32, src string) {
 	attributeNames := s.getAttributeNames(program, src)
 
 	var index uint32 = 0
@@ -162,7 +162,7 @@ func (s *OpenGLESShader) bindAttributesFromFile(program uint32, src string) {
 	}
 }
 
-func (s *OpenGLESShader) compileOpenGLESShader(shader_name string, shader_type uint32, src string, program uint32) (uint32, error) {
+func (s *OpenGLES2Shader) compileOpenGLES2Shader(shader_name string, shader_type uint32, src string, program uint32) (uint32, error) {
 	shader := gl.CreateShader(shader_type)
 	var srcs [1]string
 	srcs[0] = src
@@ -195,9 +195,9 @@ func (s *OpenGLESShader) compileOpenGLESShader(shader_name string, shader_type u
 	return shader, nil
 }
 
-func (s *OpenGLESShader) AddShader(shader_type uint8, src string) error {
+func (s *OpenGLES2Shader) AddShader(shader_type uint8, src string) error {
 	if shader_type == gohome.GEOMETRY {
-		render, _ := gohome.Render.(*OpenGLESRenderer)
+		render, _ := gohome.Render.(*OpenGLES2Renderer)
 		if !render.HasFunctionAvailable("GEOMETRY_SHADER") {
 			return &OpenGLError{errorString: "Geometry shaders are not supported by this implementation"}
 		}
@@ -207,9 +207,9 @@ func (s *OpenGLESShader) AddShader(shader_type uint8, src string) error {
 	var shaderName uint32
 	switch shader_type {
 	case gohome.VERTEX:
-		shaderName, err = s.compileOpenGLESShader(s.name, gl.VERTEX_SHADER, src, s.program)
+		shaderName, err = s.compileOpenGLES2Shader(s.name, gl.VERTEX_SHADER, src, s.program)
 	case gohome.FRAGMENT:
-		shaderName, err = s.compileOpenGLESShader(s.name, gl.FRAGMENT_SHADER, src, s.program)
+		shaderName, err = s.compileOpenGLES2Shader(s.name, gl.FRAGMENT_SHADER, src, s.program)
 	}
 
 	if err != nil {
@@ -221,7 +221,7 @@ func (s *OpenGLESShader) AddShader(shader_type uint8, src string) error {
 	return nil
 }
 
-func (s *OpenGLESShader) deleteAllShaders() {
+func (s *OpenGLES2Shader) deleteAllShaders() {
 	for i := 0; i < 6; i++ {
 		if s.shaders[i] != 0 {
 			gl.DetachShader(s.program, s.shaders[i])
@@ -230,7 +230,7 @@ func (s *OpenGLESShader) deleteAllShaders() {
 	}
 }
 
-func (s *OpenGLESShader) Link() error {
+func (s *OpenGLES2Shader) Link() error {
 	defer s.deleteAllShaders()
 
 	gl.GetError()
@@ -267,27 +267,27 @@ func (s *OpenGLESShader) Link() error {
 	return nil
 }
 
-func (s *OpenGLESShader) Use() {
+func (s *OpenGLES2Shader) Use() {
 	gl.GetError()
 	gl.UseProgram(s.program)
 	handleOpenGLError("Shader", s.name, "glUseProgram")
 }
 
-func (s *OpenGLESShader) Unuse() {
+func (s *OpenGLES2Shader) Unuse() {
 	gl.GetError()
 	gl.UseProgram(0)
 	handleOpenGLError("Shader", s.name, "glUseProgram with 0")
 }
 
-func (s *OpenGLESShader) Setup() error {
+func (s *OpenGLES2Shader) Setup() error {
 	return s.validate()
 }
 
-func (s *OpenGLESShader) Terminate() {
+func (s *OpenGLES2Shader) Terminate() {
 	gl.DeleteProgram(s.program)
 }
 
-func (s *OpenGLESShader) getUniformLocation(name string) int32 {
+func (s *OpenGLES2Shader) getUniformLocation(name string) int32 {
 	var loc int32
 	var ok bool
 	if loc, ok = s.uniform_locations[name]; !ok {
@@ -302,7 +302,7 @@ func (s *OpenGLESShader) getUniformLocation(name string) int32 {
 	return loc
 }
 
-func (s *OpenGLESShader) SetUniformV2(name string, value mgl32.Vec2) {
+func (s *OpenGLES2Shader) SetUniformV2(name string, value mgl32.Vec2) {
 	loc := s.getUniformLocation(name)
 	if loc != -1 {
 		gl.GetError()
@@ -310,7 +310,7 @@ func (s *OpenGLESShader) SetUniformV2(name string, value mgl32.Vec2) {
 		handleOpenGLError("Shader", s.name, "glUniform2f")
 	}
 }
-func (s *OpenGLESShader) SetUniformV3(name string, value mgl32.Vec3) {
+func (s *OpenGLES2Shader) SetUniformV3(name string, value mgl32.Vec3) {
 	loc := s.getUniformLocation(name)
 	if loc != -1 {
 		gl.GetError()
@@ -318,7 +318,7 @@ func (s *OpenGLESShader) SetUniformV3(name string, value mgl32.Vec3) {
 		handleOpenGLError("Shader", s.name, "glUniform3f")
 	}
 }
-func (s *OpenGLESShader) SetUniformV4(name string, value mgl32.Vec4) {
+func (s *OpenGLES2Shader) SetUniformV4(name string, value mgl32.Vec4) {
 	loc := s.getUniformLocation(name)
 	if loc != -1 {
 		gl.GetError()
@@ -326,7 +326,7 @@ func (s *OpenGLESShader) SetUniformV4(name string, value mgl32.Vec4) {
 		handleOpenGLError("Shader", s.name, "glUniform4f")
 	}
 }
-func (s *OpenGLESShader) SetUniformIV2(name string, value []int32) {
+func (s *OpenGLES2Shader) SetUniformIV2(name string, value []int32) {
 	loc := s.getUniformLocation(name)
 	if loc != -1 {
 		gl.GetError()
@@ -334,7 +334,7 @@ func (s *OpenGLESShader) SetUniformIV2(name string, value []int32) {
 		handleOpenGLError("Shader", s.name, "glUniform2i")
 	}
 }
-func (s *OpenGLESShader) SetUniformIV3(name string, value []int32) {
+func (s *OpenGLES2Shader) SetUniformIV3(name string, value []int32) {
 	loc := s.getUniformLocation(name)
 	if loc != -1 {
 		gl.GetError()
@@ -342,7 +342,7 @@ func (s *OpenGLESShader) SetUniformIV3(name string, value []int32) {
 		handleOpenGLError("Shader", s.name, "glUniform3i")
 	}
 }
-func (s *OpenGLESShader) SetUniformIV4(name string, value []int32) {
+func (s *OpenGLES2Shader) SetUniformIV4(name string, value []int32) {
 	loc := s.getUniformLocation(name)
 	if loc != -1 {
 		gl.GetError()
@@ -350,7 +350,7 @@ func (s *OpenGLESShader) SetUniformIV4(name string, value []int32) {
 		handleOpenGLError("Shader", s.name, "glUniform4i")
 	}
 }
-func (s *OpenGLESShader) SetUniformF(name string, value float32) {
+func (s *OpenGLES2Shader) SetUniformF(name string, value float32) {
 	loc := s.getUniformLocation(name)
 	if loc != -1 {
 		gl.GetError()
@@ -358,7 +358,7 @@ func (s *OpenGLESShader) SetUniformF(name string, value float32) {
 		handleOpenGLError("Shader", s.name, "glUniform1f")
 	}
 }
-func (s *OpenGLESShader) SetUniformI(name string, value int32) {
+func (s *OpenGLES2Shader) SetUniformI(name string, value int32) {
 	loc := s.getUniformLocation(name)
 	if loc != -1 {
 		gl.GetError()
@@ -366,14 +366,14 @@ func (s *OpenGLESShader) SetUniformI(name string, value int32) {
 		handleOpenGLError("Shader", s.name, "glUniform1i")
 	}
 }
-func (s *OpenGLESShader) SetUniformUI(name string, value uint32) {
-	gohome.ErrorMgr.Error("Shader", s.name, "SetUniformUI does not work in OpenGLES 2.0")
+func (s *OpenGLES2Shader) SetUniformUI(name string, value uint32) {
+	gohome.ErrorMgr.Error("Shader", s.name, "SetUniformUI does not work in OpenGLES2 2.0")
 }
 
-func (s *OpenGLESShader) SetUniformB(name string, value uint8) {
+func (s *OpenGLES2Shader) SetUniformB(name string, value uint8) {
 	s.SetUniformI(name, int32(value))
 }
-func (s *OpenGLESShader) SetUniformM2(name string, value mgl32.Mat2) {
+func (s *OpenGLES2Shader) SetUniformM2(name string, value mgl32.Mat2) {
 	loc := s.getUniformLocation(name)
 	if loc != -1 {
 		gl.GetError()
@@ -381,7 +381,7 @@ func (s *OpenGLESShader) SetUniformM2(name string, value mgl32.Mat2) {
 		handleOpenGLError("Shader", s.name, "glUniformMatrix2fv")
 	}
 }
-func (s *OpenGLESShader) SetUniformM3(name string, value mgl32.Mat3) {
+func (s *OpenGLES2Shader) SetUniformM3(name string, value mgl32.Mat3) {
 	loc := s.getUniformLocation(name)
 	if loc != -1 {
 		gl.GetError()
@@ -389,7 +389,7 @@ func (s *OpenGLESShader) SetUniformM3(name string, value mgl32.Mat3) {
 		handleOpenGLError("Shader", s.name, "glUniformMatrix3fv")
 	}
 }
-func (s *OpenGLESShader) SetUniformM4(name string, value mgl32.Mat4) {
+func (s *OpenGLES2Shader) SetUniformM4(name string, value mgl32.Mat4) {
 	loc := s.getUniformLocation(name)
 	if loc != -1 {
 		gl.GetError()
@@ -398,7 +398,7 @@ func (s *OpenGLESShader) SetUniformM4(name string, value mgl32.Mat4) {
 	}
 }
 
-func (s *OpenGLESShader) SetUniformMaterial(mat gohome.Material) {
+func (s *OpenGLES2Shader) SetUniformMaterial(mat gohome.Material) {
 	var diffBind int32 = 0
 	var specBind int32 = 0
 	var normBind int32 = 0
@@ -467,7 +467,7 @@ func (s *OpenGLESShader) SetUniformMaterial(mat gohome.Material) {
 	s.SetUniformF(gohome.MATERIAL_UNIFORM_NAME+"."+gohome.MATERIAL_TRANSPARENCY_UNIFORM_NAME, mat.Transparency)
 }
 
-func (s *OpenGLESShader) SetUniformLights(lightCollectionIndex int32) {
+func (s *OpenGLES2Shader) SetUniformLights(lightCollectionIndex int32) {
 	if lightCollectionIndex == -1 || lightCollectionIndex > int32(len(gohome.LightMgr.LightCollections)-1) {
 		s.SetUniformI(gohome.NUM_POINT_LIGHTS_UNIFORM_NAME, 0)
 		s.SetUniformI(gohome.NUM_DIRECTIONAL_LIGHTS_UNIFORM_NAME, 0)
@@ -497,11 +497,11 @@ func (s *OpenGLESShader) SetUniformLights(lightCollectionIndex int32) {
 	}
 }
 
-func (s *OpenGLESShader) GetName() string {
+func (s *OpenGLES2Shader) GetName() string {
 	return s.name
 }
 
-func (s *OpenGLESShader) validate() error {
+func (s *OpenGLES2Shader) validate() error {
 	if s.validated {
 		return nil
 	}
@@ -529,6 +529,6 @@ func (s *OpenGLESShader) validate() error {
 	return nil
 }
 
-func (s *OpenGLESShader) AddAttribute(name string, location uint32) {
+func (s *OpenGLES2Shader) AddAttribute(name string, location uint32) {
 	gl.BindAttribLocation(s.program, location, name)
 }

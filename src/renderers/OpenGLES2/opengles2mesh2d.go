@@ -6,7 +6,7 @@ import (
 	"unsafe"
 )
 
-type OpenGLESMesh2D struct {
+type OpenGLES2Mesh2D struct {
 	vertices    []gohome.Mesh2DVertex
 	indices     []uint32
 	numVertices uint32
@@ -16,25 +16,25 @@ type OpenGLESMesh2D struct {
 	ibo         uint32
 }
 
-func CreateOpenGLESMesh2D(name string) *OpenGLESMesh2D {
-	mesh := OpenGLESMesh2D{
+func CreateOpenGLES2Mesh2D(name string) *OpenGLES2Mesh2D {
+	mesh := OpenGLES2Mesh2D{
 		Name: name,
 	}
 
 	return &mesh
 }
 
-func (oglm *OpenGLESMesh2D) deleteElements() {
+func (oglm *OpenGLES2Mesh2D) deleteElements() {
 	oglm.vertices = append(oglm.vertices[:0], oglm.vertices[len(oglm.vertices):]...)
 	oglm.indices = append(oglm.indices[:0], oglm.indices[len(oglm.indices):]...)
 }
 
-func (oglm *OpenGLESMesh2D) AddVertices(vertices []gohome.Mesh2DVertex, indices []uint32) {
+func (oglm *OpenGLES2Mesh2D) AddVertices(vertices []gohome.Mesh2DVertex, indices []uint32) {
 	oglm.vertices = append(oglm.vertices, vertices...)
 	oglm.indices = append(oglm.indices, indices...)
 }
 
-func (oglm *OpenGLESMesh2D) attributePointer() {
+func (oglm *OpenGLES2Mesh2D) attributePointer() {
 	offset0 := 0
 	offset1 := 3 * 4
 
@@ -47,7 +47,7 @@ func (oglm *OpenGLESMesh2D) attributePointer() {
 	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, oglm.ibo)
 }
 
-func (oglm *OpenGLESMesh2D) Load() {
+func (oglm *OpenGLES2Mesh2D) Load() {
 	oglm.numVertices = uint32(len(oglm.vertices))
 	oglm.numIndices = uint32(len(oglm.indices))
 	var verticesSize uint32 = oglm.numVertices * gohome.MESH2DVERTEX_SIZE
@@ -70,7 +70,7 @@ func (oglm *OpenGLESMesh2D) Load() {
 	oglm.deleteElements()
 }
 
-func (oglm *OpenGLESMesh2D) Render() {
+func (oglm *OpenGLES2Mesh2D) Render() {
 	oglm.attributePointer()
 
 	gl.GetError()
@@ -81,7 +81,7 @@ func (oglm *OpenGLESMesh2D) Render() {
 	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, 0)
 }
 
-func (oglm *OpenGLESMesh2D) Terminate() {
+func (oglm *OpenGLES2Mesh2D) Terminate() {
 	var buf [2]uint32
 	buf[0] = oglm.vbo
 	buf[1] = oglm.ibo

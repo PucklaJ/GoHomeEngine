@@ -10,7 +10,7 @@ import (
 	"unsafe"
 )
 
-type OpenGLESTexture struct {
+type OpenGLES2Texture struct {
 	width   int
 	height  int
 	name    string
@@ -20,18 +20,18 @@ type OpenGLESTexture struct {
 	modColor color.Color
 }
 
-func (ogltex *OpenGLESTexture) bindingPoint() uint32 {
+func (ogltex *OpenGLES2Texture) bindingPoint() uint32 {
 	return gl.TEXTURE_2D
 }
 
-func CreateOpenGLESTexture(name string) *OpenGLESTexture {
-	tex := &OpenGLESTexture{
+func CreateOpenGLES2Texture(name string) *OpenGLES2Texture {
+	tex := &OpenGLES2Texture{
 		name: name,
 	}
 	return tex
 }
 
-func printOGLTexture2DError(ogltex *OpenGLESTexture, data []byte, width, height int) {
+func printOGLTexture2DError(ogltex *OpenGLES2Texture, data []byte, width, height int) {
 	err := gl.GetError()
 	if err != gl.NO_ERROR {
 		var errString string
@@ -66,7 +66,7 @@ func printOGLTexture2DError(ogltex *OpenGLESTexture, data []byte, width, height 
 	}
 }
 
-func (ogltex *OpenGLESTexture) Load(data []byte, width, height int, shadowMap bool) error {
+func (ogltex *OpenGLES2Texture) Load(data []byte, width, height int, shadowMap bool) error {
 	ogltex.width = width
 	ogltex.height = height
 	var tex [1]uint32
@@ -123,7 +123,7 @@ func loadImageData(img_data *[]byte, img image.Image, start_width, end_width, ma
 	}
 }
 
-func (ogltex *OpenGLESTexture) LoadFromImage(img image.Image) error {
+func (ogltex *OpenGLES2Texture) LoadFromImage(img image.Image) error {
 
 	width := img.Bounds().Size().X
 	height := img.Bounds().Size().Y
@@ -148,7 +148,7 @@ func toTextureUnit(unit uint32) uint32 {
 	return gl.TEXTURE0 + unit
 }
 
-func (ogltex *OpenGLESTexture) Bind(unit uint32) {
+func (ogltex *OpenGLES2Texture) Bind(unit uint32) {
 	newUnit := toTextureUnit(unit)
 	gl.GetError()
 	gl.ActiveTexture(newUnit)
@@ -156,7 +156,7 @@ func (ogltex *OpenGLESTexture) Bind(unit uint32) {
 	gl.BindTexture(ogltex.bindingPoint(), ogltex.oglName)
 	handleOpenGLError("Texture", ogltex.name, "glBindTexture in Bind")
 }
-func (ogltex *OpenGLESTexture) Unbind(unit uint32) {
+func (ogltex *OpenGLES2Texture) Unbind(unit uint32) {
 	newUnit := toTextureUnit(unit)
 	gl.GetError()
 	gl.ActiveTexture(newUnit)
@@ -164,20 +164,20 @@ func (ogltex *OpenGLESTexture) Unbind(unit uint32) {
 	gl.BindTexture(ogltex.bindingPoint(), 0)
 	handleOpenGLError("Texture", ogltex.name, "glBindTexture in Unbind")
 }
-func (ogltex *OpenGLESTexture) GetWidth() int {
+func (ogltex *OpenGLES2Texture) GetWidth() int {
 	return ogltex.width
 }
-func (ogltex *OpenGLESTexture) GetHeight() int {
+func (ogltex *OpenGLES2Texture) GetHeight() int {
 	return ogltex.height
 }
 
-func (ogltex *OpenGLESTexture) Terminate() {
+func (ogltex *OpenGLES2Texture) Terminate() {
 	var tex [1]uint32
 	tex[0] = ogltex.oglName
 	gl.DeleteTextures(1, tex[:])
 }
 
-func (ogltex *OpenGLESTexture) SetFiltering(filtering uint32) {
+func (ogltex *OpenGLES2Texture) SetFiltering(filtering uint32) {
 	gl.BindTexture(ogltex.bindingPoint(), ogltex.oglName)
 	var filter int32
 	if filtering == gohome.FILTERING_NEAREST {
@@ -193,7 +193,7 @@ func (ogltex *OpenGLESTexture) SetFiltering(filtering uint32) {
 	gl.BindTexture(ogltex.bindingPoint(), 0)
 }
 
-func (ogltex *OpenGLESTexture) SetWrapping(wrapping uint32) {
+func (ogltex *OpenGLES2Texture) SetWrapping(wrapping uint32) {
 	gl.BindTexture(ogltex.bindingPoint(), ogltex.oglName)
 	var wrap int32
 	if wrapping == gohome.WRAPPING_REPEAT {
@@ -211,37 +211,37 @@ func (ogltex *OpenGLESTexture) SetWrapping(wrapping uint32) {
 	gl.BindTexture(ogltex.bindingPoint(), 0)
 }
 
-func (ogltex *OpenGLESTexture) SetBorderColor(col color.Color) {
-	gohome.ErrorMgr.Error("Texture", ogltex.name, "SetBorderColor does not work in OpenGLES 2.0")
+func (ogltex *OpenGLES2Texture) SetBorderColor(col color.Color) {
+	gohome.ErrorMgr.Error("Texture", ogltex.name, "SetBorderColor does not work in OpenGLES2 2.0")
 }
 
-func (ogltex *OpenGLESTexture) SetBorderDepth(depth float32) {
-	gohome.ErrorMgr.Error("Texture", ogltex.name, "SetBorderDepth does not work in OpenGLES 2.0")
+func (ogltex *OpenGLES2Texture) SetBorderDepth(depth float32) {
+	gohome.ErrorMgr.Error("Texture", ogltex.name, "SetBorderDepth does not work in OpenGLES2 2.0")
 
 }
 
-func (ogltex *OpenGLESTexture) SetKeyColor(col color.Color) {
+func (ogltex *OpenGLES2Texture) SetKeyColor(col color.Color) {
 	ogltex.keyColor = col
 }
 
-func (ogltex *OpenGLESTexture) GetKeyColor() color.Color {
+func (ogltex *OpenGLES2Texture) GetKeyColor() color.Color {
 	return ogltex.keyColor
 }
 
-func (ogltex *OpenGLESTexture) SetModColor(col color.Color) {
+func (ogltex *OpenGLES2Texture) SetModColor(col color.Color) {
 	ogltex.modColor = col
 }
 
-func (ogltex *OpenGLESTexture) GetModColor() color.Color {
+func (ogltex *OpenGLES2Texture) GetModColor() color.Color {
 	return ogltex.modColor
 }
 
-func (ogltex *OpenGLESTexture) GetName() string {
+func (ogltex *OpenGLES2Texture) GetName() string {
 	return ogltex.name
 }
 
-func (ogltex *OpenGLESTexture) GetData() (data []byte, width int, height int) {
+func (ogltex *OpenGLES2Texture) GetData() (data []byte, width int, height int) {
 	width, height = ogltex.GetWidth(), ogltex.GetHeight()
-	gohome.ErrorMgr.Error("Texture", ogltex.name, "GetData does not work in OpenGLES 2.0")
+	gohome.ErrorMgr.Error("Texture", ogltex.name, "GetData does not work in OpenGLES2 2.0")
 	return
 }

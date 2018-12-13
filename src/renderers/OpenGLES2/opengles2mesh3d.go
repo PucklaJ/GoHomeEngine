@@ -13,7 +13,7 @@ const (
 	MESH3DVERTEX_SIZE                    uint32 = 3*4 + 3*4 + 2*4 + 3*4 // 3*sizeof(float32)+3*sizeof(float32)+2*sizeof(float32)+3*sizeof(float32)
 )
 
-type OpenGLESMesh3D struct {
+type OpenGLES2Mesh3D struct {
 	vertices    []gohome.Mesh3DVertex
 	indices     []uint32
 	numVertices uint32
@@ -31,7 +31,7 @@ type OpenGLESMesh3D struct {
 	aabb gohome.AxisAlignedBoundingBox
 }
 
-func (oglm *OpenGLESMesh3D) CalculateTangentsRoutine(startIndex, maxIndex uint32, wg *sync.WaitGroup) {
+func (oglm *OpenGLES2Mesh3D) CalculateTangentsRoutine(startIndex, maxIndex uint32, wg *sync.WaitGroup) {
 	if wg != nil {
 		defer wg.Done()
 	}
@@ -89,7 +89,7 @@ func (oglm *OpenGLESMesh3D) CalculateTangentsRoutine(startIndex, maxIndex uint32
 	}
 }
 
-func (oglm *OpenGLESMesh3D) CalculateTangents() {
+func (oglm *OpenGLES2Mesh3D) CalculateTangents() {
 	if oglm.tangentsCalculated {
 		return
 	}
@@ -120,13 +120,13 @@ func (oglm *OpenGLESMesh3D) CalculateTangents() {
 	oglm.tangentsCalculated = true
 }
 
-func (oglm *OpenGLESMesh3D) AddVertices(vertices []gohome.Mesh3DVertex, indices []uint32) {
+func (oglm *OpenGLES2Mesh3D) AddVertices(vertices []gohome.Mesh3DVertex, indices []uint32) {
 	oglm.vertices = append(oglm.vertices, vertices...)
 	oglm.indices = append(oglm.indices, indices...)
 	oglm.checkAABB()
 }
 
-func (oglm *OpenGLESMesh3D) checkAABB() {
+func (oglm *OpenGLES2Mesh3D) checkAABB() {
 	var max, min mgl32.Vec3 = [3]float32{oglm.vertices[0][0], oglm.vertices[0][1], oglm.vertices[0][2]}, [3]float32{oglm.vertices[0][0], oglm.vertices[0][1], oglm.vertices[0][2]}
 	var current gohome.Mesh3DVertex
 	for i := 0; i < len(oglm.vertices); i++ {
@@ -150,8 +150,8 @@ func (oglm *OpenGLESMesh3D) checkAABB() {
 	}
 }
 
-func CreateOpenGLESMesh3D(name string) *OpenGLESMesh3D {
-	mesh := OpenGLESMesh3D{
+func CreateOpenGLES2Mesh3D(name string) *OpenGLES2Mesh3D {
+	mesh := OpenGLES2Mesh3D{
 		Name:               name,
 		tangentsCalculated: false,
 	}
@@ -159,12 +159,12 @@ func CreateOpenGLESMesh3D(name string) *OpenGLESMesh3D {
 	return &mesh
 }
 
-func (oglm *OpenGLESMesh3D) deleteElements() {
+func (oglm *OpenGLES2Mesh3D) deleteElements() {
 	oglm.vertices = append(oglm.vertices[:0], oglm.vertices[len(oglm.vertices):]...)
 	oglm.indices = append(oglm.indices[:0], oglm.indices[len(oglm.indices):]...)
 }
 
-func (oglm *OpenGLESMesh3D) attributePointer() {
+func (oglm *OpenGLES2Mesh3D) attributePointer() {
 	offset0 := 0
 	offset1 := 3 * 4
 	offset2 := 3*4 + 3*4
@@ -184,7 +184,7 @@ func (oglm *OpenGLESMesh3D) attributePointer() {
 	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, oglm.buffer)
 }
 
-func (oglm *OpenGLESMesh3D) Load() {
+func (oglm *OpenGLES2Mesh3D) Load() {
 	if oglm.loaded {
 		return
 	}
@@ -219,7 +219,7 @@ func (oglm *OpenGLESMesh3D) Load() {
 	oglm.loaded = true
 }
 
-func (oglm *OpenGLESMesh3D) Render() {
+func (oglm *OpenGLES2Mesh3D) Render() {
 	if oglm.numVertices == 0 || oglm.numIndices == 0 {
 		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "Mesh", oglm.Name, "No Vertices or Indices have been loaded!")
 		return
@@ -240,51 +240,51 @@ func (oglm *OpenGLESMesh3D) Render() {
 	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, 0)
 }
 
-func (oglm *OpenGLESMesh3D) Terminate() {
+func (oglm *OpenGLES2Mesh3D) Terminate() {
 	var buf [1]uint32
 	buf[0] = oglm.buffer
 	defer gl.DeleteBuffers(1, buf[:])
 }
 
-func (oglm *OpenGLESMesh3D) SetMaterial(mat *gohome.Material) {
+func (oglm *OpenGLES2Mesh3D) SetMaterial(mat *gohome.Material) {
 	oglm.Material = mat
 }
 
-func (oglm *OpenGLESMesh3D) GetMaterial() *gohome.Material {
+func (oglm *OpenGLES2Mesh3D) GetMaterial() *gohome.Material {
 	if oglm.Material == nil {
 		oglm.Material = &gohome.Material{}
 	}
 	return oglm.Material
 }
 
-func (oglm *OpenGLESMesh3D) GetNumVertices() uint32 {
+func (oglm *OpenGLES2Mesh3D) GetNumVertices() uint32 {
 	return oglm.numVertices
 }
-func (oglm *OpenGLESMesh3D) GetNumIndices() uint32 {
+func (oglm *OpenGLES2Mesh3D) GetNumIndices() uint32 {
 	return oglm.numIndices
 }
 
-func (oglm *OpenGLESMesh3D) GetVertices() []gohome.Mesh3DVertex {
+func (oglm *OpenGLES2Mesh3D) GetVertices() []gohome.Mesh3DVertex {
 	return oglm.vertices
 }
-func (oglm *OpenGLESMesh3D) GetIndices() []uint32 {
+func (oglm *OpenGLES2Mesh3D) GetIndices() []uint32 {
 	return oglm.indices
 }
 
-func (oglm *OpenGLESMesh3D) GetName() string {
+func (oglm *OpenGLES2Mesh3D) GetName() string {
 	return oglm.Name
 }
 
-func (oglm *OpenGLESMesh3D) AABB() gohome.AxisAlignedBoundingBox {
+func (oglm *OpenGLES2Mesh3D) AABB() gohome.AxisAlignedBoundingBox {
 	return oglm.aabb
 }
 
-func (oglm *OpenGLESMesh3D) HasUV() bool {
+func (oglm *OpenGLES2Mesh3D) HasUV() bool {
 	return oglm.hasUV
 }
 
-func (oglm *OpenGLESMesh3D) Copy() gohome.Mesh3D {
-	var oglm1 OpenGLESMesh3D
+func (oglm *OpenGLES2Mesh3D) Copy() gohome.Mesh3D {
+	var oglm1 OpenGLES2Mesh3D
 	oglm1.Name = oglm.Name + " Copy"
 	oglm1.buffer = oglm.buffer
 	mat := *oglm.Material
@@ -297,6 +297,6 @@ func (oglm *OpenGLESMesh3D) Copy() gohome.Mesh3D {
 	return &oglm1
 }
 
-func (oglm *OpenGLESMesh3D) LoadedToGPU() bool {
+func (oglm *OpenGLES2Mesh3D) LoadedToGPU() bool {
 	return oglm.loaded
 }

@@ -7,7 +7,7 @@ import (
 	"image/color"
 )
 
-type OpenGLESCubeMap struct {
+type OpenGLES2CubeMap struct {
 	name      string
 	oglName   uint32
 	width     uint32
@@ -15,18 +15,18 @@ type OpenGLESCubeMap struct {
 	shadowMap bool
 }
 
-func (this *OpenGLESCubeMap) GetName() string {
+func (this *OpenGLES2CubeMap) GetName() string {
 	return this.name
 }
 
-func CreateOpenGLESCubeMap(name string) *OpenGLESCubeMap {
-	cubeMap := &OpenGLESCubeMap{
+func CreateOpenGLES2CubeMap(name string) *OpenGLES2CubeMap {
+	cubeMap := &OpenGLES2CubeMap{
 		name: name,
 	}
 	return cubeMap
 }
 
-func (this *OpenGLESCubeMap) Load(data []byte, width, height int, shadowMap bool) error {
+func (this *OpenGLES2CubeMap) Load(data []byte, width, height int, shadowMap bool) error {
 	this.width = uint32(width)
 	this.height = uint32(height)
 	this.shadowMap = shadowMap
@@ -53,31 +53,31 @@ func (this *OpenGLESCubeMap) Load(data []byte, width, height int, shadowMap bool
 	return nil
 }
 
-func (this *OpenGLESCubeMap) LoadFromImage(img image.Image) error {
+func (this *OpenGLES2CubeMap) LoadFromImage(img image.Image) error {
 	return nil
 }
 
-func (this *OpenGLESCubeMap) Bind(unit uint32) {
+func (this *OpenGLES2CubeMap) Bind(unit uint32) {
 	gl.ActiveTexture(gl.TEXTURE0 + unit)
 	gl.BindTexture(gl.TEXTURE_CUBE_MAP, this.oglName)
 }
-func (this *OpenGLESCubeMap) Unbind(unit uint32) {
+func (this *OpenGLES2CubeMap) Unbind(unit uint32) {
 	gl.ActiveTexture(gl.TEXTURE0 + unit)
 	gl.BindTexture(gl.TEXTURE_CUBE_MAP, 0)
 
 }
-func (this *OpenGLESCubeMap) GetWidth() int {
+func (this *OpenGLES2CubeMap) GetWidth() int {
 	return int(this.width)
 }
-func (this *OpenGLESCubeMap) GetHeight() int {
+func (this *OpenGLES2CubeMap) GetHeight() int {
 	return int(this.height)
 }
-func (this *OpenGLESCubeMap) Terminate() {
+func (this *OpenGLES2CubeMap) Terminate() {
 	var tex [1]uint32
 	tex[0] = this.oglName
 	gl.DeleteTextures(1, tex[:])
 }
-func (this *OpenGLESCubeMap) SetFiltering(filtering uint32) {
+func (this *OpenGLES2CubeMap) SetFiltering(filtering uint32) {
 	gl.BindTexture(gl.TEXTURE_CUBE_MAP, this.oglName)
 	var filter int32
 	if filtering == gohome.FILTERING_NEAREST {
@@ -92,7 +92,7 @@ func (this *OpenGLESCubeMap) SetFiltering(filtering uint32) {
 
 	gl.BindTexture(gl.TEXTURE_CUBE_MAP, 0)
 }
-func (this *OpenGLESCubeMap) SetWrapping(wrapping uint32) {
+func (this *OpenGLES2CubeMap) SetWrapping(wrapping uint32) {
 	gl.BindTexture(gl.TEXTURE_CUBE_MAP, this.oglName)
 	var wrap int32
 	if wrapping == gohome.WRAPPING_REPEAT {
@@ -110,31 +110,31 @@ func (this *OpenGLESCubeMap) SetWrapping(wrapping uint32) {
 	gl.BindTexture(gl.TEXTURE_CUBE_MAP, 0)
 
 }
-func (this *OpenGLESCubeMap) SetBorderColor(col color.Color) {
-	gohome.ErrorMgr.Error("Texture", this.name, "SetBorderColor does not work in OpenGLES 2.0")
+func (this *OpenGLES2CubeMap) SetBorderColor(col color.Color) {
+	gohome.ErrorMgr.Error("Texture", this.name, "SetBorderColor does not work in OpenGLES2 2.0")
 }
-func (this *OpenGLESCubeMap) SetBorderDepth(depth float32) {
-	gohome.ErrorMgr.Error("Texture", this.name, "SetBorderDepth does not work in OpenGLES 2.0")
+func (this *OpenGLES2CubeMap) SetBorderDepth(depth float32) {
+	gohome.ErrorMgr.Error("Texture", this.name, "SetBorderDepth does not work in OpenGLES2 2.0")
 }
 
-func (this *OpenGLESCubeMap) GetKeyColor() color.Color {
+func (this *OpenGLES2CubeMap) GetKeyColor() color.Color {
 	return nil
 }
 
-func (this *OpenGLESCubeMap) GetModColor() color.Color {
+func (this *OpenGLES2CubeMap) GetModColor() color.Color {
 	return nil
 }
 
-func (this *OpenGLESCubeMap) SetKeyColor(col color.Color) {
+func (this *OpenGLES2CubeMap) SetKeyColor(col color.Color) {
 
 }
 
-func (this *OpenGLESCubeMap) SetModColor(col color.Color) {
+func (this *OpenGLES2CubeMap) SetModColor(col color.Color) {
 
 }
 
-func (this *OpenGLESCubeMap) GetData() (data []byte, width int, height int) {
+func (this *OpenGLES2CubeMap) GetData() (data []byte, width int, height int) {
 	width, height = this.GetWidth(), this.GetHeight()
-	gohome.ErrorMgr.Error("Texture", this.name, "GetData does not work in OpenGLES 2.0")
+	gohome.ErrorMgr.Error("Texture", this.name, "GetData does not work in OpenGLES2 2.0")
 	return
 }

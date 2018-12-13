@@ -6,7 +6,7 @@ import (
 	"unsafe"
 )
 
-type OpenGLESLines3DInterface struct {
+type OpenGLES2Lines3DInterface struct {
 	Name   string
 	vbo    uint32
 	loaded bool
@@ -15,11 +15,11 @@ type OpenGLESLines3DInterface struct {
 	numVertices uint32
 }
 
-func (this *OpenGLESLines3DInterface) Init() {
+func (this *OpenGLES2Lines3DInterface) Init() {
 	this.loaded = false
 }
 
-func (this *OpenGLESLines3DInterface) AddLines(lines []gohome.Line3D) {
+func (this *OpenGLES2Lines3DInterface) AddLines(lines []gohome.Line3D) {
 	if this.loaded {
 		gohome.ErrorMgr.Warning("Lines3DInterface", this.Name, "It has already been loaded to the GPU! You can't add any vertices anymore!")
 		return
@@ -28,11 +28,11 @@ func (this *OpenGLESLines3DInterface) AddLines(lines []gohome.Line3D) {
 	this.lines = append(this.lines, lines...)
 }
 
-func (this *OpenGLESLines3DInterface) GetLines() []gohome.Line3D {
+func (this *OpenGLES2Lines3DInterface) GetLines() []gohome.Line3D {
 	return this.lines
 }
 
-func (this *OpenGLESLines3DInterface) attributePointer() {
+func (this *OpenGLES2Lines3DInterface) attributePointer() {
 	offset0 := 0
 	offset1 := 3 * 4
 
@@ -44,7 +44,7 @@ func (this *OpenGLESLines3DInterface) attributePointer() {
 	gl.EnableVertexAttribArray(1)
 }
 
-func (this *OpenGLESLines3DInterface) Load() {
+func (this *OpenGLES2Lines3DInterface) Load() {
 	if this.loaded {
 		return
 	}
@@ -66,7 +66,7 @@ func (this *OpenGLESLines3DInterface) Load() {
 	this.loaded = true
 }
 
-func (this *OpenGLESLines3DInterface) Render() {
+func (this *OpenGLES2Lines3DInterface) Render() {
 	hasLoaded := this.loaded
 	if !hasLoaded {
 		this.Load()
@@ -87,7 +87,7 @@ func (this *OpenGLESLines3DInterface) Render() {
 		this.Terminate()
 	}
 }
-func (this *OpenGLESLines3DInterface) Terminate() {
+func (this *OpenGLES2Lines3DInterface) Terminate() {
 	var buf [1]uint32
 	buf[0] = this.vbo
 	defer gl.DeleteBuffers(1, buf[:])

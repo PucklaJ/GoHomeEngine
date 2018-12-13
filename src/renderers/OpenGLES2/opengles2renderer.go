@@ -14,17 +14,17 @@ const (
 	GL_TEXTURE_MAX_ANISOTROPY     uint32 = 0x84FE
 )
 
-type OpenGLESRenderer struct {
+type OpenGLES2Renderer struct {
 	CurrentTextureUnit uint32
 
 	availableFunctions map[string]bool
-	backBufferMesh     *OpenGLESMesh2D
+	backBufferMesh     *OpenGLES2Mesh2D
 	backgroundColor    color.Color
 	version            uint8
 }
 
-func (this *OpenGLESRenderer) createBackBufferMesh() {
-	this.backBufferMesh = CreateOpenGLESMesh2D("BackBufferMesh")
+func (this *OpenGLES2Renderer) createBackBufferMesh() {
+	this.backBufferMesh = CreateOpenGLES2Mesh2D("BackBufferMesh")
 
 	var vertices []gohome.Mesh2DVertex = make([]gohome.Mesh2DVertex, 4)
 	var indices []uint32 = make([]uint32, 6)
@@ -50,15 +50,15 @@ func (this *OpenGLESRenderer) createBackBufferMesh() {
 	this.backBufferMesh.Load()
 }
 
-func (this *OpenGLESRenderer) Init() error {
+func (this *OpenGLES2Renderer) Init() error {
 	version := gl.GetString(gl.VERSION)
 	versioni := this.GetVersioni()
 	if version == "" {
 		version = strconv.FormatUint(uint64(versioni), 10)
 	}
-	gohome.ErrorMgr.Log("Renderer", "OpenGLES\t", "Version: "+version)
+	gohome.ErrorMgr.Log("Renderer", "OpenGLES2\t", "Version: "+version)
 	if versioni < 21 {
-		gohome.ErrorMgr.Warning("Renderer", "OpenGLES", "You don't have a graphics card or your graphics card is not supported! Minimum: OpenGL 2.1")
+		gohome.ErrorMgr.Warning("Renderer", "OpenGLES2", "You don't have a graphics card or your graphics card is not supported! Minimum: OpenGL 2.1")
 	}
 
 	this.CurrentTextureUnit = 0
@@ -73,7 +73,7 @@ func (this *OpenGLESRenderer) Init() error {
 	return nil
 }
 
-func (this *OpenGLESRenderer) AfterInit() {
+func (this *OpenGLES2Renderer) AfterInit() {
 	gl.DepthFunc(gl.LEQUAL)
 	gl.Enable(gl.BLEND)
 	gl.BlendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA)
@@ -85,17 +85,17 @@ func (this *OpenGLESRenderer) AfterInit() {
 	gl.Enable(gl.DEPTH_TEST)
 }
 
-func (this *OpenGLESRenderer) SetWireFrame(b bool) {
-	gohome.ErrorMgr.Error("Renderer", "OpenGLES", "WireframeMode does not work")
+func (this *OpenGLES2Renderer) SetWireFrame(b bool) {
+	gohome.ErrorMgr.Error("Renderer", "OpenGLES2", "WireframeMode does not work")
 }
 
-func (this *OpenGLESRenderer) Terminate() {
+func (this *OpenGLES2Renderer) Terminate() {
 	if this.backBufferMesh != nil {
 		this.backBufferMesh.Terminate()
 	}
 }
 
-func (*OpenGLESRenderer) ClearScreen(c color.Color) {
+func (*OpenGLES2Renderer) ClearScreen(c color.Color) {
 	clearColor := gohome.ColorToVec4(c)
 	gl.ClearColor(clearColor[0], clearColor[1], clearColor[2], clearColor[3])
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT)
@@ -109,41 +109,41 @@ func (oerr OpenGLError) Error() string {
 	return oerr.errorString
 }
 
-func (*OpenGLESRenderer) CreateTexture(name string, multiSampled bool) gohome.Texture {
-	return CreateOpenGLESTexture(name)
+func (*OpenGLES2Renderer) CreateTexture(name string, multiSampled bool) gohome.Texture {
+	return CreateOpenGLES2Texture(name)
 }
 
-func (*OpenGLESRenderer) CreateMesh2D(name string) gohome.Mesh2D {
-	return CreateOpenGLESMesh2D(name)
+func (*OpenGLES2Renderer) CreateMesh2D(name string) gohome.Mesh2D {
+	return CreateOpenGLES2Mesh2D(name)
 }
 
-func (*OpenGLESRenderer) CreateMesh3D(name string) gohome.Mesh3D {
-	return CreateOpenGLESMesh3D(name)
+func (*OpenGLES2Renderer) CreateMesh3D(name string) gohome.Mesh3D {
+	return CreateOpenGLES2Mesh3D(name)
 }
 
-func (*OpenGLESRenderer) CreateRenderTexture(name string, width, height, textures uint32, depthBuffer, multiSampled, shadowMap, cubeMap bool) gohome.RenderTexture {
-	return CreateOpenGLESRenderTexture(name, width, height, textures, depthBuffer, multiSampled, shadowMap, cubeMap)
+func (*OpenGLES2Renderer) CreateRenderTexture(name string, width, height, textures uint32, depthBuffer, multiSampled, shadowMap, cubeMap bool) gohome.RenderTexture {
+	return CreateOpenGLES2RenderTexture(name, width, height, textures, depthBuffer, multiSampled, shadowMap, cubeMap)
 }
 
-func (*OpenGLESRenderer) CreateCubeMap(name string) gohome.CubeMap {
-	return CreateOpenGLESCubeMap(name)
+func (*OpenGLES2Renderer) CreateCubeMap(name string) gohome.CubeMap {
+	return CreateOpenGLES2CubeMap(name)
 }
 
-func (*OpenGLESRenderer) CreateInstancedMesh3D(name string) gohome.InstancedMesh3D {
-	return CreateOpenGLESInstancedMesh3D(name)
+func (*OpenGLES2Renderer) CreateInstancedMesh3D(name string) gohome.InstancedMesh3D {
+	return CreateOpenGLES2InstancedMesh3D(name)
 }
 
-func (*OpenGLESRenderer) CreateLines3DInterface(name string) gohome.Lines3DInterface {
-	return &OpenGLESLines3DInterface{
+func (*OpenGLES2Renderer) CreateLines3DInterface(name string) gohome.Lines3DInterface {
+	return &OpenGLES2Lines3DInterface{
 		Name: name,
 	}
 }
 
-func (this *OpenGLESRenderer) LoadShader(name, vertex_contents, fragment_contents, geometry_contents, tesselletion_control_contents, eveluation_contents, compute_contents string) (gohome.Shader, error) {
-	var shader *OpenGLESShader
+func (this *OpenGLES2Renderer) LoadShader(name, vertex_contents, fragment_contents, geometry_contents, tesselletion_control_contents, eveluation_contents, compute_contents string) (gohome.Shader, error) {
+	var shader *OpenGLES2Shader
 	var err error
 
-	shader, err = CreateOpenGLESShader(name)
+	shader, err = CreateOpenGLES2Shader(name)
 	if err != nil {
 		return nil, err
 	}
@@ -197,15 +197,15 @@ func (this *OpenGLESRenderer) LoadShader(name, vertex_contents, fragment_content
 	return shader, nil
 }
 
-func (this *OpenGLESRenderer) RenderBackBuffer() {
+func (this *OpenGLES2Renderer) RenderBackBuffer() {
 	this.backBufferMesh.Render()
 }
 
-func (this *OpenGLESRenderer) SetViewport(viewport gohome.Viewport) {
+func (this *OpenGLES2Renderer) SetViewport(viewport gohome.Viewport) {
 	gl.Viewport(int32(viewport.X), int32(viewport.Y), int32(viewport.Width), int32(viewport.Height))
 }
 
-func (this *OpenGLESRenderer) GetViewport() gohome.Viewport {
+func (this *OpenGLES2Renderer) GetViewport() gohome.Viewport {
 	var data [4]int32
 	gl.GetIntegerv(gl.VIEWPORT, data[:])
 
@@ -217,7 +217,7 @@ func (this *OpenGLESRenderer) GetViewport() gohome.Viewport {
 	}
 }
 
-func (this *OpenGLESRenderer) SetNativeResolution(width, height uint32) {
+func (this *OpenGLES2Renderer) SetNativeResolution(width, height uint32) {
 	previous := gohome.Viewport{
 		X:      0,
 		Y:      0,
@@ -242,21 +242,21 @@ func (this *OpenGLESRenderer) SetNativeResolution(width, height uint32) {
 
 	gohome.RenderMgr.UpdateViewports(current, previous)
 }
-func (this *OpenGLESRenderer) GetNativeResolution() mgl32.Vec2 {
+func (this *OpenGLES2Renderer) GetNativeResolution() mgl32.Vec2 {
 	return [2]float32{float32(gohome.RenderMgr.BackBufferMS.GetWidth()), float32(gohome.RenderMgr.BackBufferMS.GetHeight())}
 }
-func (this *OpenGLESRenderer) OnResize(newWidth, newHeight uint32) {
+func (this *OpenGLES2Renderer) OnResize(newWidth, newHeight uint32) {
 	gl.Viewport(0, 0, int32(newWidth), int32(newHeight))
 }
 
-func (this *OpenGLESRenderer) PreRender() {
+func (this *OpenGLES2Renderer) PreRender() {
 	this.CurrentTextureUnit = 1
 }
-func (this *OpenGLESRenderer) AfterRender() {
+func (this *OpenGLES2Renderer) AfterRender() {
 	this.CurrentTextureUnit = 1
 }
 
-func (this *OpenGLESRenderer) SetBacckFaceCulling(b bool) {
+func (this *OpenGLES2Renderer) SetBacckFaceCulling(b bool) {
 	if b {
 		gl.Enable(gl.CULL_FACE)
 	} else {
@@ -264,27 +264,27 @@ func (this *OpenGLESRenderer) SetBacckFaceCulling(b bool) {
 	}
 }
 
-func (this *OpenGLESRenderer) GetMaxTextures() int32 {
+func (this *OpenGLES2Renderer) GetMaxTextures() int32 {
 	var data [1]int32
 	gl.GetIntegerv(gl.MAX_TEXTURE_IMAGE_UNITS, data[:])
 	return data[0]
 }
 
-func (this *OpenGLESRenderer) NextTextureUnit() uint32 {
+func (this *OpenGLES2Renderer) NextTextureUnit() uint32 {
 	val := this.CurrentTextureUnit
 	this.CurrentTextureUnit++
 	return val
 }
 
-func (this *OpenGLESRenderer) DecrementTextureUnit(amount uint32) {
+func (this *OpenGLES2Renderer) DecrementTextureUnit(amount uint32) {
 	this.CurrentTextureUnit -= amount
 }
 
-func (this *OpenGLESRenderer) GetVersioni() uint8 {
+func (this *OpenGLES2Renderer) GetVersioni() uint8 {
 	return 20
 }
 
-func (this *OpenGLESRenderer) gatherAvailableFunctions() {
+func (this *OpenGLES2Renderer) gatherAvailableFunctions() {
 	combined := this.GetVersioni()
 	this.version = uint8(combined)
 	if combined >= 30 {
@@ -303,12 +303,12 @@ func (this *OpenGLESRenderer) gatherAvailableFunctions() {
 	}
 }
 
-func (this *OpenGLESRenderer) HasFunctionAvailable(function string) bool {
+func (this *OpenGLES2Renderer) HasFunctionAvailable(function string) bool {
 	v, ok := this.availableFunctions[function]
 	return ok && v
 }
 
-func (this *OpenGLESRenderer) FilterShaderFiles(name, file, shader_type string) string {
+func (this *OpenGLES2Renderer) FilterShaderFiles(name, file, shader_type string) string {
 	if name == "BackBufferShader" {
 		if !this.HasFunctionAvailable("MULTISAMPLE") {
 			if shader_type == "Vertex File" {
@@ -322,7 +322,7 @@ func (this *OpenGLESRenderer) FilterShaderFiles(name, file, shader_type string) 
 	return file
 }
 
-func (this *OpenGLESRenderer) FilterShaderSource(name, source, shader_type string) string {
+func (this *OpenGLES2Renderer) FilterShaderSource(name, source, shader_type string) string {
 	if name == "BackBufferShader" {
 		if !this.HasFunctionAvailable("MULTISAMPLE") {
 			if shader_type == "Vertex File" {
@@ -336,11 +336,11 @@ func (this *OpenGLESRenderer) FilterShaderSource(name, source, shader_type strin
 	return source
 }
 
-func (this *OpenGLESRenderer) SetBackgroundColor(bgColor color.Color) {
+func (this *OpenGLES2Renderer) SetBackgroundColor(bgColor color.Color) {
 	this.backgroundColor = bgColor
 }
 
-func (this *OpenGLESRenderer) GetBackgroundColor() color.Color {
+func (this *OpenGLES2Renderer) GetBackgroundColor() color.Color {
 	return this.backgroundColor
 }
 
@@ -368,13 +368,13 @@ func handleOpenGLError(tag, objectName, errorPrefix string) {
 	}
 }
 
-func (this *OpenGLESRenderer) CreateShape2DInterface(name string) gohome.Shape2DInterface {
-	return &OpenGLESShape2DInterface{
+func (this *OpenGLES2Renderer) CreateShape2DInterface(name string) gohome.Shape2DInterface {
+	return &OpenGLES2Shape2DInterface{
 		Name: name,
 	}
 }
 
-func (this *OpenGLESRenderer) SetDepthTesting(b bool) {
+func (this *OpenGLES2Renderer) SetDepthTesting(b bool) {
 	if b {
 		gl.Enable(gl.DEPTH_TEST)
 	} else {

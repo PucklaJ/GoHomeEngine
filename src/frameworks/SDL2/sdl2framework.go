@@ -47,7 +47,7 @@ func (this *SDL2Framework) Terminate() {
 }
 
 func setGLAttributesNormal() error {
-	/*if err1 := sdl.GLSetAttribute(sdl.GL_CONTEXT_FLAGS, sdl.GL_CONTEXT_FORWARD_COMPATIBLE_FLAG); err1 != nil {
+	if err1 := sdl.GLSetAttribute(sdl.GL_CONTEXT_FLAGS, sdl.GL_CONTEXT_FORWARD_COMPATIBLE_FLAG); err1 != nil {
 		return err1
 	}
 	if err1 := sdl.GLSetAttribute(sdl.GL_MULTISAMPLEBUFFERS, 1); err1 != nil {
@@ -55,7 +55,7 @@ func setGLAttributesNormal() error {
 	}
 	if err1 := sdl.GLSetAttribute(sdl.GL_MULTISAMPLESAMPLES, 4); err1 != nil {
 		return err1
-	}*/
+	}
 	if err1 := setGLAttributesCompatible(); err1 != nil {
 		return err1
 	}
@@ -67,22 +67,16 @@ func setGLAttributesCompatible() error {
 	if err1 := sdl.GLSetAttribute(sdl.GL_DOUBLEBUFFER, 1); err1 != nil {
 		return err1
 	}
-	if err1 := sdl.GLSetAttribute(sdl.GL_DEPTH_SIZE, 24); err1 != nil {
-		return err1
-	}
 	return nil
 }
 
 func setGLAttributesProfile() error {
-	if err1 := sdl.GLSetAttribute(sdl.GL_CONTEXT_MAJOR_VERSION, 2); err1 != nil {
+	if err1 := sdl.GLSetAttribute(sdl.GL_CONTEXT_MAJOR_VERSION, 4); err1 != nil {
 		return err1
 	}
-	if err1 := sdl.GLSetAttribute(sdl.GL_CONTEXT_MINOR_VERSION, 0); err1 != nil {
+	if err1 := sdl.GLSetAttribute(sdl.GL_CONTEXT_MINOR_VERSION, 5); err1 != nil {
 		return err1
 	}
-	/*if err1 := sdl.GLSetAttribute(sdl.GL_CONTEXT_PROFILE_MASK, sdl.GL_CONTEXT_PROFILE_ES); err1 != nil {
-		return err1
-	}*/
 
 	return nil
 }
