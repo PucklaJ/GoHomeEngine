@@ -139,12 +139,12 @@ func (inmgr *InputManager) JustPressed(key Key) bool {
 
 func (inmgr *InputManager) IsTouched(id uint8) bool {
 	touched, ok := inmgr.currentTouches[id]
-	return touched && ok
+	return ok && touched
 }
 
 func (inmgr *InputManager) WasTouched(id uint8) bool {
 	touched, ok := inmgr.prevTouches[id]
-	return touched && ok
+	return ok && touched
 }
 
 func (inmgr *InputManager) JustTouched(id uint8) bool {

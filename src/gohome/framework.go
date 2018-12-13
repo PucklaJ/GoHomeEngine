@@ -129,10 +129,10 @@ func (*NilFramework) LoadLevelString(rsmgr *ResourceManager, name, contents, fil
 	return nil
 }
 func (*NilFramework) LoadSound(name, path string) Sound {
-	return nil
+	return &NilSound{}
 }
 func (*NilFramework) LoadMusic(name, path string) Music {
-	return nil
+	return &NilMusic{}
 }
 func (*NilFramework) ShowYesNoDialog(title, message string) uint8 {
 	return DIALOG_ERROR
