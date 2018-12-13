@@ -2,7 +2,7 @@ package framework
 
 import (
 	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
-	"github.com/veandco/go-sdl2/sdl"
+	"github.com/PucklaMotzer09/go-sdl2/sdl"
 )
 
 func (this *SDL2Framework) onMouseMotion(event *sdl.MouseMotionEvent) {

@@ -2,8 +2,8 @@ package framework
 
 import (
 	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
+	"github.com/PucklaMotzer09/go-sdl2/sdl"
 	"github.com/PucklaMotzer09/mathgl/mgl32"
-	"github.com/veandco/go-sdl2/sdl"
 	"os"
 	"strings"
 )
@@ -46,7 +46,31 @@ func (this *SDL2Framework) Terminate() {
 	defer sdl.GLDeleteContext(this.context)
 }
 
-func (this *SDL2Framework) CreateWindow(windowWidth, windowHeight uint32, title string) error {
+func setGLAttributesNormal() error {
+	if err1 := sdl.GLSetAttribute(sdl.GL_CONTEXT_FLAGS, sdl.GL_CONTEXT_FORWARD_COMPATIBLE_FLAG); err1 != nil {
+		return err1
+	}
+	if err1 := sdl.GLSetAttribute(sdl.GL_MULTISAMPLEBUFFERS, 1); err1 != nil {
+		return err1
+	}
+	if err1 := sdl.GLSetAttribute(sdl.GL_MULTISAMPLESAMPLES, 4); err1 != nil {
+		return err1
+	}
+	if err1 := setGLAttributesCompatible(); err1 != nil {
+		return err1
+	}
+
+	return nil
+}
+
+func setGLAttributesCompatible() error {
+	if err1 := sdl.GLSetAttribute(sdl.GL_DOUBLEBUFFER, 1); err1 != nil {
+		return err1
+	}
+	return nil
+}
+
+func setGLAttributesProfile() error {
 	if err1 := sdl.GLSetAttribute(sdl.GL_CONTEXT_MAJOR_VERSION, 4); err1 != nil {
 		return err1
 	}
@@ -56,22 +80,29 @@ func (this *SDL2Framework) CreateWindow(windowWidth, windowHeight uint32, title 
 	if err1 := sdl.GLSetAttribute(sdl.GL_CONTEXT_PROFILE_MASK, sdl.GL_CONTEXT_PROFILE_CORE); err1 != nil {
 		return err1
 	}
-	if err1 := sdl.GLSetAttribute(sdl.GL_CONTEXT_FLAGS, sdl.GL_CONTEXT_FORWARD_COMPATIBLE_FLAG); err1 != nil {
-		return err1
+
+	return nil
+}
+
+func (this *SDL2Framework) CreateWindow(windowWidth, windowHeight uint32, title string) error {
+
+	if err := setGLAttributesNormal(); err != nil {
+		return err
 	}
-	if err1 := sdl.GLSetAttribute(sdl.GL_DOUBLEBUFFER, 1); err1 != nil {
-		return err1
-	}
-	if err1 := sdl.GLSetAttribute(sdl.GL_MULTISAMPLEBUFFERS, 1); err1 != nil {
-		return err1
-	}
-	if err1 := sdl.GLSetAttribute(sdl.GL_MULTISAMPLESAMPLES, 4); err1 != nil {
-		return err1
+	if err := setGLAttributesProfile(); err != nil {
+		return err
 	}
 
 	var err error
 	if this.window, err = sdl.CreateWindow(title, sdl.WINDOWPOS_CENTERED, sdl.WINDOWPOS_CENTERED, int32(windowWidth), int32(windowHeight), sdl.WINDOW_SHOWN|sdl.WINDOW_RESIZABLE|sdl.WINDOW_OPENGL); err != nil {
-		return err
+		sdl.GLResetAttributes()
+		if err := setGLAttributesCompatible(); err != nil {
+			return err
+		}
+
+		if this.window, err = sdl.CreateWindow(title, sdl.WINDOWPOS_CENTERED, sdl.WINDOWPOS_CENTERED, int32(windowWidth), int32(windowHeight), sdl.WINDOW_SHOWN|sdl.WINDOW_RESIZABLE|sdl.WINDOW_OPENGL); err != nil {
+			return err
+		}
 	}
 
 	if this.context, err = this.window.GLCreateContext(); err != nil {
