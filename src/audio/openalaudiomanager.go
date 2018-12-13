@@ -1,7 +1,7 @@
 package audio
 
 import (
-	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
+	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
 	al "github.com/timshannon/go-openal/openal"
 	"strconv"
 	"time"
