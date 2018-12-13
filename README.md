@@ -56,22 +56,15 @@ A Game Engine for 2D/3D Games written in go
 ##### GTKFramework
 + [gtk](https://gtk.org) ([License](http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html))
 
-##### AndroidFramework
-+ [AndroidSDK](https://developer.android.com/studio/) ([License](https://developer.android.com/studio/terms))
-+ [gomobile](https://github.com/golang/mobile) ([License](https://github.com/golang/mobile/blob/master/LICENSE))
-
 ##### OpenGLRenderer
 + [go-gl/gl](https://github.com/go-gl/gl) ([License](https://github.com/go-gl/gl/blob/master/LICENSE))
-
-##### OpenGLESRenderer
-+ [gomobile/gles](https://github.com/golang/mobile/tree/master/gl) ([License](https://github.com/golang/mobile/blob/master/LICENSE))
 
 ## Platforms
 
 |				|Windows| Linux		| Mac		| Android 	| iOS	| Browser |
 |---------------|-------|-----------|-----------|-----------|-------|---------|
-|Tested 		|	Yes |	Yes		|	No 		|	Yes		|	No 	|	No    |
-|Implemented  	|   Yes |   Yes		|	Yes		|   Yes		|   Yes |   No    |
+|Tested 		|	Yes |	Yes		|	No 		|	No		|	No 	|	No    |
+|Implemented  	|   Yes |   Yes		|	Yes		|   No		|   No  |   No    |
 
 ## Installation
 1. Install the c-Dependencies:<br>
@@ -96,8 +89,6 @@ A Game Engine for 2D/3D Games written in go
 	go get -u github.com/PucklaMotzer09/tmx
 	go get -u github.com/ByteArena/box2d
 	go get -u github.com/PucklaMotzer09/GLSLGenerator
-	// For Mobile
-	go get -u golang.org/x/mobile/cmd/gomobile
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 3. Compile one of the examples to test:<br>
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
