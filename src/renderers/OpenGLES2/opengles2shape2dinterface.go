@@ -58,8 +58,8 @@ func (this *OpenGLES2Shape2DInterface) GetPoints() []gohome.Shape2DVertex {
 }
 
 func (this *OpenGLES2Shape2DInterface) attributePointer() {
-	offset0 := 0
-	offset1 := 2 * 4
+	offset0 := int32(0)
+	offset1 := int32(2 * 4)
 
 	gl.BindBuffer(gl.ARRAY_BUFFER, this.vbo)
 	gl.VertexAttribPointer(0, 2, gl.FLOAT, gl.FALSE, (2+4)*4, unsafe.Pointer(&offset0))

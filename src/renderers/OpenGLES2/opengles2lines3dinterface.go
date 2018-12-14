@@ -33,8 +33,8 @@ func (this *OpenGLES2Lines3DInterface) GetLines() []gohome.Line3D {
 }
 
 func (this *OpenGLES2Lines3DInterface) attributePointer() {
-	offset0 := 0
-	offset1 := 3 * 4
+	offset0 := int32(0)
+	offset1 := int32(3 * 4)
 
 	gl.BindBuffer(gl.ARRAY_BUFFER, this.vbo)
 	gl.VertexAttribPointer(0, 3, gl.FLOAT, gl.FALSE, int32(gohome.LINE3D_VERTEX_SIZE), unsafe.Pointer(&offset0))

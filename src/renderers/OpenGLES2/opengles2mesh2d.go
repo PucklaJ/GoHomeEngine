@@ -35,16 +35,20 @@ func (oglm *OpenGLES2Mesh2D) AddVertices(vertices []gohome.Mesh2DVertex, indices
 }
 
 func (oglm *OpenGLES2Mesh2D) attributePointer() {
-	offset0 := 0
-	offset1 := 3 * 4
-
+	offset0 := int32(0)
+	offset1 := int32(2 * 4)
+	gl.GetError()
 	gl.BindBuffer(gl.ARRAY_BUFFER, oglm.vbo)
+	handleOpenGLError("Mesh2D", oglm.Name, "glBindBuffer vbo in attributePointer: ")
 	gl.VertexAttribPointer(0, 2, gl.FLOAT, gl.FALSE, int32(gohome.MESH2DVERTEX_SIZE), unsafe.Pointer(&offset0))
+	handleOpenGLError("Mesh2D", oglm.Name, "glVertexAttribPointer 0 in attributePointer: ")
 	gl.VertexAttribPointer(1, 2, gl.FLOAT, gl.FALSE, int32(gohome.MESH2DVERTEX_SIZE), unsafe.Pointer(&offset1))
+	handleOpenGLError("Mesh2D", oglm.Name, "glVertexAttribPointer 1 in attributePointer: ")
 	gl.EnableVertexAttribArray(0)
 	gl.EnableVertexAttribArray(1)
 
 	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, oglm.ibo)
+	handleOpenGLError("Mesh2D", oglm.Name, "glBindBuffer ibo in attributePointer: ")
 }
 
 func (oglm *OpenGLES2Mesh2D) Load() {
@@ -62,11 +66,15 @@ func (oglm *OpenGLES2Mesh2D) Load() {
 	oglm.ibo = buf[0]
 
 	gl.BindBuffer(gl.ARRAY_BUFFER, oglm.vbo)
+	handleOpenGLError("Mesh2D", oglm.Name, "glBindBuffer vbo in Load: ")
 	gl.BufferData(gl.ARRAY_BUFFER, int(verticesSize), unsafe.Pointer(&oglm.vertices[0]), gl.STATIC_DRAW)
+	handleOpenGLError("Mesh2D", oglm.Name, "glBufferData vbo in Load: ")
 	gl.BindBuffer(gl.ARRAY_BUFFER, 0)
 
 	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, oglm.ibo)
+	handleOpenGLError("Mesh2D", oglm.Name, "glBindBuffer ibo in Load: ")
 	gl.BufferData(gl.ELEMENT_ARRAY_BUFFER, int(indicesSize), unsafe.Pointer(&oglm.indices[0]), gl.STATIC_DRAW)
+	handleOpenGLError("Mesh2D", oglm.Name, "glBufferData ibo in Load: ")
 	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, 0)
 
 	oglm.deleteElements()

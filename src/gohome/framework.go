@@ -48,7 +48,7 @@ type Framework interface {
 	LoadMusic(name, path string) Music
 
 	ShowYesNoDialog(title, message string) uint8
-	Log(message string)
+	Log(a ...interface{})
 
 	OnResize(callback func(newWidth, newHeight uint32))
 	OnMove(callback func(newPosX, newPosY uint32))
@@ -140,8 +140,8 @@ func (*NilFramework) ShowYesNoDialog(title, message string) uint8 {
 	return DIALOG_ERROR
 }
 
-func (*NilFramework) Log(message string) {
-	log.Println(message)
+func (*NilFramework) Log(a ...interface{}) {
+	log.Println(a)
 }
 
 func (*NilFramework) OnResize(callback func(newWidth, newHeight uint32)) {

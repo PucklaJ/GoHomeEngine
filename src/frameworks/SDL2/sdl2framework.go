@@ -1,6 +1,7 @@
 package framework
 
 import (
+	"fmt"
 	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
 	"github.com/PucklaMotzer09/go-sdl2/sdl"
 	"github.com/PucklaMotzer09/mathgl/mgl32"
@@ -286,8 +287,12 @@ func (this *SDL2Framework) ShowYesNoDialog(title, message string) uint8 {
 	}
 }
 
-func (*SDL2Framework) Log(message string) {
-	sdl.Log(message + "\n")
+func (*SDL2Framework) Log(a ...interface{}) {
+	var str = ""
+	for _, val := range a {
+		str += fmt.Sprint(val) + " "
+	}
+	sdl.Log(str[:len(str)-1])
 }
 
 func (this *SDL2Framework) OnResize(callback func(newWidth, newHeight uint32)) {

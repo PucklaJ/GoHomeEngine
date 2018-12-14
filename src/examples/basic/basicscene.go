@@ -10,6 +10,7 @@ type BasicScene struct {
 }
 
 func (this *BasicScene) Init() {
+	gohome.ErrorMgr.ErrorLevel = gohome.ERROR_LEVEL_WARNING
 	gohome.Init2DShaders()
 	gohome.ResourceMgr.LoadTexture("Gopher", "gopher.png")
 
@@ -24,7 +25,6 @@ func (this *BasicScene) Init() {
 }
 
 func (this *BasicScene) Update(delta_time float32) {
-
 }
 
 func (this *BasicScene) Terminate() {

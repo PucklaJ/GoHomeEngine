@@ -180,10 +180,10 @@ func (this *OpenGLES2InstancedMesh3D) deleteElements() {
 }
 
 func (this *OpenGLES2InstancedMesh3D) attributePointer() {
-	offset0 := 0
-	offset1 := 3 * 4
-	offset2 := 3*4 + 3*4
-	offset3 := 3*4 + 3*4 + 2*4
+	offset0 := int32(0)
+	offset1 := int32(3 * 4)
+	offset2 := int32(3*4 + 3*4)
+	offset3 := int32(3*4 + 3*4 + 2*4)
 
 	gl.BindBuffer(gl.ARRAY_BUFFER, this.buffer)
 	gl.VertexAttribPointer(0, 3, gl.FLOAT, gl.FALSE, int32(MESH3DVERTEX_SIZE), unsafe.Pointer(&offset0))
