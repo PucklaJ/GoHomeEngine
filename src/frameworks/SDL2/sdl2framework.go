@@ -4,7 +4,6 @@ import (
 	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
 	"github.com/PucklaMotzer09/go-sdl2/sdl"
 	"github.com/PucklaMotzer09/mathgl/mgl32"
-	"os"
 	"runtime"
 	"strings"
 )
@@ -197,11 +196,14 @@ func (this *SDL2Framework) WindowIsFullscreen() bool {
 }
 
 func (this *SDL2Framework) OpenFile(file string) (*gohome.File, error) {
+	rfile := sdl.RWFromFile(file, "r")
+	if rfile == nil {
+		return nil, sdl.GetError()
+	}
 	gFile := &gohome.File{}
-	osFile, err := os.Open(file)
-	gFile.ReadSeeker = osFile
-	gFile.Closer = osFile
-	return gFile, err
+	gFile.Closer = rfile
+	gFile.ReadSeeker = rfile
+	return gFile, nil
 }
 
 func getFileExtension(file string) string {
