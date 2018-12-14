@@ -286,6 +286,10 @@ func (this *SDL2Framework) ShowYesNoDialog(title, message string) uint8 {
 	}
 }
 
+func (*SDL2Framework) Log(message string) {
+	sdl.Log(message + "\n")
+}
+
 func (this *SDL2Framework) OnResize(callback func(newWidth, newHeight uint32)) {
 	this.onResizeCallbacks = append(this.onResizeCallbacks, callback)
 }

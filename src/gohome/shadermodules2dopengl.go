@@ -2,6 +2,7 @@ package gohome
 
 import (
 	"github.com/PucklaMotzer09/GLSLGenerator"
+	"strings"
 )
 
 // 2D
@@ -234,8 +235,13 @@ func GenerateShader2D(shader_type uint8, flags uint32) (n, v, f string) {
 	var vertex glslgen.VertexGenerator
 	var fragment glslgen.FragmentGenerator
 
-	vertex.SetVersion(ShaderVersion)
-	fragment.SetVersion(ShaderVersion)
+	if strings.Contains(Render.GetName(), "OpenGLES") {
+		vertex.SetVersion("100")
+		fragment.SetVersion("100")
+	} else {
+		vertex.SetVersion(ShaderVersion)
+		fragment.SetVersion(ShaderVersion)
+	}
 
 	fragment.AddMakros(MakrosFragment2D)
 

@@ -3,6 +3,7 @@ package gohome
 import (
 	"github.com/PucklaMotzer09/mathgl/mgl32"
 	"io"
+	"log"
 )
 
 const (
@@ -47,6 +48,7 @@ type Framework interface {
 	LoadMusic(name, path string) Music
 
 	ShowYesNoDialog(title, message string) uint8
+	Log(message string)
 
 	OnResize(callback func(newWidth, newHeight uint32))
 	OnMove(callback func(newPosX, newPosY uint32))
@@ -137,6 +139,11 @@ func (*NilFramework) LoadMusic(name, path string) Music {
 func (*NilFramework) ShowYesNoDialog(title, message string) uint8 {
 	return DIALOG_ERROR
 }
+
+func (*NilFramework) Log(message string) {
+	log.Println(message)
+}
+
 func (*NilFramework) OnResize(callback func(newWidth, newHeight uint32)) {
 
 }

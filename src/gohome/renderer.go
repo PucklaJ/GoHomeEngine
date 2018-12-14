@@ -29,6 +29,7 @@ type Renderer interface {
 	AfterRender()
 	SetBackgroundColor(bgColor color.Color)
 	GetBackgroundColor() color.Color
+	GetName() string
 
 	RenderBackBuffer()
 

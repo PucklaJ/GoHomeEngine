@@ -12,6 +12,7 @@ import (
 )
 
 type GTKFramework struct {
+	gohome.NilFramework
 	startOtherThanPaint time.Time
 	endOtherThanPaint   time.Time
 

@@ -433,3 +433,7 @@ func (this *OpenGLRenderer) SetDepthTesting(b bool) {
 		gl.Disable(gl.DEPTH_TEST)
 	}
 }
+
+func (this *OpenGLRenderer) GetName() string {
+	return "OpenGL"
+}

@@ -15,6 +15,7 @@ import (
 )
 
 type GLFWFramework struct {
+	gohome.NilFramework
 	window           *glfw.Window
 	prevMousePos     [2]int16
 	prevWindowWidth  int

@@ -86,7 +86,7 @@ func (this *OpenGLES2Renderer) AfterInit() {
 }
 
 func (this *OpenGLES2Renderer) SetWireFrame(b bool) {
-	gohome.ErrorMgr.Error("Renderer", "OpenGLES2", "WireframeMode does not work")
+	gohome.ErrorMgr.Warning("Renderer", "OpenGLES2", "WireframeMode does not work")
 }
 
 func (this *OpenGLES2Renderer) Terminate() {
@@ -364,4 +364,8 @@ func (this *OpenGLES2Renderer) SetDepthTesting(b bool) {
 	} else {
 		gl.Disable(gl.DEPTH_TEST)
 	}
+}
+
+func (this *OpenGLES2Renderer) GetName() string {
+	return "OpenGLES2"
 }
