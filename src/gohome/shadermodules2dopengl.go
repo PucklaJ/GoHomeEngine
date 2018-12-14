@@ -116,7 +116,7 @@ var (
 	TextureRegionModule = glslgen.Module{
 		Uniforms: []glslgen.Variable{
 			glslgen.Variable{"vec4", "highp", "textureRegion"},
-			glslgen.Variable{"bool", "highp", "enableTextureRegion"},
+			glslgen.Variable{"bool", "", "enableTextureRegion"},
 		},
 		Functions: []glslgen.Function{
 			glslgen.Function{
@@ -166,7 +166,7 @@ var (
 	KeyColorModuleFragment2D = glslgen.Module{
 		Uniforms: []glslgen.Variable{
 			glslgen.Variable{"vec3", "highp", "keyColor"},
-			glslgen.Variable{"bool", "highp", "enableKey"},
+			glslgen.Variable{"bool", "", "enableKey"},
 		},
 		Name: "keyColorModule",
 		Body: `if(enableKey)
@@ -183,7 +183,7 @@ var (
 	ModColorModuleFragment2D = glslgen.Module{
 		Uniforms: []glslgen.Variable{
 			glslgen.Variable{"vec4", "highp", "modColor"},
-			glslgen.Variable{"bool", "highp", "enableMod"},
+			glslgen.Variable{"bool", "", "enableMod"},
 		},
 		Name: "modColorModule",
 		Body: `if(enableMod)
