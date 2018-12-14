@@ -285,27 +285,11 @@ func (this *OpenGLES2Renderer) GetVersioni() uint8 {
 }
 
 func (this *OpenGLES2Renderer) gatherAvailableFunctions() {
-	combined := this.GetVersioni()
-	this.version = uint8(combined)
-	if combined >= 30 {
-		this.availableFunctions["VERTEX_ID"] = true
-		this.availableFunctions["VERTEX_ARRAY"] = true
-		this.availableFunctions["BLIT_FRAMEBUFFER"] = true
-	}
-	if combined >= 31 {
-		this.availableFunctions["INSTANCED"] = true
-		this.availableFunctions["INDIRECT"] = true
-		this.availableFunctions["MULTISAMPLE"] = true
-		this.availableFunctions["FRAMEBUFFER_TEXTURE"] = true
-	}
-	if combined >= 32 {
-		this.availableFunctions["GEOMETRY_SHADER"] = true
-	}
+
 }
 
 func (this *OpenGLES2Renderer) HasFunctionAvailable(function string) bool {
-	v, ok := this.availableFunctions[function]
-	return ok && v
+	return false
 }
 
 func (this *OpenGLES2Renderer) FilterShaderFiles(name, file, shader_type string) string {

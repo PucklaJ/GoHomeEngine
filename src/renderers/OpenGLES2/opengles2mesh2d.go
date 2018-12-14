@@ -55,8 +55,10 @@ func (oglm *OpenGLES2Mesh2D) Load() {
 
 	var buf [1]uint32
 	gl.GenBuffers(1, buf[:])
+	handleOpenGLError("Mesh2D", oglm.Name, "glGenBuffers VBO: ")
 	oglm.vbo = buf[0]
 	gl.GenBuffers(1, buf[:])
+	handleOpenGLError("Mesh2D", oglm.Name, "glGenBuffers IBO: ")
 	oglm.ibo = buf[0]
 
 	gl.BindBuffer(gl.ARRAY_BUFFER, oglm.vbo)

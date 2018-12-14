@@ -5,6 +5,7 @@ import (
 	"github.com/PucklaMotzer09/go-sdl2/sdl"
 	"github.com/PucklaMotzer09/mathgl/mgl32"
 	"os"
+	"runtime"
 	"strings"
 )
 
@@ -47,15 +48,12 @@ func (this *SDL2Framework) Terminate() {
 }
 
 func setGLAttributesNormal() error {
-	if err1 := sdl.GLSetAttribute(sdl.GL_CONTEXT_FLAGS, sdl.GL_CONTEXT_FORWARD_COMPATIBLE_FLAG); err1 != nil {
-		return err1
+	if runtime.GOOS != "android" {
+		if err1 := sdl.GLSetAttribute(sdl.GL_CONTEXT_FLAGS, sdl.GL_CONTEXT_FORWARD_COMPATIBLE_FLAG); err1 != nil {
+			return err1
+		}
 	}
-	if err1 := sdl.GLSetAttribute(sdl.GL_MULTISAMPLEBUFFERS, 1); err1 != nil {
-		return err1
-	}
-	if err1 := sdl.GLSetAttribute(sdl.GL_MULTISAMPLESAMPLES, 4); err1 != nil {
-		return err1
-	}
+
 	if err1 := setGLAttributesCompatible(); err1 != nil {
 		return err1
 	}
@@ -71,11 +69,13 @@ func setGLAttributesCompatible() error {
 }
 
 func setGLAttributesProfile() error {
-	if err1 := sdl.GLSetAttribute(sdl.GL_CONTEXT_MAJOR_VERSION, 4); err1 != nil {
-		return err1
-	}
-	if err1 := sdl.GLSetAttribute(sdl.GL_CONTEXT_MINOR_VERSION, 5); err1 != nil {
-		return err1
+	if runtime.GOOS != "android" {
+		if err1 := sdl.GLSetAttribute(sdl.GL_CONTEXT_MAJOR_VERSION, 4); err1 != nil {
+			return err1
+		}
+		if err1 := sdl.GLSetAttribute(sdl.GL_CONTEXT_MINOR_VERSION, 5); err1 != nil {
+			return err1
+		}
 	}
 
 	return nil
