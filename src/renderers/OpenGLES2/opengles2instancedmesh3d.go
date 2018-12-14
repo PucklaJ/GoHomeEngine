@@ -180,16 +180,11 @@ func (this *OpenGLES2InstancedMesh3D) deleteElements() {
 }
 
 func (this *OpenGLES2InstancedMesh3D) attributePointer() {
-	offset0 := int32(0)
-	offset1 := int32(3 * 4)
-	offset2 := int32(3*4 + 3*4)
-	offset3 := int32(3*4 + 3*4 + 2*4)
-
 	gl.BindBuffer(gl.ARRAY_BUFFER, this.buffer)
-	gl.VertexAttribPointer(0, 3, gl.FLOAT, gl.FALSE, int32(MESH3DVERTEX_SIZE), unsafe.Pointer(&offset0))
-	gl.VertexAttribPointer(1, 3, gl.FLOAT, gl.FALSE, int32(MESH3DVERTEX_SIZE), unsafe.Pointer(&offset1))
-	gl.VertexAttribPointer(2, 2, gl.FLOAT, gl.FALSE, int32(MESH3DVERTEX_SIZE), unsafe.Pointer(&offset2))
-	gl.VertexAttribPointer(3, 3, gl.FLOAT, gl.FALSE, int32(MESH3DVERTEX_SIZE), unsafe.Pointer(&offset3))
+	gl.VertexAttribPointer(0, 3, gl.FLOAT, gl.FALSE, int32(MESH3DVERTEX_SIZE), gl.PtrOffset(0))
+	gl.VertexAttribPointer(1, 3, gl.FLOAT, gl.FALSE, int32(MESH3DVERTEX_SIZE), gl.PtrOffset(3*4))
+	gl.VertexAttribPointer(2, 2, gl.FLOAT, gl.FALSE, int32(MESH3DVERTEX_SIZE), gl.PtrOffset(3*4+3*4))
+	gl.VertexAttribPointer(3, 3, gl.FLOAT, gl.FALSE, int32(MESH3DVERTEX_SIZE), gl.PtrOffset(3*4+3*4+2*4))
 
 	gl.EnableVertexAttribArray(0)
 	gl.EnableVertexAttribArray(1)
@@ -267,10 +262,9 @@ func (this *OpenGLES2InstancedMesh3D) Render() {
 		gohome.RenderMgr.CurrentShader.SetUniformMaterial(*this.Material)
 	}
 	this.attributePointer()
-	offset := this.numVertices * MESH3DVERTEX_SIZE
 	for i := uint32(0); i < this.numUsedInstances && i < this.numInstances; i++ {
 		this.setInstancedValuesUniforms(i)
-		gl.DrawElements(gl.TRIANGLES, int32(this.numIndices), gl.UNSIGNED_INT, unsafe.Pointer(&offset))
+		gl.DrawElements(gl.TRIANGLES, int32(this.numIndices), gl.UNSIGNED_INT, gl.PtrOffset(int(this.numVertices*MESH3DVERTEX_SIZE)))
 		handleOpenGLError("InstancedMesh3D", this.Name, "RenderError: ")
 	}
 

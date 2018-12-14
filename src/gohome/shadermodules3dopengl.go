@@ -2,6 +2,7 @@ package gohome
 
 import (
 	"github.com/PucklaMotzer09/GLSLGenerator"
+	"strings"
 )
 
 // 3D
@@ -963,7 +964,14 @@ func GenerateShader3D(flags uint32) (n, v, f string) {
 	var vertex glslgen.VertexGenerator
 	var fragment glslgen.FragmentGenerator
 
-	vertex.SetVersion(ShaderVersion)
+	if strings.Contains(Render.GetName(), "OpenGLES") {
+		vertex.SetVersion("100")
+		fragment.SetVersion("100")
+	} else {
+		vertex.SetVersion(ShaderVersion)
+		fragment.SetVersion(ShaderVersion)
+	}
+
 	vertex.AddAttributes(Attributes3D)
 	if flags&SHADER_FLAG_INSTANCED != 0 {
 		vertex.AddAttributes(AttributesInstanced3D)
@@ -986,7 +994,6 @@ func GenerateShader3D(flags uint32) (n, v, f string) {
 
 	lightFlag := flags & (SHADER_FLAG_NO_SHADOWS | SHADER_FLAG_NO_LIGHTING)
 
-	fragment.SetVersion(ShaderVersion)
 	if flags&SHADER_FLAG_NO_LIGHTING == 0 {
 		fragment.AddMakros(LightMakrosFragment3D)
 	}

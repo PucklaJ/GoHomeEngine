@@ -139,6 +139,9 @@ func (s *OpenGLES2Shader) getAttributeNames(program uint32, src string) []string
 			break
 		} else if len(wordsString) >= 3 {
 			if (version >= 130 && wordsString[0] == "in") || (version <= 120 && wordsString[0] == "attribute") {
+				if wordsString[1] == "highp" || wordsString[1] == "mediump" || wordsString[1] == "lowp" {
+					wordsString = append(wordsString[:1], wordsString[2:]...)
+				}
 				if wordsString[2][len(wordsString[2])-1] == ';' {
 					wordsString[2] = wordsString[2][:len(wordsString[2])-1]
 				}
@@ -157,7 +160,8 @@ func (s *OpenGLES2Shader) bindAttributesFromFile(program uint32, src string) {
 
 	var index uint32 = 0
 	for i := 0; i < len(attributeNames); i++ {
-		gl.BindAttribLocation(program, index, attributeNames[i]+"\x00")
+		gl.BindAttribLocation(program, index, attributeNames[i])
+		handleOpenGLError("Shader", s.name, "glBindAttribLocation "+attributeNames[i]+": ")
 		index += s.attribute_sizes[attributeNames[i]]
 	}
 }

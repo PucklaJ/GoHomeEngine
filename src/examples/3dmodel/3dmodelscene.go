@@ -12,8 +12,7 @@ type ModelScene struct {
 func (this *ModelScene) Init() {
 	gohome.ErrorMgr.DuplicateMessages = false
 	gohome.LightMgr.DisableLighting()
-	gohome.ResourceMgr.PreloadLevel("Gopher", "gopher.obj", true)
-	gohome.ResourceMgr.LoadPreloadedResources()
+	gohome.ResourceMgr.LoadLevel("Gopher", "gopher.obj", true)
 
 	this.gopher.InitModel(gohome.ResourceMgr.GetModel("Gopher"))
 

@@ -167,6 +167,7 @@ func (this *OpenGLES2RenderTexture) SetAsTarget() {
 		var buf [1]int32
 		gl.GetIntegerv(gl.FRAMEBUFFER_BINDING, buf[:])
 		screenFramebuffer = buf[0]
+	} else {
 	}
 	this.prevRT = currentlyBoundRT
 	currentlyBoundRT = this
