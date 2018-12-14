@@ -877,9 +877,9 @@ var (
 	}
 )
 
-func LoadGeneratedShader3D(flags uint32) {
+func LoadGeneratedShader3D(flags uint32) Shader {
 	n, v, f := GenerateShader3D(flags)
-	ls(n, v, f)
+	return ls(n, v, f)
 }
 
 func GenerateShaderSource3D() {
@@ -893,8 +893,8 @@ func GenerateShaderSource3D() {
 	ls(n, v, f)
 }
 
-func ls(n, v, f string) {
-	ResourceMgr.LoadShaderSource(n, v, f, "", "", "", "")
+func ls(n, v, f string) Shader {
+	return ResourceMgr.LoadShaderSource(n, v, f, "", "", "", "")
 }
 
 const (
@@ -905,11 +905,19 @@ const (
 	SHADER_FLAG_NO_DIFTEX   uint32 = (1 << 4)
 	SHADER_FLAG_NO_SPECTEX  uint32 = (1 << 5)
 	SHADER_FLAG_NO_NORMAP   uint32 = (1 << 6)
-	NUM_FLAGS               uint32 = 7
+	NUM_FLAGS_3D            uint32 = 7
+
+	SHADER_FLAG_NO_KEYCOLOR       uint32 = (1 << 1)
+	SHADER_FLAG_NO_MODCOLOR       uint32 = (1 << 2)
+	SHADER_FLAG_NO_FLIP           uint32 = (1 << 3)
+	SHADER_FLAG_NO_TEXTURE_REGION uint32 = (1 << 4)
+	SHADER_FLAG_NO_DEPTH          uint32 = (1 << 5)
+	SHADER_FLAG_NO_TEXTURE        uint32 = (1 << 6)
+	NUM_FLAGS_2D                  uint32 = 7
 )
 
 var (
-	FLAG_NAMES_3D = [NUM_FLAGS]string{
+	FLAG_NAMES_3D = [NUM_FLAGS_3D]string{
 		"Instanced",
 		"NoUV",
 		"NoShadows",
@@ -918,11 +926,21 @@ var (
 		"NoSpectex",
 		"NoNormap",
 	}
+
+	FLAG_NAMES_2D = [NUM_FLAGS_2D]string{
+		"Instanced",
+		"NoKeyColor",
+		"NoModColor",
+		"NoFlip",
+		"NoTextureRegion",
+		"NoDepth",
+		"NoTexture",
+	}
 )
 
 func GetShaderName3D(flags uint32) string {
 	var n = "3D"
-	for i := uint32(0); i < NUM_FLAGS; i++ {
+	for i := uint32(0); i < NUM_FLAGS_3D; i++ {
 		if flags&(1<<i) != 0 {
 			n += " " + FLAG_NAMES_3D[i]
 		}

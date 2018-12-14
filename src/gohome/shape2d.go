@@ -17,8 +17,8 @@ type Shape2D struct {
 }
 
 func (this *Shape2D) Init() {
-	if ResourceMgr.GetShader(SHAPE_2D_SHADER_NAME) == nil {
-		ResourceMgr.LoadShaderSource(SHAPE_2D_SHADER_NAME, SHAPE_2D_SHADER_VERTEX_SOURCE_OPENGL, SHAPE_2D_SHADER_FRAGMENT_SOURCE_OPENGL, "", "", "", "")
+	if ResourceMgr.GetShader(GetShaderName2D(SHADER_TYPE_SHAPE2D, 0)) == nil {
+		LoadGeneratedShader2D(SHADER_TYPE_SHAPE2D, 0)
 	}
 	this.shapeInterface = Render.CreateShape2DInterface(this.Name)
 	this.shapeInterface.Init()

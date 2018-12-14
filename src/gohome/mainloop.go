@@ -134,22 +134,21 @@ func (this *MainLoop) Quit() {
 }
 
 func Init3DShaders() {
-	LoadGeneratedShader3D(0)
-	if ResourceMgr.GetShader(ENTITY3D_SHADER_NAME) == nil {
-		LoadGeneratedShader3D(SHADER_FLAG_NO_SHADOWS)
-		if ResourceMgr.GetShader("3D NoShadows") == nil {
-			LoadGeneratedShader3D(SHADER_FLAG_NO_SHADOWS | SHADER_FLAG_NOUV)
-			if ResourceMgr.GetShader("3D NoUV NoShadows") != nil {
-				ResourceMgr.SetShader(ENTITY3D_SHADER_NAME, "3D NoUV NoShadows")
+	if shader := LoadGeneratedShader3D(0); shader == nil {
+		if shader = LoadGeneratedShader3D(SHADER_FLAG_NO_SHADOWS); shader == nil {
+			if shader = LoadGeneratedShader3D(SHADER_FLAG_NO_SHADOWS | SHADER_FLAG_NOUV); shader != nil {
+				ResourceMgr.SetShader(ENTITY3D_SHADER_NAME, shader.GetName())
 			}
 		} else {
-			ResourceMgr.SetShader(ENTITY3D_SHADER_NAME, "3D NoShadows")
+			ResourceMgr.SetShader(ENTITY3D_SHADER_NAME, shader.GetName())
 		}
 	}
 }
 
 func Init2DShaders() {
-	ResourceMgr.LoadShaderSource(SPRITE2D_SHADER_NAME, SPRITE_2D_SHADER_VERTEX_SOURCE_OPENGL, SPRITE_2D_SHADER_FRAGMENT_SOURCE_OPENGL, "", "", "", "")
+	LoadGeneratedShader2D(SHADER_TYPE_SPRITE2D, 0)
+	LoadGeneratedShader2D(SHADER_TYPE_SHAPE2D, 0)
+	LoadGeneratedShader2D(SHADER_TYPE_TEXT2D, 0)
 }
 
 func InitDefaultValues() {
