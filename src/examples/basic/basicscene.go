@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
+	"golang.org/x/image/colornames"
 )
 
 type BasicScene struct {
@@ -18,6 +19,8 @@ func (this *BasicScene) Init() {
 	this.gopher.Transform.Position = gohome.Render.GetNativeResolution().Div(2.0)
 
 	gohome.RenderMgr.AddObject(&this.gopher)
+
+	gohome.Render.SetBackgroundColor(colornames.Lime)
 }
 
 func (this *BasicScene) Update(delta_time float32) {

@@ -355,30 +355,10 @@ func (this *OpenGLRenderer) HasFunctionAvailable(function string) bool {
 }
 
 func (this *OpenGLRenderer) FilterShaderFiles(name, file, shader_type string) string {
-	if name == "BackBufferShader" {
-		if !this.HasFunctionAvailable("MULTISAMPLE") {
-			if shader_type == "Vertex File" {
-				file = "backBufferShaderNoMSVert.glsl"
-			} else if shader_type == "Fragment File" {
-				file = "backBufferShaderNoMSFrag.glsl"
-			}
-		}
-	}
-
 	return file
 }
 
 func (this *OpenGLRenderer) FilterShaderSource(name, source, shader_type string) string {
-	if name == "BackBufferShader" {
-		if !this.HasFunctionAvailable("MULTISAMPLE") {
-			if shader_type == "Vertex File" {
-				source = gohome.BACKBUFFER_NOMS_SHADER_VERTEX_SOURCE_OPENGL
-			} else if shader_type == "Fragment File" {
-				source = gohome.BACKBUFFER_NOMS_SHADER_FRAGMENT_SOURCE_OPENGL
-			}
-		}
-	}
-
 	return source
 }
 

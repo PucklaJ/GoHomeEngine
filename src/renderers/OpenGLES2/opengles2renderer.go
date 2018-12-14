@@ -76,6 +76,7 @@ func (this *OpenGLES2Renderer) Init() error {
 func (this *OpenGLES2Renderer) AfterInit() {
 	gl.DepthFunc(gl.LEQUAL)
 	gl.Enable(gl.BLEND)
+	gl.ClearDepthf(2.0)
 	gl.BlendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA)
 	gl.BlendEquation(gl.FUNC_ADD)
 
@@ -293,30 +294,10 @@ func (this *OpenGLES2Renderer) HasFunctionAvailable(function string) bool {
 }
 
 func (this *OpenGLES2Renderer) FilterShaderFiles(name, file, shader_type string) string {
-	if name == "BackBufferShader" {
-		if !this.HasFunctionAvailable("MULTISAMPLE") {
-			if shader_type == "Vertex File" {
-				file = "backBufferShaderNoMSVert.glsl"
-			} else if shader_type == "Fragment File" {
-				file = "backBufferShaderNoMSFrag.glsl"
-			}
-		}
-	}
-
 	return file
 }
 
 func (this *OpenGLES2Renderer) FilterShaderSource(name, source, shader_type string) string {
-	if name == "BackBufferShader" {
-		if !this.HasFunctionAvailable("MULTISAMPLE") {
-			if shader_type == "Vertex File" {
-				source = gohome.BACKBUFFER_NOMS_SHADER_VERTEX_SOURCE_OPENGL
-			} else if shader_type == "Fragment File" {
-				source = gohome.BACKBUFFER_NOMS_SHADER_FRAGMENT_SOURCE_OPENGL
-			}
-		}
-	}
-
 	return source
 }
 

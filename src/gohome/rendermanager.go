@@ -42,13 +42,20 @@ type RenderManager struct {
 }
 
 func (rmgr *RenderManager) Init() {
+	if Render.HasFunctionAvailable("MULTISAMPLE") {
+		bn, bv, bf := GenerateShaderBackBuffer(0)
+		ls(bn, bv, bf)
+	} else {
+		bn, bv, bf := GenerateShaderBackBuffer(SHADER_FLAG_NO_MS)
+		ls(bn, bv, bf)
+	}
+
 	windowSize := Framew.WindowGetSize()
 
 	rmgr.CurrentShader = nil
 	rmgr.BackBufferMS = Render.CreateRenderTexture("BackBufferMS", uint32(windowSize[0]), uint32(windowSize[1]), 1, true, true, false, false)
 	rmgr.BackBuffer2D = Render.CreateRenderTexture("BackBuffer2D", uint32(windowSize[0]), uint32(windowSize[1]), 1, true, true, false, false)
 	rmgr.BackBuffer3D = Render.CreateRenderTexture("BackBuffer3D", uint32(windowSize[0]), uint32(windowSize[1]), 1, true, true, false, false)
-	ResourceMgr.LoadShaderSource("BackBufferShader", BACKBUFFER_SHADER_VERTEX_SOURCE_OPENGL, BACKBUFFER_SHADER_FRAGMENT_SOURCE_OPENGL, "", "", "", "")
 	rmgr.BackBufferShader = ResourceMgr.GetShader("BackBufferShader")
 
 	rmgr.AddViewport2D(&Viewport{
@@ -245,7 +252,7 @@ func (rmgr *RenderManager) renderBackBuffers() {
 
 	if rmgr.BackBufferShader != nil {
 		rmgr.BackBufferShader.Use()
-		rmgr.BackBufferShader.SetUniformI("BackBuffer", 0)
+		rmgr.BackBufferShader.SetUniformI("texture0", 0)
 		rmgr.BackBufferShader.SetUniformF("depth", 0.5)
 	}
 	if rmgr.BackBuffer3D != nil {
@@ -281,7 +288,7 @@ func (rmgr *RenderManager) renderToScreen() {
 	} else {
 		if rmgr.BackBufferShader != nil {
 			rmgr.BackBufferShader.Use()
-			rmgr.BackBufferShader.SetUniformI("BackBuffer", 0)
+			rmgr.BackBufferShader.SetUniformI("texture0", 0)
 			rmgr.BackBufferShader.SetUniformF("depth", -1.0)
 		}
 		if rmgr.BackBufferMS != nil {
