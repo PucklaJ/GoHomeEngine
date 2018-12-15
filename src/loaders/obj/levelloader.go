@@ -6,22 +6,17 @@ import (
 )
 
 func loadFile(path string, objLoader *OBJLoader) error {
-	gohome.Framew.Log("LoadFile:", path)
-	defer gohome.Framew.Log("LoadFile end")
 	reader, err := gohome.Framew.OpenFile(path)
 	if err != nil {
 		return err
 	}
-	gohome.Framew.Log("Opened File:", reader)
 	objLoader.SetDirectory(gohome.GetPathFromFile(path))
 	objLoader.SetOpenMaterialFile(gohome.Framew.OpenFile)
 	objLoader.SetMaterialPaths(gohome.MATERIAL_PATHS[:])
-	gohome.Framew.Log("LoadReader")
 	err1 := objLoader.LoadReader(reader)
 	if err1 != nil {
 		return err1
 	}
-	gohome.Framew.Log("LoadReader done")
 	return nil
 }
 
@@ -29,7 +24,6 @@ func loadFileWithPaths(path string, paths []string, objLoader *OBJLoader) error 
 	var worked bool = false
 	var err error
 	for i := 0; i < len(paths); i++ {
-		gohome.Framew.Log("Trying path:", paths[i]+path)
 		if err = loadFile(paths[i]+path, objLoader); err == nil {
 			worked = true
 			break
@@ -222,10 +216,8 @@ func processMesh(objLoader *OBJLoader, mesh3d gohome.Mesh3D, mesh *OBJMesh, prel
 func toGohomeLevel(rsmgr *gohome.ResourceManager, name string, objLoader *OBJLoader, preloaded, loadToGPU bool) *gohome.Level {
 	level := &gohome.Level{Name: name}
 	for i := 0; i < len(objLoader.Models); i++ {
-		gohome.Framew.Log("ProcessModel:", i)
 		processModel(rsmgr, level, objLoader, &objLoader.Models[i], preloaded, loadToGPU)
 	}
-	gohome.Framew.Log("toGhomeLevel done")
 	return level
 }
 
@@ -242,26 +234,19 @@ func getNameForAlreadyLoadedLevel(rsmgr *gohome.ResourceManager, name string) st
 }
 
 func LoadLevelOBJ(rsmgr *gohome.ResourceManager, name, path string, preloaded, loadToGPU bool) *gohome.Level {
-	gohome.Framew.Log("LoadLevelOBJ loader:", name, path)
-	defer gohome.Framew.Log("LoadLevelOBJ loader end")
 	var alreadyLoaded = false
 	if _, alreadyLoaded = rsmgr.Levels[name]; alreadyLoaded && !rsmgr.LoadModelsWithSameName {
 		gohome.ErrorMgr.Log("Level", name, "Has already been loaded!")
 		return nil
 	}
-	gohome.Framew.Log("Checked already loaded")
 	if alreadyLoaded {
-		gohome.Framew.Log("AlreadyLoaded")
 		name = getNameForAlreadyLoadedLevel(rsmgr, name)
 	}
 	var objLoader OBJLoader
-	gohome.Framew.Log("loadLevelWithPaths")
 	if err := loadFileWithPaths(path, gohome.LEVEL_PATHS[:], &objLoader); err != nil {
 		gohome.ErrorMgr.Error("Level", name, "Couldn't load "+path+": "+err.Error())
 		return nil
 	}
-	gohome.Framew.Log("OBJLoader:", objLoader)
-	gohome.Framew.Log("Converting to GoHome Level")
 	lvl := toGohomeLevel(rsmgr, name, &objLoader, preloaded, loadToGPU)
 	lvl.Name = name
 	return lvl

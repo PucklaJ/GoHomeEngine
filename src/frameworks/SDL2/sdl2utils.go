@@ -255,7 +255,6 @@ func sdlMouseButtonTogohomeKeys(mb uint8) gohome.Key {
 }
 
 func loadLevelOBJ(rsmgr *gohome.ResourceManager, name, path string, preloaded, loadToGPU bool) *gohome.Level {
-	gohome.Framew.Log("LoadLevelOBJ in Framework")
 	return loader.LoadLevelOBJ(rsmgr, name, path, preloaded, loadToGPU)
 }
 

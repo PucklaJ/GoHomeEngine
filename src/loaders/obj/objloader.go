@@ -98,24 +98,35 @@ func (this *OBJLoader) Load(path string) error {
 }
 
 func handleAndroidReadError(err error) error {
-	gohome.Framew.Log("Checking Error:", err)
-	if strings.Contains(err.Error(), "java.io.FileNotFoundException") {
+	if strings.Contains(err.Error(), "java.io.FileNotFoundException") ||
+		strings.Contains(err.Error(), "multiple Read calls") {
 		err = io.EOF
 	}
 	return err
 }
 
 func (this *OBJLoader) LoadReader(reader io.ReadCloser) error {
-	defer reader.Close()
-
 	var err error
 	var line string
-	rd := bufio.NewReader(reader)
+	var rd *bufio.Reader
+	if runtime.GOOS == "android" {
+		str, err1 := gohome.ReadAll(reader)
+		reader.Close()
+		if err1 != nil {
+			err1 = handleAndroidReadError(err1)
+			if err1 != io.EOF {
+				return err1
+			}
+		}
+		rd = bufio.NewReader(strings.NewReader(str))
+	} else {
+		rd = bufio.NewReader(reader)
+		defer reader.Close()
+	}
 
 	for err != io.EOF {
 		line, err = readLine(rd)
 		if err != nil && runtime.GOOS == "android" {
-			gohome.Framew.Log("\"" + line + "\"")
 			err = handleAndroidReadError(err)
 		}
 		if err != nil && err != io.EOF {
@@ -123,7 +134,6 @@ func (this *OBJLoader) LoadReader(reader io.ReadCloser) error {
 		}
 		if line != "" {
 			if err = this.processTokens(toTokens(line)); err != nil {
-				gohome.Framew.Log("Error in processTokens")
 				return err
 			}
 		}
@@ -298,14 +308,12 @@ func (this *OBJLoader) processTokens(tokens []string) error {
 				}
 			} else if length == 2 {
 				if tokens[0] == "mtllib" {
-					gohome.Framew.Log("mtllib:", tokens[1])
 					if err := this.loadMaterialFile(tokens[1]); err != nil {
 						return &OBJError{"Couldn't load material file " + tokens[1] + ": " + err.Error()}
 					}
 				} else if tokens[0] == "o" {
 					this.Models = append(this.Models, OBJModel{Name: tokens[1]})
 				} else if tokens[0] == "usemtl" {
-					gohome.Framew.Log("NewMesh:", tokens[1])
 					if len(this.Models) == 0 {
 						this.Models = append(this.Models, OBJModel{Name: "Default"})
 					}
@@ -597,15 +605,26 @@ func (this *MTLLoader) Load(path string) error {
 func (this *MTLLoader) LoadReader(reader io.ReadCloser) error {
 	var err error
 	var line string
-	rd := bufio.NewReader(reader)
+	var rd *bufio.Reader
+	if runtime.GOOS == "android" {
+		str, err1 := gohome.ReadAll(reader)
+		reader.Close()
+		if err1 != nil {
+			err1 = handleAndroidReadError(err1)
+			if err1 != io.EOF {
+				return err1
+			}
+		}
+		rd = bufio.NewReader(strings.NewReader(str))
+	} else {
+		rd = bufio.NewReader(reader)
+		defer reader.Close()
+	}
 
 	for err != io.EOF {
 		line, err = readLine(rd)
-		gohome.Framew.Log("MTL:", line)
 		if err != nil && runtime.GOOS == "android" {
-			gohome.Framew.Log("\"" + line + "\"")
 			err = handleAndroidReadError(err)
-			gohome.Framew.Log("NewError:", err)
 		}
 		if err != nil && err != io.EOF {
 			return err
@@ -614,8 +633,6 @@ func (this *MTLLoader) LoadReader(reader io.ReadCloser) error {
 			this.processTokens(toTokens(line))
 		}
 	}
-	reader.Close()
-	gohome.Framew.Log("Finished Material")
 	return nil
 }
 

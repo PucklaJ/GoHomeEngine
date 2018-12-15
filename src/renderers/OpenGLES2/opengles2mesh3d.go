@@ -187,8 +187,6 @@ func (oglm *OpenGLES2Mesh3D) Load() {
 	oglm.numVertices = uint32(len(oglm.vertices))
 	oglm.numIndices = uint32(len(oglm.indices))
 
-	gohome.Framew.Log("Vertices:", oglm.vertices)
-
 	if oglm.numVertices == 0 || oglm.numIndices == 0 {
 		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "Mesh3D", oglm.Name, "No vertices or indices have been added!")
 		return

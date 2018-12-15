@@ -254,10 +254,7 @@ func equalIgnoreCase(str1, str string) bool {
 }
 
 func (this *SDL2Framework) LoadLevel(rsmgr *gohome.ResourceManager, name, path string, preloaded, loadToGPU bool) *gohome.Level {
-	this.Log("LoadLevel:", name, path)
-	defer this.Log("LoadLevel End")
 	extension := getFileExtension(path)
-	this.Log("Extension:", extension)
 	if equalIgnoreCase(extension, "obj") {
 		return loadLevelOBJ(rsmgr, name, path, preloaded, loadToGPU)
 	}
