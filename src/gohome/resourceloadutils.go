@@ -20,8 +20,8 @@ func GetPathFromFile(path string) string {
 	}
 }
 
-func OpenFileWithPaths(path string, paths []string) (*File, string, error) {
-	var reader *File
+func OpenFileWithPaths(path string, paths []string) (File, string, error) {
+	var reader File
 	var err error
 	var filename string
 

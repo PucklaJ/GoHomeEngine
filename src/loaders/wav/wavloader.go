@@ -1,13 +1,14 @@
 package loader
 
 import (
-	"github.com/PucklaMotzer09/go-wav"
+	"errors"
 	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
+	"github.com/PucklaMotzer09/go-wav"
 )
 
 func LoadWAVFile(fileName string) (*wav.WavData, error) {
 
-	var file *gohome.File
+	var file gohome.File
 	var err error
 	for _, path := range gohome.MUSIC_SOUND_PATHS {
 		file, err = gohome.Framew.OpenFile(path + fileName)
@@ -23,13 +24,16 @@ func LoadWAVFile(fileName string) (*wav.WavData, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	data, err := wav.ReadWavData(file)
-	if err != nil {
-		return nil, err
+	files, ok := file.(gohome.FileSeeker)
+	if ok {
+		data, err := wav.ReadWavData(files)
+		if err != nil {
+			return nil, err
+		}
+		return &data, nil
 	}
 
-	return &data, err
+	return nil, errors.New("Cannot convert file to io.ReadSeeker")
 }
 
 func convert24BitTo16Bit(samples []byte, sampleCount uint32) []byte {

@@ -160,7 +160,7 @@ func (s *OpenGLES2Shader) bindAttributesFromFile(program uint32, src string) {
 
 	var index uint32 = 0
 	for i := 0; i < len(attributeNames); i++ {
-		gl.BindAttribLocation(program, index, attributeNames[i])
+		gl.BindAttribLocation(program, index, attributeNames[i]+"\x00")
 		handleOpenGLError("Shader", s.name, "glBindAttribLocation "+attributeNames[i]+": ")
 		index += s.attribute_sizes[attributeNames[i]]
 	}

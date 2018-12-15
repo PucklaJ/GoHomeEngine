@@ -507,12 +507,8 @@ func (gfw *GLFWFramework) WindowIsFullscreen() bool {
 	return gfw.window.GetMonitor() != nil
 }
 
-func (gfw *GLFWFramework) OpenFile(file string) (*gohome.File, error) {
-	gFile := &gohome.File{}
-	osFile, err := os.Open(file)
-	gFile.ReadSeeker = osFile
-	gFile.Closer = osFile
-	return gFile, err
+func (gfw *GLFWFramework) OpenFile(file string) (gohome.File, error) {
+	return os.Open(file)
 }
 
 func getFileExtension(file string) string {

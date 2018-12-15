@@ -17,10 +17,12 @@ func (this *ModelScene) Init() {
 
 	this.gopher.InitModel(gohome.ResourceMgr.GetModel("Gopher"))
 
-	this.gopher.Transform.Position = [3]float32{0.0, -1.75, -5.0}
+	this.gopher.Transform.Position = [3]float32{0.0, 0, -5.0}
 	this.gopher.Transform.Scale = [3]float32{0.75, 0.75, 0.75}
 
 	gohome.RenderMgr.AddObject(&this.gopher)
+
+	gohome.RenderMgr.EnableBackBuffer = false
 }
 
 func (this *ModelScene) Update(delta_time float32) {

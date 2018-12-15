@@ -13,9 +13,13 @@ const (
 	DIALOG_ERROR     = iota
 )
 
-type File struct {
-	io.ReadSeeker
+type File interface {
+	io.Reader
 	io.Closer
+}
+
+type FileSeeker interface {
+	io.ReadSeeker
 }
 
 type Framework interface {
@@ -41,7 +45,7 @@ type Framework interface {
 	CursorHidden() bool
 	CursorDisabled() bool
 
-	OpenFile(file string) (*File, error)
+	OpenFile(file string) (File, error)
 	LoadLevel(rsmgr *ResourceManager, name, path string, preloaded, loadToGPU bool) *Level
 	LoadLevelString(rsmgr *ResourceManager, name, contents, fileName string, preloaded, loadToGPU bool) *Level
 	LoadSound(name, path string) Sound
@@ -121,7 +125,7 @@ func (*NilFramework) CursorHidden() bool {
 func (*NilFramework) CursorDisabled() bool {
 	return false
 }
-func (*NilFramework) OpenFile(file string) (*File, error) {
+func (*NilFramework) OpenFile(file string) (File, error) {
 	return nil, nil
 }
 func (*NilFramework) LoadLevel(rsmgr *ResourceManager, name, path string, preloaded, loadToGPU bool) *Level {

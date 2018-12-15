@@ -120,15 +120,8 @@ func (this *GTKFramework) CursorDisabled() bool {
 	return gtk.CursorDisabled()
 }
 
-func (this *GTKFramework) OpenFile(file string) (*gohome.File, error) {
-	osFile, err := os.Open(file)
-	if err != nil {
-		return nil, err
-	}
-	gFile := &gohome.File{}
-	gFile.ReadSeeker = osFile
-	gFile.Closer = osFile
-	return gFile, nil
+func (this *GTKFramework) OpenFile(file string) (gohome.File, error) {
+	return os.Open(file)
 }
 
 func getFileExtension(file string) string {

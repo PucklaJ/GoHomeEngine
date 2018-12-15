@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
 	"fmt"
+	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
 )
 
 type AudioScene struct {
@@ -12,8 +12,8 @@ type AudioScene struct {
 
 func (this *AudioScene) Init() {
 	gohome.Framew.GetAudioManager().Init()
-	gohome.ResourceMgr.PreloadSound("Bottle","bottle.wav")
-	gohome.ResourceMgr.PreloadMusic("TownTheme","TownTheme.mp3")
+	gohome.ResourceMgr.PreloadSound("Bottle", "bottle.wav")
+	gohome.ResourceMgr.PreloadMusic("TownTheme", "TownTheme.mp3")
 	gohome.ResourceMgr.LoadPreloadedResources()
 }
 
@@ -49,7 +49,7 @@ func (this *AudioScene) Update(delta_time float32) {
 	}
 
 	if this.music != nil {
-		fmt.Println("Music:",this.music.GetPlayingDuration())
+		fmt.Println("Music:", this.music.GetPlayingDuration())
 	}
 }
 

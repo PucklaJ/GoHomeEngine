@@ -1,10 +1,12 @@
 package loader
 
 import (
+	"bufio"
 	"bytes"
 	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
 	"io"
 	"os"
+	"runtime"
 	"strconv"
 	"strings"
 )
@@ -82,7 +84,7 @@ type OBJLoader struct {
 	normalsLoaded    bool
 	texCoordsLoaded  bool
 	materialPaths    []string
-	openMaterialFile func(path string) (*gohome.File, error)
+	openMaterialFile func(path string) (gohome.File, error)
 	directory        string
 }
 
@@ -95,25 +97,37 @@ func (this *OBJLoader) Load(path string) error {
 	return this.LoadReader(reader)
 }
 
+func handleAndroidReadError(err error) error {
+	gohome.Framew.Log("Checking Error:", err)
+	if strings.Contains(err.Error(), "java.io.FileNotFoundException") {
+		err = io.EOF
+	}
+	return err
+}
+
 func (this *OBJLoader) LoadReader(reader io.ReadCloser) error {
 	defer reader.Close()
 
-	var prevOverFlow []byte
 	var err error
 	var line string
+	rd := bufio.NewReader(reader)
 
-	for err != io.EOF || len(prevOverFlow) != 0 {
-		line, prevOverFlow, err = readLine(reader, prevOverFlow)
+	for err != io.EOF {
+		line, err = readLine(rd)
+		if err != nil && runtime.GOOS == "android" {
+			gohome.Framew.Log("\"" + line + "\"")
+			err = handleAndroidReadError(err)
+		}
 		if err != nil && err != io.EOF {
 			return err
 		}
 		if line != "" {
 			if err = this.processTokens(toTokens(line)); err != nil {
+				gohome.Framew.Log("Error in processTokens")
 				return err
 			}
 		}
 	}
-	reader.Close()
 
 	return nil
 }
@@ -141,7 +155,7 @@ func (this *OBJLoader) SetMaterialPaths(paths []string) {
 	this.materialPaths = paths
 }
 
-func (this *OBJLoader) SetOpenMaterialFile(function func(path string) (*gohome.File, error)) {
+func (this *OBJLoader) SetOpenMaterialFile(function func(path string) (gohome.File, error)) {
 	this.openMaterialFile = function
 }
 
@@ -149,55 +163,18 @@ func (this *OBJLoader) SetDirectory(dir string) {
 	this.directory = dir
 }
 
-func readLine(reader io.Reader, prevOverFlow []byte) (string, []byte, error) {
-	var line bytes.Buffer
-	var buffer [10]byte
-	var overflow []byte
-	var breakOut bool = false
-	var prevOverFlowRead bool = len(prevOverFlow) == 0
-	var n int = 0
-	var err error = nil
-	var endOfFile bool = false
+func readLine(rd *bufio.Reader) (string, error) {
+	var str string
+	var isPrefix = true
+	var err error
+	var buf []byte
 
-	for !endOfFile {
-		if !prevOverFlowRead {
-			n = len(prevOverFlow)
-			for i := 0; i < n; i++ {
-				buffer[i] = prevOverFlow[i]
-			}
-			prevOverFlowRead = true
-		} else {
-			n, err = reader.Read(buffer[:])
-		}
-		if err == io.EOF {
-			endOfFile = true
-		}
-		for i := 0; i < n; i++ {
-			if buffer[i] == '\n' || buffer[i] == '\r' {
-				if i < n-1 {
-					if buffer[i+1] == '\n' || buffer[i+1] == '\r' {
-						if i+2 < n {
-							overflow = buffer[i+2 : n]
-						}
-					} else {
-						overflow = buffer[i+1 : n]
-					}
-				}
-				breakOut = true
-				break
-			} else {
-				if err1 := line.WriteByte(buffer[i]); err1 != nil {
-					return "", nil, err1
-				}
-			}
-		}
-		if breakOut {
-			break
-		}
+	for err == nil && isPrefix {
+		buf, isPrefix, err = rd.ReadLine()
+		str += string(buf)
 	}
-	lineString := line.String()
-	line.Reset()
-	return lineString, overflow, err
+
+	return str, err
 }
 
 func readLineString(contents string, curChar int) (string, int, bool) {
@@ -272,12 +249,8 @@ func (this *OBJLoader) loadMaterialFile(path string) error {
 		this.materialPaths = append(this.materialPaths, "")
 	}
 	if this.openMaterialFile == nil {
-		this.openMaterialFile = func(path string) (*gohome.File, error) {
-			gFile := &gohome.File{}
-			osFile, err := os.Open(path)
-			gFile.ReadSeeker = osFile
-			gFile.Closer = osFile
-			return gFile, err
+		this.openMaterialFile = func(path string) (gohome.File, error) {
+			return os.Open(path)
 		}
 	}
 	for i := 0; i < len(this.materialPaths); i++ {
@@ -325,12 +298,14 @@ func (this *OBJLoader) processTokens(tokens []string) error {
 				}
 			} else if length == 2 {
 				if tokens[0] == "mtllib" {
+					gohome.Framew.Log("mtllib:", tokens[1])
 					if err := this.loadMaterialFile(tokens[1]); err != nil {
 						return &OBJError{"Couldn't load material file " + tokens[1] + ": " + err.Error()}
 					}
 				} else if tokens[0] == "o" {
 					this.Models = append(this.Models, OBJModel{Name: tokens[1]})
 				} else if tokens[0] == "usemtl" {
+					gohome.Framew.Log("NewMesh:", tokens[1])
 					if len(this.Models) == 0 {
 						this.Models = append(this.Models, OBJModel{Name: "Default"})
 					}
@@ -620,12 +595,18 @@ func (this *MTLLoader) Load(path string) error {
 }
 
 func (this *MTLLoader) LoadReader(reader io.ReadCloser) error {
-	var prevOverFlow []byte
 	var err error
 	var line string
+	rd := bufio.NewReader(reader)
 
-	for err != io.EOF || len(prevOverFlow) != 0 {
-		line, prevOverFlow, err = readLine(reader, prevOverFlow)
+	for err != io.EOF {
+		line, err = readLine(rd)
+		gohome.Framew.Log("MTL:", line)
+		if err != nil && runtime.GOOS == "android" {
+			gohome.Framew.Log("\"" + line + "\"")
+			err = handleAndroidReadError(err)
+			gohome.Framew.Log("NewError:", err)
+		}
 		if err != nil && err != io.EOF {
 			return err
 		}
@@ -634,7 +615,7 @@ func (this *MTLLoader) LoadReader(reader io.ReadCloser) error {
 		}
 	}
 	reader.Close()
-
+	gohome.Framew.Log("Finished Material")
 	return nil
 }
 

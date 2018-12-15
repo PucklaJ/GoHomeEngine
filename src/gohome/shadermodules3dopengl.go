@@ -71,9 +71,9 @@ var (
 	}
 
 	GlobalsFragment3D = []glslgen.Variable{
-		glslgen.Variable{"const float", "highp", "shadowDistance = 50.0"},
-		glslgen.Variable{"const float", "highp", "transitionDistance = 5.0"},
-		glslgen.Variable{"const float", "highp", "bias = 0.005"},
+		glslgen.Variable{"float", "const highp", "shadowDistance = 50.0"},
+		glslgen.Variable{"float", "const highp", "transitionDistance = 5.0"},
+		glslgen.Variable{"float", "const highp", "bias = 0.005"},
 		glslgen.Variable{"vec4", "highp", "finalDiffuseColor"},
 		glslgen.Variable{"vec4", "highp", "finalSpecularColor"},
 		glslgen.Variable{"vec4", "highp", "finalAmbientColor"},

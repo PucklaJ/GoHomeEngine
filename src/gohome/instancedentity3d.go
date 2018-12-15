@@ -36,6 +36,9 @@ func (this *InstancedEntity3D) commonInit(numInstances uint32) {
 	this.RenderLast = false
 	this.DepthTesting = true
 	this.RenderType = TYPE_3D_INSTANCED
+	if this.Model3D == nil {
+		return
+	}
 	this.configureShader()
 
 	this.Model3D.AddValueFront(VALUE_MAT4)

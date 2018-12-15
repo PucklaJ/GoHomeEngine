@@ -4,6 +4,7 @@ import (
 	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
 	gl "github.com/PucklaMotzer09/android-go/gles2"
 	"github.com/PucklaMotzer09/mathgl/mgl32"
+	//gl1 "github.com/go-gl/gl/all-core/gl"
 	"sync"
 	"unsafe"
 )
@@ -186,6 +187,8 @@ func (oglm *OpenGLES2Mesh3D) Load() {
 	oglm.numVertices = uint32(len(oglm.vertices))
 	oglm.numIndices = uint32(len(oglm.indices))
 
+	gohome.Framew.Log("Vertices:", oglm.vertices)
+
 	if oglm.numVertices == 0 || oglm.numIndices == 0 {
 		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "Mesh3D", oglm.Name, "No vertices or indices have been added!")
 		return
@@ -200,19 +203,27 @@ func (oglm *OpenGLES2Mesh3D) Load() {
 	gl.GenBuffers(1, buf[:])
 	oglm.buffer = buf[0]
 
+	gl.GetError()
 	gl.BindBuffer(gl.ARRAY_BUFFER, oglm.buffer)
+	handleOpenGLError("Mesh3D", oglm.Name, "glBindBuffer ARRAY_BUFFER: ")
 	gl.BufferData(gl.ARRAY_BUFFER, int(verticesSize)+int(indicesSize), nil, gl.STATIC_DRAW)
+	handleOpenGLError("Mesh3D", oglm.Name, "glBufferData: ")
 
 	gl.BufferSubData(gl.ARRAY_BUFFER, 0, int(verticesSize), unsafe.Pointer(&oglm.vertices[0]))
+	handleOpenGLError("Mesh3D", oglm.Name, "glBufferSubData ARRAY_BUFFER: ")
 	gl.BindBuffer(gl.ARRAY_BUFFER, 0)
 
 	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, oglm.buffer)
+	handleOpenGLError("Mesh3D", oglm.Name, "glBindBuffer ELEMENT_ARRAY_BUFFER: ")
 	gl.BufferSubData(gl.ELEMENT_ARRAY_BUFFER, int(verticesSize), int(indicesSize), unsafe.Pointer(&oglm.indices[0]))
+	handleOpenGLError("Mesh3D", oglm.Name, "glBufferSubData ELEMENT_ARRAY_BUFFER: ")
 	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, 0)
 
 	oglm.deleteElements()
 	oglm.loaded = true
 }
+
+var vao uint32 = 0
 
 func (oglm *OpenGLES2Mesh3D) Render() {
 	if oglm.numVertices == 0 || oglm.numIndices == 0 {
@@ -226,6 +237,13 @@ func (oglm *OpenGLES2Mesh3D) Render() {
 		}
 		gohome.RenderMgr.CurrentShader.SetUniformMaterial(*oglm.Material)
 	}
+	/*if vao == 0 {
+		gl1.Init()
+	}
+	gl1.GenVertexArrays(1, &vao)
+	gl1.BindVertexArray(vao)
+	defer gl1.DeleteVertexArrays(1, &vao)*/
+
 	oglm.attributePointer()
 	gl.GetError()
 	gl.DrawElements(gl.TRIANGLES, int32(oglm.numIndices), gl.UNSIGNED_INT, gl.PtrOffset(int(oglm.numVertices*MESH3DVERTEX_SIZE)))

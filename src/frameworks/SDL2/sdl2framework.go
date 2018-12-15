@@ -5,6 +5,7 @@ import (
 	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
 	"github.com/PucklaMotzer09/go-sdl2/sdl"
 	"github.com/PucklaMotzer09/mathgl/mgl32"
+	"os"
 	"runtime"
 	"strings"
 )
@@ -200,15 +201,17 @@ func (this *SDL2Framework) WindowIsFullscreen() bool {
 	return (flags&sdl.WINDOW_FULLSCREEN | sdl.WINDOW_FULLSCREEN_DESKTOP) != 0
 }
 
-func (this *SDL2Framework) OpenFile(file string) (*gohome.File, error) {
-	rfile := sdl.RWFromFile(file, "r")
-	if rfile == nil {
-		return nil, sdl.GetError()
+func (this *SDL2Framework) OpenFile(file string) (gohome.File, error) {
+	if runtime.GOOS == "android" {
+		rw := sdl.RWFromFile(file, "rb")
+		var err error
+		if rw == nil {
+			err = sdl.GetError()
+		}
+		return rw, err
+	} else {
+		return os.Open(file)
 	}
-	gFile := &gohome.File{}
-	gFile.Closer = rfile
-	gFile.ReadSeeker = rfile
-	return gFile, nil
 }
 
 func getFileExtension(file string) string {
@@ -251,7 +254,10 @@ func equalIgnoreCase(str1, str string) bool {
 }
 
 func (this *SDL2Framework) LoadLevel(rsmgr *gohome.ResourceManager, name, path string, preloaded, loadToGPU bool) *gohome.Level {
+	this.Log("LoadLevel:", name, path)
+	defer this.Log("LoadLevel End")
 	extension := getFileExtension(path)
+	this.Log("Extension:", extension)
 	if equalIgnoreCase(extension, "obj") {
 		return loadLevelOBJ(rsmgr, name, path, preloaded, loadToGPU)
 	}

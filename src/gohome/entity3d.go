@@ -80,6 +80,9 @@ func (this *Entity3D) configureShaderFlags() uint32 {
 }
 
 func (this *Entity3D) configureShader() {
+	if this.Model3D == nil {
+		return
+	}
 	flags := this.configureShaderFlags()
 	name := GetShaderName3D(flags)
 	this.Shader = ResourceMgr.GetShader(name)
