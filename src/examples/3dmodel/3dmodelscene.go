@@ -10,18 +10,15 @@ type ModelScene struct {
 }
 
 func (this *ModelScene) Init() {
-	gohome.Init3DShaders()
 	gohome.LightMgr.DisableLighting()
-	gohome.ResourceMgr.LoadLevel("Gopher", "assets/models/gopher.obj", true)
+	gohome.ResourceMgr.LoadLevel("Gopher", "gopher.obj", true)
 
 	this.gopher.InitModel(gohome.ResourceMgr.GetModel("Gopher"))
 
-	this.gopher.Transform.Position = [3]float32{0.0, 0, -5.0}
+	this.gopher.Transform.Position = [3]float32{0.0, -1.75, -5.0}
 	this.gopher.Transform.Scale = [3]float32{0.75, 0.75, 0.75}
 
 	gohome.RenderMgr.AddObject(&this.gopher)
-
-	gohome.RenderMgr.EnableBackBuffer = false
 }
 
 func (this *ModelScene) Update(delta_time float32) {

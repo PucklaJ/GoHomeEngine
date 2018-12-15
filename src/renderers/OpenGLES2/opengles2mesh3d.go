@@ -4,7 +4,6 @@ import (
 	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
 	gl "github.com/PucklaMotzer09/android-go/gles2"
 	"github.com/PucklaMotzer09/mathgl/mgl32"
-	//gl1 "github.com/go-gl/gl/all-core/gl"
 	"sync"
 	"unsafe"
 )
@@ -239,12 +238,6 @@ func (oglm *OpenGLES2Mesh3D) Render() {
 		}
 		gohome.RenderMgr.CurrentShader.SetUniformMaterial(*oglm.Material)
 	}
-	/*if vao == 0 {
-		gl1.Init()
-	}
-	gl1.GenVertexArrays(1, &vao)
-	gl1.BindVertexArray(vao)
-	defer gl1.DeleteVertexArrays(1, &vao)*/
 
 	oglm.attributePointer()
 	gl.GetError()

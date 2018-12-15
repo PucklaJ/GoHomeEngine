@@ -6,16 +6,24 @@ android {
 
     defaultConfig {
         applicationId "com.gohome.example"
-        minSdkVersion 24
-        targetSdkVersion 24
+        minSdkVersion 16
+        targetSdkVersion 26
         versionCode 1
         versionName '1.0'
     }
 
+    signingConfigs {
+        release {
+            storeFile = new File(RELEASE_STORE_FILE)
+            storePassword = RELEASE_STORE_PASSWORD
+            keyAlias = RELEASE_KEY_ALIAS
+            keyPassword = RELEASE_KEY_PASSWORD
+        }
+    }
+
     buildTypes {
         release {
-            minifyEnabled false
-            zipAlignEnabled true
+            signingConfig signingConfigs.release
         }
     }
 

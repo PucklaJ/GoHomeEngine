@@ -83,6 +83,10 @@ func (spr *Sprite2D) commonInit() {
 	spr.NotRelativeToCamera = -1
 	spr.RenderType = TYPE_2D_NORMAL
 	spr.Flip = FLIP_NONE
+	spr.Shader = ResourceMgr.GetShader(SPRITE2D_SHADER_NAME)
+	if spr.Shader == nil {
+		spr.Shader = LoadGeneratedShader2D(SHADER_TYPE_SPRITE2D, 0)
+	}
 }
 
 func (spr *Sprite2D) Init(texName string) {

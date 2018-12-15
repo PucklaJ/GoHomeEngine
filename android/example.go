@@ -1,71 +1,27 @@
 package main
 
-import "C"
-
 import (
-	"github.com/veandco/go-sdl2/sdl"
-	"runtime"
+	"github.com/PucklaMotzer09/GoHomeEngine/src/frameworks/SDL2"
+	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
+	"github.com/PucklaMotzer09/GoHomeEngine/src/renderers/OpenGLES2"
+	"golang.org/x/image/colornames"
 )
 
-const (
-	winTitle  = "GoHomeApp"
-	winWidth  = 480
-	winHeight = 800
-)
-
-var Window *sdl.Window
-var Running bool = true
-
-func Init() (err error) {
-	err = sdl.Init(sdl.INIT_EVERYTHING)
-	if err != nil {
-		return
-	}
-
-	Window, err = sdl.CreateWindow(winTitle, sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED, winWidth, winHeight, sdl.WINDOW_SHOWN)
-	if err != nil {
-		return
-	}
-
-	return
+type ExampleScene struct {
 }
 
-// Destroy destroys SDL and releases the memory.
-func Destroy() {
-	Window.Destroy()
-	sdl.Quit()
+func (*ExampleScene) Init() {
+	gohome.Render.SetBackgroundColor(colornames.Lime)
 }
 
-// Quit exits main loop.
-func Quit() {
-	Running = false
+func (*ExampleScene) Update(delta_time float32) {
+
 }
 
-//export SDL_main
-func SDL_main() {
-	runtime.LockOSThread()
+func (*ExampleScene) Terminate() {
 
-	err := Init()
-	if err != nil {
-		sdl.LogError(sdl.LOG_CATEGORY_APPLICATION, "Init: %s\n", err)
-	}
-	defer Destroy()
-
-	for Running {
-		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
-			switch t := event.(type) {
-			case *sdl.QuitEvent:
-				Quit()
-
-			case *sdl.KeyboardEvent:
-				if t.Keysym.Scancode == sdl.SCANCODE_ESCAPE || t.Keysym.Scancode == sdl.SCANCODE_AC_BACK {
-					Quit()
-				}
-			}
-		}
-	}
 }
 
 func main() {
-	SDL_main()
+	gohome.MainLop.Run(&framework.SDL2Framework{}, &renderer.OpenGLES2Renderer{}, 640, 480, "Example", &ExampleScene{})
 }

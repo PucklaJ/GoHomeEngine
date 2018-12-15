@@ -1,6 +1,7 @@
 package gohome
 
 import (
+	"fmt"
 	"github.com/PucklaMotzer09/mathgl/mgl32"
 	"io"
 	"log"
@@ -145,7 +146,11 @@ func (*NilFramework) ShowYesNoDialog(title, message string) uint8 {
 }
 
 func (*NilFramework) Log(a ...interface{}) {
-	log.Println(a)
+	var str = ""
+	for _, val := range a {
+		str += fmt.Sprint(val) + " "
+	}
+	log.Println(str[:len(str)-1])
 }
 
 func (*NilFramework) OnResize(callback func(newWidth, newHeight uint32)) {
