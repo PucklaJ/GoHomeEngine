@@ -962,10 +962,15 @@ func GenerateShader3D(flags uint32) (n, v, f string) {
 		flags |= SHADER_FLAG_NO_DIFTEX | SHADER_FLAG_NO_SPECTEX | SHADER_FLAG_NO_NORMAP
 	}
 
+	rname := Render.GetName()
+	if rname == "OpenGLES2" {
+		flags |= SHADER_FLAG_NO_SHADOWS | SHADER_FLAG_NO_NORMAP
+	}
+
 	var vertex glslgen.VertexGenerator
 	var fragment glslgen.FragmentGenerator
 
-	if strings.Contains(Render.GetName(), "OpenGLES") {
+	if strings.Contains(rname, "OpenGLES") {
 		vertex.SetVersion("100")
 		fragment.SetVersion("100")
 	} else {
@@ -978,8 +983,11 @@ func GenerateShader3D(flags uint32) (n, v, f string) {
 		vertex.AddAttributes(AttributesInstanced3D)
 	}
 	vertex.AddOutputs(InputsFragment3D)
-	if flags&SHADER_FLAG_NOUV == 0 {
+	if flags&SHADER_FLAG_NOUV == 0 && rname != "OpenGLES2" {
 		vertex.AddOutputs(InputsNormalFragment3D)
+	}
+	if rname == "OpenGLES2" {
+		vertex.AddOutput(glslgen.Variable{"vec2", "highp", "fragTexCoord"})
 	}
 	vertex.AddModule(UniformModuleVertex3D)
 	if flags&SHADER_FLAG_INSTANCED == 0 {
@@ -987,7 +995,7 @@ func GenerateShader3D(flags uint32) (n, v, f string) {
 	}
 	vertex.AddModule(CalculatePositionModule3D)
 	vertex.AddModule(SetOutputsModuleVertex3D)
-	if flags&SHADER_FLAG_NOUV == 0 {
+	if flags&SHADER_FLAG_NOUV == 0 && rname != "OpenGLES2" {
 		vertex.AddModule(SetOutputsNormalModuleVertex3D)
 	} else {
 		vertex.AddModule(SetOutputsNoUVModuleVertex3D)
@@ -1003,11 +1011,14 @@ func GenerateShader3D(flags uint32) (n, v, f string) {
 		fragment.AddGlobals(LightsAndShadowsGlobalsFragment3D)
 	}
 	fragment.AddInputs(InputsFragment3D)
-	if flags&SHADER_FLAG_NOUV == 0 {
+	if flags&SHADER_FLAG_NOUV == 0 && rname != "OpenGLES2" {
 		fragment.AddInputs(InputsNormalFragment3D)
 	}
+	if rname == "OpenGLES2" {
+		fragment.AddOutput(glslgen.Variable{"vec2", "highp", "fragTexCoord"})
+	}
 	fragment.AddModule(InitialiseModuleFragment3D)
-	if flags&SHADER_FLAG_NOUV == 0 {
+	if flags&SHADER_FLAG_NOUV == 0 && rname != "OpenGLES2" {
 		fragment.AddModule(InitialiseNormalModuleFragment3D)
 	} else {
 		fragment.AddModule(InitialiseNoUVModuleFragment3D)
@@ -1017,20 +1028,20 @@ func GenerateShader3D(flags uint32) (n, v, f string) {
 	}
 	if flags&SHADER_FLAG_NO_LIGHTING == 0 {
 		fragment.AddModule(LightUniformsModule3D)
-		if flags&SHADER_FLAG_NOUV == 0 {
+		if flags&SHADER_FLAG_NOUV == 0 && rname != "OpenGLES2" {
 			fragment.AddModule(LightCalcSpotAmountNormalModule3D)
 		} else {
 			fragment.AddModule(LightCalcSpotAmountNoUVModule3D)
 		}
 		if flags&SHADER_FLAG_NO_SHADOWS == 0 {
 			fragment.AddModule(LightsAndShadowsFunctions3D)
-			if flags&SHADER_FLAG_NOUV == 0 {
+			if flags&SHADER_FLAG_NOUV == 0 && rname != "OpenGLES2" {
 				fragment.AddModule(LightsAndShadowsCalculationModule3D)
 			} else {
 				fragment.AddModule(LightsAndShadowsCalculationNoUVModule3D)
 			}
 		} else {
-			if flags&SHADER_FLAG_NOUV == 0 {
+			if flags&SHADER_FLAG_NOUV == 0 && rname != "OpenGLES2" {
 				fragment.AddModule(LightCalculationModel3D)
 			} else {
 				fragment.AddModule(LightCalculationNoUVModule3D)

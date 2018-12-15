@@ -16,7 +16,7 @@ const (
 
 type OpenGLES2Mesh3D struct {
 	vertices    []gohome.Mesh3DVertex
-	indices     []uint32
+	indices     []uint16
 	numVertices uint32
 	numIndices  uint32
 
@@ -123,7 +123,11 @@ func (oglm *OpenGLES2Mesh3D) CalculateTangents() {
 
 func (oglm *OpenGLES2Mesh3D) AddVertices(vertices []gohome.Mesh3DVertex, indices []uint32) {
 	oglm.vertices = append(oglm.vertices, vertices...)
-	oglm.indices = append(oglm.indices, indices...)
+	index := len(oglm.indices)
+	oglm.indices = append(oglm.indices, make([]uint16, len(indices))...)
+	for id, i := range indices {
+		oglm.indices[index+id] = uint16(i)
+	}
 	oglm.checkAABB()
 }
 
@@ -193,7 +197,7 @@ func (oglm *OpenGLES2Mesh3D) Load() {
 	}
 
 	var verticesSize uint32 = oglm.numVertices * MESH3DVERTEX_SIZE
-	var indicesSize uint32 = oglm.numIndices * gohome.INDEX_SIZE
+	var indicesSize uint32 = oglm.numIndices * 2
 
 	oglm.CalculateTangents()
 
@@ -244,7 +248,7 @@ func (oglm *OpenGLES2Mesh3D) Render() {
 
 	oglm.attributePointer()
 	gl.GetError()
-	gl.DrawElements(gl.TRIANGLES, int32(oglm.numIndices), gl.UNSIGNED_INT, gl.PtrOffset(int(oglm.numVertices*MESH3DVERTEX_SIZE)))
+	gl.DrawElements(gl.TRIANGLES, int32(oglm.numIndices), gl.UNSIGNED_SHORT, gl.PtrOffset(int(oglm.numVertices*MESH3DVERTEX_SIZE)))
 	handleOpenGLError("Mesh3D", oglm.Name, "RenderError: ")
 	gl.BindBuffer(gl.ARRAY_BUFFER, 0)
 	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, 0)
@@ -278,7 +282,11 @@ func (oglm *OpenGLES2Mesh3D) GetVertices() []gohome.Mesh3DVertex {
 	return oglm.vertices
 }
 func (oglm *OpenGLES2Mesh3D) GetIndices() []uint32 {
-	return oglm.indices
+	indices := make([]uint32, len(oglm.indices))
+	for id, i := range oglm.indices {
+		indices[id] = uint32(i)
+	}
+	return indices
 }
 
 func (oglm *OpenGLES2Mesh3D) GetName() string {

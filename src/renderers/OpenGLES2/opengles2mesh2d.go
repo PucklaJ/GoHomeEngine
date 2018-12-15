@@ -8,7 +8,7 @@ import (
 
 type OpenGLES2Mesh2D struct {
 	vertices    []gohome.Mesh2DVertex
-	indices     []uint32
+	indices     []uint8
 	numVertices uint32
 	numIndices  uint32
 	Name        string
@@ -31,7 +31,11 @@ func (oglm *OpenGLES2Mesh2D) deleteElements() {
 
 func (oglm *OpenGLES2Mesh2D) AddVertices(vertices []gohome.Mesh2DVertex, indices []uint32) {
 	oglm.vertices = append(oglm.vertices, vertices...)
-	oglm.indices = append(oglm.indices, indices...)
+	index := len(oglm.indices)
+	oglm.indices = append(oglm.indices, make([]uint8, len(indices))...)
+	for id, i := range indices {
+		oglm.indices[index+id] = uint8(i)
+	}
 }
 
 func (oglm *OpenGLES2Mesh2D) attributePointer() {
@@ -53,7 +57,7 @@ func (oglm *OpenGLES2Mesh2D) Load() {
 	oglm.numVertices = uint32(len(oglm.vertices))
 	oglm.numIndices = uint32(len(oglm.indices))
 	var verticesSize uint32 = oglm.numVertices * gohome.MESH2DVERTEX_SIZE
-	var indicesSize uint32 = oglm.numIndices * gohome.INDEX_SIZE
+	var indicesSize uint32 = oglm.numIndices
 
 	var buf [1]uint32
 	gl.GenBuffers(1, buf[:])
@@ -82,7 +86,7 @@ func (oglm *OpenGLES2Mesh2D) Render() {
 	oglm.attributePointer()
 
 	gl.GetError()
-	gl.DrawElements(gl.TRIANGLES, int32(oglm.numIndices), gl.UNSIGNED_INT, nil)
+	gl.DrawElements(gl.TRIANGLES, int32(oglm.numIndices), gl.UNSIGNED_BYTE, nil)
 	handleOpenGLError("Mesh2D", oglm.Name, "RenderError: ")
 
 	gl.BindBuffer(gl.ARRAY_BUFFER, 0)
