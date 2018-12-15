@@ -132,6 +132,45 @@ var (
 					glslgen.Variable{"float", "highp", "quadratic"},
 				},
 			},
+			glslgen.Struct{
+				"PointLight",
+				[]glslgen.Variable{
+					glslgen.Variable{"vec3", "highp", "position"},
+					glslgen.Variable{"vec3", "highp", "diffuseColor"},
+					glslgen.Variable{"vec3", "highp", "specularColor"},
+					glslgen.Variable{"Attentuation", "", "attentuation"},
+					glslgen.Variable{"mat4", "highp", "lightSpaceMatrix[6]"},
+					glslgen.Variable{"bool", "", "castsShadows"},
+					glslgen.Variable{"float", "highp", "farPlane"},
+				},
+			},
+			glslgen.Struct{
+				"DirectionalLight",
+				[]glslgen.Variable{
+					glslgen.Variable{"vec3", "highp", "direction"},
+					glslgen.Variable{"vec3", "highp", "diffuseColor"},
+					glslgen.Variable{"vec3", "highp", "specularColor"},
+					glslgen.Variable{"mat4", "highp", "lightSpaceMatrix"},
+					glslgen.Variable{"bool", "", "castsShadows"},
+					glslgen.Variable{"ivec2", "", "shadowMapSize"},
+					glslgen.Variable{"float", "highp", "shadowDistance"},
+				},
+			},
+			glslgen.Struct{
+				"SpotLight",
+				[]glslgen.Variable{
+					glslgen.Variable{"vec3", "highp", "position"},
+					glslgen.Variable{"vec3", "highp", "direction"},
+					glslgen.Variable{"vec3", "highp", "diffuseColor"},
+					glslgen.Variable{"vec3", "highp", "specularColor"},
+					glslgen.Variable{"float", "highp", "innerCutOff"},
+					glslgen.Variable{"float", "highp", "outerCutOff"},
+					glslgen.Variable{"Attentuation", "", "attentuation"},
+					glslgen.Variable{"mat4", "highp", "lightSpaceMatrix"},
+					glslgen.Variable{"bool", "", "castsShadows"},
+					glslgen.Variable{"ivec2", "", "shadowMapSize"},
+				},
+			},
 		},
 
 		Uniforms: []glslgen.Variable{
@@ -139,52 +178,11 @@ var (
 			glslgen.Variable{"int", "", "numDirectionalLights"},
 			glslgen.Variable{"int", "", "numSpotLights"},
 			glslgen.Variable{"vec3", "highp", "ambientLight"},
-			glslgen.Variable{`struct PointLight
-			{
-				vec3 position;
-
-				vec3 diffuseColor;
-				vec3 specularColor;
-
-				Attentuation attentuation;
-				
-				mat4  lightSpaceMatrix[6];
-				bool castsShadows;
-
-				float farPlane;
-			}`, "", "pointLights[MAX_POINT_LIGHTS]"},
+			glslgen.Variable{"PointLight", "", "pointLights[MAX_POINT_LIGHTS]"},
 			glslgen.Variable{"samplerCube", "highp", "pointLightsshadowmap[MAX_POINT_LIGHTS]"},
-			glslgen.Variable{`struct DirectionalLight
-			{
-				vec3 direction;
-
-				vec3 diffuseColor;
-				vec3 specularColor;
-				
-				mat4 lightSpaceMatrix;
-				bool castsShadows;
-				ivec2 shadowMapSize;
-
-				float shadowDistance;
-			}`, "", "directionalLights[MAX_POINT_LIGHTS]"},
+			glslgen.Variable{"DirectionalLight", "", "directionalLights[MAX_POINT_LIGHTS]"},
 			glslgen.Variable{"sampler2D", "highp", "directionalLightsshadowmap[MAX_DIRECTIONAL_LIGHTS]"},
-			glslgen.Variable{`struct SpotLight
-			{
-				vec3 position;
-				vec3 direction;
-
-				vec3 diffuseColor;
-				vec3 specularColor;
-
-				float innerCutOff;
-				float outerCutOff;
-
-				Attentuation attentuation;
-				
-				mat4 lightSpaceMatrix;
-				bool castsShadows;
-				ivec2 shadowMapSize;
-			}`, "", "spotLights[MAX_SPOT_LIGHTS]"},
+			glslgen.Variable{"SpotLight", "", "spotLights[MAX_SPOT_LIGHTS]"},
 			glslgen.Variable{"sampler2D", "highp", "spotLightsshadowmap[MAX_SPOT_LIGHTS]"},
 		},
 
@@ -814,19 +812,22 @@ var (
 	}
 
 	MaterialModule3D = glslgen.Module{
+		Structs: []glslgen.Struct{
+			glslgen.Struct{
+				Name: "Material",
+				Variables: []glslgen.Variable{
+					glslgen.Variable{"vec3", "highp", "diffuseColor"},
+					glslgen.Variable{"vec3", "highp", "specularColor"},
+					glslgen.Variable{"bool", "", "DiffuseTextureLoaded"},
+					glslgen.Variable{"bool", "", "SpecularTextureLoaded"},
+					glslgen.Variable{"bool", "", "NormalMapLoaded"},
+					glslgen.Variable{"float", "highp", "shinyness"},
+					glslgen.Variable{"float", "highp", "transparency"},
+				},
+			},
+		},
 		Uniforms: []glslgen.Variable{
-			glslgen.Variable{`struct Material
-			{
-				vec3 diffuseColor;
-				vec3 specularColor;
-
-				bool DiffuseTextureLoaded;
-				bool SpecularTextureLoaded;
-				bool NormalMapLoaded;
-
-				float shinyness;
-				float transparency;
-			}`, "", "material"},
+			glslgen.Variable{"Material", "", "material"},
 		},
 		Name: "materialCalculation",
 		Body: `finalDiffuseColor *= vec4(material.diffuseColor,material.transparency);

@@ -10,6 +10,7 @@ type ModelScene struct {
 }
 
 func (this *ModelScene) Init() {
+	gohome.Init3DShaders()
 	gohome.ErrorMgr.DuplicateMessages = false
 	gohome.LightMgr.DisableLighting()
 	gohome.ResourceMgr.LoadLevel("Gopher", "gopher.obj", true)
