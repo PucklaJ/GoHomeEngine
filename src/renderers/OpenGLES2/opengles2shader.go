@@ -509,12 +509,7 @@ func (s *OpenGLES2Shader) validate() error {
 	if s.validated {
 		return nil
 	}
-	s.Use()
-	maxtextures := gohome.Render.GetMaxTextures()
-	for i := 0; i < 31; i++ {
-		s.SetUniformI(gohome.POINT_LIGHTS_UNIFORM_NAME+gohome.SHADOWMAP_UNIFORM_NAME+"["+strconv.Itoa(i)+"]", maxtextures-1)
-	}
-	s.Unuse()
+
 	s.validated = true
 	gl.ValidateProgram(s.program)
 	var status int32

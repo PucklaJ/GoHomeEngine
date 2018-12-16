@@ -148,6 +148,9 @@ func (s *OpenGLShader) getAttributeNames(program uint32, src string) []string {
 			break
 		} else if len(wordsString) >= 3 {
 			if (version >= 130 && wordsString[0] == "in") || (version <= 120 && wordsString[0] == "attribute") {
+				if wordsString[1] == "highp" || wordsString[1] == "mediump" || wordsString[1] == "lowp" {
+					wordsString = append(wordsString[:1], wordsString[2:]...)
+				}
 				if wordsString[2][len(wordsString[2])-1] == ';' {
 					wordsString[2] = wordsString[2][:len(wordsString[2])-1]
 				}
@@ -523,12 +526,7 @@ func (s *OpenGLShader) validate() error {
 		return nil
 	}
 	render, _ := gohome.Render.(*OpenGLRenderer)
-	s.Use()
-	maxtextures := gohome.Render.GetMaxTextures()
-	for i := 0; i < 31; i++ {
-		s.SetUniformI(gohome.POINT_LIGHTS_UNIFORM_NAME+gohome.SHADOWMAP_UNIFORM_NAME+"["+strconv.Itoa(i)+"]", maxtextures-1)
-	}
-	s.Unuse()
+
 	s.validated = true
 	var vao uint32
 	if render.HasFunctionAvailable("VERTEX_ARRAY") {

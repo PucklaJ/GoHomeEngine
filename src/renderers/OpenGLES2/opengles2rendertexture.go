@@ -308,14 +308,8 @@ func (this *OpenGLES2RenderTexture) GetData() ([]byte, int, int) {
 	if len(this.textures) == 0 {
 		return nil, 0, 0
 	}
-	if _, ok := this.textures[0].(*OpenGLES2Texture); ok {
-		if gohome.Render.HasFunctionAvailable("BLIT_FRAMEBUFFER") {
-			rtex := CreateOpenGLES2RenderTexture("Temp", uint32(this.GetWidth()), uint32(this.GetHeight()), 1, false, false, false, false)
-			this.Blit(rtex)
-			data, width, height := rtex.GetData()
-			rtex.Terminate()
-			return data, width, height
-		}
+	if tex, ok := this.textures[0].(*OpenGLES2Texture); ok {
+		return tex.GetData()
 	}
 
 	return this.textures[0].GetData()

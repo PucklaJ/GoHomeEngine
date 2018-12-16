@@ -36,10 +36,6 @@ func (this *SDL2Framework) Init(ml *gohome.MainLoop) error {
 }
 
 func (this *SDL2Framework) Update() {
-	if runtime.GOOS == "android" {
-		gohome.RenderMgr.EnableBackBuffer = false
-	}
-
 	gohome.InputMgr.Mouse.Wheel[0] = 0
 	gohome.InputMgr.Mouse.Wheel[1] = 0
 	gohome.InputMgr.Mouse.DPos[0] = 0

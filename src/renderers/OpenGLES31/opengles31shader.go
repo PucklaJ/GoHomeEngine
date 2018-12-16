@@ -3,12 +3,12 @@ package renderer
 import (
 	"bytes"
 	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
-	gl "github.com/PucklaMotzer09/android-go/gles3"
+	gl "github.com/PucklaMotzer09/android-go/gles31"
 	"github.com/PucklaMotzer09/mathgl/mgl32"
 	"strconv"
 )
 
-type OpenGLES3Shader struct {
+type OpenGLES31Shader struct {
 	program             uint32
 	name                string
 	shaders             [6]uint32
@@ -18,8 +18,8 @@ type OpenGLES3Shader struct {
 	validated           bool
 }
 
-func CreateOpenGLES3Shader(name string) (*OpenGLES3Shader, error) {
-	shader := &OpenGLES3Shader{
+func CreateOpenGLES31Shader(name string) (*OpenGLES31Shader, error) {
+	shader := &OpenGLES31Shader{
 		program:             0,
 		name:                name,
 		shaders:             [6]uint32{0, 0, 0, 0, 0, 0},
@@ -29,7 +29,7 @@ func CreateOpenGLES3Shader(name string) (*OpenGLES3Shader, error) {
 	}
 	program := gl.CreateProgram()
 	if program == 0 {
-		return shader, &OpenGLES3Error{errorString: "Couldn't create program"}
+		return shader, &OpenGLES31Error{errorString: "Couldn't create program"}
 	} else {
 		shader.program = program
 		return shader, nil
@@ -62,6 +62,8 @@ func toGohomeShaderType(shader_type uint32) uint8 {
 		return gohome.VERTEX
 	case gl.FRAGMENT_SHADER:
 		return gohome.FRAGMENT
+	case gl.COMPUTE_SHADER:
+		return gohome.COMPUTE
 	}
 
 	return 255
@@ -82,7 +84,7 @@ func getAttributeSizeForType(atype string) uint32 {
 	return 1
 }
 
-func (s *OpenGLES3Shader) getAttributeNames(program uint32, src string) []string {
+func (s *OpenGLES31Shader) getAttributeNames(program uint32, src string) []string {
 	var line bytes.Buffer
 	var lineString string
 	var attributeNames []string
@@ -155,7 +157,7 @@ func (s *OpenGLES3Shader) getAttributeNames(program uint32, src string) []string
 	return attributeNames
 }
 
-func (s *OpenGLES3Shader) bindAttributesFromFile(program uint32, src string) {
+func (s *OpenGLES31Shader) bindAttributesFromFile(program uint32, src string) {
 	attributeNames := s.getAttributeNames(program, src)
 
 	var index uint32 = 0
@@ -165,7 +167,7 @@ func (s *OpenGLES3Shader) bindAttributesFromFile(program uint32, src string) {
 	}
 }
 
-func (s *OpenGLES3Shader) compileOpenGLES3Shader(shader_name string, shader_type uint32, src string, program uint32) (uint32, error) {
+func (s *OpenGLES31Shader) compileOpenGLES31Shader(shader_name string, shader_type uint32, src string, program uint32) (uint32, error) {
 	shader := gl.CreateShader(shader_type)
 	var srcs [1]string
 	srcs[0] = src
@@ -184,12 +186,12 @@ func (s *OpenGLES3Shader) compileOpenGLES3Shader(shader_name string, shader_type
 		gl.GetShaderInfoLog(shader, logLength, nil, buf[:])
 		logText := string(buf)
 
-		return 0, &OpenGLES3Error{errorString: logText}
+		return 0, &OpenGLES31Error{errorString: logText}
 	}
 	gl.GetError()
 	gl.AttachShader(program, shader)
 	if err := gl.GetError(); err != gl.NO_ERROR {
-		return 0, &OpenGLES3Error{errorString: "Couldn't attach " + toShaderTypeName(shader_type) + " of " + shader_name + ": ErrorCode: " + strconv.Itoa(int(err))}
+		return 0, &OpenGLES31Error{errorString: "Couldn't attach " + toShaderTypeName(shader_type) + " of " + shader_name + ": ErrorCode: " + strconv.Itoa(int(err))}
 	}
 	if shader_type == gl.VERTEX_SHADER {
 		s.bindAttributesFromFile(program, src)
@@ -198,22 +200,27 @@ func (s *OpenGLES3Shader) compileOpenGLES3Shader(shader_name string, shader_type
 	return shader, nil
 }
 
-func (s *OpenGLES3Shader) AddShader(shader_type uint8, src string) error {
+func (s *OpenGLES31Shader) AddShader(shader_type uint8, src string) error {
 	if shader_type == gohome.GEOMETRY {
-		return &OpenGLES3Error{errorString: "Geometry shaders are not supported by this implementation"}
+		render, _ := gohome.Render.(*OpenGLES31Renderer)
+		if !render.HasFunctionAvailable("GEOMETRY_SHADER") {
+			return &OpenGLES31Error{errorString: "Geometry shaders are not supported by this implementation"}
+		}
 	}
 
 	var err error
 	var shaderName uint32
 	switch shader_type {
 	case gohome.VERTEX:
-		shaderName, err = s.compileOpenGLES3Shader(s.name, gl.VERTEX_SHADER, src, s.program)
+		shaderName, err = s.compileOpenGLES31Shader(s.name, gl.VERTEX_SHADER, src, s.program)
 	case gohome.FRAGMENT:
-		shaderName, err = s.compileOpenGLES3Shader(s.name, gl.FRAGMENT_SHADER, src, s.program)
+		shaderName, err = s.compileOpenGLES31Shader(s.name, gl.FRAGMENT_SHADER, src, s.program)
+	case gohome.COMPUTE:
+		shaderName, err = s.compileOpenGLES31Shader(s.name, gl.COMPUTE_SHADER, src, s.program)
 	}
 
 	if err != nil {
-		return &OpenGLES3Error{errorString: "Couldn't compile " + getShaderTypeName(shader_type) + ": " + err.Error()}
+		return &OpenGLES31Error{errorString: "Couldn't compile " + getShaderTypeName(shader_type) + ": " + err.Error()}
 	}
 
 	s.shaders[shader_type] = shaderName
@@ -221,7 +228,7 @@ func (s *OpenGLES3Shader) AddShader(shader_type uint8, src string) error {
 	return nil
 }
 
-func (s *OpenGLES3Shader) deleteAllShaders() {
+func (s *OpenGLES31Shader) deleteAllShaders() {
 	for i := 0; i < 6; i++ {
 		if s.shaders[i] != 0 {
 			gl.DetachShader(s.program, s.shaders[i])
@@ -230,72 +237,70 @@ func (s *OpenGLES3Shader) deleteAllShaders() {
 	}
 }
 
-func (s *OpenGLES3Shader) Link() error {
+func (s *OpenGLES31Shader) Link() error {
 	defer s.deleteAllShaders()
 
 	gl.GetError()
 	gl.LinkProgram(s.program)
 	if err := gl.GetError(); err != gl.NO_ERROR {
-		return &OpenGLES3Error{errorString: "Couldn't link: ErrorCode: " + strconv.Itoa(int(err))}
+		return &OpenGLES31Error{errorString: "Couldn't link: ErrorCode: " + strconv.Itoa(int(err))}
 	}
 
 	var status int32
 	gl.GetError()
 	gl.GetProgramiv(s.program, gl.LINK_STATUS, &status)
 	if err := gl.GetError(); err != gl.NO_ERROR {
-		return &OpenGLES3Error{errorString: "Couldn't link: Couldn't get link status: ErrorCode: " + strconv.Itoa(int(err))}
+		return &OpenGLES31Error{errorString: "Couldn't link: Couldn't get link status: ErrorCode: " + strconv.Itoa(int(err))}
 	}
 	if status == gl.FALSE {
 		var logLength int32
 		gl.GetError()
 		gl.GetProgramiv(s.program, gl.INFO_LOG_LENGTH, &logLength)
 		if err := gl.GetError(); err != gl.NO_ERROR {
-			return &OpenGLES3Error{errorString: "Couldn't link: Couldn't get info log length: ErrorCode: " + strconv.Itoa(int(err))}
+			return &OpenGLES31Error{errorString: "Couldn't link: Couldn't get info log length: ErrorCode: " + strconv.Itoa(int(err))}
 		}
 
 		buf := make([]byte, logLength)
-
 		gl.GetError()
 		gl.GetProgramInfoLog(s.program, logLength, nil, buf[:])
 		logtext := string(buf)
-
 		if err := gl.GetError(); err != gl.NO_ERROR {
-			return &OpenGLES3Error{errorString: "Couldn't link: Couldn't get info log: ErrorCode: " + strconv.Itoa(int(err))}
+			return &OpenGLES31Error{errorString: "Couldn't link: Couldn't get info log: ErrorCode: " + strconv.Itoa(int(err))}
 		}
 
-		return &OpenGLES3Error{errorString: "Couldn't link: " + logtext}
+		return &OpenGLES31Error{errorString: "Couldn't link: " + logtext}
 	}
 
 	return nil
 }
 
-func (s *OpenGLES3Shader) Use() {
+func (s *OpenGLES31Shader) Use() {
 	gl.GetError()
 	gl.UseProgram(s.program)
-	handleOpenGLES3Error("Shader", s.name, "glUseProgram")
+	handleOpenGLES31Error("Shader", s.name, "glUseProgram")
 }
 
-func (s *OpenGLES3Shader) Unuse() {
+func (s *OpenGLES31Shader) Unuse() {
 	gl.GetError()
 	gl.UseProgram(0)
-	handleOpenGLES3Error("Shader", s.name, "glUseProgram with 0")
+	handleOpenGLES31Error("Shader", s.name, "glUseProgram with 0")
 }
 
-func (s *OpenGLES3Shader) Setup() error {
+func (s *OpenGLES31Shader) Setup() error {
 	return s.validate()
 }
 
-func (s *OpenGLES3Shader) Terminate() {
+func (s *OpenGLES31Shader) Terminate() {
 	gl.DeleteProgram(s.program)
 }
 
-func (s *OpenGLES3Shader) getUniformLocation(name string) int32 {
+func (s *OpenGLES31Shader) getUniformLocation(name string) int32 {
 	var loc int32
 	var ok bool
 	if loc, ok = s.uniform_locations[name]; !ok {
 		gl.GetError()
 		loc = gl.GetUniformLocation(s.program, name+"\x00")
-		handleOpenGLES3Error("Shader", s.name, "glGetUniformLocation")
+		handleOpenGLES31Error("Shader", s.name, "glGetUniformLocation")
 		s.uniform_locations[name] = loc
 	}
 	if loc == -1 {
@@ -304,107 +309,107 @@ func (s *OpenGLES3Shader) getUniformLocation(name string) int32 {
 	return loc
 }
 
-func (s *OpenGLES3Shader) SetUniformV2(name string, value mgl32.Vec2) {
+func (s *OpenGLES31Shader) SetUniformV2(name string, value mgl32.Vec2) {
 	loc := s.getUniformLocation(name)
 	if loc != -1 {
 		gl.GetError()
 		gl.Uniform2f(loc, value[0], value[1])
-		handleOpenGLES3Error("Shader", s.name, "glUniform2f")
+		handleOpenGLES31Error("Shader", s.name, "glUniform2f")
 	}
 }
-func (s *OpenGLES3Shader) SetUniformV3(name string, value mgl32.Vec3) {
+func (s *OpenGLES31Shader) SetUniformV3(name string, value mgl32.Vec3) {
 	loc := s.getUniformLocation(name)
 	if loc != -1 {
 		gl.GetError()
 		gl.Uniform3f(loc, value[0], value[1], value[2])
-		handleOpenGLES3Error("Shader", s.name, "glUniform3f")
+		handleOpenGLES31Error("Shader", s.name, "glUniform3f")
 	}
 }
-func (s *OpenGLES3Shader) SetUniformV4(name string, value mgl32.Vec4) {
+func (s *OpenGLES31Shader) SetUniformV4(name string, value mgl32.Vec4) {
 	loc := s.getUniformLocation(name)
 	if loc != -1 {
 		gl.GetError()
 		gl.Uniform4f(loc, value[0], value[1], value[2], value[3])
-		handleOpenGLES3Error("Shader", s.name, "glUniform4f")
+		handleOpenGLES31Error("Shader", s.name, "glUniform4f")
 	}
 }
-func (s *OpenGLES3Shader) SetUniformIV2(name string, value []int32) {
+func (s *OpenGLES31Shader) SetUniformIV2(name string, value []int32) {
 	loc := s.getUniformLocation(name)
 	if loc != -1 {
 		gl.GetError()
 		gl.Uniform2i(loc, value[0], value[1])
-		handleOpenGLES3Error("Shader", s.name, "glUniform2i")
+		handleOpenGLES31Error("Shader", s.name, "glUniform2i")
 	}
 }
-func (s *OpenGLES3Shader) SetUniformIV3(name string, value []int32) {
+func (s *OpenGLES31Shader) SetUniformIV3(name string, value []int32) {
 	loc := s.getUniformLocation(name)
 	if loc != -1 {
 		gl.GetError()
 		gl.Uniform3i(loc, value[0], value[1], value[2])
-		handleOpenGLES3Error("Shader", s.name, "glUniform3i")
+		handleOpenGLES31Error("Shader", s.name, "glUniform3i")
 	}
 }
-func (s *OpenGLES3Shader) SetUniformIV4(name string, value []int32) {
+func (s *OpenGLES31Shader) SetUniformIV4(name string, value []int32) {
 	loc := s.getUniformLocation(name)
 	if loc != -1 {
 		gl.GetError()
 		gl.Uniform4i(loc, value[0], value[1], value[2], value[3])
-		handleOpenGLES3Error("Shader", s.name, "glUniform4i")
+		handleOpenGLES31Error("Shader", s.name, "glUniform4i")
 	}
 }
-func (s *OpenGLES3Shader) SetUniformF(name string, value float32) {
+func (s *OpenGLES31Shader) SetUniformF(name string, value float32) {
 	loc := s.getUniformLocation(name)
 	if loc != -1 {
 		gl.GetError()
 		gl.Uniform1f(loc, value)
-		handleOpenGLES3Error("Shader", s.name, "glUniform1f")
+		handleOpenGLES31Error("Shader", s.name, "glUniform1f")
 	}
 }
-func (s *OpenGLES3Shader) SetUniformI(name string, value int32) {
+func (s *OpenGLES31Shader) SetUniformI(name string, value int32) {
 	loc := s.getUniformLocation(name)
 	if loc != -1 {
 		gl.GetError()
 		gl.Uniform1i(loc, value)
-		handleOpenGLES3Error("Shader", s.name, "glUniform1i")
+		handleOpenGLES31Error("Shader", s.name, "glUniform1i")
 	}
 }
-func (s *OpenGLES3Shader) SetUniformUI(name string, value uint32) {
+func (s *OpenGLES31Shader) SetUniformUI(name string, value uint32) {
 	loc := s.getUniformLocation(name)
 	if loc != -1 {
 		gl.GetError()
 		gl.Uniform1ui(loc, value)
-		handleOpenGLES3Error("Shader", s.name, "glUniform1ui")
+		handleOpenGLES31Error("Shader", s.name, "glUniform1ui")
 	}
 }
-func (s *OpenGLES3Shader) SetUniformB(name string, value uint8) {
+func (s *OpenGLES31Shader) SetUniformB(name string, value uint8) {
 	s.SetUniformI(name, int32(value))
 }
-func (s *OpenGLES3Shader) SetUniformM2(name string, value mgl32.Mat2) {
+func (s *OpenGLES31Shader) SetUniformM2(name string, value mgl32.Mat2) {
 	loc := s.getUniformLocation(name)
 	if loc != -1 {
 		gl.GetError()
 		gl.UniformMatrix2fv(loc, 1, gl.FALSE, &value[0])
-		handleOpenGLES3Error("Shader", s.name, "glUniformMatrix2fv")
+		handleOpenGLES31Error("Shader", s.name, "glUniformMatrix2fv")
 	}
 }
-func (s *OpenGLES3Shader) SetUniformM3(name string, value mgl32.Mat3) {
+func (s *OpenGLES31Shader) SetUniformM3(name string, value mgl32.Mat3) {
 	loc := s.getUniformLocation(name)
 	if loc != -1 {
 		gl.GetError()
 		gl.UniformMatrix3fv(loc, 1, gl.FALSE, &value[0])
-		handleOpenGLES3Error("Shader", s.name, "glUniformMatrix3fv")
+		handleOpenGLES31Error("Shader", s.name, "glUniformMatrix3fv")
 	}
 }
-func (s *OpenGLES3Shader) SetUniformM4(name string, value mgl32.Mat4) {
+func (s *OpenGLES31Shader) SetUniformM4(name string, value mgl32.Mat4) {
 	loc := s.getUniformLocation(name)
 	if loc != -1 {
 		gl.GetError()
 		gl.UniformMatrix4fv(loc, 1, gl.FALSE, &value[0])
-		handleOpenGLES3Error("Shader", s.name, "glUniformMatrix4fv")
+		handleOpenGLES31Error("Shader", s.name, "glUniformMatrix4fv")
 	}
 }
 
-func (s *OpenGLES3Shader) SetUniformMaterial(mat gohome.Material) {
+func (s *OpenGLES31Shader) SetUniformMaterial(mat gohome.Material) {
 	var diffBind int32 = 0
 	var specBind int32 = 0
 	var normBind int32 = 0
@@ -473,7 +478,7 @@ func (s *OpenGLES3Shader) SetUniformMaterial(mat gohome.Material) {
 	s.SetUniformF(gohome.MATERIAL_UNIFORM_NAME+"."+gohome.MATERIAL_TRANSPARENCY_UNIFORM_NAME, mat.Transparency)
 }
 
-func (s *OpenGLES3Shader) SetUniformLights(lightCollectionIndex int32) {
+func (s *OpenGLES31Shader) SetUniformLights(lightCollectionIndex int32) {
 	if lightCollectionIndex == -1 || lightCollectionIndex > int32(len(gohome.LightMgr.LightCollections)-1) {
 		s.SetUniformI(gohome.NUM_POINT_LIGHTS_UNIFORM_NAME, 0)
 		s.SetUniformI(gohome.NUM_DIRECTIONAL_LIGHTS_UNIFORM_NAME, 0)
@@ -503,15 +508,15 @@ func (s *OpenGLES3Shader) SetUniformLights(lightCollectionIndex int32) {
 	}
 }
 
-func (s *OpenGLES3Shader) GetName() string {
+func (s *OpenGLES31Shader) GetName() string {
 	return s.name
 }
 
-func (s *OpenGLES3Shader) validate() error {
+func (s *OpenGLES31Shader) validate() error {
 	if s.validated {
 		return nil
 	}
-	render, _ := gohome.Render.(*OpenGLES3Renderer)
+	render, _ := gohome.Render.(*OpenGLES31Renderer)
 
 	s.validated = true
 	var buf [1]uint32
@@ -532,12 +537,12 @@ func (s *OpenGLES3Shader) validate() error {
 		gl.GetProgramInfoLog(s.program, logLength, nil, buf[:])
 		logtext := string(buf)
 		s.validated = false
-		return &OpenGLES3Error{"Couldn't validate: " + logtext}
+		return &OpenGLES31Error{"Couldn't validate: " + logtext}
 	}
 
 	return nil
 }
 
-func (s *OpenGLES3Shader) AddAttribute(name string, location uint32) {
+func (s *OpenGLES31Shader) AddAttribute(name string, location uint32) {
 	gl.BindAttribLocation(s.program, location, name)
 }
