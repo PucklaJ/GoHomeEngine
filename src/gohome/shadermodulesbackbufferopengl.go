@@ -46,7 +46,7 @@ var (
 			glslgen.Function{
 				"vec4 fetchColor()",
 				`vec4 color = vec4(0.0);
-				ivec2 texCoords = ivec2(fragTexCoord * textureSize(texture0));
+				ivec2 texCoords = ivec2(fragTexCoord * textureSize(texture0,0));
 			
 				for(int i = 0;i<8;i++)
 				{
@@ -77,8 +77,8 @@ func GenerateShaderBackBuffer(flags uint32) (n, v, f string) {
 
 	if flags&SHADER_FLAG_NO_MS == 0 {
 		if strings.Contains(Render.GetName(), "OpenGLES") {
-			vertex.SetVersion("150 es")
-			fragment.SetVersion("150 es")
+			vertex.SetVersion("300 es")
+			fragment.SetVersion("300 es")
 		} else {
 			vertex.SetVersion("150")
 			fragment.SetVersion("150")
@@ -123,6 +123,5 @@ func GenerateShaderBackBuffer(flags uint32) (n, v, f string) {
 
 	n = "BackBufferShader"
 	v, f = vertex.String(), fragment.String()
-
 	return
 }
