@@ -39,6 +39,13 @@ A Game Engine for 2D/3D Games written in go
 * [Physics](https://box2d.org)
 * [TiledMaps](https://www.mapeditor.org)
 
+## Platforms
+
+|				|Windows| Linux		| Mac		| Android 	| iOS	| Browser |
+|---------------|-------|-----------|-----------|-----------|-------|---------|
+|Tested 		|	Yes |	Yes		|	No 		|	Yes		|	No 	|	No    |
+|Implemented  	|   Yes |   Yes		|	Yes		|   Yes		|   No  |   No    |
+
 ## Dependencies
 
 ##### General
@@ -70,13 +77,6 @@ A Game Engine for 2D/3D Games written in go
 
 ##### OpenGLES31Renderer
 + [android-go](https://github.com/PucklaMotzer09/android-go) ([Forked from here](https://github.com/xlab/android-go)) ([License](https://github.com/PucklaMotzer09/android-go/blob/master/LICENSE.txt))
-
-## Platforms
-
-|				|Windows| Linux		| Mac		| Android 	| iOS	| Browser |
-|---------------|-------|-----------|-----------|-----------|-------|---------|
-|Tested 		|	Yes |	Yes		|	No 		|	Yes		|	No 	|	No    |
-|Implemented  	|   Yes |   Yes		|	Yes		|   Yes		|   No  |   No    |
 
 ## Installation
 1. Install the c-Dependencies:<br>
