@@ -65,6 +65,9 @@ A Game Engine for 2D/3D Games written in go
 ##### OpenGLES2Renderer
 + [android-go](https://github.com/PucklaMotzer09/android-go) ([Forked from here](https://github.com/xlab/android-go)) ([License](https://github.com/PucklaMotzer09/android-go/blob/master/LICENSE.txt))
 
+##### OpenGLES3Renderer
++ [android-go](https://github.com/PucklaMotzer09/android-go) ([Forked from here](https://github.com/xlab/android-go)) ([License](https://github.com/PucklaMotzer09/android-go/blob/master/LICENSE.txt))
+
 ## Platforms
 
 |				|Windows| Linux		| Mac		| Android 	| iOS	| Browser |
@@ -76,7 +79,7 @@ A Game Engine for 2D/3D Games written in go
 1. Install the c-Dependencies:<br>
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	// For Desktop (Most of them should already be installed)
-	sudo apt-get install libx11-dev libxrandr-dev libxcursor-dev libxinerama-dev libpthread-stubs0-dev zlib1g-dev libglfw3-dev libgl1-mesa-dev libxi-dev
+	sudo apt-get install libx11-dev libxrandr-dev libxcursor-dev libxinerama-dev libpthread-stubs0-dev zlib1g-dev libgl1-mesa-dev libxi-dev
 	// For GTK
 	sudo apt-get install libgtk-3-dev
 	// On Windows use msys and execute one of the following commands
@@ -91,16 +94,40 @@ A Game Engine for 2D/3D Games written in go
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 2. Install the go-Dependencies:<br>
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	// For Desktop
-	go get -u github.com/go-gl/gl/all-core
-	go get -u github.com/go-gl/glfw/v3.2
-	go get -u github.com/PucklaMotzer09/mathgl
-	go get -u github.com/timshannon/go-openal/openal
-	go get -u github.com/PucklaMotzer09/go-wav
-	go get -u github.com/hajimehoshi/go-mp3
+	// Default (GLFW,OpenGL)
+	go get -u github.com/PucklaMotzer09/mathgl/mgl32
 	go get -u github.com/PucklaMotzer09/tmx
 	go get -u github.com/ByteArena/box2d
 	go get -u github.com/PucklaMotzer09/GLSLGenerator
+	go get -u github.com/go-gl/glfw/v3.2
+	go get -u github.com/timshannon/go-openal/openal
+	go get -u github.com/PucklaMotzer09/go-wav
+	go get -u github.com/hajimehoshi/go-mp3
+	go get -u github.com/go-gl/gl/all-core/gl
+
+	// Always Needed
+	go get -u github.com/PucklaMotzer09/mathgl/mgl32
+	go get -u github.com/PucklaMotzer09/tmx
+	go get -u github.com/ByteArena/box2d
+	go get -u github.com/PucklaMotzer09/GLSLGenerator
+
+	// For GLFW
+	go get -u github.com/go-gl/glfw/v3.2
+	go get -u github.com/timshannon/go-openal/openal
+	go get -u github.com/PucklaMotzer09/go-wav
+	go get -u github.com/hajimehoshi/go-mp3
+
+	// For SDL2
+	go get -u github.com/PucklaMotzer09/go-sdl2/sdl
+
+	// For OpenGL
+	go get -u github.com/go-gl/gl/all-core/gl
+
+	// For OpenGLES2
+	go get -u github.com/PucklaMotzer09/android-go/gles2
+
+	// For OpenGLES3
+	go get -u github.com/PucklaMotzer09/android-go/gles3
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 3. Compile one of the examples to test:<br>
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
