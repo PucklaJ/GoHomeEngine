@@ -193,6 +193,11 @@ var (
 		}`,
 	}
 
+	DepthMapModuleFragment2D = glslgen.Module{
+		Name: "depthMapModule",
+		Body: "globalColor = vec4(globalColor.r,globalColor.r,globalColor.r,globalColor.a);",
+	}
+
 	FinishColorModuleFragment2D = glslgen.Module{
 		Name: "finishColor",
 		Body: `gl_FragColor = globalColor;
@@ -293,6 +298,9 @@ func GenerateShader2D(shader_type uint8, flags uint32) (n, v, f string) {
 		}
 		if flags&SHADER_FLAG_NO_MODCOLOR == 0 {
 			fragment.AddModule(ModColorModuleFragment2D)
+		}
+		if flags&SHADER_FLAG_DEPTHMAP != 0 {
+			fragment.AddModule(DepthMapModuleFragment2D)
 		}
 
 	} else if shader_type == SHADER_TYPE_SHAPE2D {

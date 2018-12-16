@@ -366,6 +366,7 @@ func (this *OpenGLInstancedMesh3D) Load() {
 	} else {
 		usage = gl.STATIC_DRAW
 	}
+	this.hasUV = true
 
 	this.CalculateTangents()
 
@@ -418,6 +419,7 @@ func (this *OpenGLInstancedMesh3D) Render() {
 		if this.Material == nil {
 			this.Material = &gohome.Material{}
 			this.Material.InitDefault()
+			gohome.ErrorMgr.Log("", this.Name, "InitDefault")
 		}
 		gohome.RenderMgr.CurrentShader.SetUniformMaterial(*this.Material)
 	}

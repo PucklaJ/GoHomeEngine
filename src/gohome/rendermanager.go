@@ -203,7 +203,7 @@ func (rmgr *RenderManager) updateTransformMatrix(robj RenderObject) {
 }
 
 func (rmgr *RenderManager) updateLights(lightCollectionIndex int32, rtype RenderType) {
-	if rtype.Compatible(TYPE_3D) {
+	if TYPE_3D.Compatible(rtype) {
 		if rmgr.CurrentShader != nil {
 			rmgr.CurrentShader.SetUniformLights(lightCollectionIndex)
 		}

@@ -35,11 +35,10 @@ func (this *InstancedEntity3D) commonInit(numInstances uint32) {
 	this.NotRelativeToCamera = -1
 	this.RenderLast = false
 	this.DepthTesting = true
-	this.RenderType = TYPE_3D_INSTANCED
+	this.RenderType = TYPE_3D_INSTANCED | TYPE_CASTS_SHADOWS
 	if this.Model3D == nil {
 		return
 	}
-	this.configureShader()
 
 	this.Model3D.AddValueFront(VALUE_MAT4)
 	this.Model3D.SetName(0, VALUE_MAT4, "transformMatrix3D")
@@ -49,6 +48,8 @@ func (this *InstancedEntity3D) commonInit(numInstances uint32) {
 		this.Model3D.SetNumInstances(numInstances)
 		this.Model3D.Load()
 	}
+
+	this.configureShader()
 
 	this.Transforms = make([]*TransformableObjectInstanced3D, this.Model3D.GetNumInstances())
 	this.transformMatrices = make([]mgl32.Mat4, this.Model3D.GetNumInstances())

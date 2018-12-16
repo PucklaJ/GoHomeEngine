@@ -367,6 +367,7 @@ func (this *OpenGLES3InstancedMesh3D) Load() {
 		usage = gl.STATIC_DRAW
 	}
 
+	this.hasUV = true
 	this.CalculateTangents()
 
 	if this.canUseVAOs {

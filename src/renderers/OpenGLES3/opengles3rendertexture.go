@@ -130,9 +130,19 @@ func (this *OpenGLES3RenderTexture) Create(name string, width, height, textures 
 
 	this.loadRenderBuffer(width, height)
 	this.loadTextures(width, height, textures, cubeMap)
+	if shadowMap {
+		var none [1]uint32
+		none[0] = gl.NONE
+		gl.DrawBuffers(1, none[:])
+		handleOpenGLES3Error("RenderTexture", this.Name, "glDrawBuffer")
+		gl.ReadBuffer(gl.NONE)
+		handleOpenGLES3Error("RenderTexture", this.Name, "glReadBuffer")
+	}
 	if gl.CheckFramebufferStatus(gl.FRAMEBUFFER) != gl.FRAMEBUFFER_COMPLETE {
 		handleOpenGLES3Error("RenderTexture", this.Name, "glCheckFramebufferStatus")
 		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "RenderTexture", this.Name, "Framebuffer is not complete")
+		gl.BindFramebuffer(gl.FRAMEBUFFER, uint32(screenFramebuffer))
+		currentlyBoundRT = this.prevRT
 		return
 	}
 	gl.BindFramebuffer(gl.FRAMEBUFFER, 0)

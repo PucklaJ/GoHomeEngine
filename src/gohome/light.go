@@ -33,7 +33,7 @@ const (
 	SHADOWMAP_SIZE_UNIFORM_NAME         string = "shadowMapSize"
 
 	SHADOWMAP_SHADER_NAME           string = "ShadowMap"
-	SHADOWMAP_INSTANCED_SHADER_NAME string = "ShadowMapInstanced"
+	SHADOWMAP_INSTANCED_SHADER_NAME string = "ShadowMap Instanced"
 
 	DEFAULT_DIRECTIONAL_LIGHTS_SHADOWMAP_SIZE uint32 = 1024 * 4
 	DEFAULT_SPOT_LIGHTS_SHADOWMAP_SIZE        uint32 = 1024
@@ -217,6 +217,10 @@ func (this *DirectionalLight) RenderShadowMap() {
 	if this.ShadowMap == nil {
 		this.InitShadowmap(DEFAULT_DIRECTIONAL_LIGHTS_SHADOWMAP_SIZE, DEFAULT_DIRECTIONAL_LIGHTS_SHADOWMAP_SIZE)
 	}
+	if this.ShadowMap == nil {
+		this.CastsShadows = 0
+		return
+	}
 	if ResourceMgr.GetShader(SHADOWMAP_SHADER_NAME) == nil {
 		this.ShadowMap.SetAsTarget()
 		Render.ClearScreen(Color{0, 0, 0, 255})
@@ -242,10 +246,10 @@ func (this *DirectionalLight) RenderShadowMap() {
 	Render.SetBacckFaceCulling(false)
 
 	RenderMgr.ForceShader3D = ResourceMgr.GetShader(SHADOWMAP_SHADER_NAME)
-	RenderMgr.Render(TYPE_3D_NORMAL, 0, -1, -1)
+	RenderMgr.Render(TYPE_3D_NORMAL|TYPE_CASTS_SHADOWS, 0, -1, -1)
 
 	RenderMgr.ForceShader3D = ResourceMgr.GetShader(SHADOWMAP_INSTANCED_SHADER_NAME)
-	RenderMgr.Render(TYPE_3D_INSTANCED, 0, -1, -1)
+	RenderMgr.Render(TYPE_3D_INSTANCED|TYPE_CASTS_SHADOWS, 0, -1, -1)
 
 	Render.SetBacckFaceCulling(true)
 	this.ShadowMap.UnsetAsTarget()
@@ -273,6 +277,8 @@ type SpotLight struct {
 	ShadowMap        RenderTexture
 	CastsShadows     uint8
 	LightSpaceMatrix mgl32.Mat4
+	NearPlane        float32
+	FarPlane         float32
 }
 
 func (pl *SpotLight) SetUniforms(s Shader, arrayIndex uint32) {
@@ -307,10 +313,10 @@ func (pl *SpotLight) SetUniforms(s Shader, arrayIndex uint32) {
 
 func loadShadowMapShader() {
 	if ResourceMgr.GetShader(SHADOWMAP_SHADER_NAME) == nil {
-		ResourceMgr.LoadShaderSource(SHADOWMAP_SHADER_NAME, SHADOWMAP_SHADER_VERTEX_SOURCE_OPENGL, SHADOWMAP_SHADER_FRAGMENT_SOURCE_OPENGL, "", "", "", "")
+		LoadGeneratedShaderShadowMap(0)
 	}
 	if ResourceMgr.GetShader(SHADOWMAP_INSTANCED_SHADER_NAME) == nil {
-		ResourceMgr.LoadShaderSource(SHADOWMAP_INSTANCED_SHADER_NAME, SHADOWMAP_INSTANCED_SHADER_VERTEX_SOURCE_OPENGL, SHADOWMAP_SHADER_FRAGMENT_SOURCE_OPENGL, "", "", "", "")
+		LoadGeneratedShaderShadowMap(SHADER_FLAG_INSTANCED)
 	}
 }
 
@@ -335,6 +341,10 @@ func (this *SpotLight) RenderShadowMap() {
 	if this.ShadowMap == nil {
 		this.InitShadowmap(DEFAULT_SPOT_LIGHTS_SHADOWMAP_SIZE, DEFAULT_SPOT_LIGHTS_SHADOWMAP_SIZE)
 	}
+	if this.ShadowMap == nil {
+		this.CastsShadows = 0
+		return
+	}
 	if ResourceMgr.GetShader(SHADOWMAP_SHADER_NAME) == nil {
 		this.ShadowMap.SetAsTarget()
 		Render.ClearScreen(Color{0, 0, 0, 255})
@@ -355,8 +365,8 @@ func (this *SpotLight) RenderShadowMap() {
 		Width:     ns[0],
 		Height:    ns[1],
 		FOV:       prevFOV,
-		NearPlane: 0.1,
-		FarPlane:  1000.0,
+		NearPlane: this.NearPlane,
+		FarPlane:  this.FarPlane,
 	}
 	RenderMgr.SetProjection3D(projection)
 	var camera Camera3D
@@ -370,10 +380,10 @@ func (this *SpotLight) RenderShadowMap() {
 	Render.SetBacckFaceCulling(false)
 
 	RenderMgr.ForceShader3D = ResourceMgr.GetShader(SHADOWMAP_SHADER_NAME)
-	RenderMgr.Render(TYPE_3D_NORMAL, 6, -1, -1)
+	RenderMgr.Render(TYPE_3D_NORMAL|TYPE_CASTS_SHADOWS, 6, -1, -1)
 
 	RenderMgr.ForceShader3D = ResourceMgr.GetShader(SHADOWMAP_INSTANCED_SHADER_NAME)
-	RenderMgr.Render(TYPE_3D_INSTANCED, 6, -1, -1)
+	RenderMgr.Render(TYPE_3D_INSTANCED|TYPE_CASTS_SHADOWS, 6, -1, -1)
 
 	Render.SetBacckFaceCulling(true)
 	this.ShadowMap.UnsetAsTarget()

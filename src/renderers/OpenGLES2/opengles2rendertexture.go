@@ -133,6 +133,8 @@ func (this *OpenGLES2RenderTexture) Create(name string, width, height, textures 
 	if gl.CheckFramebufferStatus(gl.FRAMEBUFFER) != gl.FRAMEBUFFER_COMPLETE {
 		handleOpenGLError("RenderTexture", this.Name, "glCheckFramebufferStatus")
 		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "RenderTexture", this.Name, "Framebuffer is not complete")
+		gl.BindFramebuffer(gl.FRAMEBUFFER, uint32(screenFramebuffer))
+		currentlyBoundRT = this.prevRT
 		return
 	}
 	gl.BindFramebuffer(gl.FRAMEBUFFER, 0)

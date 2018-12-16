@@ -11,13 +11,19 @@ var (
 		glslgen.Variable{"vec4", "highp", "color"},
 	}
 
-	UniformModuleShape3D = glslgen.Module{
+	UniformModuleMatricesDefault3D = glslgen.Module{
 		Uniforms: []glslgen.Variable{
-			glslgen.Variable{"mat4", "highp", "transformMatrix3D"},
 			glslgen.Variable{"mat4", "highp", "viewMatrix3D"},
 			glslgen.Variable{"mat4", "highp", "projectionMatrix3D"},
 		},
-		Name: "uniformModuleShape3D",
+		Name: "uniformModuleMatricesDefault",
+	}
+
+	UniformModuleMatricesNormal3D = glslgen.Module{
+		Uniforms: []glslgen.Variable{
+			glslgen.Variable{"mat4", "highp", "transformMatrix3D"},
+		},
+		Name: "uniformModuleMatricesNormal",
 	}
 )
 
@@ -35,7 +41,8 @@ func generateShaderShape3D() (n, v, f string) {
 
 	vertex.AddAttributes(AttributesShape3D)
 	vertex.AddOutputs(OutputsShape2D)
-	vertex.AddModule(UniformModuleShape3D)
+	vertex.AddModule(UniformModuleMatricesDefault3D)
+	vertex.AddModule(UniformModuleMatricesNormal3D)
 	vertex.AddModule(CalculatePositionModule3D)
 	vertex.AddModule(FinishFragColorModule2D)
 

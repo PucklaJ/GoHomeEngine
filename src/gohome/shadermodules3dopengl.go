@@ -458,6 +458,43 @@ var (
 		},
 	}
 
+	LightsAndShadowsFunctionsNoUV3D = glslgen.Module{
+		Functions: []glslgen.Function{
+			glslgen.Function{
+				"float calcShadow(sampler2D shadowMap,mat4 lightSpaceMatrix,float shadowdistance,bool distanceTransition,ivec2 shadowMapSize)",
+				`float distance = 0.0;
+				if(distanceTransition)
+				{
+					distance = length(fragPos);
+					distance = distance - (shadowdistance - transitionDistance);
+					distance = distance / transitionDistance;
+					distance = clamp(1.0-distance,0.0,1.0);
+				}
+				vec4 fragPosLightSpace = lightSpaceMatrix*vec4(fragPos,1.0);
+				vec3 projCoords = clamp((fragPosLightSpace.xyz / fragPosLightSpace.w)*0.5+0.5,-1.0,1.0);
+				float currentDepth = projCoords.z-bias;
+				float shadowresult = 0.0;
+				float closestDepth = texture2D(shadowMap, projCoords.xy).r;
+				vec2 texelSize = 1.0 / vec2(shadowMapSize);
+				for(int x = -1; x <= 1; ++x)
+				{
+					for(int y = -1; y <= 1; ++y)
+					{
+						float pcfDepth = texture2D(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r; 
+						shadowresult += currentDepth > pcfDepth ? 0.0 : 1.0;        
+					}    
+				}
+				shadowresult /= 9.0;
+				if(distanceTransition)
+				{
+					shadowresult = 1.0 - (1.0-shadowresult)*distance;
+				}
+				return shadowresult;`,
+			},
+		},
+		Name: "lightsAndShadowCalculationNoUV",
+	}
+
 	LightsAndShadowsFunctions3D = glslgen.Module{
 		Functions: []glslgen.Function{
 			glslgen.Function{
@@ -839,7 +876,8 @@ const (
 	SHADER_FLAG_NO_TEXTURE_REGION uint32 = (1 << 4)
 	SHADER_FLAG_NO_DEPTH          uint32 = (1 << 5)
 	SHADER_FLAG_NO_TEXTURE        uint32 = (1 << 6)
-	NUM_FLAGS_2D                  uint32 = 7
+	SHADER_FLAG_DEPTHMAP          uint32 = (1 << 7)
+	NUM_FLAGS_2D                  uint32 = 8
 )
 
 var (
@@ -861,6 +899,7 @@ var (
 		"NoTextureRegion",
 		"NoDepth",
 		"NoTexture",
+		"DepthMap",
 	}
 )
 
@@ -955,10 +994,11 @@ func GenerateShader3D(shader_type uint8, flags uint32) (n, v, f string) {
 				fragment.AddModule(LightCalcSpotAmountNoUVModule3D)
 			}
 			if flags&SHADER_FLAG_NO_SHADOWS == 0 {
-				fragment.AddModule(LightsAndShadowsFunctions3D)
 				if flags&SHADER_FLAG_NOUV == 0 && rname != "OpenGLES2" {
+					fragment.AddModule(LightsAndShadowsFunctions3D)
 					fragment.AddModule(LightsAndShadowsCalculationModule3D)
 				} else {
+					fragment.AddModule(LightsAndShadowsFunctionsNoUV3D)
 					fragment.AddModule(LightsAndShadowsCalculationNoUVModule3D)
 				}
 			} else {

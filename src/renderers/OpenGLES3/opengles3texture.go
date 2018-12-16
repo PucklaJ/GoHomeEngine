@@ -98,7 +98,7 @@ func (ogltex *OpenGLES3Texture) Load(data []byte, width, height int, shadowMap b
 	}
 	gl.GetError()
 	if shadowMap {
-		gl.TexImage2D(ogltex.bindingPoint(), 0, gl.DEPTH_COMPONENT, int32(ogltex.width), int32(ogltex.height), 0, gl.DEPTH_COMPONENT, gl.FLOAT, ptr)
+		gl.TexImage2D(ogltex.bindingPoint(), 0, gl.DEPTH_COMPONENT24, int32(ogltex.width), int32(ogltex.height), 0, gl.DEPTH_COMPONENT, gl.UNSIGNED_INT, ptr)
 	} else {
 		gl.TexImage2D(ogltex.bindingPoint(), 0, gl.RGBA, int32(ogltex.width), int32(ogltex.height), 0, gl.RGBA, gl.UNSIGNED_BYTE, ptr)
 	}

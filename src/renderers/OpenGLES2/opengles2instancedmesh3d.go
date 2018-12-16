@@ -220,6 +220,7 @@ func (this *OpenGLES2InstancedMesh3D) Load() {
 	var usage uint32
 	usage = gl.STATIC_DRAW
 
+	this.hasUV = true
 	this.CalculateTangents()
 
 	var buf [1]uint32

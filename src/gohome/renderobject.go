@@ -3,17 +3,22 @@ package gohome
 type RenderType uint16
 
 const (
-	TYPE_3D_NORMAL    RenderType = (1 << 1)
-	TYPE_2D_NORMAL    RenderType = (1 << 2)
-	TYPE_3D_INSTANCED RenderType = (1 << 3)
-	TYPE_2D_INSTANCED RenderType = (1 << 4)
-	TYPE_2D           RenderType = TYPE_2D_NORMAL | TYPE_2D_INSTANCED
-	TYPE_3D           RenderType = TYPE_3D_NORMAL | TYPE_3D_INSTANCED
-	TYPE_EVERYTHING   RenderType = (1 << 16) - 1
+	TYPE_3D_NORMAL     RenderType = (1 << 1)
+	TYPE_2D_NORMAL     RenderType = (1 << 2)
+	TYPE_3D_INSTANCED  RenderType = (1 << 3)
+	TYPE_2D_INSTANCED  RenderType = (1 << 4)
+	TYPE_CASTS_SHADOWS RenderType = (1 << 5)
+	TYPE_2D            RenderType = TYPE_2D_NORMAL | TYPE_2D_INSTANCED
+	TYPE_3D            RenderType = TYPE_3D_NORMAL | TYPE_3D_INSTANCED
+	TYPE_EVERYTHING    RenderType = (1 << 16) - 1
 )
 
 func (this RenderType) Compatible(rtype RenderType) bool {
-	return (this & rtype) != 0
+	if this == TYPE_2D || this == TYPE_3D || this == TYPE_EVERYTHING {
+		return (this & rtype) != 0
+	} else {
+		return (this & rtype) == this
+	}
 }
 
 type TransformableObject interface {

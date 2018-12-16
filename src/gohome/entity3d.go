@@ -38,7 +38,7 @@ func (this *Entity3D) commonInit() {
 	this.NotRelativeToCamera = -1
 	this.RenderLast = false
 	this.DepthTesting = true
-	this.RenderType = TYPE_3D_NORMAL
+	this.RenderType = TYPE_3D_NORMAL | TYPE_CASTS_SHADOWS
 	this.configureShader()
 }
 
