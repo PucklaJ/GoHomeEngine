@@ -3,15 +3,16 @@
 + Controller Input
 + Browser support
 + Simple Loading Screen
-+ Add SDLFramework
 + Add DirectXRenderer
 + WorldEditor (3D, 2D)
-+ Change Build scripts to programs
 + Add Tween interpreter language
 + Add Parents for TransformableObjects2D
 + Collada loader
 + Parent System for Sprite2D
 + OBJLoader load non-triangulate faces
++ Add Build command gohome
++ Add OpenGLES3 and 31 Renderer
++ Changes Lines3D and shadow map shader to modules
 
 ## 2D
 

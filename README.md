@@ -56,15 +56,21 @@ A Game Engine for 2D/3D Games written in go
 ##### GTKFramework
 + [gtk](https://gtk.org) ([License](http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html))
 
+##### SDL2Framework
++ [go-sdl2](https://github.com/PucklaMotzer09/go-sdl2) ([Forked from here](https://github.com/veandco/go-sdl2)) ([License](https://github.com/PucklaMotzer09/go-sdl2/blob/master/LICENSE))
+
 ##### OpenGLRenderer
 + [go-gl/gl](https://github.com/go-gl/gl) ([License](https://github.com/go-gl/gl/blob/master/LICENSE))
+
+##### OpenGLES2Renderer
++ [android-go](https://github.com/PucklaMotzer09/android-go) ([Forked from here](https://github.com/xlab/android-go)) ([License](https://github.com/PucklaMotzer09/android-go/blob/master/LICENSE.txt))
 
 ## Platforms
 
 |				|Windows| Linux		| Mac		| Android 	| iOS	| Browser |
 |---------------|-------|-----------|-----------|-----------|-------|---------|
-|Tested 		|	Yes |	Yes		|	No 		|	No		|	No 	|	No    |
-|Implemented  	|   Yes |   Yes		|	Yes		|   No		|   No  |   No    |
+|Tested 		|	Yes |	Yes		|	No 		|	Yes		|	No 	|	No    |
+|Implemented  	|   Yes |   Yes		|	Yes		|   Yes		|   No  |   No    |
 
 ## Installation
 1. Install the c-Dependencies:<br>
@@ -76,6 +82,12 @@ A Game Engine for 2D/3D Games written in go
 	// On Windows use msys and execute one of the following commands
 	pacman -S mingw-w64-x86_64-gtk3 // for 64-Bit
 	pacman -S mingw-w64-i686-gtk3   // for 32-Bit
+	// For SDL2
+	sudo apt-get install libsdl2-dev
+	// On Windows use msys and execute one of the following commands
+	pacman -S mingw-w64-x86_64-sdl2 // for 64-Bit
+	pacman -S mingw-w64-i686-sdl2   // for 32-Bit
+
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 2. Install the go-Dependencies:<br>
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
