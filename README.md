@@ -68,6 +68,9 @@ A Game Engine for 2D/3D Games written in go
 ##### OpenGLES3Renderer
 + [android-go](https://github.com/PucklaMotzer09/android-go) ([Forked from here](https://github.com/xlab/android-go)) ([License](https://github.com/PucklaMotzer09/android-go/blob/master/LICENSE.txt))
 
+##### OpenGLES31Renderer
++ [android-go](https://github.com/PucklaMotzer09/android-go) ([Forked from here](https://github.com/xlab/android-go)) ([License](https://github.com/PucklaMotzer09/android-go/blob/master/LICENSE.txt))
+
 ## Platforms
 
 |				|Windows| Linux		| Mac		| Android 	| iOS	| Browser |
@@ -128,6 +131,9 @@ A Game Engine for 2D/3D Games written in go
 
 	// For OpenGLES3
 	go get -u github.com/PucklaMotzer09/android-go/gles3
+
+	// For OpenGLES31
+	go get -u github.com/PucklaMotzer09/android-go/gles31
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 3. Compile one of the examples to test:<br>
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
