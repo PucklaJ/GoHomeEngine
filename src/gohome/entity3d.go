@@ -87,14 +87,14 @@ func (this *Entity3D) configureShader() {
 	name := GetShaderName3D(flags)
 	this.Shader = ResourceMgr.GetShader(name)
 	if this.Shader == nil {
-		LoadGeneratedShader3D(flags)
+		LoadGeneratedShader3D(SHADER_TYPE_3D, flags)
 		this.Shader = ResourceMgr.GetShader(name)
 		if this.Shader == nil {
 			flags |= SHADER_FLAG_NO_SHADOWS
 			name = GetShaderName3D(flags)
 			this.Shader = ResourceMgr.GetShader(name)
 			if this.Shader == nil {
-				LoadGeneratedShader3D(flags)
+				LoadGeneratedShader3D(SHADER_TYPE_3D, flags)
 				this.Shader = ResourceMgr.GetShader(name)
 			}
 		}

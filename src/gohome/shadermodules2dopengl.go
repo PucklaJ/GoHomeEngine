@@ -220,6 +220,9 @@ const (
 	SHADER_TYPE_SPRITE2D uint8 = 1
 	SHADER_TYPE_SHAPE2D  uint8 = 2
 	SHADER_TYPE_TEXT2D   uint8 = 3
+
+	SHADER_TYPE_3D      uint8 = 4
+	SHADER_TYPE_SHAPE3D uint8 = 5
 )
 
 func GenerateShader2D(shader_type uint8, flags uint32) (n, v, f string) {

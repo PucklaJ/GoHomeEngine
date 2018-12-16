@@ -134,9 +134,9 @@ func (this *MainLoop) Quit() {
 }
 
 func Init3DShaders() {
-	if shader := LoadGeneratedShader3D(0); shader == nil {
-		if shader = LoadGeneratedShader3D(SHADER_FLAG_NO_SHADOWS); shader == nil {
-			if shader = LoadGeneratedShader3D(SHADER_FLAG_NO_SHADOWS | SHADER_FLAG_NOUV); shader != nil {
+	if shader := LoadGeneratedShader3D(SHADER_TYPE_3D, 0); shader == nil {
+		if shader = LoadGeneratedShader3D(SHADER_TYPE_3D, SHADER_FLAG_NO_SHADOWS); shader == nil {
+			if shader = LoadGeneratedShader3D(SHADER_TYPE_3D, SHADER_FLAG_NO_SHADOWS|SHADER_FLAG_NOUV); shader != nil {
 				ResourceMgr.SetShader(ENTITY3D_SHADER_NAME, shader.GetName())
 			}
 		} else {

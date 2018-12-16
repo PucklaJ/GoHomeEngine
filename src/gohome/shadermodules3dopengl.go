@@ -139,9 +139,6 @@ var (
 					glslgen.Variable{"vec3", "highp", "diffuseColor"},
 					glslgen.Variable{"vec3", "highp", "specularColor"},
 					glslgen.Variable{"Attentuation", "", "attentuation"},
-					glslgen.Variable{"mat4", "highp", "lightSpaceMatrix[6]"},
-					glslgen.Variable{"bool", "", "castsShadows"},
-					glslgen.Variable{"float", "highp", "farPlane"},
 				},
 			},
 			glslgen.Struct{
@@ -179,7 +176,6 @@ var (
 			glslgen.Variable{"int", "", "numSpotLights"},
 			glslgen.Variable{"vec3", "highp", "ambientLight"},
 			glslgen.Variable{"PointLight", "", "pointLights[MAX_POINT_LIGHTS]"},
-			glslgen.Variable{"samplerCube", "highp", "pointLightsshadowmap[MAX_POINT_LIGHTS]"},
 			glslgen.Variable{"DirectionalLight", "", "directionalLights[MAX_POINT_LIGHTS]"},
 			glslgen.Variable{"sampler2D", "highp", "directionalLightsshadowmap[MAX_DIRECTIONAL_LIGHTS]"},
 			glslgen.Variable{"SpotLight", "", "spotLights[MAX_SPOT_LIGHTS]"},
@@ -462,10 +458,6 @@ var (
 		},
 	}
 
-	LightsAndShadowsGlobalsFragment3D = []glslgen.Variable{
-		glslgen.Variable{"vec3", "highp", "sampleOffsetDirections[20]"},
-	}
-
 	LightsAndShadowsFunctions3D = glslgen.Module{
 		Functions: []glslgen.Function{
 			glslgen.Function{
@@ -499,41 +491,13 @@ var (
 				}
 				return shadowresult;`,
 			},
-			glslgen.Function{
-				"void setOffsetDirections()",
-				`sampleOffsetDirections[1] = vec3( 1,  1,  1); sampleOffsetDirections[2] = vec3( 1, -1,  1); sampleOffsetDirections[3] = vec3(-1, -1,  1); sampleOffsetDirections[4] = vec3(-1,  1,  1); 
-				sampleOffsetDirections[5] = vec3( 1,  1, -1); sampleOffsetDirections[6] = vec3( 1, -1, -1); sampleOffsetDirections[7] = vec3(-1, -1, -1); sampleOffsetDirections[8] = vec3(-1,  1, -1);
-				sampleOffsetDirections[9] = vec3( 1,  1,  0); sampleOffsetDirections[10] = vec3( 1, -1,  0); sampleOffsetDirections[11] = vec3(-1, -1,  0); sampleOffsetDirections[12] = vec3(-1,  1,  0);
-				sampleOffsetDirections[13] = vec3( 1,  0,  1); sampleOffsetDirections[14] = vec3(-1,  0,  1); sampleOffsetDirections[15] = vec3( 1,  0, -1); sampleOffsetDirections[15] = vec3(-1,  0, -1);
-				sampleOffsetDirections[17] = vec3( 0,  1,  1); sampleOffsetDirections[18] = vec3( 0, -1,  1); sampleOffsetDirections[19] = vec3( 0, -1, -1); sampleOffsetDirections[19] = vec3( 0,  1, -1);`,
-			},
-			glslgen.Function{
-				"float calcShadowPointLight(PointLight pl,samplerCube shadowmap)",
-				`vec3 fragToLight = (fragInverseViewMatrix3D*vec4(fragPos,1.0)).xyz - pl.position;
-				float currentDepth = length(fragToLight)-bias*10.0*pl.farPlane;
-				float shadow  = 0.0;
-				int samples = 20;
-				float viewDistance = length(-fragPos);
-				float diskRadius = (1.0 + (viewDistance / pl.farPlane)) / 70.0;
-				for(int i = 0;i<samples;i++) {
-					 float closestDepth = textureCube(shadowmap, fragToLight + sampleOffsetDirections[i]*diskRadius).r;
-							closestDepth *= pl.farPlane;   // Undo mapping [0;1]
-							if(currentDepth <= closestDepth)
-								shadow += 1.0;
-				}
-				shadow /= float(samples);
-				return shadow;`,
-			},
 		},
 		Name: "lightsAndShadowCalculation",
-		Body: "setOffsetDirections();",
 	}
 
-	LightsAndShadowsCalculationModule3D = glslgen.Module{
-		Functions: []glslgen.Function{
-			glslgen.Function{
-				"void calculatePointLight(PointLight pl,int index)",
-				`vec3 lightPosition = (fragViewMatrix3D*vec4(pl.position,1.0)).xyz;
+	calcPointLightFunc = glslgen.Function{
+		"void calculatePointLight(PointLight pl,int index)",
+		`vec3 lightPosition = (fragViewMatrix3D*vec4(pl.position,1.0)).xyz;
 				vec3 lightDir = normalize(fragToTangentSpace*(lightPosition - fragPos));
 			
 			
@@ -546,15 +510,16 @@ var (
 				// Attentuation
 				float attent = calcAttentuation(lightPosition,pl.attentuation);
 			
-				// Shadow
-				float shadow = pl.castsShadows ? calcShadowPointLight(pl,pointLightsshadowmap[index]) : 1.0;
-			
-				diffuse *= attent * shadow;
-				specular *= attent * shadow;
+				diffuse *= attent;
+				specular *= attent;
 			
 				finalDiffuseColor += vec4(diffuse,0.0);
 				finalSpecularColor += vec4(specular,0.0);`,
-			},
+	}
+
+	LightsAndShadowsCalculationModule3D = glslgen.Module{
+		Functions: []glslgen.Function{
+			calcPointLightFunc,
 			glslgen.Function{
 				"void calculateDirectionalLight(DirectionalLight dl,int index)",
 				`vec3 lightDirection = (fragViewMatrix3D*vec4(dl.direction*-1.0,0.0)).xyz;
@@ -608,27 +573,7 @@ var (
 
 	LightCalculationModel3D = glslgen.Module{
 		Functions: []glslgen.Function{
-			glslgen.Function{
-				"void calculatePointLight(PointLight pl,int index)",
-				`vec3 lightPosition = (fragViewMatrix3D*vec4(pl.position,1.0)).xyz;
-				vec3 lightDir = normalize(fragToTangentSpace*(lightPosition - fragPos));
-			
-			
-				// Diffuse
-				vec3 diffuse = diffuseLighting(lightDir,pl.diffuseColor);
-			
-				// Specular
-				vec3 specular = specularLighting(lightDir,pl.specularColor);
-			
-				// Attentuation
-				float attent = calcAttentuation(lightPosition,pl.attentuation);
-			
-				diffuse *= attent;
-				specular *= attent;
-			
-				finalDiffuseColor += vec4(diffuse,0.0);
-				finalSpecularColor += vec4(specular,0.0);`,
-			},
+			calcPointLightFunc,
 			glslgen.Function{
 				"void calculateDirectionalLight(DirectionalLight dl,int index)",
 				`vec3 lightDirection = (fragViewMatrix3D*vec4(dl.direction*-1.0,0.0)).xyz;
@@ -670,32 +615,31 @@ var (
 		},
 	}
 
+	calcPointLightNoUVFunc = glslgen.Function{
+		"void calculatePointLight(PointLight pl,int index)",
+		`vec3 lightPosition = pl.position;
+		vec3 lightDir = normalize(lightPosition - fragPos);
+	
+	
+		// Diffuse
+		vec3 diffuse = diffuseLighting(lightDir,pl.diffuseColor);
+	
+		// Specular
+		vec3 specular = specularLighting(lightDir,pl.specularColor);
+	
+		// Attentuation
+		float attent = calcAttentuation(lightPosition,pl.attentuation);
+	
+		diffuse *= attent;
+		specular *= attent;
+	
+		finalDiffuseColor += vec4(diffuse,0.0);
+		finalSpecularColor += vec4(specular,0.0);`,
+	}
+
 	LightsAndShadowsCalculationNoUVModule3D = glslgen.Module{
 		Functions: []glslgen.Function{
-			glslgen.Function{
-				"void calculatePointLight(PointLight pl,int index)",
-				`vec3 lightPosition = pl.position;
-				vec3 lightDir = normalize(lightPosition - fragPos);
-			
-			
-				// Diffuse
-				vec3 diffuse = diffuseLighting(lightDir,pl.diffuseColor);
-			
-				// Specular
-				vec3 specular = specularLighting(lightDir,pl.specularColor);
-			
-				// Attentuation
-				float attent = calcAttentuation(lightPosition,pl.attentuation);
-			
-				// Shadow
-				float shadow = pl.castsShadows ? calcShadowPointLight(pl,pointLightsshadowmap[index]) : 1.0;
-			
-				diffuse *= attent * shadow;
-				specular *= attent * shadow;
-			
-				finalDiffuseColor += vec4(diffuse,0.0);
-				finalSpecularColor += vec4(specular,0.0);`,
-			},
+			calcPointLightNoUVFunc,
 			glslgen.Function{
 				"void calculateDirectionalLight(DirectionalLight dl,int index)",
 				`vec3 lightDirection = -dl.direction;
@@ -749,27 +693,7 @@ var (
 
 	LightCalculationNoUVModule3D = glslgen.Module{
 		Functions: []glslgen.Function{
-			glslgen.Function{
-				"void calculatePointLight(PointLight pl,int index)",
-				`vec3 lightPosition = pl.position;
-				vec3 lightDir = normalize(lightPosition - fragPos);
-			
-			
-				// Diffuse
-				vec3 diffuse = diffuseLighting(lightDir,pl.diffuseColor);
-			
-				// Specular
-				vec3 specular = specularLighting(lightDir,pl.specularColor);
-			
-				// Attentuation
-				float attent = calcAttentuation(lightPosition,pl.attentuation);
-			
-				diffuse *= attent;
-				specular *= attent;
-			
-				finalDiffuseColor += vec4(diffuse,0.0);
-				finalSpecularColor += vec4(specular,0.0);`,
-			},
+			calcPointLightNoUVFunc,
 			glslgen.Function{
 				"void calculateDirectionalLight(DirectionalLight dl,int index)",
 				`vec3 lightDirection = -dl.direction;
@@ -879,19 +803,19 @@ var (
 	}
 )
 
-func LoadGeneratedShader3D(flags uint32) Shader {
-	n, v, f := GenerateShader3D(flags)
+func LoadGeneratedShader3D(shader_type uint8, flags uint32) Shader {
+	n, v, f := GenerateShader3D(shader_type, flags)
 	return ls(n, v, f)
 }
 
 func GenerateShaderSource3D() {
-	n, v, f := GenerateShader3D(0)
+	n, v, f := GenerateShader3D(SHADER_TYPE_3D, 0)
 	ls(n, v, f)
-	n, v, f = GenerateShader3D(SHADER_FLAG_NOUV)
+	n, v, f = GenerateShader3D(SHADER_TYPE_3D, SHADER_FLAG_NOUV)
 	ls(n, v, f)
-	n, v, f = GenerateShader3D(SHADER_FLAG_INSTANCED)
+	n, v, f = GenerateShader3D(SHADER_TYPE_3D, SHADER_FLAG_INSTANCED)
 	ls(n, v, f)
-	n, v, f = GenerateShader3D(SHADER_FLAG_INSTANCED | SHADER_FLAG_NOUV)
+	n, v, f = GenerateShader3D(SHADER_TYPE_3D, SHADER_FLAG_INSTANCED|SHADER_FLAG_NOUV)
 	ls(n, v, f)
 }
 
@@ -950,116 +874,116 @@ func GetShaderName3D(flags uint32) string {
 	return n
 }
 
-func GenerateShader3D(flags uint32) (n, v, f string) {
-	startFlags := flags
-	if !Render.HasFunctionAvailable("INSTANCED") {
-		flags &= ^SHADER_FLAG_INSTANCED
-	}
-	if flags&SHADER_FLAG_NO_LIGHTING != 0 {
-		flags |= SHADER_FLAG_NO_SHADOWS
-	}
-	if flags&SHADER_FLAG_NOUV != 0 {
-		flags |= SHADER_FLAG_NO_DIFTEX | SHADER_FLAG_NO_SPECTEX | SHADER_FLAG_NO_NORMAP
-	}
+func GenerateShader3D(shader_type uint8, flags uint32) (n, v, f string) {
+	if shader_type == SHADER_TYPE_3D {
+		startFlags := flags
+		if !Render.HasFunctionAvailable("INSTANCED") {
+			flags &= ^SHADER_FLAG_INSTANCED
+		}
+		if flags&SHADER_FLAG_NO_LIGHTING != 0 {
+			flags |= SHADER_FLAG_NO_SHADOWS
+		}
+		if flags&SHADER_FLAG_NOUV != 0 {
+			flags |= SHADER_FLAG_NO_DIFTEX | SHADER_FLAG_NO_SPECTEX | SHADER_FLAG_NO_NORMAP
+		}
 
-	rname := Render.GetName()
-	if rname == "OpenGLES2" {
-		flags |= SHADER_FLAG_NO_SHADOWS | SHADER_FLAG_NO_NORMAP
-	}
+		rname := Render.GetName()
+		if rname == "OpenGLES2" {
+			flags |= SHADER_FLAG_NO_SHADOWS | SHADER_FLAG_NO_NORMAP
+		}
 
-	var vertex glslgen.VertexGenerator
-	var fragment glslgen.FragmentGenerator
+		var vertex glslgen.VertexGenerator
+		var fragment glslgen.FragmentGenerator
 
-	if strings.Contains(rname, "OpenGLES") {
-		vertex.SetVersion("100")
-		fragment.SetVersion("100")
-	} else {
-		vertex.SetVersion(ShaderVersion)
-		fragment.SetVersion(ShaderVersion)
-	}
+		if strings.Contains(rname, "OpenGLES") {
+			vertex.SetVersion("100")
+			fragment.SetVersion("100")
+		} else {
+			vertex.SetVersion(ShaderVersion)
+			fragment.SetVersion(ShaderVersion)
+		}
 
-	vertex.AddAttributes(Attributes3D)
-	if flags&SHADER_FLAG_INSTANCED != 0 {
-		vertex.AddAttributes(AttributesInstanced3D)
-	}
-	vertex.AddOutputs(InputsFragment3D)
-	if flags&SHADER_FLAG_NOUV == 0 && rname != "OpenGLES2" {
-		vertex.AddOutputs(InputsNormalFragment3D)
-	}
-	if rname == "OpenGLES2" {
-		vertex.AddOutput(glslgen.Variable{"vec2", "highp", "fragTexCoord"})
-	}
-	vertex.AddModule(UniformModuleVertex3D)
-	if flags&SHADER_FLAG_INSTANCED == 0 {
-		vertex.AddModule(UniformNormalModuleVertex3D)
-	}
-	vertex.AddModule(CalculatePositionModule3D)
-	vertex.AddModule(SetOutputsModuleVertex3D)
-	if flags&SHADER_FLAG_NOUV == 0 && rname != "OpenGLES2" {
-		vertex.AddModule(SetOutputsNormalModuleVertex3D)
-	} else {
-		vertex.AddModule(SetOutputsNoUVModuleVertex3D)
-	}
-
-	lightFlag := flags & (SHADER_FLAG_NO_SHADOWS | SHADER_FLAG_NO_LIGHTING)
-
-	if flags&SHADER_FLAG_NO_LIGHTING == 0 {
-		fragment.AddMakros(LightMakrosFragment3D)
-	}
-	fragment.AddGlobals(GlobalsFragment3D)
-	if lightFlag == 0 {
-		fragment.AddGlobals(LightsAndShadowsGlobalsFragment3D)
-	}
-	fragment.AddInputs(InputsFragment3D)
-	if flags&SHADER_FLAG_NOUV == 0 && rname != "OpenGLES2" {
-		fragment.AddInputs(InputsNormalFragment3D)
-	}
-	if rname == "OpenGLES2" {
-		fragment.AddOutput(glslgen.Variable{"vec2", "highp", "fragTexCoord"})
-	}
-	fragment.AddModule(InitialiseModuleFragment3D)
-	if flags&SHADER_FLAG_NOUV == 0 && rname != "OpenGLES2" {
-		fragment.AddModule(InitialiseNormalModuleFragment3D)
-	} else {
-		fragment.AddModule(InitialiseNoUVModuleFragment3D)
-	}
-	if flags&(SHADER_FLAG_NO_NORMAP|SHADER_FLAG_NOUV) == 0 {
-		fragment.AddModule(NormalMapModule3D)
-	}
-	if flags&SHADER_FLAG_NO_LIGHTING == 0 {
-		fragment.AddModule(LightUniformsModule3D)
+		vertex.AddAttributes(Attributes3D)
+		if flags&SHADER_FLAG_INSTANCED != 0 {
+			vertex.AddAttributes(AttributesInstanced3D)
+		}
+		vertex.AddOutputs(InputsFragment3D)
 		if flags&SHADER_FLAG_NOUV == 0 && rname != "OpenGLES2" {
-			fragment.AddModule(LightCalcSpotAmountNormalModule3D)
-		} else {
-			fragment.AddModule(LightCalcSpotAmountNoUVModule3D)
+			vertex.AddOutputs(InputsNormalFragment3D)
 		}
-		if flags&SHADER_FLAG_NO_SHADOWS == 0 {
-			fragment.AddModule(LightsAndShadowsFunctions3D)
-			if flags&SHADER_FLAG_NOUV == 0 && rname != "OpenGLES2" {
-				fragment.AddModule(LightsAndShadowsCalculationModule3D)
-			} else {
-				fragment.AddModule(LightsAndShadowsCalculationNoUVModule3D)
-			}
-		} else {
-			if flags&SHADER_FLAG_NOUV == 0 && rname != "OpenGLES2" {
-				fragment.AddModule(LightCalculationModel3D)
-			} else {
-				fragment.AddModule(LightCalculationNoUVModule3D)
-			}
+		if rname == "OpenGLES2" {
+			vertex.AddOutput(glslgen.Variable{"vec2", "highp", "fragTexCoord"})
 		}
-	}
-	fragment.AddModule(MaterialModule3D)
-	if flags&SHADER_FLAG_NO_DIFTEX == 0 {
-		fragment.AddModule(DiffuseTextureModule3D)
-	}
-	if flags&SHADER_FLAG_NO_SPECTEX == 0 {
-		fragment.AddModule(SpecularTextureModule3D)
-	}
-	fragment.AddModule(FinalModuleFragment3D)
+		vertex.AddModule(UniformModuleVertex3D)
+		if flags&SHADER_FLAG_INSTANCED == 0 {
+			vertex.AddModule(UniformNormalModuleVertex3D)
+		}
+		vertex.AddModule(CalculatePositionModule3D)
+		vertex.AddModule(SetOutputsModuleVertex3D)
+		if flags&SHADER_FLAG_NOUV == 0 && rname != "OpenGLES2" {
+			vertex.AddModule(SetOutputsNormalModuleVertex3D)
+		} else {
+			vertex.AddModule(SetOutputsNoUVModuleVertex3D)
+		}
 
-	v = vertex.String()
-	f = fragment.String()
-	n = GetShaderName3D(startFlags)
+		if flags&SHADER_FLAG_NO_LIGHTING == 0 {
+			fragment.AddMakros(LightMakrosFragment3D)
+		}
+		fragment.AddGlobals(GlobalsFragment3D)
+
+		fragment.AddInputs(InputsFragment3D)
+		if flags&SHADER_FLAG_NOUV == 0 && rname != "OpenGLES2" {
+			fragment.AddInputs(InputsNormalFragment3D)
+		}
+		if flags&SHADER_FLAG_NOUV == 0 && rname == "OpenGLES2" {
+			fragment.AddInput(glslgen.Variable{"vec2", "highp", "fragTexCoord"})
+		}
+		fragment.AddModule(InitialiseModuleFragment3D)
+		if flags&SHADER_FLAG_NOUV == 0 && rname != "OpenGLES2" {
+			fragment.AddModule(InitialiseNormalModuleFragment3D)
+		} else {
+			fragment.AddModule(InitialiseNoUVModuleFragment3D)
+		}
+		if flags&(SHADER_FLAG_NO_NORMAP|SHADER_FLAG_NOUV) == 0 {
+			fragment.AddModule(NormalMapModule3D)
+		}
+		if flags&SHADER_FLAG_NO_LIGHTING == 0 {
+			fragment.AddModule(LightUniformsModule3D)
+			if flags&SHADER_FLAG_NOUV == 0 && rname != "OpenGLES2" {
+				fragment.AddModule(LightCalcSpotAmountNormalModule3D)
+			} else {
+				fragment.AddModule(LightCalcSpotAmountNoUVModule3D)
+			}
+			if flags&SHADER_FLAG_NO_SHADOWS == 0 {
+				fragment.AddModule(LightsAndShadowsFunctions3D)
+				if flags&SHADER_FLAG_NOUV == 0 && rname != "OpenGLES2" {
+					fragment.AddModule(LightsAndShadowsCalculationModule3D)
+				} else {
+					fragment.AddModule(LightsAndShadowsCalculationNoUVModule3D)
+				}
+			} else {
+				if flags&SHADER_FLAG_NOUV == 0 && rname != "OpenGLES2" {
+					fragment.AddModule(LightCalculationModel3D)
+				} else {
+					fragment.AddModule(LightCalculationNoUVModule3D)
+				}
+			}
+		}
+		fragment.AddModule(MaterialModule3D)
+		if flags&SHADER_FLAG_NO_DIFTEX == 0 {
+			fragment.AddModule(DiffuseTextureModule3D)
+		}
+		if flags&SHADER_FLAG_NO_SPECTEX == 0 {
+			fragment.AddModule(SpecularTextureModule3D)
+		}
+		fragment.AddModule(FinalModuleFragment3D)
+
+		v = vertex.String()
+		f = fragment.String()
+		n = GetShaderName3D(startFlags)
+	} else {
+		n, v, f = generateShaderShape3D()
+	}
 
 	return
 }
