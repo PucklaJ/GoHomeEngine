@@ -46,7 +46,7 @@ var (
 			glslgen.Function{
 				"vec4 fetchColor()",
 				`vec4 color = vec4(0.0);
-				ivec2 texCoords = ivec2(fragTexCoord * textureSize(texture0,0));
+				ivec2 texCoords = ivec2(fragTexCoord * textureSize(texture0));
 			
 				for(int i = 0;i<8;i++)
 				{
