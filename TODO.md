@@ -11,7 +11,6 @@
 + Parent System for Sprite2D
 + OBJLoader load non-triangulate faces
 + Add Build command gohome
-+ Add OpenGLES31 Renderer
 
 ## 2D
 
