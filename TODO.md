@@ -40,6 +40,8 @@
     - add global fragPos
     - use global fragPos
 + Parallax Mapping / Parallax Occlusion Mapping / Steep Parallax Mapping
++ Add Changeable MAX_POINT_LIGHTS, MAX_DIRECTIONAL_LIGHTS, etc. to LightMgr
+    - maybe all makros (APLHA_DISCARD_PADDING)
 
 ## 2D
 
