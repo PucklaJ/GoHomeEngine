@@ -49,12 +49,6 @@ func (this *SDL2Framework) Terminate() {
 }
 
 func setGLAttributesNormal() error {
-	if runtime.GOOS != "android" {
-		if err1 := sdl.GLSetAttribute(sdl.GL_CONTEXT_FLAGS, sdl.GL_CONTEXT_FORWARD_COMPATIBLE_FLAG); err1 != nil {
-			return err1
-		}
-	}
-
 	if err1 := setGLAttributesCompatible(); err1 != nil {
 		return err1
 	}
@@ -71,6 +65,9 @@ func setGLAttributesCompatible() error {
 
 func setGLAttributesProfile() error {
 	if runtime.GOOS != "android" {
+		if err1 := sdl.GLSetAttribute(sdl.GL_CONTEXT_PROFILE_MASK, sdl.GL_CONTEXT_PROFILE_CORE); err1 != nil {
+			return err1
+		}
 		if err1 := sdl.GLSetAttribute(sdl.GL_CONTEXT_MAJOR_VERSION, 4); err1 != nil {
 			return err1
 		}
@@ -79,6 +76,18 @@ func setGLAttributesProfile() error {
 		}
 	}
 
+	return nil
+}
+
+func (this *SDL2Framework) createWindowLight(windowWidth, windowHeight uint32, title string) error {
+	sdl.GLResetAttributes()
+	if err := setGLAttributesCompatible(); err != nil {
+		return err
+	}
+	var err error
+	if this.window, err = sdl.CreateWindow(title, sdl.WINDOWPOS_CENTERED, sdl.WINDOWPOS_CENTERED, int32(windowWidth), int32(windowHeight), sdl.WINDOW_SHOWN|sdl.WINDOW_RESIZABLE|sdl.WINDOW_OPENGL); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -93,18 +102,29 @@ func (this *SDL2Framework) CreateWindow(windowWidth, windowHeight uint32, title 
 
 	var err error
 	if this.window, err = sdl.CreateWindow(title, sdl.WINDOWPOS_CENTERED, sdl.WINDOWPOS_CENTERED, int32(windowWidth), int32(windowHeight), sdl.WINDOW_SHOWN|sdl.WINDOW_RESIZABLE|sdl.WINDOW_OPENGL); err != nil {
-		sdl.GLResetAttributes()
-		if err := setGLAttributesCompatible(); err != nil {
-			return err
-		}
-
-		if this.window, err = sdl.CreateWindow(title, sdl.WINDOWPOS_CENTERED, sdl.WINDOWPOS_CENTERED, int32(windowWidth), int32(windowHeight), sdl.WINDOW_SHOWN|sdl.WINDOW_RESIZABLE|sdl.WINDOW_OPENGL); err != nil {
+		if err = this.createWindowLight(windowWidth, windowHeight, title); err != nil {
 			return err
 		}
 	}
 
 	if this.context, err = this.window.GLCreateContext(); err != nil {
-		return err
+		this.window.Destroy()
+		if err = this.createWindowLight(windowWidth, windowHeight, title); err != nil {
+			return err
+		}
+		if this.context, err = this.window.GLCreateContext(); err != nil {
+			this.window.Destroy()
+			sdl.Quit()
+			if err = sdl.Init(sdl.INIT_VIDEO); err != nil {
+				return err
+			}
+			if err = this.createWindowLight(windowWidth, windowHeight, title); err != nil {
+				return err
+			}
+			if this.context, err = this.window.GLCreateContext(); err != nil {
+				return err
+			}
+		}
 	}
 
 	if err1 := sdl.GLSetSwapInterval(1); err1 != nil {
