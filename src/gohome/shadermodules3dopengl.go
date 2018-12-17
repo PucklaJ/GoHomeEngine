@@ -199,12 +199,12 @@ var (
 			},
 			glslgen.Function{
 				"void calculatePointLights()",
-				`// for(uint i = 0;i<numPointLights&&i<MAX_POINT_LIGHTS;i++)
-				// {
-				// 	calculatePointLight(pointLights[i]);
-				// }
+				` for (int i = 0;i<numPointLights&&i<MAX_POINT_LIGHTS;i++)
+				 {
+				 	calculatePointLight(pointLights[i],i);
+				 }
 			
-				#if MAX_POINT_LIGHTS > 0
+				/*#if MAX_POINT_LIGHTS > 0
 				if(numPointLights > 0)
 					calculatePointLight(pointLights[0],0);
 				#endif
@@ -287,11 +287,16 @@ var (
 				#if MAX_POINT_LIGHTS > 20
 				if(numPointLights > 20)
 					calculatePointLight(pointLights[20],20);
-				#endif`,
+				#endif*/`,
 			},
 			glslgen.Function{
 				"void calculateDirectionalLights()",
-				`#if MAX_DIRECTIONAL_LIGHTS > 0
+				`
+				for (int i = 0;i<numDirectionalLights&&i<MAX_DIRECTIONAL_LIGHTS;i++)
+				 {
+					calculateDirectionalLight(directionalLights[i],i);
+				 }
+				/*#if MAX_DIRECTIONAL_LIGHTS > 0
 				if(int(numDirectionalLights) > 0)
 					calculateDirectionalLight(directionalLights[0],0);
 				#endif
@@ -326,15 +331,15 @@ var (
 				#if MAX_DIRECTIONAL_LIGHTS > 8
 				if(int(numDirectionalLights) > 8)
 					calculateDirectionalLight(directionalLights[8],8);
-				#endif`,
+				#endif*/`,
 			},
 			glslgen.Function{
 				"void calculateSpotLights()",
-				`// for(int i=0; i<numSpotLights && i<MAX_SPOT_LIGHTS ; i++)
-				// {
-				// 	calculateSpotLight(spotLights[i]);
-				// }
-				#if MAX_SPOT_LIGHTS > 0
+				`for(int i=0; i<numSpotLights && i<MAX_SPOT_LIGHTS ; i++)
+				 {
+				 	calculateSpotLight(spotLights[i],i);
+				 }
+				/*#if MAX_SPOT_LIGHTS > 0
 				if(int(numSpotLights) > 0)
 					calculateSpotLight(spotLights[0],0);
 				#endif
@@ -401,7 +406,7 @@ var (
 				#if MAX_SPOT_LIGHTS > 16
 				if(int(numSpotLights) > 16)
 					calculateSpotLight(spotLights[16],16);
-				#endif`,
+				#endif*/`,
 			},
 			glslgen.Function{
 				"void calculateAllLights()",

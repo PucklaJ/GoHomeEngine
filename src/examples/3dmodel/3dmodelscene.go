@@ -10,7 +10,7 @@ type ModelScene struct {
 }
 
 func (this *ModelScene) Init() {
-	gohome.LightMgr.DisableLighting()
+	gohome.LightMgr.SetAmbientLight(gohome.Color{255, 255, 255, 255}, 0)
 	gohome.ResourceMgr.LoadLevel("Gopher", "gopher.obj", true)
 	this.gopher.InitModel(gohome.ResourceMgr.GetModel("Gopher"))
 

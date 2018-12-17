@@ -58,3 +58,5 @@
 + Frustum culling
 + Physics
 	- [cubez](https://github.com/tbogdala/cubez) maybe
++ Add Short Light add methods
++ Remove light collection and have lights per scene

@@ -141,9 +141,13 @@ func calculateDirectionalLightShadowMapProjection(cam *Camera3D, lightCam *Camer
 		farPlaneHalfWidthShadowDistance = float32(math.Tan(float64(persProj.FOV)/180.0*math.Pi) * float64(dl.ShadowDistance))
 		farPlaneHalfHeightShadowDistance = farPlaneHalfWidthShadowDistance / (persProj.Width / persProj.Height)
 	}
-	cam.CalculateViewMatrix()
+	if cam != nil {
+		cam.CalculateViewMatrix()
+		inverseViewMatrix = cam.GetInverseViewMatrix()
+	} else {
+		inverseViewMatrix = mgl32.Ident4()
+	}
 	lightCam.CalculateViewMatrix()
-	inverseViewMatrix = cam.GetInverseViewMatrix()
 	lightViewMatrix = lightCam.GetViewMatrix()
 
 	pointsViewSpace = proj.GetFrustum()
@@ -228,7 +232,10 @@ func (this *DirectionalLight) RenderShadowMap() {
 		return
 	}
 
-	prevCamera := RenderMgr.camera3Ds[0]
+	var prevCamera *Camera3D
+	if len(RenderMgr.camera3Ds) != 0 {
+		prevCamera = RenderMgr.camera3Ds[0]
+	}
 	this.Direction = this.Direction.Normalize()
 	if this.lightCam.LookDirection[0] == 0.0 && this.lightCam.LookDirection[1] == 0.0 && this.lightCam.LookDirection[2] == 0.0 {
 		this.lightCam.Init()
