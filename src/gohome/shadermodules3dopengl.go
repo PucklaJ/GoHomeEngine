@@ -199,214 +199,31 @@ var (
 			},
 			glslgen.Function{
 				"void calculatePointLights()",
-				` for (int i = 0;i<numPointLights&&i<MAX_POINT_LIGHTS;i++)
+				` for (int i = 0;i<MAX_POINT_LIGHTS;i++)
 				 {
+					 if(i>=numPointLights)
+					 	break;
 				 	calculatePointLight(pointLights[i],i);
-				 }
-			
-				/*#if MAX_POINT_LIGHTS > 0
-				if(numPointLights > 0)
-					calculatePointLight(pointLights[0],0);
-				#endif
-				#if MAX_POINT_LIGHTS > 1
-				if(numPointLights > 1)
-					calculatePointLight(pointLights[1],1);
-				#endif
-				#if MAX_POINT_LIGHTS > 2
-				if(numPointLights > 2)
-					calculatePointLight(pointLights[2],2);
-				#endif
-				#if MAX_POINT_LIGHTS > 3
-				if(numPointLights > 3)
-					calculatePointLight(pointLights[3],3);
-				#endif
-				#if MAX_POINT_LIGHTS > 4
-				if(numPointLights > 4)
-					calculatePointLight(pointLights[4],4);
-				#endif
-				#if MAX_POINT_LIGHTS > 5
-				if(numPointLights > 5)
-					calculatePointLight(pointLights[5],5);
-				#endif
-				#if MAX_POINT_LIGHTS > 6
-				if(numPointLights > 6)
-					calculatePointLight(pointLights[6],6);
-				#endif
-				#if MAX_POINT_LIGHTS > 7
-				if(numPointLights > 7)
-					calculatePointLight(pointLights[7],7);
-				#endif
-				#if MAX_POINT_LIGHTS > 8
-				if(numPointLights > 8)
-					calculatePointLight(pointLights[8],8);
-				#endif
-				#if MAX_POINT_LIGHTS > 9
-				if(numPointLights > 9)
-					calculatePointLight(pointLights[9],9);
-				#endif
-				#if MAX_POINT_LIGHTS > 10
-				if(numPointLights > 10)
-					calculatePointLight(pointLights[10],10);
-				#endif
-				#if MAX_POINT_LIGHTS > 11
-				if(numPointLights > 11)
-					calculatePointLight(pointLights[11],11);
-				#endif
-				#if MAX_POINT_LIGHTS > 12
-				if(numPointLights > 12)
-					calculatePointLight(pointLights[12],12);
-				#endif
-				#if MAX_POINT_LIGHTS > 13
-				if(numPointLights > 13)
-					calculatePointLight(pointLights[13],13);
-				#endif
-				#if MAX_POINT_LIGHTS > 14
-				if(numPointLights > 14)
-					calculatePointLight(pointLights[14],14);
-				#endif
-				#if MAX_POINT_LIGHTS > 15
-				if(numPointLights > 15)
-					calculatePointLight(pointLights[15],15);
-				#endif
-				#if MAX_POINT_LIGHTS > 16
-				if(numPointLights > 16)
-					calculatePointLight(pointLights[16],16);
-				#endif
-				#if MAX_POINT_LIGHTS > 17
-				if(numPointLights > 17)
-					calculatePointLight(pointLights[17],17);
-				#endif
-				#if MAX_POINT_LIGHTS > 18
-				if(numPointLights > 18)
-					calculatePointLight(pointLights[18],18);
-				#endif
-				#if MAX_POINT_LIGHTS > 19
-				if(numPointLights > 19)
-					calculatePointLight(pointLights[19],19);
-				#endif
-				#if MAX_POINT_LIGHTS > 20
-				if(numPointLights > 20)
-					calculatePointLight(pointLights[20],20);
-				#endif*/`,
+				 }`,
 			},
 			glslgen.Function{
 				"void calculateDirectionalLights()",
 				`
-				for (int i = 0;i<numDirectionalLights&&i<MAX_DIRECTIONAL_LIGHTS;i++)
+				for (int i = 0;i<MAX_DIRECTIONAL_LIGHTS;i++)
 				 {
+					 if(i>=numDirectionalLights)
+					 	break;
 					calculateDirectionalLight(directionalLights[i],i);
-				 }
-				/*#if MAX_DIRECTIONAL_LIGHTS > 0
-				if(int(numDirectionalLights) > 0)
-					calculateDirectionalLight(directionalLights[0],0);
-				#endif
-				#if MAX_DIRECTIONAL_LIGHTS > 1
-				if(int(numDirectionalLights) > 1)
-					calculateDirectionalLight(directionalLights[1],1);
-				#endif
-				#if MAX_DIRECTIONAL_LIGHTS > 2
-				if(int(numDirectionalLights) > 2)
-					calculateDirectionalLight(directionalLights[2],2);
-				#endif
-				#if MAX_DIRECTIONAL_LIGHTS > 3
-				if(int(numDirectionalLights) > 3)
-					calculateDirectionalLight(directionalLights[3],3);
-				#endif
-				#if MAX_DIRECTIONAL_LIGHTS > 4
-				if(int(numDirectionalLights) > 4)
-					calculateDirectionalLight(directionalLights[4],4);
-				#endif
-				#if MAX_DIRECTIONAL_LIGHTS > 5
-				if(int(numDirectionalLights) > 5)
-					calculateDirectionalLight(directionalLights[5],5);
-				#endif
-				#if MAX_DIRECTIONAL_LIGHTS > 6
-				if(int(numDirectionalLights) > 6)
-					calculateDirectionalLight(directionalLights[6],6);
-				#endif
-				#if MAX_DIRECTIONAL_LIGHTS > 7
-				if(int(numDirectionalLights) > 7)
-					calculateDirectionalLight(directionalLights[7],7);
-				#endif
-				#if MAX_DIRECTIONAL_LIGHTS > 8
-				if(int(numDirectionalLights) > 8)
-					calculateDirectionalLight(directionalLights[8],8);
-				#endif*/`,
+				 }`,
 			},
 			glslgen.Function{
 				"void calculateSpotLights()",
-				`for(int i=0; i<numSpotLights && i<MAX_SPOT_LIGHTS ; i++)
+				`for(int i=0;i<MAX_SPOT_LIGHTS ; i++)
 				 {
+					 if(i>=numSpotLights)
+					 	break;
 				 	calculateSpotLight(spotLights[i],i);
-				 }
-				/*#if MAX_SPOT_LIGHTS > 0
-				if(int(numSpotLights) > 0)
-					calculateSpotLight(spotLights[0],0);
-				#endif
-				#if MAX_SPOT_LIGHTS > 1
-				if(int(numSpotLights) > 1)
-					calculateSpotLight(spotLights[1],1);
-				#endif
-				#if MAX_SPOT_LIGHTS > 2
-				if(int(numSpotLights) > 2)
-					calculateSpotLight(spotLights[2],2);
-				#endif
-				#if MAX_SPOT_LIGHTS > 3
-				if(int(numSpotLights) > 3)
-					calculateSpotLight(spotLights[3],3);
-				#endif
-				#if MAX_SPOT_LIGHTS > 4
-				if(int(numSpotLights) > 4)
-					calculateSpotLight(spotLights[4],4);
-				#endif
-				#if MAX_SPOT_LIGHTS > 5
-				if(int(numSpotLights) > 5)
-					calculateSpotLight(spotLights[5],5);
-				#endif
-				#if MAX_SPOT_LIGHTS > 6
-				if(int(numSpotLights) > 6)
-					calculateSpotLight(spotLights[6],6);
-				#endif
-				#if MAX_SPOT_LIGHTS > 7
-				if(int(numSpotLights) > 7)
-					calculateSpotLight(spotLights[7],7);
-				#endif
-				#if MAX_SPOT_LIGHTS > 8
-				if(int(numSpotLights) > 8)
-					calculateSpotLight(spotLights[8],8);
-				#endif
-				#if MAX_SPOT_LIGHTS > 9
-				if(int(numSpotLights) > 9)
-					calculateSpotLight(spotLights[9],9);
-				#endif
-				#if MAX_SPOT_LIGHTS > 10
-				if(int(numSpotLights) > 10)
-					calculateSpotLight(spotLights[10],10);
-				#endif
-				#if MAX_SPOT_LIGHTS > 11
-				if(int(numSpotLights) > 11)
-					calculateSpotLight(spotLights[11],11);
-				#endif
-				#if MAX_SPOT_LIGHTS > 12
-				if(int(numSpotLights) > 12)
-					calculateSpotLight(spotLights[12],12);
-				#endif
-				#if MAX_SPOT_LIGHTS > 13
-				if(int(numSpotLights) > 13)
-					calculateSpotLight(spotLights[13],13);
-				#endif
-				#if MAX_SPOT_LIGHTS > 14
-				if(int(numSpotLights) > 14)
-					calculateSpotLight(spotLights[14],14);
-				#endif
-				#if MAX_SPOT_LIGHTS > 15
-				if(int(numSpotLights) > 15)
-					calculateSpotLight(spotLights[15],15);
-				#endif
-				#if MAX_SPOT_LIGHTS > 16
-				if(int(numSpotLights) > 16)
-					calculateSpotLight(spotLights[16],16);
-				#endif*/`,
+				 }`,
 			},
 			glslgen.Function{
 				"void calculateAllLights()",
