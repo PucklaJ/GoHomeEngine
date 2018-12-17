@@ -27,7 +27,7 @@ A Game Engine for 2D/3D Games written in go
 * PointLights
 * DirectionalLights
 * SpotLights
-* Shadows of all three lighttypes
+* Shadows of DirectionalLight and SpotLight
 * Ray Casting
 * [Level Editor](https://github.com/PucklaMotzer09/GoHomeEdit) (in development)
 

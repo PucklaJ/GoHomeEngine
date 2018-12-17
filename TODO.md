@@ -11,6 +11,35 @@
 + Parent System for Sprite2D
 + OBJLoader load non-triangulate faces
 + Add Build command gohome
++ Go routines for calculating transform matrices
+    - create a channel in the parent for every children
+    - send on channel when parent finished
+    - wait until parent finished in children
++ Add more sprites to spriteanimation example
++ Add Backgroundcolor to BackBufferMS
++ Add PostProcessing
+    - interface with DoPostProcessing()
+    - add GlowShader
+    - with GLOW_BIT RenderType
++ Remove audio manager from framework
++ Add indirect rendering
+    - add mesh/model to IndirectRender struct (?)
+    - and then call Render on this struct
++ Remove compatible instancing from OpenGLES3 and OpenGLES31
++ Add Vertices for NonUV meshes
+    - without texCoord and tangent
+    - convert Mesh3DVertices to Mesh3DNoUVVertices (with go routines)
+    - or rewrite AddVertices -> (vertex,normal,texCoord)
+    - and rewrite order of data in Mesh3D
+    - change shaders accordingly (remove attributes)
+    - in instancedmesh think about index
++ Change order of custom values of InstancedMesh3D
+    - to DataOfVal1|DataOfVal2 etc. instead of Val1OfVal1|Val1OfVal2|Val2OfVal1|Val2OfVal2
++ Rewrite PointLight shadows
++ Bump mapping
+    - add global fragPos
+    - use global fragPos
++ Parallax Mapping / Parallax Occlusion Mapping / Steep Parallax Mapping
 
 ## 2D
 
