@@ -44,6 +44,9 @@
     - maybe all makros (APLHA_DISCARD_PADDING)
 + Fix multisample samples not greater than supported by system
 + Change obj loading to be concurrent
++ Remove audio manager from framework
+	- Add InitAudio method to gohome which takes a AudioManager pointer
+
 ## 2D
 
 + Instanced Mesh
