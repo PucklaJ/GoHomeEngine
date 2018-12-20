@@ -2,7 +2,6 @@ package gohome
 
 import (
 	"github.com/golang/freetype"
-	"io/ioutil"
 )
 
 var (
@@ -68,13 +67,13 @@ func (rsmgr *ResourceManager) loadFont(name, path string, preloaded bool) *Font 
 		return nil
 	}
 
-	data, err := ioutil.ReadAll(reader)
+	data, err := ReadAll(reader)
 	if err != nil {
 		ErrorMgr.Error("Font", name, "Couldn't read: "+err.Error())
 		return nil
 	}
 
-	ttf, err := freetype.ParseFont(data)
+	ttf, err := freetype.ParseFont([]byte(data))
 	if err != nil {
 		ErrorMgr.Error("Font", name, "Couldn't parse: "+err.Error())
 		return nil

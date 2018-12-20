@@ -124,6 +124,7 @@ const (
 	KeyRightAlt     Key = iota
 	KeyRightSuper   Key = iota
 	KeyMenu         Key = iota
+	KeyBack         Key = iota
 	KeyLast         Key = iota
 
 	MouseButton1      Key = iota

@@ -16,5 +16,8 @@ func ReadAll(r io.Reader) (str string, err error) {
 		n, err = r.Read(buf)
 		str += string(buf[:n])
 	}
+	if err == io.EOF {
+		err = nil
+	}
 	return
 }

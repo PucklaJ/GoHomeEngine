@@ -2,6 +2,7 @@ package gohome
 
 import (
 	"github.com/PucklaMotzer09/tmx"
+	"io"
 )
 
 var (
@@ -48,6 +49,9 @@ func (rsmgr *ResourceManager) LoadTMXMap(name, path string) *tmx.Map {
 		return nil
 	}
 
+	tmx.OpenFileFunction = func(filename string) (io.ReadCloser, error) {
+		return Framew.OpenFile(filename)
+	}
 	tmxmap, err := tmx.LoadReader(file, fileName)
 	if err != nil {
 		ErrorMgr.MessageError(ERROR_LEVEL_ERROR, "TMXMap", name, err)

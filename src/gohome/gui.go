@@ -3,6 +3,7 @@ package gohome
 import (
 	"image/color"
 	"math"
+	"runtime"
 )
 
 type ButtonCallback func(btn *Button)
@@ -64,7 +65,12 @@ func (this *Button) Update(delta_time float32) {
 		pos[1] -= this.Transform.Origin[1] * size[1]
 		prevEntered := this.Entered
 		this.Entered = mpos[0] > pos[0] && mpos[1] > pos[1] && mpos[0] <= pos[0]+size[0] && mpos[1] <= pos[1]+size[1]
-		if !InputMgr.IsPressed(MouseButtonLeft) {
+		if runtime.GOOS == "android" {
+			if !InputMgr.IsPressed(MouseButtonLeft) && !InputMgr.WasPressed(MouseButtonLeft) {
+				this.Entered = false
+			}
+		}
+		if !InputMgr.IsPressed(MouseButtonLeft) || (runtime.GOOS == "android" && (!this.Entered || InputMgr.JustPressed(MouseButtonLeft))) {
 			if this.Entered {
 				this.Texture.SetModColor(this.EnterModColor)
 				if !prevEntered && this.EnterCallback != nil {

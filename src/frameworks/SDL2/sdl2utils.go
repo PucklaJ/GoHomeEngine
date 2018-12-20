@@ -236,6 +236,8 @@ func sdlKeysTogohomeKeys(key sdl.Keycode) gohome.Key {
 		return gohome.KeyRightAlt
 	case sdl.K_MENU:
 		return gohome.KeyMenu
+	case sdl.K_AC_BACK:
+		return gohome.KeyBack
 	}
 
 	return gohome.KeyUnknown

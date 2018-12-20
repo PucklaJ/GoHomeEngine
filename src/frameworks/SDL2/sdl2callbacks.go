@@ -5,19 +5,27 @@ import (
 	"github.com/PucklaMotzer09/go-sdl2/sdl"
 )
 
-func (this *SDL2Framework) onMouseMotion(event *sdl.MouseMotionEvent) {
-	gohome.InputMgr.Mouse.Pos[0] = int16(event.X)
-	gohome.InputMgr.Mouse.Pos[1] = int16(event.Y)
-	gohome.InputMgr.Mouse.DPos[0] = int16(event.XRel)
-	gohome.InputMgr.Mouse.DPos[1] = int16(event.YRel)
+func setMousePosition(x, y, xrel, yrel int32) {
+	gohome.InputMgr.Mouse.Pos[0] = int16(x)
+	gohome.InputMgr.Mouse.Pos[1] = int16(y)
+	gohome.InputMgr.Mouse.DPos[0] = int16(xrel)
+	gohome.InputMgr.Mouse.DPos[1] = int16(yrel)
+}
 
-	inputTouch := gohome.InputMgr.Touches[0]
-	inputTouch.Pos = gohome.InputMgr.Mouse.Pos
-	inputTouch.DPos = gohome.InputMgr.Mouse.DPos
-	inputTouch.PPos[0] = gohome.InputMgr.Mouse.Pos[0] - gohome.InputMgr.Mouse.DPos[0]
-	inputTouch.PPos[0] = gohome.InputMgr.Mouse.Pos[1] - gohome.InputMgr.Mouse.DPos[1]
-	inputTouch.ID = 0
-	gohome.InputMgr.Touches[0] = inputTouch
+func setTouchPosition(x, y, xrel, yrel int32, touchID sdl.FingerID) {
+	inputTouch := gohome.InputMgr.Touches[uint8(touchID)]
+	inputTouch.Pos = [2]int16{int16(x), int16(y)}
+	inputTouch.DPos = [2]int16{int16(xrel), int16(yrel)}
+	inputTouch.PPos[0] = inputTouch.Pos[0] - inputTouch.DPos[0]
+	inputTouch.PPos[1] = inputTouch.Pos[1] - inputTouch.DPos[1]
+
+	inputTouch.ID = uint8(touchID)
+	gohome.InputMgr.Touches[uint8(touchID)] = inputTouch
+}
+
+func (this *SDL2Framework) onMouseMotion(event *sdl.MouseMotionEvent) {
+	setMousePosition(event.X, event.Y, event.XRel, event.YRel)
+	setTouchPosition(event.X, event.Y, event.XRel, event.YRel, 0)
 }
 
 func (this *SDL2Framework) onMouseWheel(event *sdl.MouseWheelEvent) {
@@ -79,19 +87,19 @@ func (this *SDL2Framework) onWindowEvent(event *sdl.WindowEvent) {
 
 func (this *SDL2Framework) onTouch(event *sdl.TouchFingerEvent) {
 	windowSize := this.WindowGetSize()
+	x := int32(event.X * windowSize[0])
+	y := int32(event.Y * windowSize[1])
+	xrel := int32(event.DX * windowSize[0])
+	yrel := int32(event.DY * windowSize[1])
+	setTouchPosition(x, y, xrel, yrel, event.FingerID)
+	if event.FingerID == 0 {
+		setMousePosition(x, y, xrel, yrel)
+	}
 
 	inputTouch := gohome.InputMgr.Touches[uint8(event.FingerID)]
-	inputTouch.Pos[0] = int16(event.X * windowSize[0])
-	inputTouch.Pos[1] = int16(event.Y * windowSize[1])
-
 	inputTouch.ID = uint8(event.FingerID)
 
 	switch event.Type {
-	case sdl.FINGERMOTION:
-		inputTouch.DPos[0] = int16(event.DX * windowSize[0])
-		inputTouch.DPos[1] = int16(event.DY * windowSize[1])
-		inputTouch.PPos[0] = inputTouch.Pos[0] - inputTouch.DPos[0]
-		inputTouch.PPos[1] = inputTouch.Pos[1] - inputTouch.DPos[1]
 	case sdl.FINGERDOWN:
 		gohome.InputMgr.Touch(uint8(event.FingerID))
 	case sdl.FINGERUP:
@@ -99,5 +107,4 @@ func (this *SDL2Framework) onTouch(event *sdl.TouchFingerEvent) {
 	}
 
 	gohome.InputMgr.Touches[uint8(event.FingerID)] = inputTouch
-
 }
