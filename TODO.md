@@ -16,7 +16,6 @@
     - send on channel when parent finished
     - wait until parent finished in children
 + Add more sprites to spriteanimation example
-+ Add Backgroundcolor to BackBufferMS
 + Add PostProcessing
     - interface with DoPostProcessing()
     - add GlowShader

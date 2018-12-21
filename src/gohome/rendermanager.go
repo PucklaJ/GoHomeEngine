@@ -2,6 +2,7 @@ package gohome
 
 import (
 	"github.com/PucklaMotzer09/mathgl/mgl32"
+	"math"
 )
 
 type Viewport struct {
@@ -217,7 +218,7 @@ func (rmgr *RenderManager) GetBackBuffer() RenderTexture {
 func (rmgr *RenderManager) render3D() {
 	if rmgr.BackBuffer3D != nil && rmgr.EnableBackBuffer {
 		rmgr.BackBuffer3D.SetAsTarget()
-		Render.ClearScreen(Color{0, 0, 0, 0})
+		Render.ClearScreen(nil)
 	}
 	for i := 0; i < len(rmgr.viewport3Ds); i++ {
 		rmgr.Render(TYPE_3D, rmgr.viewport3Ds[i].CameraIndex, int32(i), LightMgr.CurrentLightCollection)
@@ -230,7 +231,7 @@ func (rmgr *RenderManager) render3D() {
 func (rmgr *RenderManager) render2D() {
 	if rmgr.BackBuffer2D != nil && rmgr.EnableBackBuffer {
 		rmgr.BackBuffer2D.SetAsTarget()
-		Render.ClearScreen(Color{0, 0, 0, 0})
+		Render.ClearScreen(nil)
 	}
 	for i := 0; i < len(rmgr.viewport2Ds); i++ {
 		rmgr.Render(TYPE_2D, rmgr.viewport2Ds[i].CameraIndex, int32(i), LightMgr.CurrentLightCollection)
@@ -578,17 +579,19 @@ func (rmgr *RenderManager) UpdateViewports(current Viewport, previous Viewport) 
 
 func (rmgr *RenderManager) clearToBackgroundColor() {
 	backg := Render.GetBackgroundColor()
-	var r, g, b uint32
+	var r, g, b, a uint32
 	if backg != nil {
-		r, g, b, _ = backg.RGBA()
+		r, g, b, a = backg.RGBA()
 	} else {
-		r, g, b = 0, 0, 0
+		r, g, b, a = 0, 0, 0, math.MaxUint32
 	}
 
-	newCol := Color{uint8(float32(r) / float32(0xffff) * 255.0),
+	newCol := Color{
+		uint8(float32(r) / float32(0xffff) * 255.0),
 		uint8(float32(g) / float32(0xffff) * 255.0),
 		uint8(float32(b) / float32(0xffff) * 255.0),
-		0}
+		uint8(float32(a) / float32(0xffff) * 255.0),
+	}
 
 	Render.ClearScreen(newCol)
 }
