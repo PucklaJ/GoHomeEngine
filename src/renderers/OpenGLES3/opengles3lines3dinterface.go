@@ -7,19 +7,16 @@ import (
 )
 
 type OpenGLES3Lines3DInterface struct {
-	Name       string
-	vbo        uint32
-	vao        uint32
-	canUseVaos bool
-	loaded     bool
+	Name   string
+	vbo    uint32
+	vao    uint32
+	loaded bool
 
 	lines       []gohome.Line3D
 	numVertices uint32
 }
 
 func (this *OpenGLES3Lines3DInterface) Init() {
-	render := gohome.Render.(*OpenGLES3Renderer)
-	this.canUseVaos = render.HasFunctionAvailable("VERTEX_ARRAY")
 	this.loaded = false
 }
 
@@ -59,20 +56,16 @@ func (this *OpenGLES3Lines3DInterface) Load() {
 	var buf [1]uint32
 	gl.GenBuffers(1, buf[:])
 	this.vbo = buf[0]
-	if this.canUseVaos {
-		gl.GenVertexArrays(1, buf[:])
-		this.vao = buf[0]
-	}
+	gl.GenVertexArrays(1, buf[:])
+	this.vao = buf[0]
 
 	gl.BindBuffer(gl.ARRAY_BUFFER, this.vbo)
 	gl.BufferData(gl.ARRAY_BUFFER, int(gohome.LINE3D_VERTEX_SIZE*this.numVertices), unsafe.Pointer(&this.lines[0][0][0]), gl.STATIC_DRAW)
 	gl.BindBuffer(gl.ARRAY_BUFFER, 0)
 
-	if this.canUseVaos {
-		gl.BindVertexArray(this.vao)
-		this.attributePointer()
-		gl.BindVertexArray(0)
-	}
+	gl.BindVertexArray(this.vao)
+	this.attributePointer()
+	gl.BindVertexArray(0)
 
 	this.loaded = true
 }
@@ -88,19 +81,11 @@ func (this *OpenGLES3Lines3DInterface) Render() {
 		return
 	}
 
-	if this.canUseVaos {
-		gl.BindVertexArray(this.vao)
-	} else {
-		this.attributePointer()
-	}
+	gl.BindVertexArray(this.vao)
 	gl.GetError()
 	gl.DrawArrays(gl.LINES, 0, int32(this.numVertices))
 	handleOpenGLES3Error("Lines3DInterface", this.Name, "RenderError: ")
-	if this.canUseVaos {
-		gl.BindVertexArray(0)
-	} else {
-		gl.BindBuffer(gl.ARRAY_BUFFER, 0)
-	}
+	gl.BindVertexArray(0)
 
 	if !hasLoaded {
 		this.Terminate()
@@ -110,11 +95,9 @@ func (this *OpenGLES3Lines3DInterface) Terminate() {
 	var buf [1]uint32
 	buf[0] = this.vbo
 	defer gl.DeleteBuffers(1, buf[:])
-	if this.canUseVaos {
-		var vbuf [1]uint32
-		vbuf[0] = this.vao
-		defer gl.DeleteVertexArrays(1, vbuf[:])
-	}
+	var vbuf [1]uint32
+	vbuf[0] = this.vao
+	defer gl.DeleteVertexArrays(1, vbuf[:])
 	this.numVertices = 0
 	this.loaded = false
 	this.lines = this.lines[:0]

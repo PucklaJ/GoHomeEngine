@@ -25,7 +25,6 @@
 + Add indirect rendering
     - add mesh/model to IndirectRender struct (?)
     - and then call Render on this struct
-+ Remove compatible instancing from OpenGLES3 and OpenGLES31
 + Add Vertices for NonUV meshes
     - without texCoord and tangent
     - convert Mesh3DVertices to Mesh3DNoUVVertices (with go routines)

@@ -26,7 +26,6 @@ type OpenGLES31Mesh3D struct {
 	Material *gohome.Material
 
 	tangentsCalculated bool
-	canUseVAOs         bool
 	hasUV              bool
 	loaded             bool
 
@@ -157,8 +156,6 @@ func CreateOpenGLES31Mesh3D(name string) *OpenGLES31Mesh3D {
 		Name:               name,
 		tangentsCalculated: false,
 	}
-	render, _ := gohome.Render.(*OpenGLES31Renderer)
-	mesh.canUseVAOs = render.HasFunctionAvailable("VERTEX_ARRAY")
 
 	return &mesh
 }
@@ -200,12 +197,9 @@ func (oglm *OpenGLES31Mesh3D) Load() {
 
 	oglm.CalculateTangents()
 
-	if oglm.canUseVAOs {
-		var buf [1]uint32
-		gl.GenVertexArrays(1, buf[:])
-		oglm.vao = buf[0]
-	}
 	var buf [1]uint32
+	gl.GenVertexArrays(1, buf[:])
+	oglm.vao = buf[0]
 	gl.GenBuffers(1, buf[:])
 	oglm.buffer = buf[0]
 
@@ -219,11 +213,9 @@ func (oglm *OpenGLES31Mesh3D) Load() {
 	gl.BufferSubData(gl.ELEMENT_ARRAY_BUFFER, int(verticesSize), int(indicesSize), unsafe.Pointer(&oglm.indices[0]))
 	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, 0)
 
-	if oglm.canUseVAOs {
-		gl.BindVertexArray(oglm.vao)
-		oglm.attributePointer()
-		gl.BindVertexArray(0)
-	}
+	gl.BindVertexArray(oglm.vao)
+	oglm.attributePointer()
+	gl.BindVertexArray(0)
 
 	oglm.deleteElements()
 	oglm.loaded = true
@@ -241,28 +233,19 @@ func (oglm *OpenGLES31Mesh3D) Render() {
 		}
 		gohome.RenderMgr.CurrentShader.SetUniformMaterial(*oglm.Material)
 	}
-	if oglm.canUseVAOs {
-		gl.BindVertexArray(oglm.vao)
-	} else {
-		oglm.attributePointer()
-	}
+	gl.BindVertexArray(oglm.vao)
+
 	gl.GetError()
 	gl.DrawElements(gl.TRIANGLES, int32(oglm.numIndices), gl.UNSIGNED_INT, gl.PtrOffset(int(oglm.numVertices*MESH3DVERTEX_SIZE)))
 	handleOpenGLES31Error("Mesh3D", oglm.Name, "RenderError: ")
-	if oglm.canUseVAOs {
-		gl.BindVertexArray(0)
-	} else {
-		gl.BindBuffer(gl.ARRAY_BUFFER, 0)
-		gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, 0)
-	}
+
+	gl.BindVertexArray(0)
 }
 
 func (oglm *OpenGLES31Mesh3D) Terminate() {
-	if oglm.canUseVAOs {
-		var buf [1]uint32
-		buf[0] = oglm.vao
-		defer gl.DeleteVertexArrays(1, buf[:])
-	}
+	var vbuf [1]uint32
+	vbuf[0] = oglm.vao
+	defer gl.DeleteVertexArrays(1, vbuf[:])
 	var buf [1]uint32
 	buf[0] = oglm.buffer
 	defer gl.DeleteBuffers(1, buf[:])
@@ -316,7 +299,6 @@ func (oglm *OpenGLES31Mesh3D) Copy() gohome.Mesh3D {
 	oglm1.numIndices = oglm.numIndices
 	oglm1.numVertices = oglm.numVertices
 	oglm1.hasUV = oglm.hasUV
-	oglm1.canUseVAOs = oglm.canUseVAOs
 	oglm1.aabb = oglm.aabb
 	return &oglm1
 }
