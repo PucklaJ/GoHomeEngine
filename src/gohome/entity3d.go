@@ -200,16 +200,20 @@ func (this *Entity3D) GetTransform3D() *TransformableObject3D {
 	return this.Transform
 }
 
+func (this *Entity3D) SetChildChannel(channel chan bool, tobj *TransformableObject3D) {
+	this.Transform.SetChildChannel(channel, tobj)
+}
+
 func (this *Entity3D) RendersLast() bool {
 	return this.RenderLast
 }
 
 func (this *Entity3D) SetParent(parent interface{}) {
 	this.parent = parent
-	if tobj, ok := parent.(TweenableObject3D); ok {
-		this.Transform.Parent = tobj
+	if tobj, ok := parent.(ParentObject3D); ok {
+		this.Transform.SetParent(tobj)
 	} else {
-		this.Transform.Parent = nil
+		this.Transform.SetParent(nil)
 	}
 }
 

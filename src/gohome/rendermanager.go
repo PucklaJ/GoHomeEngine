@@ -3,6 +3,7 @@ package gohome
 import (
 	"github.com/PucklaMotzer09/mathgl/mgl32"
 	"math"
+	"sync"
 )
 
 type Viewport struct {
@@ -40,6 +41,8 @@ type RenderManager struct {
 	RenderToScreenFirst          bool
 	AutoRender                   bool
 	ReRender                     bool
+
+	calculatingTransformMatricesParallel bool
 }
 
 func (rmgr *RenderManager) Init() {
@@ -190,12 +193,38 @@ func (rmgr *RenderManager) updateProjection(t RenderType) {
 	}
 }
 
+func (rmgr *RenderManager) calculateTransformMatrices(rtype RenderType) {
+	rmgr.calculatingTransformMatricesParallel = true
+	calcFunc := func(_robj RenderObject, wg *sync.WaitGroup) {
+		tobj := _robj.GetTransformableObject()
+		if tobj != nil {
+			tobj.CalculateTransformMatrix(rmgr, _robj.NotRelativeCamera())
+		}
+		wg.Done()
+	}
+	var wg sync.WaitGroup
+	for _, robj := range rmgr.renderObjects {
+		if rtype.Compatible(robj.GetType()) {
+			wg.Add(1)
+			go calcFunc(robj, &wg)
+		}
+	}
+	for _, arobj := range rmgr.afterRenderObjects {
+		if rtype.Compatible(arobj.GetType()) {
+			wg.Add(1)
+			go calcFunc(arobj, &wg)
+		}
+	}
+	wg.Wait()
+	rmgr.calculatingTransformMatricesParallel = false
+}
+
 func (rmgr *RenderManager) updateTransformMatrix(robj RenderObject) {
 	if robj != nil && robj.GetTransformableObject() != nil {
-		robj.GetTransformableObject().CalculateTransformMatrix(rmgr, robj.NotRelativeCamera())
+		//robj.GetTransformableObject().CalculateTransformMatrix(rmgr, robj.NotRelativeCamera())
 		robj.GetTransformableObject().SetTransformMatrix(rmgr)
 	} else {
-		if robj.GetType() == TYPE_2D {
+		if TYPE_2D.Compatible(robj.GetType()) {
 			rmgr.setTransformMatrix2D(mgl32.Ident3())
 		} else {
 			rmgr.setTransformMatrix3D(mgl32.Ident4())
@@ -424,6 +453,7 @@ func (rmgr *RenderManager) Render(rtype RenderType, cameraIndex int32, viewportI
 	if rmgr.CurrentShader != nil {
 		rmgr.CurrentShader.Use()
 	}
+	rmgr.calculateTransformMatrices(rtype)
 
 	for i := 0; i < len(rmgr.renderObjects); i++ {
 		rmgr.renderInnerLoop(rtype, rmgr.renderObjects[i], lightCollectionIndex)

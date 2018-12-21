@@ -3,7 +3,7 @@ package gohome
 const (
 	TWEEN_TYPE_WITH_PREVIOUS  uint8 = iota
 	TWEEN_TYPE_AFTER_PREVIOUS uint8 = iota
-	TWEEN_TYPE_ALWAYS uint8 = iota
+	TWEEN_TYPE_ALWAYS         uint8 = iota
 )
 
 type Tween interface {
@@ -21,4 +21,9 @@ type TweenableObject2D interface {
 
 type TweenableObject3D interface {
 	GetTransform3D() *TransformableObject3D
+}
+
+type ParentObject3D interface {
+	TweenableObject3D
+	SetChildChannel(channel chan bool, tobj *TransformableObject3D)
 }

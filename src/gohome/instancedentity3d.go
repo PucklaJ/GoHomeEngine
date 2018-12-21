@@ -28,6 +28,7 @@ type InstancedEntity3D struct {
 
 	Transforms        []*TransformableObjectInstanced3D
 	transformMatrices []mgl32.Mat4
+	transformsChanged bool
 }
 
 func (this *InstancedEntity3D) commonInit(numInstances uint32) {
@@ -135,6 +136,10 @@ func (this *InstancedEntity3D) InitModel(model *InstancedModel3D, numInstances u
 	this.commonInit(numInstances)
 }
 
+func (this *InstancedEntity3D) GetTransformableObject() TransformableObject {
+	return this
+}
+
 func (this *InstancedEntity3D) GetShader() Shader {
 	return this.Shader
 }
@@ -156,6 +161,10 @@ func (this *InstancedEntity3D) Render() {
 		this.UpdateInstancedValues()
 	}
 	if this.Model3D != nil {
+		if this.transformsChanged {
+			this.Model3D.SetM4(0, this.transformMatrices)
+			this.transformsChanged = false
+		}
 		this.Model3D.Render()
 	}
 }
@@ -191,22 +200,7 @@ func (this *InstancedEntity3D) HasDepthTesting() bool {
 }
 
 func (this *InstancedEntity3D) UpdateInstancedValues() {
-	var changed = false
-	var wg sync.WaitGroup
-	wg.Add(int(this.Model3D.GetNumInstances()))
-	for _, t := range this.Transforms {
-		go func(_t *TransformableObjectInstanced3D) {
-			if _t.valuesChanged() {
-				changed = true
-				_t.CalculateTransformMatrix(&RenderMgr, this.NotRelativeToCamera)
-			}
-			wg.Done()
-		}(t)
-	}
-	wg.Wait()
-	if changed {
-		this.Model3D.SetM4(0, this.transformMatrices)
-	}
+	this.CalculateTransformMatrix(&RenderMgr, this.NotRelativeToCamera)
 }
 
 func (this *InstancedEntity3D) SetNumInstances(n uint32) {
@@ -236,4 +230,23 @@ func (this *InstancedEntity3D) SetNumInstances(n uint32) {
 
 func (this *InstancedEntity3D) SetNumUsedInstances(n uint32) {
 	this.Model3D.SetNumUsedInstances(n)
+}
+
+func (this *InstancedEntity3D) CalculateTransformMatrix(rmgr *RenderManager, notRelativeToCamera int) {
+	var wg sync.WaitGroup
+	wg.Add(int(this.Model3D.GetNumInstances()))
+	for _, t := range this.Transforms {
+		go func(_t *TransformableObjectInstanced3D) {
+			if _t.valuesChanged() {
+				this.transformsChanged = true
+			}
+			_t.CalculateTransformMatrix(&RenderMgr, notRelativeToCamera)
+			wg.Done()
+		}(t)
+	}
+	wg.Wait()
+}
+
+func (this *InstancedEntity3D) SetTransformMatrix(rmgr *RenderManager) {
+
 }

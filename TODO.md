@@ -11,10 +11,6 @@
 + Parent System for Sprite2D
 + OBJLoader load non-triangulate faces
 + Add Build command gohome
-+ Go routines for calculating transform matrices
-    - create a channel in the parent for every children
-    - send on channel when parent finished
-    - wait until parent finished in children
 + Add more sprites to spriteanimation example
 + Add PostProcessing
     - interface with DoPostProcessing()
