@@ -417,3 +417,9 @@ func (this *OpenGLRenderer) SetDepthTesting(b bool) {
 func (this *OpenGLRenderer) GetName() string {
 	return "OpenGL"
 }
+
+func maxMultisampleSamples() int32 {
+	var data int32
+	gl.GetIntegerv(gl.MAX_INTEGER_SAMPLES, &data)
+	return data
+}

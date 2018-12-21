@@ -97,7 +97,8 @@ func (ogltex *OpenGLTexture) Load(data []byte, width, height int, shadowMap bool
 	}
 
 	if ogltex.multiSampled {
-		gl.TexImage2DMultisample(ogltex.bindingPoint(), 8, gl.RGBA, int32(ogltex.width), int32(ogltex.height), true)
+		samples := maxMultisampleSamples()
+		gl.TexImage2DMultisample(ogltex.bindingPoint(), gohome.Mini(4, samples), gl.RGBA, int32(ogltex.width), int32(ogltex.height), true)
 	} else {
 		var ptr unsafe.Pointer
 		if data == nil {

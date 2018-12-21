@@ -21,3 +21,19 @@ func ReadAll(r io.Reader) (str string, err error) {
 	}
 	return
 }
+
+func Maxi(a, b int32) int32 {
+	if a > b {
+		return a
+	} else {
+		return b
+	}
+}
+
+func Mini(a, b int32) int32 {
+	if a < b {
+		return a
+	} else {
+		return b
+	}
+}

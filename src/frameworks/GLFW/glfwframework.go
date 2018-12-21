@@ -68,7 +68,7 @@ func (gfw *GLFWFramework) createWindowProfile(windowWidth, windowHeight uint32, 
 	if setprofile {
 		setProfile()
 	}
-	glfw.WindowHint(glfw.Samples, 8)
+	glfw.WindowHint(glfw.Samples, 4)
 	var err error
 	gfw.window, err = glfw.CreateWindow(int(windowWidth), int(windowHeight), title, nil, nil)
 	if err != nil {

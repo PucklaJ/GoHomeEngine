@@ -113,7 +113,8 @@ func (this *OpenGLRenderTexture) loadRenderBuffer(width, height uint32) {
 		gl.BindRenderbuffer(gl.RENDERBUFFER, this.rbo)
 		handleOpenGLError("RenderTexture", this.Name, "glBindRenderbuffer")
 		if this.multiSampled {
-			gl.RenderbufferStorageMultisample(gl.RENDERBUFFER, 8, gl.DEPTH24_STENCIL8, int32(width), int32(height))
+			samples := maxMultisampleSamples()
+			gl.RenderbufferStorageMultisample(gl.RENDERBUFFER, gohome.Mini(4, samples), gl.DEPTH24_STENCIL8, int32(width), int32(height))
 			handleOpenGLError("RenderTexture", this.Name, "glRenderbufferStorageMultisample")
 		} else {
 			gl.RenderbufferStorage(gl.RENDERBUFFER, gl.DEPTH24_STENCIL8, int32(width), int32(height))
