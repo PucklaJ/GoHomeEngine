@@ -481,6 +481,10 @@ func (rmgr *RenderManager) RenderRenderObjectAdv(robj RenderObject, cameraIndex,
 
 	rmgr.CurrentShader = nil
 
+	if tobj := robj.GetTransformableObject(); tobj != nil {
+		tobj.CalculateTransformMatrix(rmgr, robj.NotRelativeCamera())
+	}
+
 	Render.PreRender()
 	rmgr.renderRenderObject(robj, LightMgr.CurrentLightCollection)
 	Render.AfterRender()
