@@ -7,6 +7,7 @@ import (
 	"github.com/PucklaMotzer09/tmx"
 	"strconv"
 	"strings"
+	"sync"
 )
 
 var (
@@ -71,11 +72,14 @@ func ToPixelAngle(angle float64) float32 {
 type PhysicsManager2D struct {
 	World  box2d.B2World
 	Paused bool
+
+	connectors []*PhysicsConnector2D
 }
 
 func (this *PhysicsManager2D) Init(gravity mgl32.Vec2) {
 	this.World = box2d.MakeB2World(ToBox2DDirection(gravity))
 	WORLD_SIZE = gohome.Render.GetNativeResolution()
+	this.Paused = false
 
 	gohome.ErrorMgr.Log("Physics", "Box2D", "Initialized!")
 }
@@ -86,6 +90,17 @@ func (this *PhysicsManager2D) Update(delta_time float32) {
 	}
 
 	this.World.Step(float64(delta_time), int(VELOCITY_ITERATIONS), int(POSITION_ITERATIONS))
+	if len(this.connectors) != 0 {
+		var wg sync.WaitGroup
+		wg.Add(len(this.connectors))
+		for _, c := range this.connectors {
+			go func(_c *PhysicsConnector2D) {
+				_c.Update()
+				wg.Done()
+			}(c)
+		}
+		wg.Wait()
+	}
 }
 
 func (this *PhysicsManager2D) CreateDynamicBox(pos mgl32.Vec2, size mgl32.Vec2) *box2d.B2Body {
@@ -269,10 +284,9 @@ func (this *PhysicsManager2D) CreatePolyline(X, Y float64, line *tmx.Polyline) *
 }
 
 func (this *PhysicsManager2D) Terminate() {
-	for b := this.World.GetBodyList(); b != nil; b = b {
-		b1 := b.GetNext()
+	for b := this.World.GetBodyList(); b != nil; b = b.GetNext() {
 		this.World.DestroyBody(b)
-		b = b1
 	}
 	this.World.Destroy()
+	this.connectors = this.connectors[:0]
 }

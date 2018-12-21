@@ -41,6 +41,7 @@
 	- Add InitAudio method to gohome which takes a AudioManager pointer
 + Add audio to android
     - SDL_mixer or OpenSL
++ Remove go routines at some places on android
 
 ## 2D
 
