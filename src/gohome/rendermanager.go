@@ -3,6 +3,7 @@ package gohome
 import (
 	"github.com/PucklaMotzer09/mathgl/mgl32"
 	"math"
+	"runtime"
 	"sync"
 )
 
@@ -221,7 +222,9 @@ func (rmgr *RenderManager) calculateTransformMatrices(rtype RenderType) {
 
 func (rmgr *RenderManager) updateTransformMatrix(robj RenderObject) {
 	if robj != nil && robj.GetTransformableObject() != nil {
-		//robj.GetTransformableObject().CalculateTransformMatrix(rmgr, robj.NotRelativeCamera())
+		if runtime.GOOS == "android" {
+			robj.GetTransformableObject().CalculateTransformMatrix(rmgr, robj.NotRelativeCamera())
+		}
 		robj.GetTransformableObject().SetTransformMatrix(rmgr)
 	} else {
 		if TYPE_2D.Compatible(robj.GetType()) {
@@ -453,7 +456,9 @@ func (rmgr *RenderManager) Render(rtype RenderType, cameraIndex int32, viewportI
 	if rmgr.CurrentShader != nil {
 		rmgr.CurrentShader.Use()
 	}
-	rmgr.calculateTransformMatrices(rtype)
+	if runtime.GOOS != "android" {
+		rmgr.calculateTransformMatrices(rtype)
+	}
 
 	for i := 0; i < len(rmgr.renderObjects); i++ {
 		rmgr.renderInnerLoop(rtype, rmgr.renderObjects[i], lightCollectionIndex)
@@ -481,8 +486,10 @@ func (rmgr *RenderManager) RenderRenderObjectAdv(robj RenderObject, cameraIndex,
 
 	rmgr.CurrentShader = nil
 
-	if tobj := robj.GetTransformableObject(); tobj != nil {
-		tobj.CalculateTransformMatrix(rmgr, robj.NotRelativeCamera())
+	if runtime.GOOS != "android" {
+		if tobj := robj.GetTransformableObject(); tobj != nil {
+			tobj.CalculateTransformMatrix(rmgr, robj.NotRelativeCamera())
+		}
 	}
 
 	Render.PreRender()

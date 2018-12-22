@@ -5,6 +5,7 @@ import (
 	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
 	"github.com/PucklaMotzer09/mathgl/mgl32"
 	"github.com/PucklaMotzer09/tmx"
+	"runtime"
 	"strconv"
 	"strings"
 	"sync"
@@ -91,15 +92,21 @@ func (this *PhysicsManager2D) Update(delta_time float32) {
 
 	this.World.Step(float64(delta_time), int(VELOCITY_ITERATIONS), int(POSITION_ITERATIONS))
 	if len(this.connectors) != 0 {
-		var wg sync.WaitGroup
-		wg.Add(len(this.connectors))
-		for _, c := range this.connectors {
-			go func(_c *PhysicsConnector2D) {
-				_c.Update()
-				wg.Done()
-			}(c)
+		if runtime.GOOS != "android" {
+			var wg sync.WaitGroup
+			wg.Add(len(this.connectors))
+			for _, c := range this.connectors {
+				go func(_c *PhysicsConnector2D) {
+					_c.Update()
+					wg.Done()
+				}(c)
+			}
+			wg.Wait()
+		} else {
+			for _, c := range this.connectors {
+				c.Update()
+			}
 		}
-		wg.Wait()
 	}
 }
 
