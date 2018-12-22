@@ -1,0 +1,18 @@
+gohome command
+    Build interface
+        Build() // builds exe
+        Install() // install exe/apk
+        Generate() // generates source
+        Export() // builds exe and packages it with all needed files
+    DesktopBuild
+    AndroidBuild
+    // BrowserBuild
+
+Read variables from file (.gohome.config)
+    Variable=Value
+    ...
+    Variable=Value
+Not existing variables get default value
+
+functions:
+    ReplacesTextInFile

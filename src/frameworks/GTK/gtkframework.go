@@ -53,7 +53,6 @@ func (this *GTKFramework) Init(ml *gohome.MainLoop) error {
 	} else {
 		gohome.ErrorMgr.Init()
 	}
-	gohome.RenderMgr.EnableBackBuffer = false
 	ml.SetupStartScene()
 	if gtk.GetGLArea().ToWidget().GetParent().IsNULL() {
 		return errors.New("GLArea has not been added!")
@@ -72,17 +71,12 @@ func (this *GTKFramework) Update() {
 func (this *GTKFramework) Terminate() {
 	gtk.MainQuit()
 }
-func (this *GTKFramework) PollEvents() {
 
-}
 func (this *GTKFramework) CreateWindow(windowWidth, windowHeight uint32, title string) error {
 	return gtk.CreateWindow(windowWidth, windowHeight, title)
 }
 func (this *GTKFramework) WindowClosed() bool {
 	return false
-}
-func (this *GTKFramework) WindowSwap() {
-
 }
 
 func (this *GTKFramework) WindowSetSize(size mgl32.Vec2) {
@@ -180,41 +174,8 @@ func (this *GTKFramework) ShowYesNoDialog(title, message string) uint8 {
 	return gohome.DIALOG_CANCELLED
 }
 
-func (this *GTKFramework) OnResize(callback func(newWidth, newHeight uint32)) {
-
-}
-func (this *GTKFramework) OnMove(callback func(newPosX, newPosY uint32)) {
-
-}
-func (this *GTKFramework) OnClose(callback func()) {
-
-}
-func (this *GTKFramework) OnFocus(callback func(focused bool)) {
-
-}
-
-func (this *GTKFramework) StartTextInput() {
-
-}
-func (this *GTKFramework) GetTextInput() string {
-	return ""
-}
-func (this *GTKFramework) EndTextInput() {
-
-}
 func (this *GTKFramework) GetGtkWindow() gtk.Window {
 	return gtk.GetWindow()
-}
-
-func (*GTKFramework) GetAudioManager() gohome.AudioManager {
-	return &gohome.NilAudioManager{}
-}
-
-func (*GTKFramework) LoadSound(name, path string) gohome.Sound {
-	return nil
-}
-func (*GTKFramework) LoadMusic(name, path string) gohome.Music {
-	return nil
 }
 
 func (this *GTKFramework) MonitorGetSize() mgl32.Vec2 {
