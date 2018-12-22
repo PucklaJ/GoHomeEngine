@@ -1,13 +1,9 @@
 package main
 
-import (
-	"runtime"
-)
-
 var (
 	// Common
-	VAR_OS     string = runtime.GOOS
-	VAR_ARCH   string = runtime.GOARCH
+	VAR_OS     string = "runtime"
+	VAR_ARCH   string = "runtime"
 	VAR_FRAME  string = "GLFW"
 	VAR_RENDER string = "OpenGL"
 	VAR_START  string = ""
@@ -20,7 +16,7 @@ var (
 	VAR_ANDROID_KEYPWD   string = ""
 	VAR_ANDROID_STOREPWD string = ""
 
-	COMMAND string = "build"
+	COMMAND string = ""
 
 	Env []string
 

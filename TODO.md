@@ -41,6 +41,8 @@
 	- Add InitAudio method to gohome which takes a AudioManager pointer
 + Add audio to android
     - SDL_mixer or OpenSL
++ Fix OpenAL errors
+    - device not closed
 
 ## 2D
 

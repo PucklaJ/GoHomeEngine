@@ -3,13 +3,26 @@ package main
 import (
 	"fmt"
 	"os"
+	"runtime"
 	"strconv"
 )
 
 func (*DesktopBuild) build(str string) bool {
+	var varos, vararch string
+	if VAR_OS == "runtime" {
+		varos = runtime.GOOS
+	} else {
+		varos = VAR_OS
+	}
+	if VAR_ARCH == "runtime" {
+		vararch = runtime.GOARCH
+	} else {
+		vararch = VAR_ARCH
+	}
+
 	Env = []string{
-		"GOOS=" + VAR_OS,
-		"GOARCH=" + VAR_ARCH,
+		"GOOS=" + varos,
+		"GOARCH=" + vararch,
 	}
 
 	var err error
@@ -64,6 +77,11 @@ func (this *DesktopBuild) generateMain() (str string) {
 }
 
 func (this *DesktopBuild) Generate() {
+	if VAR_FRAME == "GTK" && VAR_RENDER != "OpenGL" {
+		fmt.Println(VAR_FRAME, "is not compatible with", VAR_RENDER)
+		os.Exit(1)
+	}
+
 	this.title = CustomValues["TITLE"]
 	if str, ok := CustomValues["WIDTH"]; ok {
 		i, err := strconv.ParseInt(str, 10, 32)
@@ -153,7 +171,11 @@ func (*DesktopBuild) IsGenerated() bool {
 	return FileExists(WorkingDir() + "main.go")
 }
 func (*DesktopBuild) Run() bool {
-	err := ExecCommand("./" + PackageName())
+	pack := PackageName()
+	if runtime.GOOS == "windows" {
+		pack += ".exe"
+	}
+	err := ExecCommand("./" + pack)
 	return err == nil
 }
 func (*DesktopBuild) Export() {

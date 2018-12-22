@@ -61,6 +61,7 @@ func HandleArguments() {
 
 	if COMMAND == "" {
 		fmt.Println("No command specified: build|install|run|generate|clean|env|set|reset")
+		WriteConfigFile()
 		os.Exit(1)
 	}
 }
@@ -69,6 +70,7 @@ func ExecuteCommands() {
 	build := getBuild()
 	if build == nil {
 		fmt.Println("OS not supported:", VAR_OS)
+		WriteConfigFile()
 		os.Exit(1)
 	}
 
@@ -110,6 +112,7 @@ func ExecuteCommands() {
 	}
 
 	if !success {
+		WriteConfigFile()
 		os.Exit(1)
 	}
 }

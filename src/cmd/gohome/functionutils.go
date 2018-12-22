@@ -149,7 +149,14 @@ func readVariables(r io.Reader) {
 }
 
 func getBuild() Build {
-	switch VAR_OS {
+	var varos string
+	if VAR_OS == "runtime" {
+		varos = runtime.GOOS
+	} else {
+		varos = VAR_OS
+	}
+
+	switch varos {
 	case "darwin", "freebsd", "linux", "openbsd", "solaris", "windows":
 		return &DesktopBuild{}
 	case "android":
@@ -161,8 +168,8 @@ func getBuild() Build {
 
 func resetParameters() {
 	// Common
-	VAR_OS = runtime.GOOS
-	VAR_ARCH = runtime.GOARCH
+	VAR_OS = "runtime"
+	VAR_ARCH = "runtime"
 	VAR_FRAME = "GLFW"
 	VAR_RENDER = "OpenGL"
 	VAR_START = ""

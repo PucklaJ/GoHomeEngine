@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"os"
 	"os/exec"
+	"runtime"
 	"strings"
 )
 
@@ -34,5 +35,11 @@ func FileExists(fn string) bool {
 
 func PackageName() string {
 	wd := WorkingDir()
-	return wd[strings.LastIndex(wd[:len(wd)-1], "/")+1 : len(wd)-1]
+	var slash string
+	if runtime.GOOS == "windows" {
+		slash = "\\"
+	} else {
+		slash = "/"
+	}
+	return wd[strings.LastIndex(wd[:len(wd)-1], slash)+1 : len(wd)-1]
 }
