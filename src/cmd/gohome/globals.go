@@ -10,7 +10,7 @@ var (
 	VAR_CONFIG string = "DEBUG"
 
 	// Android
-	VAR_ANDROID_API      string = "16"
+	VAR_ANDROID_API      string = ""
 	VAR_ANDROID_KEYSTORE string = ""
 	VAR_ANDROID_KEYALIAS string = ""
 	VAR_ANDROID_KEYPWD   string = ""

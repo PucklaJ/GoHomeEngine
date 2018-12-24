@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"runtime"
-	"strconv"
+	"strings"
 )
 
 func (*DesktopBuild) build(str string) bool {
@@ -39,10 +40,7 @@ func (*DesktopBuild) build(str string) bool {
 			"CGO_LDFLAGS=-O3",
 			"CGO_CXXFLAGS=-O3",
 		}...)
-		err = ExecCommand("go", str, "-v")
-		if err == nil {
-			ExecCommand("strip", "-s", "-x", "--strip-unneeded", PackageName())
-		}
+		err = ExecCommand("go", str, "-v", "-ldflags=-s -w")
 	}
 
 	return err == nil
@@ -55,8 +53,11 @@ func (this *DesktopBuild) Install() bool {
 	return this.build("install")
 }
 
-func (this *DesktopBuild) generateMain() (str string) {
+func generateMain(forandroid bool) (str string) {
 	str += "package main\n\n"
+	if forandroid {
+		str += "import \"C\"\n\n"
+	}
 	str += "import (\n"
 	str += "\t\"github.com/PucklaMotzer09/GoHomeEngine/src/frameworks/" + VAR_FRAME + "\"\n"
 	str += "\t\"github.com/PucklaMotzer09/GoHomeEngine/src/gohome\"\n"
@@ -65,13 +66,20 @@ func (this *DesktopBuild) generateMain() (str string) {
 	str += "func main() {\n"
 	var frame string
 	if VAR_FRAME == "GTK" {
-		frame = "&framework." + VAR_FRAME + "Framework{\n\t\tUseWholeWindowAsGLArea: " + strconv.FormatBool(this.gtkwholewindow) + ",\n\t\tMenuBarFix: " + strconv.FormatBool(this.gtkmenubar) + ",\n\t}"
+		frame = "&framework." + VAR_FRAME + "Framework{\n\t\tUseWholeWindowAsGLArea: " + CustomValues["USEWHOLEWINDOWASGLAREA"] + ",\n\t\tMenuBarFix: " + CustomValues["MENUBARFIX"] + ",\n\t}"
 	} else {
 		frame = "&framework." + VAR_FRAME + "Framework{}"
 	}
 
-	str += "\tgohome.MainLop.Run(" + frame + ",&renderer." + VAR_RENDER + "Renderer{}," + strconv.FormatInt(int64(this.width), 10) + "," + strconv.FormatInt(int64(this.height), 10) + ",\"" + this.title + "\",&" + VAR_START + "{})\n"
+	str += "\tgohome.MainLop.Run(" + frame + ",&renderer." + VAR_RENDER + "Renderer{}," + CustomValues["WIDTH"] + "," + CustomValues["HEIGHT"] + ",\"" + CustomValues["TITLE"] + "\",&" + VAR_START + "{})\n"
 	str += "}\n"
+
+	if forandroid {
+		str += "\n//export SDL_main\n"
+		str += "func SDL_main() {\n"
+		str += "\tmain()\n"
+		str += "}\n"
+	}
 
 	return
 }
@@ -82,83 +90,17 @@ func (this *DesktopBuild) Generate() {
 		os.Exit(1)
 	}
 
-	this.title = CustomValues["TITLE"]
-	if str, ok := CustomValues["WIDTH"]; ok {
-		i, err := strconv.ParseInt(str, 10, 32)
-		if err == nil {
-			this.width = int(i)
-		}
-	}
-	if str, ok := CustomValues["HEIGHT"]; ok {
-		i, err := strconv.ParseInt(str, 10, 32)
-		if err == nil {
-			this.height = int(i)
-		}
-	}
-
-	if this.title == "" {
-		fmt.Print("Title: ")
-		this.title = ConsoleRead()
-		CustomValues["TITLE"] = this.title
-	}
-	if this.width == 0 {
-		fmt.Print("Width: ")
-		i, err := strconv.ParseInt(ConsoleRead(), 10, 32)
-		if err != nil {
-			this.width = 1280
-		} else {
-			this.width = int(i)
-		}
-		CustomValues["WIDTH"] = strconv.FormatInt(int64(this.width), 10)
-	}
-	if this.height == 0 {
-		fmt.Print("Height: ")
-		i, err := strconv.ParseInt(ConsoleRead(), 10, 32)
-		if err != nil {
-			this.height = 720
-		} else {
-			this.height = int(i)
-		}
-		CustomValues["HEIGHT"] = strconv.FormatInt(int64(this.height), 10)
-	}
+	this.title = GetCustomValue("TITLE")
+	this.width = GetCustomValuei("WIDTH", 1280)
+	this.height = GetCustomValuei("HEIGHT", 720)
 
 	if VAR_FRAME == "GTK" {
-		var err error
-		var str string
-		var ok bool
-		if str, ok = CustomValues["USEWHOLEWINDOWASGLAREA"]; ok {
-			this.gtkwholewindow, err = strconv.ParseBool(str)
-		}
-
-		if !ok || err != nil {
-			fmt.Print("UseWholeWindowAsGLArea: ")
-			this.gtkwholewindow, err = strconv.ParseBool(ConsoleRead())
-			if err != nil {
-				this.gtkwholewindow = true
-			}
-		}
-		err = nil
-		if str, ok = CustomValues["MENUBARFIX"]; ok {
-			this.gtkmenubar, err = strconv.ParseBool(str)
-		}
-
-		if !ok || err != nil {
-			fmt.Print("MenuBarFix: ")
-			this.gtkmenubar, err = strconv.ParseBool(ConsoleRead())
-			if err != nil {
-				this.gtkmenubar = false
-			}
-		}
-
-		CustomValues["USEWHOLEWINDOWASGLAREA"] = strconv.FormatBool(this.gtkwholewindow)
-		CustomValues["MENUBARFIX"] = strconv.FormatBool(this.gtkmenubar)
+		this.gtkwholewindow = GetCustomValueb("USEWHOLEWINDOWASGLAREA", true)
+		this.gtkmenubar = GetCustomValueb("MENUBARFIX", true)
 	}
 
-	if VAR_START == "" {
-		fmt.Print("StartScene: ")
-		VAR_START = ConsoleRead()
-	}
-	str := this.generateMain()
+	AssertValue(&VAR_START, "", "StartScene")
+	str := generateMain(false)
 	file, err := os.Create(WorkingDir() + "main.go")
 	if err != nil {
 		fmt.Println("Failed to generate main.go:", err)
@@ -186,13 +128,20 @@ func (*DesktopBuild) Clean() {
 	ExecCommand("rm", "-f", "main.go")
 }
 
-func (*DesktopBuild) Env() {
+func printEnv(forandroid bool) {
 	fmt.Println("OS=" + VAR_OS)
 	fmt.Println("ARCH=" + VAR_ARCH)
 	fmt.Println("FRAME=" + VAR_FRAME)
 	fmt.Println("RENDER=" + VAR_RENDER)
 	fmt.Println("START=" + VAR_START)
 	fmt.Println("CONFIG=" + VAR_CONFIG)
+	if forandroid {
+		fmt.Println("ANDROID_API=" + VAR_ANDROID_API)
+		fmt.Println("ANDROID_KEYSTORE=" + VAR_ANDROID_KEYSTORE)
+		fmt.Println("ANDROID_KEYALIAS=" + VAR_ANDROID_KEYALIAS)
+		fmt.Println("ANDROID_KEYPWD=" + VAR_ANDROID_KEYPWD)
+		fmt.Println("ANDROID_STOREPWD=" + VAR_ANDROID_STOREPWD)
+	}
 	for k, v := range CustomValues {
 		fmt.Println(k + "=" + v)
 	}
@@ -208,27 +157,202 @@ func (*DesktopBuild) Env() {
 	}
 }
 
-func (*AndroidBuild) Build() bool {
-	return true
+func (*DesktopBuild) Env() {
+	printEnv(false)
 }
-func (*AndroidBuild) Install() bool {
-	return true
-}
-func (*AndroidBuild) Generate() {
 
+func (*AndroidBuild) Build() bool {
+	slash := GetSlash()
+	ndkHome := os.Getenv("ANDROID_NDK_HOME")
+	sysRoot := ndkHome + slash + "platforms" + slash + "android-" + VAR_ANDROID_API + slash + "arch-arm"
+	Env = append(Env, []string{
+		"CC=arm-linux-androideabi-gcc",
+		"CGO_CFLAGS=-O3 -w -D__ANDROID_API__=" + VAR_ANDROID_API + " -I" + ndkHome + "/sysroot/usr/include -I" + ndkHome + "/sysroot/usr/include/arm-linux-androideabi --sysroot=" + sysRoot,
+		"CGO_LDFLAGS=-O3 -L" + ndkHome + "/sysroot/usr/lib -L" + ndkHome + "/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/lib/gcc/arm-linux-androideabi/4.9.x/ --sysroot=" + sysRoot,
+		"CGO_CXXFLAGS=-O3",
+		"CGO_ENABLED=1",
+		"GOOS=android",
+		"GOARCH=arm",
+	}...)
+
+	if err := ExecCommand("go", "build", "-v", "-tags=static", "-buildmode=c-shared", "-ldflags=-s -w -extldflags=-Wl,-soname,libgohome.so", "-o=android/libs/armeabi-v7a/libgohome.so"); err != nil {
+		return false
+	}
+
+	var assemble string
+
+	if VAR_CONFIG == "DEBUG" {
+		assemble = "assembleDebug"
+	} else {
+		assemble = "assembleRelease"
+	}
+
+	if err := ExecCommand("./gradlew", assemble); err != nil {
+		return false
+	}
+
+	return true
+}
+
+func installAPK() bool {
+	slash := GetSlash()
+	path := "android" + slash + "build" + slash + "outputs" + slash + "apk" + slash
+	if VAR_CONFIG == "DEBUG" {
+		path += "debug" + slash + "android-debug.apk"
+	} else {
+		path += "release" + slash + "android-release.apk"
+	}
+
+	if err := ExecCommand("adb", "install", "-r", path); err != nil {
+		return false
+	}
+	return true
+}
+
+func (this *AndroidBuild) Install() bool {
+	if !this.Build() {
+		return false
+	}
+
+	return installAPK()
+}
+
+func doCopy(path string) {
+	if err := ExecCommand("cp", "-r", path, WorkingDir()); err != nil {
+		fmt.Println("Failed to copy android files")
+		os.Exit(1)
+	}
+}
+
+func setGradleProperties() {
+	slash := GetSlash()
+	home := os.Getenv("HOME") + slash
+	var str string
+	file, err := os.Open(home + ".gradle" + slash + "gradle.properties")
+	if err == nil {
+		contents, _ := ioutil.ReadAll(file)
+		cstr := string(contents)
+		values := strings.Split(cstr, "\n")
+		for _, v := range values {
+			if !strings.Contains(v, "=") {
+				continue
+			}
+			keyvalues := strings.Split(v, "=")
+			switch keyvalues[0] {
+			case "ANDROID_KEYSTORE", "ANDROID_STOREPWD", "ANDROID_KEYALIAS", "ANDROID_KEYPWD":
+			default:
+				str += keyvalues[0] + "=" + keyvalues[1] + "\n"
+			}
+		}
+	}
+
+	str += "ANDROID_KEYSTORE=" + VAR_ANDROID_KEYSTORE + "\n"
+	str += "ANDROID_STOREPWD=" + VAR_ANDROID_STOREPWD + "\n"
+	str += "ANDROID_KEYALIAS=" + VAR_ANDROID_KEYALIAS + "\n"
+	str += "ANDROID_KEYPWD=" + VAR_ANDROID_KEYPWD + "\n"
+
+	file, err = os.Create(home + ".gradle" + slash + "gradle.properties")
+	if err != nil {
+		fmt.Println("Failed to create gradle.properties:", err)
+		os.Exit(1)
+	}
+	file.WriteString(str)
+	file.Close()
+}
+
+func copyAssets() {
+	slash := GetSlash()
+	ExecCommand("cp", "-r", "assets", "android"+slash+"src"+slash+"main"+slash+"assets"+slash+"assets")
+}
+
+func (*AndroidBuild) Generate() {
+	slash := GetSlash()
+	gopath := os.Getenv("GOPATH") + slash
+	androidpath := gopath + "src" + slash + "github.com" + slash + "PucklaMotzer09" + slash + "GoHomeEngine" + slash + "android" + slash
+
+	doCopy(androidpath + "android")
+	doCopy(androidpath + "gradle")
+	doCopy(androidpath + "build.gradle")
+	doCopy(androidpath + "build_libraries.sh")
+	doCopy(androidpath + "gradlew")
+	doCopy(androidpath + "gradlew.bat")
+	doCopy(androidpath + "settings.gradle")
+
+	appname := GetCustomValue("APPNAME")
+	AssertValue(&VAR_ANDROID_API, "", "APILEVEL")
+	AssertValue(&VAR_ANDROID_KEYSTORE, "", "KEYSTORE")
+	AssertValue(&VAR_ANDROID_KEYALIAS, "", "KEYALIAS")
+	AssertValue(&VAR_ANDROID_KEYPWD, "", "KEYPWD")
+	AssertValue(&VAR_ANDROID_STOREPWD, "", "STOREPWD")
+	AssertValue(&VAR_START, "", "StartScene")
+	CustomValues["TITLE"] = appname
+	if _, ok := CustomValues["WIDTH"]; !ok {
+		CustomValues["WIDTH"] = "1280"
+	}
+	if _, ok := CustomValues["HEIGHT"]; !ok {
+		CustomValues["HEIGHT"] = "720"
+	}
+
+	buildgradle := WorkingDir() + "android" + slash + "build.gradle"
+	stringsxml := WorkingDir() + "android" + slash + "src" + slash + "main" + slash + "res" + slash + "values" + slash + "strings.xml"
+
+	ReplaceStringinFile(buildgradle, "%APPNAME%", LowerCaseAndNoNumber(appname))
+	ReplaceStringinFile(buildgradle, "%APILEVEL%", VAR_ANDROID_API)
+	ReplaceStringinFile(stringsxml, "%APPNAME%", appname)
+
+	setGradleProperties()
+	copyAssets()
+
+	if VAR_FRAME != "SDL2" {
+		fmt.Println("Android is only compatible with SDL2")
+		VAR_FRAME = "SDL2"
+	}
+	if !strings.Contains(VAR_RENDER, "OpenGLES") {
+		fmt.Println("Android is only compatible with OpenGLES")
+		fmt.Print("Which version (2,3,31): ")
+		version := ConsoleRead()
+		VAR_RENDER = "OpenGLES" + version
+	}
+
+	str := generateMain(true)
+	file, err := os.Create(WorkingDir() + "main.go")
+	if err != nil {
+		fmt.Println("Failed to create main.go:", err)
+		os.Exit(1)
+	}
+
+	file.WriteString(str)
+	file.Close()
 }
 func (*AndroidBuild) IsGenerated() bool {
 	return FileExists(WorkingDir()+"main.go") && FileExists(WorkingDir()+"gradlew")
 }
 func (*AndroidBuild) Run() bool {
+	if !installAPK() {
+		return false
+	}
+
+	if err := ExecCommand("adb", "shell", "am", "start", "-n", "com.gohome."+LowerCaseAndNoNumber(CustomValues["APPNAME"])+"/com.example.android.MyGame"); err != nil {
+		return false
+	}
+
 	return true
 }
-func (*AndroidBuild) Export() {
-
+func (this *AndroidBuild) Export() {
+	slash := GetSlash()
+	ExecCommand("mkdir", "-p", "export"+slash+"android")
+	path := "android" + slash + "build" + slash + "outputs" + slash + "apk" + slash
+	if VAR_CONFIG == "DEBUG" {
+		path += "debug" + slash + "android-debug.apk"
+	} else {
+		path += "release" + slash + "android-release.apk"
+	}
+	ExecCommand("cp", path, "export"+slash+"android"+slash+CustomValues["APPNAME"]+".apk")
 }
 func (*AndroidBuild) Clean() {
-
+	ExecCommand("rm", "-f", "-r", "android", "gradle", ".gradle", "build.gradle", "gradlew", "gradlew.bat", "settings.gradle", "build_libraries.sh", "main.go")
+	ExecCommand("go", "clean", "-r", "--cache")
 }
 func (*AndroidBuild) Env() {
-
+	printEnv(true)
 }

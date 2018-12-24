@@ -103,6 +103,8 @@ func ExecuteCommands() {
 		build.Env()
 	case "reset":
 		resetParameters()
+		ExecCommand("rm", ".gohome.config")
+		os.Exit(0)
 	case "export":
 		if !build.IsGenerated() || valuesChanged() {
 			build.Generate()
