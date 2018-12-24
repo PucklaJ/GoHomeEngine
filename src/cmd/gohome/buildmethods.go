@@ -218,7 +218,7 @@ func (*AndroidBuild) Generate() {
 
 }
 func (*AndroidBuild) IsGenerated() bool {
-	return false
+	return FileExists(WorkingDir()+"main.go") && FileExists(WorkingDir()+"gradlew")
 }
 func (*AndroidBuild) Run() bool {
 	return true
