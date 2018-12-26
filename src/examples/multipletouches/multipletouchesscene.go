@@ -1,6 +1,6 @@
 package main
 
-import "github.com/PucklaMotzer09/gohomeengine/src/gohome"
+import "github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
 
 type MultipleTouchesScene struct {
 	targets [6]gohome.Sprite2D
