@@ -29,6 +29,9 @@ func (*DesktopBuild) build(str string) bool {
 	var ldflags string
 	if VAR_CONFIG == "RELEASE" {
 		ldflags = "-ldflags=-s -w"
+		if runtime.GOOS == "windows" {
+			ldflags += " -extldflags=-Wl,--subsystem,windows"
+		}
 	}
 	if COMMAND == "export" {
 		if VAR_CONFIG == "DEBUG" {
@@ -149,19 +152,41 @@ func (*DesktopBuild) Run() bool {
 	return err == nil
 }
 func (*DesktopBuild) Export() {
+	var vararch string
+	var varos string
+	if VAR_ARCH == "runtime" {
+		vararch = runtime.GOARCH
+	} else {
+		vararch = VAR_ARCH
+	}
+	if VAR_OS == "runtime" {
+		varos = runtime.GOOS
+	} else {
+		varos = VAR_OS
+	}
+
 	slash := GetSlash()
 	exename := PackageName()
-	if runtime.GOOS == "windows" {
+	if varos == "windows" {
 		exename += ".exe"
 	}
-	exportpath := "export" + slash + runtime.GOOS
+	exportpath := "export" + slash + varos
+	if varos == "windows" {
+		exportpath += slash + vararch
+	}
 	ExecCommand("mkdir", "-p", exportpath)
 	ExecCommand("cp", exename, exportpath+slash+exename)
 	ExecCommand("cp", "-r", "assets", exportpath+slash+"assets")
 	if VAR_FRAME == "GLFW" {
-		if runtime.GOOS == "linux" {
+		if varos == "linux" {
 			ExecCommand("mkdir", "-p", exportpath+slash+"lib")
 			ExecCommand("cp", "/usr/lib/x86_64-linux-gnu/libopenal.so.1", exportpath+slash+"lib")
+		} else if varos == "windows" {
+			if vararch == "386" {
+				ExecCommand("cp", "C:\\msys64\\mingw32\\bin\\libopenal-1.dll", exportpath)
+			} else {
+				ExecCommand("cp", "C:\\msys64\\mingw64\\bin\\libopenal-1.dll", exportpath)
+			}
 		}
 	}
 }
