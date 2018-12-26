@@ -26,6 +26,22 @@ func (*DesktopBuild) build(str string) bool {
 		"GOARCH=" + vararch,
 	}
 
+	var ldflags string
+	if VAR_CONFIG == "RELEASE" {
+		ldflags = "-ldflags=-s -w"
+	}
+	if COMMAND == "export" {
+		if VAR_CONFIG == "DEBUG" {
+			ldflags = "-ldflags="
+		} else {
+			ldflags += " "
+		}
+
+		if runtime.GOOS == "linux" {
+			ldflags += "-extldflags=-Wl,-z,origin,-rpath=$ORIGIN/lib"
+		}
+	}
+
 	var err error
 	if VAR_CONFIG == "DEBUG" {
 		Env = append(Env, []string{
@@ -33,14 +49,14 @@ func (*DesktopBuild) build(str string) bool {
 			"CGO_LDFLAGS=-g",
 			"CGO_CXXFLAGS=-g",
 		}...)
-		err = ExecCommand("go", str, "-v")
+		err = ExecCommand("go", str, "-v", ldflags)
 	} else {
 		Env = append(Env, []string{
 			"CGO_FLAGS=-O3",
 			"CGO_LDFLAGS=-O3",
 			"CGO_CXXFLAGS=-O3",
 		}...)
-		err = ExecCommand("go", str, "-v", "-ldflags=-s -w")
+		err = ExecCommand("go", str, "-v", ldflags)
 	}
 
 	return err == nil
@@ -90,6 +106,18 @@ func (this *DesktopBuild) Generate() {
 		os.Exit(1)
 	}
 
+	if VAR_RENDER == "OpenGLES3" || VAR_RENDER == "OpenGLES31" {
+		fmt.Println("Desktop is only compatible with OpenGL or OpenGLES2!")
+		fmt.Print("(1) OpenGL\n(2)OpenGLES2\nChoose one: ")
+		render := ConsoleReadi()
+		switch render {
+		case 2:
+			VAR_RENDER = "OpenGLES2"
+		default:
+			VAR_RENDER = "OpenGL"
+		}
+	}
+
 	this.title = GetCustomValue("TITLE")
 	this.width = GetCustomValuei("WIDTH", 1280)
 	this.height = GetCustomValuei("HEIGHT", 720)
@@ -121,7 +149,21 @@ func (*DesktopBuild) Run() bool {
 	return err == nil
 }
 func (*DesktopBuild) Export() {
-
+	slash := GetSlash()
+	exename := PackageName()
+	if runtime.GOOS == "windows" {
+		exename += ".exe"
+	}
+	exportpath := "export" + slash + runtime.GOOS
+	ExecCommand("mkdir", "-p", exportpath)
+	ExecCommand("cp", exename, exportpath+slash+exename)
+	ExecCommand("cp", "-r", "assets", exportpath+slash+"assets")
+	if VAR_FRAME == "GLFW" {
+		if runtime.GOOS == "linux" {
+			ExecCommand("mkdir", "-p", exportpath+slash+"lib")
+			ExecCommand("cp", "/usr/lib/x86_64-linux-gnu/libopenal.so.1", exportpath+slash+"lib")
+		}
+	}
 }
 func (*DesktopBuild) Clean() {
 	ExecCommand("go", "clean", "-r", "--cache")

@@ -26,6 +26,16 @@ func ConsoleRead() string {
 	return text[:len(text)-1]
 }
 
+func ConsoleReadi() int {
+	str := ConsoleRead()
+	i, err := strconv.ParseInt(str, 10, 32)
+	if err != nil {
+		return 0
+	} else {
+		return int(i)
+	}
+}
+
 func WorkingDir() string {
 	str, _ := os.Getwd()
 	return str + "/"

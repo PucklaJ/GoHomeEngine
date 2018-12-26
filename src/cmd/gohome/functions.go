@@ -109,8 +109,10 @@ func ExecuteCommands() {
 		if !build.IsGenerated() || valuesChanged() {
 			build.Generate()
 		}
-		build.Build()
-		build.Export()
+		success = build.Build()
+		if success {
+			build.Export()
+		}
 	}
 
 	if !success {
