@@ -71,6 +71,7 @@ func (this *JSFramework) CreateWindow(windowWidth, windowHeight uint32, title st
 	}
 	this.Canvas.Set("width", windowWidth)
 	this.Canvas.Set("height", windowHeight)
+	this.Canvas.Set("id", "gohome_canvas")
 	body := document.Get("body")
 	if body == nil {
 		return errors.New("Failed to attach Canvas to body")
