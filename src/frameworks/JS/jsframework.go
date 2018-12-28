@@ -28,7 +28,9 @@ func loop(float32) {
 	}()
 }
 
-func (*JSFramework) Init(ml *gohome.MainLoop) error {
+func (this *JSFramework) Init(ml *gohome.MainLoop) error {
+	framew = this
+	addEventListeners()
 	if !ml.InitWindow() {
 		return errors.New("Failed to create Canvas")
 	}
@@ -51,7 +53,14 @@ func (*JSFramework) Terminate() {
 }
 
 func (*JSFramework) PollEvents() {
+	lock_events = true
 
+	for _, event := range buffered_events {
+		event.ApplyValues()
+	}
+	buffered_events = buffered_events[:0]
+
+	lock_events = false
 }
 
 func (this *JSFramework) CreateWindow(windowWidth, windowHeight uint32, title string) error {
@@ -60,6 +69,8 @@ func (this *JSFramework) CreateWindow(windowWidth, windowHeight uint32, title st
 	if this.Canvas == nil {
 		return errors.New("Failed to create Canvas")
 	}
+	this.Canvas.Set("width", windowWidth)
+	this.Canvas.Set("height", windowHeight)
 	body := document.Get("body")
 	if body == nil {
 		return errors.New("Failed to attach Canvas to body")
@@ -124,3 +135,5 @@ func (*JSFramework) Log(a ...interface{}) {
 	}
 	println(str)
 }
+
+var framew *JSFramework
