@@ -65,6 +65,22 @@ func printOGLTexture2DError(ogltex *WebGLTexture, data []byte, width, height int
 	}
 }
 
+func isPowerOfTwo(width, height int) bool {
+	var pow = 1
+	var widthis, heightis bool
+	for i := 0; i < 11; i++ {
+		if !widthis && width == pow {
+			widthis = true
+		}
+		if !heightis && height == pow {
+			heightis = true
+		}
+		pow *= 2
+	}
+
+	return widthis && heightis
+}
+
 func (ogltex *WebGLTexture) Load(data []byte, width, height int, shadowMap bool) error {
 	ogltex.width = width
 	ogltex.height = height
@@ -73,8 +89,13 @@ func (ogltex *WebGLTexture) Load(data []byte, width, height int, shadowMap bool)
 
 	gl.BindTexture(ogltex.bindingPoint(), ogltex.oglName)
 
-	gl.TexParameteri(ogltex.bindingPoint(), gl.TEXTURE_WRAP_S, gl.REPEAT)
-	gl.TexParameteri(ogltex.bindingPoint(), gl.TEXTURE_WRAP_T, gl.REPEAT)
+	if isPowerOfTwo(width, height) {
+		gl.TexParameteri(ogltex.bindingPoint(), gl.TEXTURE_WRAP_S, gl.REPEAT)
+		gl.TexParameteri(ogltex.bindingPoint(), gl.TEXTURE_WRAP_T, gl.REPEAT)
+	} else {
+		gl.TexParameteri(ogltex.bindingPoint(), gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+		gl.TexParameteri(ogltex.bindingPoint(), gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+	}
 	gl.TexParameteri(ogltex.bindingPoint(), gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR)
 	gl.TexParameteri(ogltex.bindingPoint(), gl.TEXTURE_MIN_FILTER, gl.LINEAR)
 	gl.TexParameteri(ogltex.bindingPoint(), gl.TEXTURE_MAG_FILTER, gl.LINEAR)
@@ -89,8 +110,6 @@ func (ogltex *WebGLTexture) Load(data []byte, width, height int, shadowMap bool)
 	gl.GetError()
 	gl.TexImage2D(ogltex.bindingPoint(), 0, gl.RGBA, ogltex.width, ogltex.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, dataobj)
 	printOGLTexture2DError(ogltex, data, width, height)
-
-	gl.GenerateMipmap(ogltex.bindingPoint())
 
 	gl.BindTexture(ogltex.bindingPoint(), nil)
 

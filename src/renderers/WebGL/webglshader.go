@@ -160,7 +160,7 @@ func (s *WebGLShader) bindAttributesFromFile(program *js.Object, src string) {
 
 	var index int = 0
 	for i := 0; i < len(attributeNames); i++ {
-		gl.BindAttribLocation(program, index, attributeNames[i]+"\x00")
+		gl.BindAttribLocation(program, index, attributeNames[i])
 		index += s.attribute_sizes[attributeNames[i]]
 	}
 }
@@ -170,10 +170,12 @@ func (s *WebGLShader) compileWebGLShader(shader_name string, shader_type int, sr
 	gl.ShaderSource(shader, src)
 	gl.CompileShader(shader)
 
-	status := gl.GetShaderiv(shader, gl.COMPILE_STATUS)
-	if int(status[0]) == gl.FALSE {
+	status := gl.GetShaderb(shader, gl.COMPILE_STATUS)
+	if status == false {
 		logText := gl.GetShaderInfoLog(shader)
-
+		if logText == "" {
+			logText = "Empty Log"
+		}
 		return nil, &WebGLError{errorString: logText}
 	}
 	gl.GetError()
@@ -216,7 +218,7 @@ func (s *WebGLShader) AddShader(shader_type uint8, src string) error {
 
 func (s *WebGLShader) deleteAllShaders() {
 	for i := 0; i < 6; i++ {
-		if s.shaders[i] != js.Undefined {
+		if s.shaders[i] != nil && s.shaders[i] != js.Undefined {
 			gl.DetachShader(s.program, s.shaders[i])
 			gl.DeleteShader(s.shaders[i])
 		}
@@ -233,17 +235,19 @@ func (s *WebGLShader) Link() error {
 	}
 
 	gl.GetError()
-	status := gl.GetProgrami(s.program, gl.LINK_STATUS)
+	status := gl.GetProgramb(s.program, gl.LINK_STATUS)
 	if err := gl.GetError(); err != gl.NO_ERROR {
 		return &WebGLError{errorString: "Couldn't link: Couldn't get link status: ErrorCode: " + strconv.Itoa(int(err))}
 	}
-	if status == gl.FALSE {
+	if status == false {
 		gl.GetError()
 		logtext := gl.GetProgramInfoLog(s.program)
 		if err := gl.GetError(); err != gl.NO_ERROR {
 			return &WebGLError{errorString: "Couldn't link: Couldn't get info log: ErrorCode: " + strconv.Itoa(int(err))}
 		}
-
+		if logtext == "" {
+			logtext = "Empty Log"
+		}
 		return &WebGLError{errorString: "Couldn't link: " + logtext}
 	}
 
@@ -275,7 +279,7 @@ func (s *WebGLShader) getUniformLocation(name string) *js.Object {
 	var ok bool
 	if loc, ok = s.uniform_locations[name]; !ok {
 		gl.GetError()
-		loc = gl.GetUniformLocation(s.program, name+"\x00")
+		loc = gl.GetUniformLocation(s.program, name)
 		handleWebGLError("Shader", s.name, "glGetUniformLocation")
 		s.uniform_locations[name] = loc
 	}
@@ -489,9 +493,12 @@ func (s *WebGLShader) validate() error {
 	}
 	s.validated = true
 	gl.ValidateProgram(s.program)
-	status := gl.GetProgrami(s.program, gl.VALIDATE_STATUS)
-	if status == gl.FALSE {
+	status := gl.GetProgramb(s.program, gl.VALIDATE_STATUS)
+	if status == false {
 		logtext := gl.GetProgramInfoLog(s.program)
+		if logtext == "" {
+			logtext = "Empty Log"
+		}
 		s.validated = false
 		return &WebGLError{"Couldn't validate: " + logtext}
 	}

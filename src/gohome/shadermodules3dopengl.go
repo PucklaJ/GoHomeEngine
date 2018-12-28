@@ -749,14 +749,16 @@ func GenerateShader3D(shader_type uint8, flags uint32) (n, v, f string) {
 		}
 
 		rname := Render.GetName()
-		if rname == "OpenGLES2" {
+		if rname == "OpenGLES2" || rname == "WebGL" {
 			flags |= SHADER_FLAG_NO_SHADOWS | SHADER_FLAG_NO_NORMAP
 		}
 
 		var vertex glslgen.VertexGenerator
 		var fragment glslgen.FragmentGenerator
-
-		if strings.Contains(rname, "OpenGLES") {
+		if rname == "WebGL" {
+			vertex.SetVersion("WebGL")
+			fragment.SetVersion("WebGL")
+		} else if strings.Contains(rname, "OpenGLES") {
 			vertex.SetVersion("100")
 			fragment.SetVersion("100")
 		} else {
@@ -769,7 +771,7 @@ func GenerateShader3D(shader_type uint8, flags uint32) (n, v, f string) {
 			vertex.AddAttributes(AttributesInstanced3D)
 		}
 		vertex.AddOutputs(InputsFragment3D)
-		if flags&SHADER_FLAG_NOUV == 0 && rname != "OpenGLES2" {
+		if flags&SHADER_FLAG_NOUV == 0 && (rname != "OpenGLES2" && rname != "WebGL") {
 			vertex.AddOutputs(InputsNormalFragment3D)
 		}
 		if rname == "OpenGLES2" {
@@ -781,7 +783,7 @@ func GenerateShader3D(shader_type uint8, flags uint32) (n, v, f string) {
 		}
 		vertex.AddModule(CalculatePositionModule3D)
 		vertex.AddModule(SetOutputsModuleVertex3D)
-		if flags&SHADER_FLAG_NOUV == 0 && rname != "OpenGLES2" {
+		if flags&SHADER_FLAG_NOUV == 0 && (rname != "OpenGLES2" && rname != "WebGL") {
 			vertex.AddModule(SetOutputsNormalModuleVertex3D)
 		} else {
 			vertex.AddModule(SetOutputsNoUVModuleVertex3D)
@@ -793,14 +795,14 @@ func GenerateShader3D(shader_type uint8, flags uint32) (n, v, f string) {
 		fragment.AddGlobals(GlobalsFragment3D)
 
 		fragment.AddInputs(InputsFragment3D)
-		if flags&SHADER_FLAG_NOUV == 0 && rname != "OpenGLES2" {
+		if flags&SHADER_FLAG_NOUV == 0 && (rname != "OpenGLES2" && rname != "WebGL") {
 			fragment.AddInputs(InputsNormalFragment3D)
 		}
-		if flags&SHADER_FLAG_NOUV == 0 && rname == "OpenGLES2" {
+		if flags&SHADER_FLAG_NOUV == 0 && (rname == "OpenGLES2" || rname == "WebGL") {
 			fragment.AddInput(glslgen.Variable{"vec2", "highp", "fragTexCoord"})
 		}
 		fragment.AddModule(InitialiseModuleFragment3D)
-		if flags&SHADER_FLAG_NOUV == 0 && rname != "OpenGLES2" {
+		if flags&SHADER_FLAG_NOUV == 0 && (rname != "OpenGLES2" && rname != "WebGL") {
 			fragment.AddModule(InitialiseNormalModuleFragment3D)
 		} else {
 			fragment.AddModule(InitialiseNoUVModuleFragment3D)
@@ -810,13 +812,13 @@ func GenerateShader3D(shader_type uint8, flags uint32) (n, v, f string) {
 		}
 		if flags&SHADER_FLAG_NO_LIGHTING == 0 {
 			fragment.AddModule(LightUniformsModule3D)
-			if flags&SHADER_FLAG_NOUV == 0 && rname != "OpenGLES2" {
+			if flags&SHADER_FLAG_NOUV == 0 && (rname != "OpenGLES2" && rname != "WebGL") {
 				fragment.AddModule(LightCalcSpotAmountNormalModule3D)
 			} else {
 				fragment.AddModule(LightCalcSpotAmountNoUVModule3D)
 			}
 			if flags&SHADER_FLAG_NO_SHADOWS == 0 {
-				if flags&SHADER_FLAG_NOUV == 0 && rname != "OpenGLES2" {
+				if flags&SHADER_FLAG_NOUV == 0 && (rname != "OpenGLES2" && rname != "WebGL") {
 					fragment.AddModule(LightsAndShadowsFunctions3D)
 					fragment.AddModule(LightsAndShadowsCalculationModule3D)
 				} else {
@@ -824,7 +826,7 @@ func GenerateShader3D(shader_type uint8, flags uint32) (n, v, f string) {
 					fragment.AddModule(LightsAndShadowsCalculationNoUVModule3D)
 				}
 			} else {
-				if flags&SHADER_FLAG_NOUV == 0 && rname != "OpenGLES2" {
+				if flags&SHADER_FLAG_NOUV == 0 && (rname != "OpenGLES2" && rname != "WebGL") {
 					fragment.AddModule(LightCalculationModel3D)
 				} else {
 					fragment.AddModule(LightCalculationNoUVModule3D)

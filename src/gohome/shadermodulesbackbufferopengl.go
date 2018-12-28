@@ -76,7 +76,10 @@ func GenerateShaderBackBuffer(flags uint32) (n, v, f string) {
 	var fragment glslgen.FragmentGenerator
 
 	if flags&SHADER_FLAG_NO_MS == 0 {
-		if strings.Contains(Render.GetName(), "OpenGLES") {
+		if Render.GetName() == "WebGL" {
+			vertex.SetVersion("WebGL")
+			fragment.SetVersion("WebGL")
+		} else if strings.Contains(Render.GetName(), "OpenGLES") {
 			vertex.SetVersion("300 es")
 			fragment.SetVersion("300 es")
 		} else {
@@ -98,7 +101,10 @@ func GenerateShaderBackBuffer(flags uint32) (n, v, f string) {
 		fragment.AddModule(TextureMSModule)
 		fragment.AddModule(FinishColorModuleFragment2D)
 	} else {
-		if strings.Contains(Render.GetName(), "OpenGLES") {
+		if Render.GetName() == "WebGL" {
+			vertex.SetVersion("WebGL")
+			fragment.SetVersion("WebGL")
+		} else if strings.Contains(Render.GetName(), "OpenGLES") {
 			vertex.SetVersion("100")
 			fragment.SetVersion("100")
 		} else {

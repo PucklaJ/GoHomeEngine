@@ -53,19 +53,31 @@ func (oglm *WebGLMesh2D) Load() {
 	var verticesSize uint32 = oglm.numVertices * gohome.MESH2DVERTEX_SIZE
 	var indicesSize uint32 = oglm.numIndices * 1
 
+	floatBuffer := make([]float32, verticesSize/4)
+	var index int = 0
+	for _, vert := range oglm.vertices {
+		floatBuffer[index+0] = vert[0]
+		floatBuffer[index+1] = vert[1]
+		floatBuffer[index+2] = vert[2]
+		floatBuffer[index+3] = vert[3]
+		index += 4
+	}
+
 	oglm.vbo = gl.CreateBuffer()
 	oglm.ibo = gl.CreateBuffer()
 
 	gl.BindBuffer(gl.ARRAY_BUFFER, oglm.vbo)
-	gl.BufferData(gl.ARRAY_BUFFER, int(verticesSize), oglm.vertices, gl.STATIC_DRAW)
+	gl.GetError()
+	gl.BufferData(gl.ARRAY_BUFFER, int(verticesSize), floatBuffer, gl.STATIC_DRAW)
+	handleWebGLError("Mesh2D", oglm.Name, "glBufferData VBO: ")
 	gl.BindBuffer(gl.ARRAY_BUFFER, nil)
 
 	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, oglm.ibo)
 	gl.BufferData(gl.ELEMENT_ARRAY_BUFFER, int(indicesSize), oglm.indices, gl.STATIC_DRAW)
+	handleWebGLError("Mesh2D", oglm.Name, "glBufferData IBO: ")
 	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, nil)
 
 	oglm.deleteElements()
-
 }
 
 func (oglm *WebGLMesh2D) Render() {

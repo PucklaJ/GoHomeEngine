@@ -55,7 +55,10 @@ func GenerateShaderShadowMap(flags uint32) (n, v, f string) {
 	var vertex glslgen.VertexGenerator
 	var fragment glslgen.FragmentGenerator
 
-	if strings.Contains(Render.GetName(), "OpenGLES") {
+	if Render.GetName() == "WebGL" {
+		vertex.SetVersion("WebGL")
+		fragment.SetVersion("WebGL")
+	} else if strings.Contains(Render.GetName(), "OpenGLES") {
 		vertex.SetVersion("100")
 		fragment.SetVersion("100")
 	} else {
