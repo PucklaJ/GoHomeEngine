@@ -362,3 +362,62 @@ func Plane(name string, size mgl32.Vec2, textures float32, loadToGPU bool) Mesh3
 
 	return mesh
 }
+
+type NilMesh3D struct {
+}
+
+func (*NilMesh3D) AddVertices(vertices []Mesh3DVertex, indices []uint32) {
+
+}
+func (*NilMesh3D) Load() {
+
+}
+func (*NilMesh3D) Render() {
+
+}
+func (*NilMesh3D) Terminate() {
+
+}
+func (*NilMesh3D) SetMaterial(mat *Material) {
+
+}
+func (*NilMesh3D) GetMaterial() *Material {
+	var mat Material
+	mat.InitDefault()
+	return &mat
+}
+func (*NilMesh3D) GetName() string {
+	return ""
+}
+func (*NilMesh3D) GetNumVertices() uint32 {
+	return 0
+}
+func (*NilMesh3D) GetNumIndices() uint32 {
+	return 0
+}
+func (*NilMesh3D) GetVertices() []Mesh3DVertex {
+	var verts []Mesh3DVertex
+	return verts
+}
+func (*NilMesh3D) GetIndices() []uint32 {
+	var inds []uint32
+	return inds
+}
+func (*NilMesh3D) CalculateTangents() {
+
+}
+func (*NilMesh3D) HasUV() bool {
+	return true
+}
+func (*NilMesh3D) AABB() AxisAlignedBoundingBox {
+	return AxisAlignedBoundingBox{
+		mgl32.Vec3{0, 0, 0},
+		mgl32.Vec3{0, 0, 0},
+	}
+}
+func (*NilMesh3D) Copy() Mesh3D {
+	return &NilMesh3D{}
+}
+func (*NilMesh3D) LoadedToGPU() bool {
+	return true
+}

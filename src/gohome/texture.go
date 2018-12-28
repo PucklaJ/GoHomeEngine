@@ -87,3 +87,59 @@ func GetColorFromData(x, y int, data []byte, width int) color.Color {
 		A: data[(x+y*width)*4+3],
 	}
 }
+
+type NilTexture struct {
+}
+
+func (*NilTexture) Load(data []byte, width, height int, shadowMap bool) error {
+	return nil
+}
+func (*NilTexture) LoadFromImage(img image.Image) error {
+	return nil
+}
+func (*NilTexture) Bind(unit uint32) {
+
+}
+func (*NilTexture) Unbind(unit uint32) {
+
+}
+func (*NilTexture) GetWidth() int {
+	return 0
+}
+func (*NilTexture) GetHeight() int {
+	return 0
+}
+func (*NilTexture) GetKeyColor() color.Color {
+	return nil
+}
+func (*NilTexture) GetModColor() color.Color {
+	return nil
+}
+func (*NilTexture) Terminate() {
+
+}
+func (*NilTexture) SetFiltering(filtering uint32) {
+
+}
+func (*NilTexture) SetWrapping(wrapping uint32) {
+
+}
+func (*NilTexture) SetBorderColor(col color.Color) {
+
+}
+func (*NilTexture) SetBorderDepth(depth float32) {
+
+}
+func (*NilTexture) SetKeyColor(col color.Color) {
+
+}
+func (*NilTexture) SetModColor(col color.Color) {
+
+}
+func (*NilTexture) GetName() string {
+	return ""
+}
+func (*NilTexture) GetData() ([]byte, int, int) {
+	var data []byte
+	return data, 0, 0
+}
