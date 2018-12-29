@@ -20,8 +20,16 @@ type mouseButtonEvent struct {
 }
 
 type mouseMoveEvent struct {
-	x int
-	y int
+	x  int
+	y  int
+	dx int
+	dy int
+}
+
+type mouseWheelEvent struct {
+	dx int
+	dy int
+	dm int
 }
 
 var buffered_events []buffered_event
@@ -82,13 +90,31 @@ func onMouseButtonUp(event *js.Object) {
 	)
 }
 
+var moveX, moveY int
+
 func onMouseMove(event *js.Object) {
 	cx := framew.Canvas.Get("left").Int()
 	cy := framew.Canvas.Get("top").Int()
+	mx := event.Get("x").Int() - cx
+	my := event.Get("y").Int() - cy
+	moveX += event.Get("movementX").Int()
+	moveY += event.Get("movementY").Int()
 	addEvent(
 		&mouseMoveEvent{
-			x: event.Get("x").Int() - cx,
-			y: event.Get("y").Int() - cy,
+			x:  mx,
+			y:  my,
+			dx: mx - prevMPos[0],
+			dy: my - prevMPos[1],
+		},
+	)
+}
+
+func onWheel(event *js.Object) {
+	addEvent(
+		&mouseWheelEvent{
+			dx: event.Get("deltaX").Int(),
+			dy: event.Get("deltaY").Int(),
+			dm: event.Get("deltaMode").Int(),
 		},
 	)
 }
@@ -110,8 +136,30 @@ func (this *mouseButtonEvent) ApplyValues() {
 }
 
 func (this *mouseMoveEvent) ApplyValues() {
-	gohome.InputMgr.Mouse.Pos[0] = int16(this.x)
-	gohome.InputMgr.Mouse.Pos[1] = int16(this.y)
+	if framew.CursorDisabled() {
+		if moveX != 0 || moveY != 0 {
+			gohome.InputMgr.Mouse.Pos[0] += int16(moveX)
+			gohome.InputMgr.Mouse.Pos[1] += int16(moveY)
+			gohome.InputMgr.Mouse.DPos[0] = int16(moveX)
+			gohome.InputMgr.Mouse.DPos[1] = int16(moveY)
+			moveX = 0
+			moveY = 0
+		}
+	} else {
+		gohome.InputMgr.Mouse.Pos[0] = int16(this.x)
+		gohome.InputMgr.Mouse.Pos[1] = int16(this.y)
+		gohome.InputMgr.Mouse.DPos[0] = int16(this.dx)
+		gohome.InputMgr.Mouse.DPos[1] = int16(this.dy)
+		moveX = 0
+		moveY = 0
+	}
+}
+
+func (this *mouseWheelEvent) ApplyValues() {
+	if this.dm == 0 || this.dm == 1 {
+		gohome.InputMgr.Mouse.Wheel[0] = int8(this.dx)
+		gohome.InputMgr.Mouse.Wheel[1] = int8(this.dy)
+	}
 }
 
 func addEventListeners() {
@@ -121,6 +169,7 @@ func addEventListeners() {
 	document.Call("addEventListener", "mousedown", onMouseButtonDown, false)
 	document.Call("addEventListener", "mouseup", onMouseButtonUp, false)
 	document.Call("addEventListener", "mousemove", onMouseMove, false)
+	framew.Canvas.Call("addEventListener", "wheel", onWheel, false)
 	js.Global.Call("addEventListener", "beforeunload", onBeforeUnload, false)
 }
 

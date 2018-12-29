@@ -19,6 +19,7 @@ type JSFramework struct {
 }
 
 var running = false
+var prevMPos [2]int
 
 var addtimestart, addtimeend time.Time
 
@@ -76,10 +77,18 @@ func (*JSFramework) Terminate() {
 func (*JSFramework) PollEvents() {
 	lock_events = true
 
+	gohome.InputMgr.Mouse.DPos[0] = 0
+	gohome.InputMgr.Mouse.DPos[1] = 0
+	gohome.InputMgr.Mouse.Wheel[0] = 0
+	gohome.InputMgr.Mouse.Wheel[1] = 0
+
 	for _, event := range buffered_events {
 		event.ApplyValues()
 	}
 	buffered_events = buffered_events[:0]
+
+	prevMPos[0] = int(gohome.InputMgr.Mouse.Pos[0])
+	prevMPos[1] = int(gohome.InputMgr.Mouse.Pos[1])
 
 	lock_events = false
 }

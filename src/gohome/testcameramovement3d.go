@@ -52,11 +52,11 @@ func (this *TestCameraMovement3D) updatePosition(delta_time float32) {
 
 	this.cam.AddPositionRelative(pos)
 
-	if InputMgr.IsPressed(KeyO) {
+	if InputMgr.IsPressed(KeyI) {
 		pos[1] += speed * delta_time
 	}
 
-	if InputMgr.IsPressed(KeyL) {
+	if InputMgr.IsPressed(KeyK) {
 		pos[1] -= speed * delta_time
 	}
 
