@@ -41,8 +41,8 @@ func (oglm *OpenGLMesh2D) AddVertices(vertices []gohome.Mesh2DVertex, indices []
 
 func (oglm *OpenGLMesh2D) attributePointer() {
 	gl.BindBuffer(gl.ARRAY_BUFFER, oglm.vbo)
-	gl.VertexAttribPointer(0, 2, gl.FLOAT, false, int32(gohome.MESH2DVERTEX_SIZE), gl.PtrOffset(0))
-	gl.VertexAttribPointer(1, 2, gl.FLOAT, false, int32(gohome.MESH2DVERTEX_SIZE), gl.PtrOffset(2*4))
+	gl.VertexAttribPointer(0, 2, gl.FLOAT, false, gohome.MESH2DVERTEXSIZE, gl.PtrOffset(0))
+	gl.VertexAttribPointer(1, 2, gl.FLOAT, false, gohome.MESH2DVERTEXSIZE, gl.PtrOffset(2*4))
 	gl.EnableVertexAttribArray(0)
 	gl.EnableVertexAttribArray(1)
 
@@ -52,8 +52,8 @@ func (oglm *OpenGLMesh2D) attributePointer() {
 func (oglm *OpenGLMesh2D) Load() {
 	oglm.numVertices = uint32(len(oglm.vertices))
 	oglm.numIndices = uint32(len(oglm.indices))
-	var verticesSize uint32 = oglm.numVertices * gohome.MESH2DVERTEX_SIZE
-	var indicesSize uint32 = oglm.numIndices * gohome.INDEX_SIZE
+	var verticesSize uint32 = oglm.numVertices * gohome.MESH2DVERTEXSIZE
+	var indicesSize uint32 = oglm.numIndices * gohome.INDEXSIZE
 
 	if oglm.canUseVAOs {
 		gl.GenVertexArrays(1, &oglm.vao)
