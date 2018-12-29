@@ -11,7 +11,7 @@ type WebGLLines3DInterface struct {
 	loaded bool
 
 	lines       []gohome.Line3D
-	numVertices uint32
+	numVertices int
 }
 
 func (this *WebGLLines3DInterface) Init() {
@@ -33,8 +33,8 @@ func (this *WebGLLines3DInterface) GetLines() []gohome.Line3D {
 
 func (this *WebGLLines3DInterface) attributePointer() {
 	gl.BindBuffer(gl.ARRAY_BUFFER, this.vbo)
-	gl.VertexAttribPointer(0, 3, gl.FLOAT, false, int(gohome.LINE3D_VERTEX_SIZE), 0)
-	gl.VertexAttribPointer(1, 4, gl.FLOAT, false, int(gohome.LINE3D_VERTEX_SIZE), 3*4)
+	gl.VertexAttribPointer(0, 3, gl.FLOAT, false, gohome.LINE3DVERTEXSIZE, 0)
+	gl.VertexAttribPointer(1, 4, gl.FLOAT, false, gohome.LINE3DVERTEXSIZE, 3*4)
 
 	gl.EnableVertexAttribArray(0)
 	gl.EnableVertexAttribArray(1)
@@ -45,16 +45,18 @@ func (this *WebGLLines3DInterface) Load() {
 		return
 	}
 
-	this.numVertices = uint32(2 * len(this.lines))
+	this.numVertices = 2 * len(this.lines)
 	if this.numVertices == 0 {
 		gohome.ErrorMgr.Error("Lines3DInterface", this.Name, "No Vertices have been added!")
 		return
 	}
 
+	vertexBuffer := gohome.Lines3DToFloatArray(this.lines)
+
 	this.vbo = gl.CreateBuffer()
 
 	gl.BindBuffer(gl.ARRAY_BUFFER, this.vbo)
-	gl.BufferData(gl.ARRAY_BUFFER, int(gohome.LINE3D_VERTEX_SIZE*this.numVertices), this.lines, gl.STATIC_DRAW)
+	gl.BufferData(gl.ARRAY_BUFFER, gohome.LINE3DVERTEXSIZE*this.numVertices, vertexBuffer, gl.STATIC_DRAW)
 	gl.BindBuffer(gl.ARRAY_BUFFER, nil)
 
 	this.loaded = true
@@ -73,7 +75,7 @@ func (this *WebGLLines3DInterface) Render() {
 
 	this.attributePointer()
 	gl.GetError()
-	gl.DrawArrays(gl.LINES, 0, int(this.numVertices))
+	gl.DrawArrays(gl.LINES, 0, this.numVertices)
 	handleWebGLError("Lines3DInterface", this.Name, "RenderError: ")
 	gl.BindBuffer(gl.ARRAY_BUFFER, nil)
 

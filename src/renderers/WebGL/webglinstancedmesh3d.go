@@ -249,8 +249,8 @@ func vertexAttribPointerForValueType(valueType uint32, offset *int, index *int, 
 	}
 }
 
-func (this *WebGLInstancedMesh3D) instancedVertexAttribPointer(verticesSize int, indicesSize int, sizeOfOneInstance int) {
-	offset := verticesSize + indicesSize
+func (this *WebGLInstancedMesh3D) instancedVertexAttribPointer(verticesSize int, sizeOfOneInstance int) {
+	offset := verticesSize
 	var index = 4
 
 	for i := 0; i < len(this.customValues); i++ {
@@ -323,7 +323,7 @@ func (this *WebGLInstancedMesh3D) attributePointer() {
 	gl.VertexAttribPointer(1, 3, gl.FLOAT, false, gohome.MESH3DVERTEXSIZE, gl.PtrOffset(3*4))
 	gl.VertexAttribPointer(2, 2, gl.FLOAT, false, gohome.MESH3DVERTEXSIZE, gl.PtrOffset(3*4+3*4))
 	gl.VertexAttribPointer(3, 3, gl.FLOAT, false, gohome.MESH3DVERTEXSIZE, gl.PtrOffset(3*4+3*4+2*4))
-	this.instancedVertexAttribPointer(this.numVertices*gohome.MESH3DVERTEXSIZE, this.numIndices*gohome.INDEX_SIZE, this.sizePerInstance)
+	this.instancedVertexAttribPointer(this.numVertices*gohome.MESH3DVERTEXSIZE, this.sizePerInstance)
 
 	gl.EnableVertexAttribArray(0)
 	gl.EnableVertexAttribArray(1)

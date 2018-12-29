@@ -11,10 +11,9 @@ type WebGLShape2DInterface struct {
 	loaded bool
 
 	points        []gohome.Shape2DVertex
-	numVertices   uint32
+	numVertices   int
 	WebGLDrawMode int
-	pointSize     float32
-	lineWidth     float32
+	lineWidth     float64
 }
 
 func (this *WebGLShape2DInterface) Init() {
@@ -70,16 +69,18 @@ func (this *WebGLShape2DInterface) Load() {
 		return
 	}
 
-	this.numVertices = uint32(len(this.points))
+	this.numVertices = len(this.points)
 	if this.numVertices == 0 {
 		gohome.ErrorMgr.Error("Shape2DInterface", this.Name, "No Vertices have been added!")
 		return
 	}
 
+	vertexBuffer := gohome.Shape2DVerticesToFloatArray(this.points)
+
 	this.vbo = gl.CreateBuffer()
 
 	gl.BindBuffer(gl.ARRAY_BUFFER, this.vbo)
-	gl.BufferData(gl.ARRAY_BUFFER, int((2+4)*4*this.numVertices), this.points, gl.STATIC_DRAW)
+	gl.BufferData(gl.ARRAY_BUFFER, this.numVertices*gohome.SHAPE2DVERTEXSIZE, vertexBuffer, gl.STATIC_DRAW)
 	gl.BindBuffer(gl.ARRAY_BUFFER, nil)
 
 	this.loaded = true
@@ -98,10 +99,10 @@ func (this *WebGLShape2DInterface) Render() {
 
 	this.attributePointer()
 
-	gl.LineWidth(float64(this.lineWidth))
+	gl.LineWidth(this.lineWidth)
 
 	gl.GetError()
-	gl.DrawArrays(this.WebGLDrawMode, 0, int(this.numVertices))
+	gl.DrawArrays(this.WebGLDrawMode, 0, this.numVertices)
 	handleWebGLError("Shape2DInterface", this.Name, "RenderError: ")
 
 	gl.LineWidth(1.0)
@@ -134,8 +135,8 @@ func (this *WebGLShape2DInterface) SetDrawMode(mode uint8) {
 }
 
 func (this *WebGLShape2DInterface) SetPointSize(size float32) {
-	this.pointSize = size
+
 }
 func (this *WebGLShape2DInterface) SetLineWidth(width float32) {
-	this.lineWidth = width
+	this.lineWidth = float64(width)
 }

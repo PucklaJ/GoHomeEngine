@@ -111,4 +111,9 @@ func addEventListeners() {
 	document.Call("addEventListener", "mousedown", onMouseButtonDown, false)
 	document.Call("addEventListener", "mouseup", onMouseButtonUp, false)
 	document.Call("addEventListener", "mousemove", onMouseMove, false)
+	js.Global.Call("addEventListener", "beforeunload", onBeforeUnload, false)
+}
+
+func onBeforeUnload(event *js.Object) {
+	running = false
 }

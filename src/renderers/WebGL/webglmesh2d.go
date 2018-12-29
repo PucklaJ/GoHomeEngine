@@ -8,8 +8,8 @@ import (
 type WebGLMesh2D struct {
 	vertices    []gohome.Mesh2DVertex
 	indices     []uint8
-	numVertices uint32
-	numIndices  uint32
+	numVertices int
+	numIndices  int
 	Name        string
 	vbo         *js.Object
 	ibo         *js.Object
@@ -39,8 +39,8 @@ func (oglm *WebGLMesh2D) AddVertices(vertices []gohome.Mesh2DVertex, indices []u
 
 func (oglm *WebGLMesh2D) attributePointer() {
 	gl.BindBuffer(gl.ARRAY_BUFFER, oglm.vbo)
-	gl.VertexAttribPointer(0, 2, gl.FLOAT, false, int(gohome.MESH2DVERTEX_SIZE), 0)
-	gl.VertexAttribPointer(1, 2, gl.FLOAT, false, int(gohome.MESH2DVERTEX_SIZE), 2*4)
+	gl.VertexAttribPointer(0, 2, gl.FLOAT, false, gohome.MESH2DVERTEXSIZE, 0)
+	gl.VertexAttribPointer(1, 2, gl.FLOAT, false, gohome.MESH2DVERTEXSIZE, 2*4)
 	gl.EnableVertexAttribArray(0)
 	gl.EnableVertexAttribArray(1)
 
@@ -48,10 +48,10 @@ func (oglm *WebGLMesh2D) attributePointer() {
 }
 
 func (oglm *WebGLMesh2D) Load() {
-	oglm.numVertices = uint32(len(oglm.vertices))
-	oglm.numIndices = uint32(len(oglm.indices))
-	var verticesSize uint32 = oglm.numVertices * gohome.MESH2DVERTEX_SIZE
-	var indicesSize uint32 = oglm.numIndices * 1
+	oglm.numVertices = len(oglm.vertices)
+	oglm.numIndices = len(oglm.indices)
+	var verticesSize = oglm.numVertices * gohome.MESH2DVERTEXSIZE
+	var indicesSize = oglm.numIndices * 1
 
 	floatBuffer := make([]float32, verticesSize/4)
 	var index int = 0
@@ -68,12 +68,12 @@ func (oglm *WebGLMesh2D) Load() {
 
 	gl.BindBuffer(gl.ARRAY_BUFFER, oglm.vbo)
 	gl.GetError()
-	gl.BufferData(gl.ARRAY_BUFFER, int(verticesSize), floatBuffer, gl.STATIC_DRAW)
+	gl.BufferData(gl.ARRAY_BUFFER, verticesSize, floatBuffer, gl.STATIC_DRAW)
 	handleWebGLError("Mesh2D", oglm.Name, "glBufferData VBO: ")
 	gl.BindBuffer(gl.ARRAY_BUFFER, nil)
 
 	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, oglm.ibo)
-	gl.BufferData(gl.ELEMENT_ARRAY_BUFFER, int(indicesSize), oglm.indices, gl.STATIC_DRAW)
+	gl.BufferData(gl.ELEMENT_ARRAY_BUFFER, indicesSize, oglm.indices, gl.STATIC_DRAW)
 	handleWebGLError("Mesh2D", oglm.Name, "glBufferData IBO: ")
 	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, nil)
 

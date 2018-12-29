@@ -18,6 +18,8 @@ type JSFramework struct {
 	Canvas *js.Object
 }
 
+var running = false
+
 var addtimestart, addtimeend time.Time
 
 func loop(float32) {
@@ -27,7 +29,11 @@ func loop(float32) {
 		gohome.FPSLimit.AddTime(addtime)
 		gohome.MainLop.LoopOnce()
 		addtimestart = time.Now()
-		js.Global.Call("requestAnimationFrame", loop)
+		if running {
+			js.Global.Call("requestAnimationFrame", loop)
+		} else {
+			gohome.MainLop.Quit()
+		}
 	}()
 }
 
@@ -42,7 +48,7 @@ func (this *JSFramework) Init(ml *gohome.MainLoop) error {
 	ml.InitManagers()
 	gohome.Render.AfterInit()
 	ml.SetupStartScene()
-
+	running = true
 	js.Global.Call("requestAnimationFrame", loop)
 
 	return nil
@@ -87,8 +93,9 @@ func (*JSFramework) WindowClosed() bool {
 	return false
 }
 
-func (*JSFramework) WindowSetSize(size mgl32.Vec2) {
-
+func (this *JSFramework) WindowSetSize(size mgl32.Vec2) {
+	this.Canvas.Set("width", size[0])
+	this.Canvas.Set("height", size[1])
 }
 func (this *JSFramework) WindowGetSize() mgl32.Vec2 {
 	width := float32(this.Canvas.Get("width").Float())

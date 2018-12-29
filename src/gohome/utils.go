@@ -59,13 +59,53 @@ func Mesh3DVerticesToFloatArray(vertices []Mesh3DVertex) (array []float32) {
 }
 
 func Mesh2DVerticesToFloatArray(vertices []Mesh2DVertex) (array []float32) {
-	const NUM_FLOATS = MESH2DVERTEX_SIZE / 4
+	const NUM_FLOATS = MESH2DVERTEXSIZE / 4
 	array = make([]float32, len(vertices)*NUM_FLOATS)
 	var wg sync.WaitGroup
 	wg.Add(len(array) / NUM_FLOATS)
 	var index = 0
 	for _, v := range vertices {
 		go func(_index int, _v Mesh2DVertex) {
+			for i := 0; i < NUM_FLOATS; i++ {
+				array[_index+i] = _v[i]
+			}
+			wg.Done()
+		}(index, v)
+		index += NUM_FLOATS
+	}
+	wg.Wait()
+	return
+}
+
+func Lines3DToFloatArray(lines []Line3D) (array []float32) {
+	const NUM_FLOATS = LINE3DVERTEXSIZE / 4 * 2
+	array = make([]float32, len(lines)*NUM_FLOATS)
+	var wg sync.WaitGroup
+	wg.Add(len(array) / NUM_FLOATS)
+	var index = 0
+	for _, l := range lines {
+		go func(_index int, _l Line3D) {
+			for i := 0; i < 2; i++ {
+				for j := 0; j < 3+4; j++ {
+					array[_index+i*(3+4)+j] = _l[i][j]
+				}
+			}
+			wg.Done()
+		}(index, l)
+		index += NUM_FLOATS
+	}
+	wg.Wait()
+	return
+}
+
+func Shape2DVerticesToFloatArray(vertices []Shape2DVertex) (array []float32) {
+	const NUM_FLOATS = SHAPE2DVERTEXSIZE / 4
+	array = make([]float32, len(vertices)*NUM_FLOATS)
+	var wg sync.WaitGroup
+	wg.Add(len(array) / NUM_FLOATS)
+	var index = 0
+	for _, v := range vertices {
+		go func(_index int, _v Shape2DVertex) {
 			for i := 0; i < NUM_FLOATS; i++ {
 				array[_index+i] = _v[i]
 			}
