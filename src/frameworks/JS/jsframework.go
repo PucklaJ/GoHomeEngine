@@ -38,23 +38,31 @@ func loop(float32) {
 	}()
 }
 
-func (this *JSFramework) Init(ml *gohome.MainLoop) error {
-	addtimestart = time.Now()
-	framew = this
-	if !ml.InitWindow() {
-		return errors.New("Failed to create Canvas")
-	}
+func (this *JSFramework) setPointerLockFunctions() {
 	if this.Canvas.Get("requestPointerLock") != js.Undefined {
 		this.Canvas.Set("requestPointerLock", this.Canvas.Get("requestPointerLock"))
 	} else if this.Canvas.Get("mozRequestPointerLock") != js.Undefined {
 		this.Canvas.Set("requestPointerLock", this.Canvas.Get("mozRequestPointerLock"))
+	} else if this.Canvas.Get("webkitRequestPointerLock") != js.Undefined {
+		this.Canvas.Set("requestPointerLock", this.Canvas.Get("webkitRequestPointerLock"))
 	}
 	document := js.Global.Get("document")
 	if document.Get("exitPointerLock") != js.Undefined {
 		document.Set("exitPointerLock", document.Get("exitPointerLock"))
 	} else if document.Get("mozExitPointerLock") != js.Undefined {
 		document.Set("exitPointerLock", document.Get("mozExitPointerLock"))
+	} else if document.Get("webkitExitPointerLock") != js.Undefined {
+		document.Set("exitPointerLock", document.Get("webkitExitPointerLock"))
 	}
+}
+
+func (this *JSFramework) Init(ml *gohome.MainLoop) error {
+	addtimestart = time.Now()
+	framew = this
+	if !ml.InitWindow() {
+		return errors.New("Failed to create Canvas")
+	}
+	this.setPointerLockFunctions()
 	addEventListeners()
 	ml.InitRenderer()
 	ml.InitManagers()

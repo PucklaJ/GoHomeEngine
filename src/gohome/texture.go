@@ -41,6 +41,9 @@ type Texture interface {
 func TextureToImage(tex Texture, flipX, flipY bool) image.Image {
 	var wg sync.WaitGroup
 	data, width, height := tex.GetData()
+	if data == nil || len(data) == 0 {
+		return nil
+	}
 	img := image.NewRGBA(image.Rect(0, 0, width, height))
 	wg.Add(width * height)
 	for x := 0; x < width; x++ {

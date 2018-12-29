@@ -1,7 +1,5 @@
 package gohome
 
-// import "fmt"
-
 const (
 	TEST_CAMERA_MOVEMENT_MOVE_SPEED           float32 = 30.0
 	TEST_CAMERA_MOVEMENT_ROTATE_SPEED         float32 = 0.5
@@ -9,7 +7,9 @@ const (
 )
 
 type TestCameraMovement3D struct {
-	cam *Camera3D
+	cam       *Camera3D
+	MoveSpeed float32
+	LookSpeed float32
 }
 
 func (this *TestCameraMovement3D) Init(cam *Camera3D) {
@@ -18,15 +18,15 @@ func (this *TestCameraMovement3D) Init(cam *Camera3D) {
 }
 
 func (this *TestCameraMovement3D) updateLookDirection() {
-	pitch := float32(InputMgr.Mouse.DPos[1]) * TEST_CAMERA_MOVEMENT_ROTATE_SPEED
-	yaw := float32(InputMgr.Mouse.DPos[0]) * TEST_CAMERA_MOVEMENT_ROTATE_SPEED
+	pitch := float32(InputMgr.Mouse.DPos[1]) * TEST_CAMERA_MOVEMENT_ROTATE_SPEED * (1 + this.LookSpeed)
+	yaw := float32(InputMgr.Mouse.DPos[0]) * TEST_CAMERA_MOVEMENT_ROTATE_SPEED * (1 + this.LookSpeed)
 
 	this.cam.AddRotation([2]float32{-pitch, -yaw})
 }
 
 func (this *TestCameraMovement3D) updatePosition(delta_time float32) {
 	var pos [3]float32
-	var speed float32 = TEST_CAMERA_MOVEMENT_MOVE_SPEED
+	var speed float32 = TEST_CAMERA_MOVEMENT_MOVE_SPEED * (1 + this.MoveSpeed)
 
 	if InputMgr.IsPressed(KeyLeftControl) {
 		speed *= 1.0 / TEST_CAMERA_MOVEMENT_MOVE_SPEED_MAGNIFIER

@@ -45,6 +45,9 @@ func addEvent(e buffered_event) {
 }
 
 func onKeyDown(event *js.Object) {
+	if event.Get("target") != js.Global.Get("document").Get("body") {
+		return
+	}
 	addEvent(
 		&keyEvent{
 			keyCode: event.Get("keyCode").Int(),
@@ -60,6 +63,11 @@ func onKeyDown(event *js.Object) {
 		} else {
 			framew.CurserShow()
 		}
+	}
+
+	if event.Get("altKey").Bool() || event.Get("ctrlKey").Bool() ||
+		event.Get("shiftKey").Bool() {
+		event.Call("preventDefault")
 	}
 }
 
@@ -92,13 +100,45 @@ func onMouseButtonUp(event *js.Object) {
 
 var moveX, moveY int
 
+func getMovementX(event *js.Object) int {
+	movementX := event.Get("movementX")
+	if movementX != js.Undefined && movementX != nil {
+		return movementX.Int()
+	}
+	mozMovementX := event.Get("mozMovementX")
+	if mozMovementX != js.Undefined && mozMovementX != nil {
+		return mozMovementX.Int()
+	}
+	webkitMovementX := event.Get("webkitMovementX")
+	if webkitMovementX != js.Undefined && webkitMovementX != nil {
+		return webkitMovementX.Int()
+	}
+	return 0
+}
+
+func getMovementY(event *js.Object) int {
+	movementY := event.Get("movementY")
+	if movementY != js.Undefined && movementY != nil {
+		return movementY.Int()
+	}
+	mozMovementY := event.Get("mozMovementY")
+	if mozMovementY != js.Undefined && mozMovementY != nil {
+		return mozMovementY.Int()
+	}
+	webkitMovementY := event.Get("webkitMovementY")
+	if webkitMovementY != js.Undefined && webkitMovementY != nil {
+		return webkitMovementY.Int()
+	}
+	return 0
+}
+
 func onMouseMove(event *js.Object) {
 	cx := framew.Canvas.Get("left").Int()
 	cy := framew.Canvas.Get("top").Int()
 	mx := event.Get("x").Int() - cx
 	my := event.Get("y").Int() - cy
-	moveX += event.Get("movementX").Int()
-	moveY += event.Get("movementY").Int()
+	moveX += getMovementX(event)
+	moveY += getMovementY(event)
 	addEvent(
 		&mouseMoveEvent{
 			x:  mx,
@@ -117,6 +157,8 @@ func onWheel(event *js.Object) {
 			dm: event.Get("deltaMode").Int(),
 		},
 	)
+
+	event.Call("preventDefault")
 }
 
 func (this *keyEvent) ApplyValues() {
@@ -166,15 +208,20 @@ func addEventListeners() {
 	document := js.Global.Get("document")
 	document.Call("addEventListener", "keydown", onKeyDown, false)
 	document.Call("addEventListener", "keyup", onKeyUp, false)
-	document.Call("addEventListener", "mousedown", onMouseButtonDown, false)
+	framew.Canvas.Call("addEventListener", "mousedown", onMouseButtonDown, false)
 	document.Call("addEventListener", "mouseup", onMouseButtonUp, false)
 	document.Call("addEventListener", "mousemove", onMouseMove, false)
 	framew.Canvas.Call("addEventListener", "wheel", onWheel, false)
 	js.Global.Call("addEventListener", "beforeunload", onBeforeUnload, false)
+	framew.Canvas.Call("addEventListener", "contextmenu", disableContextMenu, false)
 }
 
 func onBeforeUnload(event *js.Object) {
 	running = false
+}
+
+func disableContextMenu(event *js.Object) {
+	event.Call("preventDefault")
 }
 
 func onResize() {
