@@ -104,7 +104,7 @@ func (ogltex *WebGLTexture) Load(data []byte, width, height int, shadowMap bool)
 	if data == nil {
 		dataobj = nil
 	} else {
-		dataobj = js.InternalObject(data)
+		dataobj = js.InternalObject(data).Get("$array")
 	}
 
 	gl.GetError()

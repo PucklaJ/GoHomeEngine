@@ -6,7 +6,9 @@ import (
 	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
 	"github.com/PucklaMotzer09/mathgl/mgl32"
 	"github.com/gopherjs/gopherjs/js"
+	"io"
 	"log"
+	"net/http"
 	"time"
 )
 
@@ -119,8 +121,18 @@ func (*JSFramework) CursorHidden() bool {
 func (*JSFramework) CursorDisabled() bool {
 	return false
 }
+
+type JSFile struct {
+	io.ReadSeeker
+	io.Closer
+}
+
 func (*JSFramework) OpenFile(file string) (gohome.File, error) {
-	return nil, nil
+	resp, err := http.Get(file)
+	if err != nil {
+		return nil, err
+	}
+	return resp.Body, nil
 }
 func (*JSFramework) LoadLevel(rsmgr *gohome.ResourceManager, name, path string, preloaded, loadToGPU bool) *gohome.Level {
 	return nil
