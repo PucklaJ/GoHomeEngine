@@ -316,7 +316,7 @@ func (rmgr *RenderManager) renderToScreen() {
 	if !rmgr.EnableBackBuffer {
 		return
 	}
-	if !Render.HasFunctionAvailable("MULTISAMPLE") && Render.HasFunctionAvailable("BLIT_FRAMEBUFFER") {
+	if !Render.HasFunctionAvailable("MULTISAMPLE") && Render.HasFunctionAvailable("BLIT_FRAMEBUFFER_SCREEN") {
 		rmgr.BackBufferMS.Blit(nil)
 	} else {
 		if rmgr.BackBufferShader != nil {

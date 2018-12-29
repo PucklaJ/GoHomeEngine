@@ -9,14 +9,13 @@ import (
 
 const (
 	NUM_GO_ROUTINES_TANGENTS_CALCULATING uint32 = 10
-	MESH3DVERTEX_SIZE                    uint32 = 3*4 + 3*4 + 2*4 + 3*4 // 3*sizeof(float32)+3*sizeof(float32)+2*sizeof(float32)+3*sizeof(float32)
 )
 
 type WebGLMesh3D struct {
 	vertices    []gohome.Mesh3DVertex
 	indices     []uint16
-	numVertices uint32
-	numIndices  uint32
+	numVertices int
+	numIndices  int
 
 	buffer *js.Object
 
@@ -169,10 +168,10 @@ func (oglm *WebGLMesh3D) deleteElements() {
 
 func (oglm *WebGLMesh3D) attributePointer() {
 	gl.BindBuffer(gl.ARRAY_BUFFER, oglm.buffer)
-	gl.VertexAttribPointer(0, 3, gl.FLOAT, false, int(MESH3DVERTEX_SIZE), 0)
-	gl.VertexAttribPointer(1, 3, gl.FLOAT, false, int(MESH3DVERTEX_SIZE), 3*4)
-	gl.VertexAttribPointer(2, 2, gl.FLOAT, false, int(MESH3DVERTEX_SIZE), 3*4+3*4)
-	gl.VertexAttribPointer(3, 3, gl.FLOAT, false, int(MESH3DVERTEX_SIZE), 3*4+3*4+2*4)
+	gl.VertexAttribPointer(0, 3, gl.FLOAT, false, int(gohome.MESH3DVERTEXSIZE), 0)
+	gl.VertexAttribPointer(1, 3, gl.FLOAT, false, int(gohome.MESH3DVERTEXSIZE), 3*4)
+	gl.VertexAttribPointer(2, 2, gl.FLOAT, false, int(gohome.MESH3DVERTEXSIZE), 3*4+3*4)
+	gl.VertexAttribPointer(3, 3, gl.FLOAT, false, int(gohome.MESH3DVERTEXSIZE), 3*4+3*4+2*4)
 
 	gl.EnableVertexAttribArray(0)
 	gl.EnableVertexAttribArray(1)
@@ -186,16 +185,16 @@ func (oglm *WebGLMesh3D) Load() {
 	if oglm.loaded {
 		return
 	}
-	oglm.numVertices = uint32(len(oglm.vertices))
-	oglm.numIndices = uint32(len(oglm.indices))
+	oglm.numVertices = len(oglm.vertices)
+	oglm.numIndices = len(oglm.indices)
 
 	if oglm.numVertices == 0 || oglm.numIndices == 0 {
 		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "Mesh3D", oglm.Name, "No vertices or indices have been added!")
 		return
 	}
 
-	var verticesSize uint32 = oglm.numVertices * MESH3DVERTEX_SIZE
-	var indicesSize uint32 = oglm.numIndices * 2
+	var verticesSize = oglm.numVertices * gohome.MESH3DVERTEXSIZE
+	var indicesSize = oglm.numIndices * 2
 
 	oglm.CalculateTangents()
 
@@ -229,7 +228,7 @@ func (oglm *WebGLMesh3D) Render() {
 	}
 	oglm.attributePointer()
 	gl.GetError()
-	gl.DrawElements(gl.TRIANGLES, int(oglm.numIndices), gl.UNSIGNED_SHORT, int(oglm.numVertices*MESH3DVERTEX_SIZE))
+	gl.DrawElements(gl.TRIANGLES, oglm.numIndices, gl.UNSIGNED_SHORT, oglm.numVertices*gohome.MESH3DVERTEXSIZE)
 	handleWebGLError("Mesh3D", oglm.Name, "RenderError: ")
 	gl.BindBuffer(gl.ARRAY_BUFFER, nil)
 	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, nil)
@@ -251,10 +250,10 @@ func (oglm *WebGLMesh3D) GetMaterial() *gohome.Material {
 }
 
 func (oglm *WebGLMesh3D) GetNumVertices() uint32 {
-	return oglm.numVertices
+	return uint32(oglm.numVertices)
 }
 func (oglm *WebGLMesh3D) GetNumIndices() uint32 {
-	return oglm.numIndices
+	return uint32(oglm.numIndices)
 }
 
 func (oglm *WebGLMesh3D) GetVertices() []gohome.Mesh3DVertex {

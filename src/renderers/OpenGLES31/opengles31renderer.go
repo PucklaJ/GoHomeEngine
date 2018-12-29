@@ -324,6 +324,7 @@ func (this *OpenGLES31Renderer) gatherAvailableFunctions() {
 	this.availableFunctions["VERTEX_ID"] = true
 	this.availableFunctions["VERTEX_ARRAY"] = true
 	this.availableFunctions["BLIT_FRAMEBUFFER"] = true
+	this.availableFunctions["BLIT_FRAMEBUFFER_SCREEN"] = true
 	this.availableFunctions["INSTANCED"] = true
 	this.availableFunctions["INDIRECT"] = true
 }

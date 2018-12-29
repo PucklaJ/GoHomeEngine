@@ -4,6 +4,10 @@ import (
 	"github.com/PucklaMotzer09/mathgl/mgl32"
 )
 
+const (
+	MESH3DVERTEXSIZE = 3*4 + 3*4 + 2*4 + 3*4
+)
+
 type Mesh3D interface {
 	AddVertices(vertices []Mesh3DVertex, indices []uint32)
 	Load()

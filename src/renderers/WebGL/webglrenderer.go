@@ -62,7 +62,7 @@ func (this *WebGLRenderer) Init() error {
 	gl = ctx
 
 	version := gl.GetString(gl.VERSION)
-	versioni := this.GetVersioni()
+	versioni := gl.GetVersioni()
 	if version == "" {
 		version = strconv.FormatUint(uint64(versioni), 10)
 	}
@@ -290,11 +290,18 @@ func (this *WebGLRenderer) DecrementTextureUnit(amount uint32) {
 }
 
 func (this *WebGLRenderer) GetVersioni() uint8 {
-	return 10
+	return uint8(gl.GetVersioni())
 }
 
 func (this *WebGLRenderer) gatherAvailableFunctions() {
-
+	versioni := gl.GetVersioni()
+	if versioni == 20 {
+		this.availableFunctions["VERTEX_ID"] = true
+		this.availableFunctions["VERTEX_ARRAY"] = true
+		this.availableFunctions["INSTANCED"] = true
+		this.availableFunctions["DRAW_BUFFERS"] = true
+		this.availableFunctions["BLIT_FRAMEBUFFER"] = true
+	}
 }
 
 func (this *WebGLRenderer) HasFunctionAvailable(function string) bool {

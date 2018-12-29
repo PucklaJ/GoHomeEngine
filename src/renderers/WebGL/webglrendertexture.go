@@ -96,9 +96,11 @@ func (this *WebGLRenderTexture) loadRenderBuffer(width, height int) {
 		handleWebGLError("RenderTexture", this.Name, "glGenRenderbuffers")
 		gl.BindRenderbuffer(gl.RENDERBUFFER, this.rbo)
 		handleWebGLError("RenderTexture", this.Name, "glBindRenderbuffer")
+
 		gl.RenderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, width, height)
 		handleWebGLError("RenderTexture", this.Name, "glRenderbufferStorage")
-		gl.FrameBufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, this.rbo)
+
+		gl.FramebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, this.rbo)
 		handleWebGLError("RenderTexture", this.Name, "glFramebufferRenderbuffer")
 		gl.BindRenderbuffer(gl.RENDERBUFFER, nil)
 		handleWebGLError("RenderTexture", this.Name, "glBindRenderbuffer with 0")
@@ -109,6 +111,8 @@ func (this *WebGLRenderTexture) Create(name string, width, height, textures uint
 	if textures == 0 {
 		textures = 1
 	}
+
+	render, _ := gohome.Render.(*WebGLRenderer)
 
 	this.Name = name
 	this.shadowMap = shadowMap
@@ -124,15 +128,20 @@ func (this *WebGLRenderTexture) Create(name string, width, height, textures uint
 
 	this.loadRenderBuffer(int(width), int(height))
 	this.loadTextures(int(width), int(height), int(textures), cubeMap)
-	/* if shadowMap {
-		gl.DrawBuffer(gl.NONE)
-		handleWebGLError("RenderTexture", this.Name, "glDrawBuffer")
-		gl.ReadBuffer(gl.NONE)
-		handleWebGLError("RenderTexture", this.Name, "glReadBuffer")
-	} */
+
+	if shadowMap {
+		if render.HasFunctionAvailable("DRAW_BUFFERS") {
+			var buffers [1]int
+			buffers[0] = gl.NONE
+			gl.DrawBuffers(buffers[:])
+			handleWebGLError("RenderTexture", this.Name, "glDrawBuffer")
+			gl.ReadBuffer(gl.NONE)
+			handleWebGLError("RenderTexture", this.Name, "glReadBuffer")
+		}
+	}
 	if gl.CheckFramebufferStatus(gl.FRAMEBUFFER) != gl.FRAMEBUFFER_COMPLETE {
 		handleWebGLError("RenderTexture", this.Name, "glCheckFramebufferStatus")
-		gohome.ErrorMgr.Error("RenderTexture", this.Name, "Framebuffer is not complete")
+		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "RenderTexture", this.Name, "Framebuffer is not complete")
 		gl.BindFramebuffer(gl.FRAMEBUFFER, nil)
 		currentlyBoundRT = this.prevRT
 		return
@@ -186,7 +195,37 @@ func (this *WebGLRenderTexture) UnsetAsTarget() {
 }
 
 func (this *WebGLRenderTexture) Blit(rtex gohome.RenderTexture) {
-	gohome.ErrorMgr.Warning("RenderTexture", this.Name, "Blit does not work in WebGL")
+	var ortex *WebGLRenderTexture
+	if rtex != nil {
+		ortex = rtex.(*WebGLRenderTexture)
+	}
+	var width int
+	var height int
+	var x int
+	var y int
+	if rtex != nil {
+		gl.BindFramebuffer(gl.DRAW_FRAMEBUFFER, ortex.fbo)
+		width = rtex.GetWidth()
+		height = rtex.GetHeight()
+		x = 0
+		y = 0
+	} else {
+		gl.BindFramebuffer(gl.DRAW_FRAMEBUFFER, nil)
+		handleWebGLError("RenderTexture", this.Name, "glBindFramebuffer with GL_DRAW_FRAMEBUFFER in Blit")
+		width = this.prevViewport.Width
+		height = this.prevViewport.Height
+		x = this.prevViewport.X
+		y = this.prevViewport.Y
+	}
+	gl.BindFramebuffer(gl.READ_FRAMEBUFFER, this.fbo)
+	handleWebGLError("RenderTexture", this.Name, "glBindFramebuffer with GL_READ_FRAMEBUFFER in Blit")
+	gl.BlitFramebuffer(0, 0, this.GetWidth(), this.GetHeight(), x, y, width, height, gl.COLOR_BUFFER_BIT, gl.NEAREST)
+	handleWebGLError("RenderTexture", this.Name, "glBlitFramebuffer")
+
+	gl.BindFramebuffer(gl.READ_FRAMEBUFFER, nil)
+	handleWebGLError("RenderTexture", this.Name, "glBindFramebuffer with GL_READ_FRAMEBUFFER and 0 in Blit")
+	gl.BindFramebuffer(gl.DRAW_FRAMEBUFFER, nil)
+	handleWebGLError("RenderTexture", this.Name, "glBindFramebuffer with GL_DRAW_FRAMEBUFFER and 0 in Blit")
 }
 
 func (this *WebGLRenderTexture) Bind(unit uint32) {
@@ -228,10 +267,10 @@ func (this *WebGLRenderTexture) GetHeight() int {
 func (this *WebGLRenderTexture) Terminate() {
 	gl.DeleteFramebuffer(this.fbo)
 	if this.depthBuffer {
-		defer gl.DeleteRenderbuffer(this.rbo)
+		gl.DeleteRenderbuffer(this.rbo)
 	}
 	for i := 0; i < len(this.textures); i++ {
-		defer this.textures[i].Terminate()
+		this.textures[i].Terminate()
 	}
 	this.textures = append(this.textures[:0], this.textures[len(this.textures):]...)
 }
