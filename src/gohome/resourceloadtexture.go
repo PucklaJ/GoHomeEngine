@@ -8,6 +8,7 @@ import (
 	"io"
 	"strconv"
 	"sync"
+	"time"
 )
 
 const (
@@ -44,11 +45,14 @@ func loadImageData(img_data *[]byte, img image.Image, start_width, end_width, ma
 }
 
 func (rsmgr *ResourceManager) LoadTexture(name, path string) Texture {
+	start := time.Now()
 	tex := rsmgr.LoadTextureFunction(name, path, false)
 	if tex != nil {
 		rsmgr.textures[name] = tex
 		rsmgr.resourceFileNames[path] = name
-		ErrorMgr.Message(ERROR_LEVEL_LOG, "Texture", name, "Finished loading! W: "+strconv.Itoa(tex.GetWidth())+" H: "+strconv.Itoa(tex.GetHeight()))
+		end := time.Now()
+		sec := end.Sub(start).Seconds()
+		ErrorMgr.Message(ERROR_LEVEL_LOG, "Texture", name, "Finished loading! W: "+strconv.Itoa(tex.GetWidth())+" H: "+strconv.Itoa(tex.GetHeight())+" T: "+strconv.FormatFloat(sec, 'f', 3, 64)+" s")
 	}
 	return tex
 }

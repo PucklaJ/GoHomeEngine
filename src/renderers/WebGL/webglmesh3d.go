@@ -17,7 +17,8 @@ type WebGLMesh3D struct {
 	numVertices int
 	numIndices  int
 
-	buffer *js.Object
+	vbo *js.Object
+	ibo *js.Object
 
 	Name     string
 	Material *gohome.Material
@@ -167,18 +168,18 @@ func (oglm *WebGLMesh3D) deleteElements() {
 }
 
 func (oglm *WebGLMesh3D) attributePointer() {
-	gl.BindBuffer(gl.ARRAY_BUFFER, oglm.buffer)
-	gl.VertexAttribPointer(0, 3, gl.FLOAT, false, int(gohome.MESH3DVERTEXSIZE), 0)
-	gl.VertexAttribPointer(1, 3, gl.FLOAT, false, int(gohome.MESH3DVERTEXSIZE), 3*4)
-	gl.VertexAttribPointer(2, 2, gl.FLOAT, false, int(gohome.MESH3DVERTEXSIZE), 3*4+3*4)
-	gl.VertexAttribPointer(3, 3, gl.FLOAT, false, int(gohome.MESH3DVERTEXSIZE), 3*4+3*4+2*4)
+	gl.BindBuffer(gl.ARRAY_BUFFER, oglm.vbo)
+	gl.VertexAttribPointer(0, 3, gl.FLOAT, false, gohome.MESH3DVERTEXSIZE, 0)
+	gl.VertexAttribPointer(1, 3, gl.FLOAT, false, gohome.MESH3DVERTEXSIZE, 3*4)
+	gl.VertexAttribPointer(2, 2, gl.FLOAT, false, gohome.MESH3DVERTEXSIZE, 3*4+3*4)
+	gl.VertexAttribPointer(3, 3, gl.FLOAT, false, gohome.MESH3DVERTEXSIZE, 3*4+3*4+2*4)
 
 	gl.EnableVertexAttribArray(0)
 	gl.EnableVertexAttribArray(1)
 	gl.EnableVertexAttribArray(2)
 	gl.EnableVertexAttribArray(3)
 
-	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, oglm.buffer)
+	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, oglm.ibo)
 }
 
 func (oglm *WebGLMesh3D) Load() {
@@ -194,20 +195,20 @@ func (oglm *WebGLMesh3D) Load() {
 	}
 
 	var verticesSize = oglm.numVertices * gohome.MESH3DVERTEXSIZE
-	var indicesSize = oglm.numIndices * 2
 
 	oglm.CalculateTangents()
 
-	oglm.buffer = gl.CreateBuffer()
+	vertexBuffer := gohome.Mesh3DVerticesToFloatArray(oglm.vertices)
 
-	gl.BindBuffer(gl.ARRAY_BUFFER, oglm.buffer)
-	gl.BufferData(gl.ARRAY_BUFFER, int(verticesSize)+int(indicesSize), nil, gl.STATIC_DRAW)
+	oglm.vbo = gl.CreateBuffer()
+	oglm.ibo = gl.CreateBuffer()
 
-	gl.BufferSubData(gl.ARRAY_BUFFER, 0, oglm.vertices)
+	gl.BindBuffer(gl.ARRAY_BUFFER, oglm.vbo)
+	gl.BufferData(gl.ARRAY_BUFFER, verticesSize, vertexBuffer, gl.STATIC_DRAW)
 	gl.BindBuffer(gl.ARRAY_BUFFER, nil)
 
-	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, oglm.buffer)
-	gl.BufferSubData(gl.ELEMENT_ARRAY_BUFFER, int(verticesSize), oglm.indices)
+	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, oglm.ibo)
+	gl.BufferData(gl.ELEMENT_ARRAY_BUFFER, verticesSize, oglm.indices, gl.STATIC_DRAW)
 	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, nil)
 
 	oglm.deleteElements()
@@ -228,14 +229,15 @@ func (oglm *WebGLMesh3D) Render() {
 	}
 	oglm.attributePointer()
 	gl.GetError()
-	gl.DrawElements(gl.TRIANGLES, oglm.numIndices, gl.UNSIGNED_SHORT, oglm.numVertices*gohome.MESH3DVERTEXSIZE)
+	gl.DrawElements(gl.TRIANGLES, oglm.numIndices, gl.UNSIGNED_SHORT, 0)
 	handleWebGLError("Mesh3D", oglm.Name, "RenderError: ")
 	gl.BindBuffer(gl.ARRAY_BUFFER, nil)
 	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, nil)
 }
 
 func (oglm *WebGLMesh3D) Terminate() {
-	gl.DeleteBuffer(oglm.buffer)
+	gl.DeleteBuffer(oglm.vbo)
+	gl.DeleteBuffer(oglm.ibo)
 }
 
 func (oglm *WebGLMesh3D) SetMaterial(mat *gohome.Material) {
@@ -282,7 +284,8 @@ func (oglm *WebGLMesh3D) HasUV() bool {
 func (oglm *WebGLMesh3D) Copy() gohome.Mesh3D {
 	var oglm1 WebGLMesh3D
 	oglm1.Name = oglm.Name + " Copy"
-	oglm1.buffer = oglm.buffer
+	oglm1.vbo = oglm.vbo
+	oglm1.ibo = oglm.ibo
 	mat := *oglm.Material
 	oglm1.Material = &mat
 	oglm1.tangentsCalculated = oglm.tangentsCalculated

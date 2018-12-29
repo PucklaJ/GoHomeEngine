@@ -28,7 +28,8 @@ type WebGLInstancedMesh3D struct {
 	numUsedInstances int
 
 	vao             *js.Object
-	buffer          *js.Object
+	vbo             *js.Object
+	ibo             *js.Object
 	canUseVAOs      bool
 	canUseInstanced bool
 	hasUV           bool
@@ -309,7 +310,7 @@ func (this *WebGLInstancedMesh3D) deleteElements() {
 
 func (this *WebGLInstancedMesh3D) calculateOffsets() {
 	var i uint32
-	var offset = this.numVertices*gohome.MESH3DVERTEXSIZE + this.numIndices*2
+	var offset = this.numVertices * gohome.MESH3DVERTEXSIZE
 	for i = 0; i < uint32(len(this.valueTypeIndexOffsets)); i++ {
 		this.valueTypeIndexOffsets[i].offset = offset
 		offset += getSize(this.valueTypeIndexOffsets[i].valueType)
@@ -317,7 +318,7 @@ func (this *WebGLInstancedMesh3D) calculateOffsets() {
 }
 
 func (this *WebGLInstancedMesh3D) attributePointer() {
-	gl.BindBuffer(gl.ARRAY_BUFFER, this.buffer)
+	gl.BindBuffer(gl.ARRAY_BUFFER, this.vbo)
 	gl.VertexAttribPointer(0, 3, gl.FLOAT, false, gohome.MESH3DVERTEXSIZE, gl.PtrOffset(0))
 	gl.VertexAttribPointer(1, 3, gl.FLOAT, false, gohome.MESH3DVERTEXSIZE, gl.PtrOffset(3*4))
 	gl.VertexAttribPointer(2, 2, gl.FLOAT, false, gohome.MESH3DVERTEXSIZE, gl.PtrOffset(3*4+3*4))
@@ -330,7 +331,7 @@ func (this *WebGLInstancedMesh3D) attributePointer() {
 	gl.EnableVertexAttribArray(3)
 	this.instancedEnableVertexAttribArray()
 
-	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.buffer)
+	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.ibo)
 }
 
 func (this *WebGLInstancedMesh3D) Load() {
@@ -359,9 +360,9 @@ func (this *WebGLInstancedMesh3D) Load() {
 	}
 	var bufferSize int
 	if this.canUseInstanced {
-		bufferSize = verticesSize + indicesSize + this.instancedSize
+		bufferSize = verticesSize + this.instancedSize
 	} else {
-		bufferSize = verticesSize + indicesSize
+		bufferSize = verticesSize
 	}
 	var usage int
 	if this.canUseInstanced {
@@ -378,10 +379,11 @@ func (this *WebGLInstancedMesh3D) Load() {
 	if this.canUseVAOs {
 		this.vao = gl.CreateVertexArray()
 	}
-	this.buffer = gl.CreateBuffer()
+	this.vbo = gl.CreateBuffer()
+	this.ibo = gl.CreateBuffer()
 	handleWebGLError("InstancedMesh3D", this.Name, "GenBuffer: ")
 
-	gl.BindBuffer(gl.ARRAY_BUFFER, this.buffer)
+	gl.BindBuffer(gl.ARRAY_BUFFER, this.vbo)
 	gl.BufferData(gl.ARRAY_BUFFER, bufferSize, nil, usage)
 	handleWebGLError("InstancedMesh3D", this.Name, "BufferData: ")
 
@@ -389,8 +391,8 @@ func (this *WebGLInstancedMesh3D) Load() {
 	handleWebGLError("InstancedMesh3D", this.Name, "BufferSubData Vertices: ")
 	gl.BindBuffer(gl.ARRAY_BUFFER, nil)
 
-	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.buffer)
-	gl.BufferSubData(gl.ELEMENT_ARRAY_BUFFER, int(verticesSize), this.indices)
+	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.ibo)
+	gl.BufferData(gl.ELEMENT_ARRAY_BUFFER, indicesSize, this.indices, gl.STATIC_DRAW)
 	handleWebGLError("InstancedMesh3D", this.Name, "BufferSubData Indices: ")
 	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, nil)
 
@@ -435,12 +437,12 @@ func (this *WebGLInstancedMesh3D) Render() {
 	}
 	if this.canUseInstanced {
 		gl.GetError()
-		gl.DrawElementsInstanced(gl.TRIANGLES, this.numIndices, gl.UNSIGNED_SHORT, this.numVertices*gohome.MESH3DVERTEXSIZE, this.numUsedInstances)
+		gl.DrawElementsInstanced(gl.TRIANGLES, this.numIndices, gl.UNSIGNED_SHORT, 0, this.numUsedInstances)
 		handleWebGLError("InstancedMesh3D", this.Name, "RenderError: ")
 	} else {
 		for i := 0; i < this.numUsedInstances && i < this.numInstances; i++ {
 			this.setInstancedValuesUniforms(i)
-			gl.DrawElements(gl.TRIANGLES, this.numIndices, gl.UNSIGNED_SHORT, this.numVertices*gohome.MESH3DVERTEXSIZE)
+			gl.DrawElements(gl.TRIANGLES, this.numIndices, gl.UNSIGNED_SHORT, 0)
 			handleWebGLError("InstancedMesh3D", this.Name, "RenderError: ")
 		}
 	}
@@ -542,7 +544,8 @@ func (this *WebGLInstancedMesh3D) Terminate() {
 	if this.canUseVAOs {
 		gl.DeleteVertexArray(this.vao)
 	}
-	gl.DeleteBuffer(this.buffer)
+	gl.DeleteBuffer(this.vbo)
+	gl.DeleteBuffer(this.ibo)
 }
 
 func (this *WebGLInstancedMesh3D) SetMaterial(mat *gohome.Material) {
@@ -569,25 +572,24 @@ func (this *WebGLInstancedMesh3D) GetNumIndices() uint32 {
 
 func (this *WebGLInstancedMesh3D) recreateBuffer(numInstances int) {
 	verticesSize := this.numVertices * gohome.MESH3DVERTEXSIZE
-	indicesSize := this.numIndices * 2
 	this.instancedSize = this.getInstancedSize() * numInstances
-	bufferSize := verticesSize + indicesSize + this.instancedSize
+	bufferSize := verticesSize + this.instancedSize
 
 	tempBuffer := gl.CreateBuffer()
 	handleWebGLError("InstancedMesh3D", this.Name, "SetNumInstances GenBuffer: ")
-	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.buffer)
+	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.vbo)
 
 	gl.BindBuffer(gl.ARRAY_BUFFER, tempBuffer)
 	gl.BufferData(gl.ARRAY_BUFFER, bufferSize, nil, gl.DYNAMIC_DRAW)
 	handleWebGLError("InstancedMesh3D", this.Name, "SetNumInstances BufferData: ")
 
-	gl.CopyBufferSubData(gl.ELEMENT_ARRAY_BUFFER, gl.ARRAY_BUFFER, 0, 0, verticesSize+indicesSize)
+	gl.CopyBufferSubData(gl.ELEMENT_ARRAY_BUFFER, gl.ARRAY_BUFFER, 0, 0, verticesSize)
 	handleWebGLError("InstancedMesh3D", this.Name, "SetNumInstances CopyBufferSubData Vertices: ")
 
 	gl.BindBuffer(gl.ARRAY_BUFFER, nil)
 	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, nil)
-	gl.DeleteBuffer(this.buffer)
-	this.buffer = tempBuffer
+	gl.DeleteBuffer(this.vbo)
+	this.vbo = tempBuffer
 
 	this.sizePerInstance = this.instancedSize / numInstances
 
@@ -754,7 +756,7 @@ func (this *WebGLInstancedMesh3D) SetF(index uint32, value []float32) {
 			return
 		}
 
-		gl.BindBuffer(gl.ARRAY_BUFFER, this.buffer)
+		gl.BindBuffer(gl.ARRAY_BUFFER, this.vbo)
 
 		for i := 0; i < this.numInstances; i++ {
 			gl.BufferSubData(gl.ARRAY_BUFFER, offset, value[i])
@@ -778,7 +780,7 @@ func (this *WebGLInstancedMesh3D) SetV2(index uint32, value []mgl32.Vec2) {
 			return
 		}
 
-		gl.BindBuffer(gl.ARRAY_BUFFER, this.buffer)
+		gl.BindBuffer(gl.ARRAY_BUFFER, this.vbo)
 
 		for i := 0; i < this.numInstances; i++ {
 			gl.BufferSubData(gl.ARRAY_BUFFER, offset, value[i])
@@ -802,7 +804,7 @@ func (this *WebGLInstancedMesh3D) SetV3(index uint32, value []mgl32.Vec3) {
 			return
 		}
 
-		gl.BindBuffer(gl.ARRAY_BUFFER, this.buffer)
+		gl.BindBuffer(gl.ARRAY_BUFFER, this.vbo)
 
 		for i := 0; i < this.numInstances; i++ {
 			gl.BufferSubData(gl.ARRAY_BUFFER, offset, value[i])
@@ -825,7 +827,7 @@ func (this *WebGLInstancedMesh3D) SetV4(index uint32, value []mgl32.Vec4) {
 			return
 		}
 
-		gl.BindBuffer(gl.ARRAY_BUFFER, this.buffer)
+		gl.BindBuffer(gl.ARRAY_BUFFER, this.vbo)
 
 		for i := 0; i < this.numInstances; i++ {
 			gl.BufferSubData(gl.ARRAY_BUFFER, offset, value[i])
@@ -848,7 +850,7 @@ func (this *WebGLInstancedMesh3D) SetM2(index uint32, value []mgl32.Mat2) {
 			return
 		}
 
-		gl.BindBuffer(gl.ARRAY_BUFFER, this.buffer)
+		gl.BindBuffer(gl.ARRAY_BUFFER, this.vbo)
 
 		for i := 0; i < this.numInstances; i++ {
 			gl.BufferSubData(gl.ARRAY_BUFFER, offset, value[i])
@@ -871,7 +873,7 @@ func (this *WebGLInstancedMesh3D) SetM3(index uint32, value []mgl32.Mat3) {
 			return
 		}
 
-		gl.BindBuffer(gl.ARRAY_BUFFER, this.buffer)
+		gl.BindBuffer(gl.ARRAY_BUFFER, this.vbo)
 
 		for i := 0; i < this.numInstances; i++ {
 			gl.BufferSubData(gl.ARRAY_BUFFER, offset, value[i])
@@ -895,7 +897,7 @@ func (this *WebGLInstancedMesh3D) SetM4(index uint32, value []mgl32.Mat4) {
 			return
 		}
 
-		gl.BindBuffer(gl.ARRAY_BUFFER, this.buffer)
+		gl.BindBuffer(gl.ARRAY_BUFFER, this.vbo)
 
 		for i := 0; i < this.numInstances; i++ {
 			gl.BufferSubData(gl.ARRAY_BUFFER, offset, value[i])
@@ -985,11 +987,10 @@ func (this *WebGLRenderer) InstancedMesh3DFromLoadedMesh3D(mesh gohome.Mesh3D) g
 	ioglmesh.numInstances = 0
 
 	var verticesSize = ioglmesh.numVertices * gohome.MESH3DVERTEXSIZE
-	var indicesSize = ioglmesh.numIndices * 2
 	if ioglmesh.canUseInstanced {
 		ioglmesh.instancedSize = 0
 	}
-	bufferSize := verticesSize + indicesSize
+	bufferSize := verticesSize
 	var usage int
 	if ioglmesh.canUseInstanced {
 		usage = gl.DYNAMIC_DRAW
@@ -1000,17 +1001,19 @@ func (this *WebGLRenderer) InstancedMesh3DFromLoadedMesh3D(mesh gohome.Mesh3D) g
 	if ioglmesh.canUseVAOs {
 		ioglmesh.vao = gl.CreateVertexArray()
 	}
-	ioglmesh.buffer = gl.CreateBuffer()
+	ioglmesh.vbo = gl.CreateBuffer()
 	handleWebGLError("InstancedMesh3D", ioglmesh.Name, "GenBuffer: ")
 
-	gl.BindBuffer(gl.ARRAY_BUFFER, ioglmesh.buffer)
+	gl.BindBuffer(gl.ARRAY_BUFFER, ioglmesh.vbo)
 	gl.BufferData(gl.ARRAY_BUFFER, bufferSize, nil, usage)
 	handleWebGLError("InstancedMesh3D", ioglmesh.Name, "BufferData: ")
 
-	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, oglmesh.buffer)
+	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, oglmesh.vbo)
 	gl.CopyBufferSubData(gl.ELEMENT_ARRAY_BUFFER, gl.ARRAY_BUFFER, 0, 0, bufferSize)
 	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, nil)
 	gl.BindBuffer(gl.ARRAY_BUFFER, nil)
+
+	ioglmesh.ibo = oglmesh.ibo
 
 	if ioglmesh.canUseInstanced {
 		ioglmesh.sizePerInstance = 0

@@ -9,6 +9,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -31,6 +32,7 @@ func loop(float32) {
 }
 
 func (this *JSFramework) Init(ml *gohome.MainLoop) error {
+	addtimestart = time.Now()
 	framew = this
 	addEventListeners()
 	if !ml.InitWindow() {
@@ -38,9 +40,9 @@ func (this *JSFramework) Init(ml *gohome.MainLoop) error {
 	}
 	ml.InitRenderer()
 	ml.InitManagers()
+	gohome.Render.AfterInit()
 	ml.SetupStartScene()
 
-	addtimestart = time.Now()
 	js.Global.Call("requestAnimationFrame", loop)
 
 	return nil
@@ -123,7 +125,7 @@ func (*JSFramework) CursorDisabled() bool {
 }
 
 type JSFile struct {
-	io.ReadSeeker
+	io.Reader
 	io.Closer
 }
 
@@ -132,13 +134,22 @@ func (*JSFramework) OpenFile(file string) (gohome.File, error) {
 	if err != nil {
 		return nil, err
 	}
+	if resp.StatusCode/100 != 2 {
+		return nil, errors.New("HTTP Request failed: " + strconv.Itoa(resp.StatusCode))
+	}
+
 	return resp.Body, nil
 }
 func (*JSFramework) LoadLevel(rsmgr *gohome.ResourceManager, name, path string, preloaded, loadToGPU bool) *gohome.Level {
+	extension := getFileExtension(path)
+	if equalIgnoreCase(extension, "obj") {
+		return loadLevelOBJ(rsmgr, name, path, preloaded, loadToGPU)
+	}
+	gohome.ErrorMgr.Error("Level", name, "The extension "+extension+" is not supported")
 	return nil
 }
 func (*JSFramework) LoadLevelString(rsmgr *gohome.ResourceManager, name, contents, fileName string, preloaded, loadToGPU bool) *gohome.Level {
-	return nil
+	return loadLevelOBJString(rsmgr, name, contents, fileName, preloaded, loadToGPU)
 }
 
 func (*JSFramework) Log(a ...interface{}) {

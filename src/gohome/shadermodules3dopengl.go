@@ -51,7 +51,6 @@ var (
 	SetOutputsNormalModuleVertex3D = glslgen.Module{
 		Name: "setOutputsNormal",
 		Body: `fragPos =  (viewMatrix3D*transformMatrix3D*vec4(vertex,1.0)).xyz;
-			   fragTexCoord = texCoord;
 			   fragNormal =  (viewMatrix3D*transformMatrix3D*vec4(normal,0.0)).xyz;
 			   vec3 norm = normalize(fragNormal);
 			   vec3 tang = normalize((viewMatrix3D*transformMatrix3D*vec4(tangent,0.0)).xyz);
@@ -68,6 +67,11 @@ var (
 		Name: "setOutputsNoUV",
 		Body: `fragPos =  (transformMatrix3D*vec4(vertex,1.0)).xyz;
 			   fragNormal =  (transformMatrix3D*vec4(normal,0.0)).xyz;`,
+	}
+
+	SetOutputTexCoordModuleVertex3D = glslgen.Module{
+		Name: "setOutputTexCoord",
+		Body: `fragTexCoord = texCoord;`,
 	}
 
 	GlobalsFragment3D = []glslgen.Variable{
@@ -774,7 +778,7 @@ func GenerateShader3D(shader_type uint8, flags uint32) (n, v, f string) {
 		if flags&SHADER_FLAG_NOUV == 0 && (rname != "OpenGLES2" && rname != "WebGL") {
 			vertex.AddOutputs(InputsNormalFragment3D)
 		}
-		if rname == "OpenGLES2" {
+		if rname == "OpenGLES2" || rname == "WebGL" {
 			vertex.AddOutput(glslgen.Variable{"vec2", "highp", "fragTexCoord"})
 		}
 		vertex.AddModule(UniformModuleVertex3D)
@@ -787,6 +791,9 @@ func GenerateShader3D(shader_type uint8, flags uint32) (n, v, f string) {
 			vertex.AddModule(SetOutputsNormalModuleVertex3D)
 		} else {
 			vertex.AddModule(SetOutputsNoUVModuleVertex3D)
+		}
+		if flags&SHADER_FLAG_NOUV == 0 {
+			vertex.AddModule(SetOutputTexCoordModuleVertex3D)
 		}
 
 		if flags&SHADER_FLAG_NO_LIGHTING == 0 {
