@@ -133,12 +133,40 @@ func getMovementY(event *js.Object) int {
 }
 
 func onMouseMove(event *js.Object) {
-	cx := framew.Canvas.Get("left").Int()
-	cy := framew.Canvas.Get("top").Int()
+	crect := framew.Canvas.Call("getClientRects").Index(0)
+	cx := crect.Get("x").Int()
+	cy := crect.Get("y").Int()
 	mx := event.Get("x").Int() - cx
 	my := event.Get("y").Int() - cy
 	moveX += getMovementX(event)
 	moveY += getMovementY(event)
+	if framew.WindowIsFullscreen() {
+		width := crect.Get("width").Float()
+		height := crect.Get("height").Float()
+		real_width := framew.Canvas.Get("width").Float()
+		real_height := framew.Canvas.Get("height").Float()
+		var calc_width, calc_height float64
+
+		xrel1 := real_width / width
+		yrel1 := real_height / height
+
+		if xrel1 < yrel1 {
+			calc_width = real_width / real_height * height
+			calc_height = real_height / real_width * calc_width
+		} else {
+			calc_height = real_height / real_width * width
+			calc_width = real_width / real_height * calc_height
+		}
+
+		xrel := real_width / calc_width
+		yrel := real_height / calc_height
+
+		mx -= int(width-calc_width) / 2
+		my -= int(height-calc_height) / 2
+
+		mx = int(float64(mx) * xrel)
+		my = int(float64(my) * yrel)
+	}
 	addEvent(
 		&mouseMoveEvent{
 			x:  mx,
@@ -172,8 +200,14 @@ func (this *keyEvent) ApplyValues() {
 func (this *mouseButtonEvent) ApplyValues() {
 	if this.pressed {
 		gohome.InputMgr.PressKey(jsmouseButtonTogohomeKey(this.button))
+		if this.button == 0 {
+			gohome.InputMgr.Touch(0)
+		}
 	} else {
 		gohome.InputMgr.ReleaseKey(jsmouseButtonTogohomeKey(this.button))
+		if this.button == 0 {
+			gohome.InputMgr.ReleaseTouch(0)
+		}
 	}
 }
 
@@ -195,6 +229,14 @@ func (this *mouseMoveEvent) ApplyValues() {
 		moveX = 0
 		moveY = 0
 	}
+
+	inputTouch := gohome.InputMgr.Touches[0]
+	inputTouch.Pos = gohome.InputMgr.Mouse.Pos
+	inputTouch.DPos = gohome.InputMgr.Mouse.DPos
+	inputTouch.PPos[0] = int16(prevMPos[0])
+	inputTouch.PPos[1] = int16(prevMPos[1])
+	inputTouch.ID = 0
+	gohome.InputMgr.Touches[0] = inputTouch
 }
 
 func (this *mouseWheelEvent) ApplyValues() {

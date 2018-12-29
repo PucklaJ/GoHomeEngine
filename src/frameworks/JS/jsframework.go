@@ -124,6 +124,8 @@ func (*JSFramework) WindowClosed() bool {
 func (this *JSFramework) WindowSetSize(size mgl32.Vec2) {
 	this.Canvas.Set("width", size[0])
 	this.Canvas.Set("height", size[1])
+	canvas_width = int(size[0])
+	canvas_height = int(size[1])
 	onResize()
 }
 func (this *JSFramework) WindowGetSize() mgl32.Vec2 {
@@ -136,6 +138,8 @@ func (this *JSFramework) WindowGetSize() mgl32.Vec2 {
 var canvas_width, canvas_height int
 
 func (this *JSFramework) WindowSetFullscreen(b bool) {
+	canvas_width = this.Canvas.Get("width").Int()
+	canvas_height = this.Canvas.Get("height").Int()
 	if b {
 		this.Canvas.Call("requestFullscreen")
 	} else {
