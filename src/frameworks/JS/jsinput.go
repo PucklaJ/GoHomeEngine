@@ -43,6 +43,10 @@ func onKeyDown(event *js.Object) {
 			pressed: true,
 		},
 	)
+
+	if event.Get("keyCode").Int() == 120 { // F9
+		framew.WindowSetFullscreen(!framew.WindowIsFullscreen())
+	}
 }
 
 func onKeyUp(event *js.Object) {
@@ -116,4 +120,9 @@ func addEventListeners() {
 
 func onBeforeUnload(event *js.Object) {
 	running = false
+}
+
+func onResize() {
+	nw, nh := uint32(framew.Canvas.Get("width").Int()), uint32(framew.Canvas.Get("height").Int())
+	gohome.Render.OnResize(nw, nh)
 }

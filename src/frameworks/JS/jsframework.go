@@ -40,10 +40,10 @@ func loop(float32) {
 func (this *JSFramework) Init(ml *gohome.MainLoop) error {
 	addtimestart = time.Now()
 	framew = this
-	addEventListeners()
 	if !ml.InitWindow() {
 		return errors.New("Failed to create Canvas")
 	}
+	addEventListeners()
 	ml.InitRenderer()
 	ml.InitManagers()
 	gohome.Render.AfterInit()
@@ -96,6 +96,7 @@ func (*JSFramework) WindowClosed() bool {
 func (this *JSFramework) WindowSetSize(size mgl32.Vec2) {
 	this.Canvas.Set("width", size[0])
 	this.Canvas.Set("height", size[1])
+	onResize()
 }
 func (this *JSFramework) WindowGetSize() mgl32.Vec2 {
 	width := float32(this.Canvas.Get("width").Float())
@@ -103,10 +104,32 @@ func (this *JSFramework) WindowGetSize() mgl32.Vec2 {
 
 	return [2]float32{width, height}
 }
-func (*JSFramework) WindowSetFullscreen(b bool) {
 
+var canvas_width, canvas_height int
+
+func (this *JSFramework) WindowSetFullscreen(b bool) {
+	if b {
+		this.Canvas.Call("requestFullscreen")
+	} else {
+		js.Global.Get("document").Call("exitFullscreen")
+	}
+	onResize()
 }
-func (*JSFramework) WindowIsFullscreen() bool {
+func (this *JSFramework) WindowIsFullscreen() bool {
+	document := js.Global.Get("document")
+	fullscreenElement := document.Get("fullscreenElement")
+	if fullscreenElement != js.Undefined && fullscreenElement != nil {
+		return true
+	}
+	mozFullscreenElement := document.Get("mozFullScreenElement")
+	if mozFullscreenElement != js.Undefined && mozFullscreenElement != nil {
+		return true
+	}
+	webkitFullscreenElement := document.Get("webkitFullscreenElement")
+	if webkitFullscreenElement != js.Undefined && webkitFullscreenElement != nil {
+		return true
+	}
+
 	return false
 }
 func (*JSFramework) MonitorGetSize() mgl32.Vec2 {
