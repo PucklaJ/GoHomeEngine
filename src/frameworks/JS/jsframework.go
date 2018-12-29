@@ -163,16 +163,20 @@ func (this *JSFramework) WindowIsFullscreen() bool {
 func (*JSFramework) MonitorGetSize() mgl32.Vec2 {
 	return [2]float32{0.0, 0.0}
 }
-func (*JSFramework) CurserShow() {
+func (this *JSFramework) CurserShow() {
+	this.Canvas.Get("style").Set("cursor", "")
 	js.Global.Get("document").Call("exitPointerLock")
 }
-func (*JSFramework) CursorHide() {
-
+func (this *JSFramework) CursorHide() {
+	this.Canvas.Get("style").Set("cursor", "none")
 }
 func (this *JSFramework) CursorDisable() {
 	this.Canvas.Call("requestPointerLock")
 }
-func (*JSFramework) CursorShown() bool {
+func (this *JSFramework) CursorShown() bool {
+	if this.CursorHidden() {
+		return false
+	}
 	document := js.Global.Get("document")
 	pointerLockElement := document.Get("pointerLockElement")
 	if pointerLockElement != js.Undefined && pointerLockElement != nil {
@@ -185,8 +189,9 @@ func (*JSFramework) CursorShown() bool {
 
 	return true
 }
-func (*JSFramework) CursorHidden() bool {
-	return false
+func (this *JSFramework) CursorHidden() bool {
+	cursor := this.Canvas.Get("style").Get("cursor")
+	return cursor != js.Undefined && cursor.String() == "none"
 }
 func (this *JSFramework) CursorDisabled() bool {
 	return !this.CursorShown()
