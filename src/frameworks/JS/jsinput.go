@@ -46,6 +46,12 @@ func onKeyDown(event *js.Object) {
 
 	if event.Get("keyCode").Int() == 120 { // F9
 		framew.WindowSetFullscreen(!framew.WindowIsFullscreen())
+	} else if event.Get("keyCode").Int() == 76 { // L
+		if framew.CursorShown() {
+			framew.CursorDisable()
+		} else {
+			framew.CurserShow()
+		}
 	}
 }
 

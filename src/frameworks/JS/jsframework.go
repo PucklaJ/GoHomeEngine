@@ -43,6 +43,17 @@ func (this *JSFramework) Init(ml *gohome.MainLoop) error {
 	if !ml.InitWindow() {
 		return errors.New("Failed to create Canvas")
 	}
+	if this.Canvas.Get("requestPointerLock") != js.Undefined {
+		this.Canvas.Set("requestPointerLock", this.Canvas.Get("requestPointerLock"))
+	} else if this.Canvas.Get("mozRequestPointerLock") != js.Undefined {
+		this.Canvas.Set("requestPointerLock", this.Canvas.Get("mozRequestPointerLock"))
+	}
+	document := js.Global.Get("document")
+	if document.Get("exitPointerLock") != js.Undefined {
+		document.Set("exitPointerLock", document.Get("exitPointerLock"))
+	} else if document.Get("mozExitPointerLock") != js.Undefined {
+		document.Set("exitPointerLock", document.Get("mozExitPointerLock"))
+	}
 	addEventListeners()
 	ml.InitRenderer()
 	ml.InitManagers()
@@ -136,22 +147,32 @@ func (*JSFramework) MonitorGetSize() mgl32.Vec2 {
 	return [2]float32{0.0, 0.0}
 }
 func (*JSFramework) CurserShow() {
-
+	js.Global.Get("document").Call("exitPointerLock")
 }
 func (*JSFramework) CursorHide() {
 
 }
-func (*JSFramework) CursorDisable() {
-
+func (this *JSFramework) CursorDisable() {
+	this.Canvas.Call("requestPointerLock")
 }
 func (*JSFramework) CursorShown() bool {
+	document := js.Global.Get("document")
+	pointerLockElement := document.Get("pointerLockElement")
+	if pointerLockElement != js.Undefined && pointerLockElement != nil {
+		return false
+	}
+	mozPointerLockElement := document.Get("mozPointerLockElement")
+	if mozPointerLockElement != js.Undefined && mozPointerLockElement != nil {
+		return false
+	}
+
 	return true
 }
 func (*JSFramework) CursorHidden() bool {
 	return false
 }
-func (*JSFramework) CursorDisabled() bool {
-	return false
+func (this *JSFramework) CursorDisabled() bool {
+	return !this.CursorShown()
 }
 
 type JSFile struct {
