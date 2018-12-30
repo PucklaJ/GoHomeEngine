@@ -365,9 +365,9 @@ func copyAssets() {
 }
 
 func (*AndroidBuild) Generate() {
-	if VAR_FRAME != "SDL" {
-		fmt.Println("Android is only compatible with SDL")
-		VAR_FRAME = "SDL"
+	if VAR_FRAME != "SDL2" {
+		fmt.Println("Android is only compatible with SDL2")
+		VAR_FRAME = "SDL2"
 	}
 	if !strings.Contains(VAR_RENDER, "OpenGLES") {
 		fmt.Println("Android is only compatible with OpenGLES")
@@ -386,52 +386,45 @@ func (*AndroidBuild) Generate() {
 		}
 	}
 
-	slash := GetSlash()
-	gopath := os.Getenv("GOPATH") + slash
-	androidpath := gopath + "src" + slash + "github.com" + slash + "PucklaMotzer09" + slash + "GoHomeEngine" + slash + "android" + slash
+	if !FileExists("gradlew") {
+		slash := GetSlash()
+		gopath := os.Getenv("GOPATH") + slash
+		androidpath := gopath + "src" + slash + "github.com" + slash + "PucklaMotzer09" + slash + "GoHomeEngine" + slash + "android" + slash
 
-	doCopy(androidpath + "android")
-	doCopy(androidpath + "gradle")
-	doCopy(androidpath + "build.gradle")
-	doCopy(androidpath + "build_libraries.sh")
-	doCopy(androidpath + "gradlew")
-	doCopy(androidpath + "gradlew.bat")
-	doCopy(androidpath + "settings.gradle")
+		doCopy(androidpath + "android")
+		doCopy(androidpath + "gradle")
+		doCopy(androidpath + "build.gradle")
+		doCopy(androidpath + "build_libraries.sh")
+		doCopy(androidpath + "gradlew")
+		doCopy(androidpath + "gradlew.bat")
+		doCopy(androidpath + "settings.gradle")
 
-	appname := GetCustomValue("APPNAME")
-	AssertValue(&VAR_ANDROID_API, "", "APILEVEL")
-	AssertValue(&VAR_ANDROID_KEYSTORE, "", "KEYSTORE")
-	AssertValue(&VAR_ANDROID_KEYALIAS, "", "KEYALIAS")
-	AssertValue(&VAR_ANDROID_KEYPWD, "", "KEYPWD")
-	AssertValue(&VAR_ANDROID_STOREPWD, "", "STOREPWD")
-	AssertValue(&VAR_START, "", "StartScene")
-	CustomValues["TITLE"] = appname
+		appname := GetCustomValue("APPNAME")
+		AssertValue(&VAR_ANDROID_API, "", "APILEVEL")
+		AssertValue(&VAR_ANDROID_KEYSTORE, "", "KEYSTORE")
+		AssertValue(&VAR_ANDROID_KEYALIAS, "", "KEYALIAS")
+		AssertValue(&VAR_ANDROID_KEYPWD, "", "KEYPWD")
+		AssertValue(&VAR_ANDROID_STOREPWD, "", "STOREPWD")
+		AssertValue(&VAR_START, "", "StartScene")
+
+		buildgradle := WorkingDir() + "android" + slash + "build.gradle"
+		stringsxml := WorkingDir() + "android" + slash + "src" + slash + "main" + slash + "res" + slash + "values" + slash + "strings.xml"
+
+		ReplaceStringinFile(buildgradle, "%APPNAME%", LowerCaseAndNoNumber(appname))
+		ReplaceStringinFile(buildgradle, "%APILEVEL%", VAR_ANDROID_API)
+		ReplaceStringinFile(stringsxml, "%APPNAME%", appname)
+
+		setGradleProperties()
+	}
+
+	copyAssets()
+
+	CustomValues["TITLE"] = GetCustomValue("APPNAME")
 	if _, ok := CustomValues["WIDTH"]; !ok {
 		CustomValues["WIDTH"] = "1280"
 	}
 	if _, ok := CustomValues["HEIGHT"]; !ok {
 		CustomValues["HEIGHT"] = "720"
-	}
-
-	buildgradle := WorkingDir() + "android" + slash + "build.gradle"
-	stringsxml := WorkingDir() + "android" + slash + "src" + slash + "main" + slash + "res" + slash + "values" + slash + "strings.xml"
-
-	ReplaceStringinFile(buildgradle, "%APPNAME%", LowerCaseAndNoNumber(appname))
-	ReplaceStringinFile(buildgradle, "%APILEVEL%", VAR_ANDROID_API)
-	ReplaceStringinFile(stringsxml, "%APPNAME%", appname)
-
-	setGradleProperties()
-	copyAssets()
-
-	if VAR_FRAME != "SDL2" {
-		fmt.Println("Android is only compatible with SDL2")
-		VAR_FRAME = "SDL2"
-	}
-	if !strings.Contains(VAR_RENDER, "OpenGLES") {
-		fmt.Println("Android is only compatible with OpenGLES")
-		fmt.Print("Which version (2,3,31): ")
-		version := ConsoleRead()
-		VAR_RENDER = "OpenGLES" + version
 	}
 
 	str := generateMain(true)
@@ -467,7 +460,7 @@ func (*AndroidBuild) Run() bool {
 		return false
 	}
 
-	if err := ExecCommand("adb", "shell", "am", "start", "-n", "com.gohome."+LowerCaseAndNoNumber(CustomValues["APPNAME"])+"/com.example.android.MyGame"); err != nil {
+	if err := ExecCommand("adb", "shell", "am", "start", "-n", "com.gohome."+LowerCaseAndNoNumber(CustomValues["APPNAME"])+"/com.gohome.android.GoHomeGame"); err != nil {
 		return false
 	}
 

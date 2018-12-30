@@ -79,13 +79,24 @@ func setGLAttributesProfile() error {
 	return nil
 }
 
+func getWindowCreationFlags() uint32 {
+	flags := sdl.WINDOW_SHOWN | sdl.WINDOW_OPENGL
+	if runtime.GOOS == "android" {
+		flags |= sdl.WINDOW_FULLSCREEN
+	} else {
+		flags |= sdl.WINDOW_RESIZABLE
+	}
+
+	return uint32(flags)
+}
+
 func (this *SDL2Framework) createWindowLight(windowWidth, windowHeight uint32, title string) error {
 	sdl.GLResetAttributes()
 	if err := setGLAttributesCompatible(); err != nil {
 		return err
 	}
 	var err error
-	if this.window, err = sdl.CreateWindow(title, sdl.WINDOWPOS_CENTERED, sdl.WINDOWPOS_CENTERED, int32(windowWidth), int32(windowHeight), sdl.WINDOW_SHOWN|sdl.WINDOW_RESIZABLE|sdl.WINDOW_OPENGL); err != nil {
+	if this.window, err = sdl.CreateWindow(title, sdl.WINDOWPOS_CENTERED, sdl.WINDOWPOS_CENTERED, int32(windowWidth), int32(windowHeight), getWindowCreationFlags()); err != nil {
 		return err
 	}
 	return nil
@@ -101,7 +112,7 @@ func (this *SDL2Framework) CreateWindow(windowWidth, windowHeight uint32, title 
 	}
 
 	var err error
-	if this.window, err = sdl.CreateWindow(title, sdl.WINDOWPOS_CENTERED, sdl.WINDOWPOS_CENTERED, int32(windowWidth), int32(windowHeight), sdl.WINDOW_SHOWN|sdl.WINDOW_RESIZABLE|sdl.WINDOW_OPENGL); err != nil {
+	if this.window, err = sdl.CreateWindow(title, sdl.WINDOWPOS_CENTERED, sdl.WINDOWPOS_CENTERED, int32(windowWidth), int32(windowHeight), getWindowCreationFlags()); err != nil {
 		if err = this.createWindowLight(windowWidth, windowHeight, title); err != nil {
 			return err
 		}

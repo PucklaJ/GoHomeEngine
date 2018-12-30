@@ -170,6 +170,8 @@ func LowerCaseAndNoNumber(str string) string {
 	if str[0] >= 48 && str[0] <= 57 {
 		str = strings.Replace(str, string(str[0]), GetNumberAsWord(str[0]), 1)
 	}
+	str = strings.Replace(str, " ", "_", -1)
+	str = strings.Replace(str, "ß", "ss", -1)
 	return str
 }
 

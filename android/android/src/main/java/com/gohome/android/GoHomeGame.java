@@ -1,8 +1,8 @@
-package com.example.android;
+package com.gohome.android;
 
 import org.libsdl.app.SDLActivity;
 
-public class MyGame extends SDLActivity {
+public class GoHomeGame extends SDLActivity {
 
     @Override
     protected String[] getLibraries() {
@@ -15,5 +15,4 @@ public class MyGame extends SDLActivity {
     protected String getMainFunction() {
         return "SDL_main";
     }
-
 }
