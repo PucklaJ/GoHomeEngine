@@ -241,8 +241,16 @@ func (this *mouseMoveEvent) ApplyValues() {
 
 func (this *mouseWheelEvent) ApplyValues() {
 	if this.dm == 0 || this.dm == 1 {
-		gohome.InputMgr.Mouse.Wheel[0] = int8(this.dx)
-		gohome.InputMgr.Mouse.Wheel[1] = int8(this.dy)
+		if this.dx > 0 {
+			gohome.InputMgr.Mouse.Wheel[0] = 1
+		} else if this.dx < 0 {
+			gohome.InputMgr.Mouse.Wheel[0] = -1
+		}
+		if this.dy > 0 {
+			gohome.InputMgr.Mouse.Wheel[1] = 1
+		} else if this.dy < 0 {
+			gohome.InputMgr.Mouse.Wheel[1] = -1
+		}
 	}
 }
 
