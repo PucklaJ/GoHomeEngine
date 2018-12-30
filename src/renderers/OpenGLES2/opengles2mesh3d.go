@@ -10,7 +10,6 @@ import (
 
 const (
 	NUM_GO_ROUTINES_TANGENTS_CALCULATING uint32 = 10
-	MESH3DVERTEX_SIZE                    uint32 = 3*4 + 3*4 + 2*4 + 3*4 // 3*sizeof(float32)+3*sizeof(float32)+2*sizeof(float32)+3*sizeof(float32)
 )
 
 type OpenGLES2Mesh3D struct {
@@ -170,10 +169,10 @@ func (oglm *OpenGLES2Mesh3D) deleteElements() {
 
 func (oglm *OpenGLES2Mesh3D) attributePointer() {
 	gl.BindBuffer(gl.ARRAY_BUFFER, oglm.buffer)
-	gl.VertexAttribPointer(0, 3, gl.FLOAT, gl.FALSE, int32(MESH3DVERTEX_SIZE), gl.PtrOffset(0))
-	gl.VertexAttribPointer(1, 3, gl.FLOAT, gl.FALSE, int32(MESH3DVERTEX_SIZE), gl.PtrOffset(3*4))
-	gl.VertexAttribPointer(2, 2, gl.FLOAT, gl.FALSE, int32(MESH3DVERTEX_SIZE), gl.PtrOffset(3*4+3*4))
-	gl.VertexAttribPointer(3, 3, gl.FLOAT, gl.FALSE, int32(MESH3DVERTEX_SIZE), gl.PtrOffset(3*4+3*4+2*4))
+	gl.VertexAttribPointer(0, 3, gl.FLOAT, gl.FALSE, int32(gohome.MESH3DVERTEXSIZE), gl.PtrOffset(0))
+	gl.VertexAttribPointer(1, 3, gl.FLOAT, gl.FALSE, int32(gohome.MESH3DVERTEXSIZE), gl.PtrOffset(3*4))
+	gl.VertexAttribPointer(2, 2, gl.FLOAT, gl.FALSE, int32(gohome.MESH3DVERTEXSIZE), gl.PtrOffset(3*4+3*4))
+	gl.VertexAttribPointer(3, 3, gl.FLOAT, gl.FALSE, int32(gohome.MESH3DVERTEXSIZE), gl.PtrOffset(3*4+3*4+2*4))
 
 	gl.EnableVertexAttribArray(0)
 	gl.EnableVertexAttribArray(1)
@@ -195,7 +194,7 @@ func (oglm *OpenGLES2Mesh3D) Load() {
 		return
 	}
 
-	var verticesSize uint32 = oglm.numVertices * MESH3DVERTEX_SIZE
+	var verticesSize uint32 = oglm.numVertices * gohome.MESH3DVERTEXSIZE
 	var indicesSize uint32 = oglm.numIndices * 2
 
 	oglm.CalculateTangents()
@@ -241,7 +240,7 @@ func (oglm *OpenGLES2Mesh3D) Render() {
 
 	oglm.attributePointer()
 	gl.GetError()
-	gl.DrawElements(gl.TRIANGLES, int32(oglm.numIndices), gl.UNSIGNED_SHORT, gl.PtrOffset(int(oglm.numVertices*MESH3DVERTEX_SIZE)))
+	gl.DrawElements(gl.TRIANGLES, int32(oglm.numIndices), gl.UNSIGNED_SHORT, gl.PtrOffset(int(oglm.numVertices*gohome.MESH3DVERTEXSIZE)))
 	handleOpenGLError("Mesh3D", oglm.Name, "RenderError: ")
 	gl.BindBuffer(gl.ARRAY_BUFFER, 0)
 	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, 0)

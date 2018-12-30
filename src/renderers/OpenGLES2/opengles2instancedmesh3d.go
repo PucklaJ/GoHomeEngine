@@ -181,10 +181,10 @@ func (this *OpenGLES2InstancedMesh3D) deleteElements() {
 
 func (this *OpenGLES2InstancedMesh3D) attributePointer() {
 	gl.BindBuffer(gl.ARRAY_BUFFER, this.buffer)
-	gl.VertexAttribPointer(0, 3, gl.FLOAT, gl.FALSE, int32(MESH3DVERTEX_SIZE), gl.PtrOffset(0))
-	gl.VertexAttribPointer(1, 3, gl.FLOAT, gl.FALSE, int32(MESH3DVERTEX_SIZE), gl.PtrOffset(3*4))
-	gl.VertexAttribPointer(2, 2, gl.FLOAT, gl.FALSE, int32(MESH3DVERTEX_SIZE), gl.PtrOffset(3*4+3*4))
-	gl.VertexAttribPointer(3, 3, gl.FLOAT, gl.FALSE, int32(MESH3DVERTEX_SIZE), gl.PtrOffset(3*4+3*4+2*4))
+	gl.VertexAttribPointer(0, 3, gl.FLOAT, gl.FALSE, int32(gohome.MESH3DVERTEXSIZE), gl.PtrOffset(0))
+	gl.VertexAttribPointer(1, 3, gl.FLOAT, gl.FALSE, int32(gohome.MESH3DVERTEXSIZE), gl.PtrOffset(3*4))
+	gl.VertexAttribPointer(2, 2, gl.FLOAT, gl.FALSE, int32(gohome.MESH3DVERTEXSIZE), gl.PtrOffset(3*4+3*4))
+	gl.VertexAttribPointer(3, 3, gl.FLOAT, gl.FALSE, int32(gohome.MESH3DVERTEXSIZE), gl.PtrOffset(3*4+3*4+2*4))
 
 	gl.EnableVertexAttribArray(0)
 	gl.EnableVertexAttribArray(1)
@@ -213,8 +213,8 @@ func (this *OpenGLES2InstancedMesh3D) Load() {
 		this.numInstances = 1
 	}
 
-	var verticesSize uint32 = this.numVertices * MESH3DVERTEX_SIZE
-	var indicesSize uint32 = this.numIndices * gohome.INDEX_SIZE
+	var verticesSize uint32 = this.numVertices * gohome.MESH3DVERTEXSIZE
+	var indicesSize uint32 = this.numIndices * 2
 	var bufferSize int
 	bufferSize = int(verticesSize) + int(indicesSize)
 	var usage uint32
@@ -265,7 +265,7 @@ func (this *OpenGLES2InstancedMesh3D) Render() {
 	this.attributePointer()
 	for i := uint32(0); i < this.numUsedInstances && i < this.numInstances; i++ {
 		this.setInstancedValuesUniforms(i)
-		gl.DrawElements(gl.TRIANGLES, int32(this.numIndices), gl.UNSIGNED_INT, gl.PtrOffset(int(this.numVertices*MESH3DVERTEX_SIZE)))
+		gl.DrawElements(gl.TRIANGLES, int32(this.numIndices), gl.UNSIGNED_SHORT, gl.PtrOffset(int(this.numVertices*gohome.MESH3DVERTEXSIZE)))
 		handleOpenGLError("InstancedMesh3D", this.Name, "RenderError: ")
 	}
 

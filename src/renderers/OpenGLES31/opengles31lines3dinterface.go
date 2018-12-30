@@ -35,8 +35,8 @@ func (this *OpenGLES31Lines3DInterface) GetLines() []gohome.Line3D {
 
 func (this *OpenGLES31Lines3DInterface) attributePointer() {
 	gl.BindBuffer(gl.ARRAY_BUFFER, this.vbo)
-	gl.VertexAttribPointer(0, 3, gl.FLOAT, gl.FALSE, int32(gohome.LINE3D_VERTEX_SIZE), gl.PtrOffset(0))
-	gl.VertexAttribPointer(1, 4, gl.FLOAT, gl.FALSE, int32(gohome.LINE3D_VERTEX_SIZE), gl.PtrOffset(3*4))
+	gl.VertexAttribPointer(0, 3, gl.FLOAT, gl.FALSE, int32(gohome.LINE3DVERTEXSIZE), gl.PtrOffset(0))
+	gl.VertexAttribPointer(1, 4, gl.FLOAT, gl.FALSE, int32(gohome.LINE3DVERTEXSIZE), gl.PtrOffset(3*4))
 
 	gl.EnableVertexAttribArray(0)
 	gl.EnableVertexAttribArray(1)
@@ -60,7 +60,7 @@ func (this *OpenGLES31Lines3DInterface) Load() {
 	this.vao = buf[0]
 
 	gl.BindBuffer(gl.ARRAY_BUFFER, this.vbo)
-	gl.BufferData(gl.ARRAY_BUFFER, int(gohome.LINE3D_VERTEX_SIZE*this.numVertices), unsafe.Pointer(&this.lines[0][0][0]), gl.STATIC_DRAW)
+	gl.BufferData(gl.ARRAY_BUFFER, int(gohome.LINE3DVERTEXSIZE*this.numVertices), unsafe.Pointer(&this.lines[0][0][0]), gl.STATIC_DRAW)
 	gl.BindBuffer(gl.ARRAY_BUFFER, 0)
 
 	gl.BindVertexArray(this.vao)

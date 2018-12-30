@@ -289,7 +289,7 @@ func (this *OpenGLES3InstancedMesh3D) deleteElements() {
 
 func (this *OpenGLES3InstancedMesh3D) calculateOffsets() {
 	var i uint32
-	var offset uint32 = this.numVertices*MESH3DVERTEX_SIZE + this.numIndices*gohome.INDEX_SIZE
+	var offset uint32 = this.numVertices*gohome.MESH3DVERTEXSIZE + this.numIndices*gohome.INDEXSIZE
 	for i = 0; i < uint32(len(this.valueTypeIndexOffsets)); i++ {
 		this.valueTypeIndexOffsets[i].offset = offset
 		offset += getSize(this.valueTypeIndexOffsets[i].valueType)
@@ -298,11 +298,11 @@ func (this *OpenGLES3InstancedMesh3D) calculateOffsets() {
 
 func (this *OpenGLES3InstancedMesh3D) attributePointer() {
 	gl.BindBuffer(gl.ARRAY_BUFFER, this.buffer)
-	gl.VertexAttribPointer(0, 3, gl.FLOAT, gl.FALSE, int32(MESH3DVERTEX_SIZE), gl.PtrOffset(0))
-	gl.VertexAttribPointer(1, 3, gl.FLOAT, gl.FALSE, int32(MESH3DVERTEX_SIZE), gl.PtrOffset(3*4))
-	gl.VertexAttribPointer(2, 2, gl.FLOAT, gl.FALSE, int32(MESH3DVERTEX_SIZE), gl.PtrOffset(3*4+3*4))
-	gl.VertexAttribPointer(3, 3, gl.FLOAT, gl.FALSE, int32(MESH3DVERTEX_SIZE), gl.PtrOffset(3*4+3*4+2*4))
-	this.instancedVertexAttribPointer(this.numVertices*MESH3DVERTEX_SIZE, this.numIndices*gohome.INDEX_SIZE, this.sizePerInstance)
+	gl.VertexAttribPointer(0, 3, gl.FLOAT, gl.FALSE, int32(gohome.MESH3DVERTEXSIZE), gl.PtrOffset(0))
+	gl.VertexAttribPointer(1, 3, gl.FLOAT, gl.FALSE, int32(gohome.MESH3DVERTEXSIZE), gl.PtrOffset(3*4))
+	gl.VertexAttribPointer(2, 2, gl.FLOAT, gl.FALSE, int32(gohome.MESH3DVERTEXSIZE), gl.PtrOffset(3*4+3*4))
+	gl.VertexAttribPointer(3, 3, gl.FLOAT, gl.FALSE, int32(gohome.MESH3DVERTEXSIZE), gl.PtrOffset(3*4+3*4+2*4))
+	this.instancedVertexAttribPointer(this.numVertices*gohome.MESH3DVERTEXSIZE, this.numIndices*gohome.INDEXSIZE, this.sizePerInstance)
 
 	gl.EnableVertexAttribArray(0)
 	gl.EnableVertexAttribArray(1)
@@ -332,8 +332,8 @@ func (this *OpenGLES3InstancedMesh3D) Load() {
 		this.numInstances = 1
 	}
 
-	var verticesSize uint32 = this.numVertices * MESH3DVERTEX_SIZE
-	var indicesSize uint32 = this.numIndices * gohome.INDEX_SIZE
+	var verticesSize uint32 = this.numVertices * gohome.MESH3DVERTEXSIZE
+	var indicesSize uint32 = this.numIndices * gohome.INDEXSIZE
 	this.instancedSize = this.getInstancedSize() * this.numInstances
 
 	var bufferSize int
@@ -395,7 +395,7 @@ func (this *OpenGLES3InstancedMesh3D) Render() {
 	gl.BindVertexArray(this.vao)
 
 	gl.GetError()
-	gl.DrawElementsInstanced(gl.TRIANGLES, int32(this.numIndices), gl.UNSIGNED_INT, gl.PtrOffset(int(this.numVertices*MESH3DVERTEX_SIZE)), int32(this.numUsedInstances))
+	gl.DrawElementsInstanced(gl.TRIANGLES, int32(this.numIndices), gl.UNSIGNED_INT, gl.PtrOffset(int(this.numVertices*gohome.MESH3DVERTEXSIZE)), int32(this.numUsedInstances))
 	handleOpenGLES3Error("InstancedMesh3D", this.Name, "RenderError: ")
 
 	gl.BindVertexArray(0)
@@ -434,8 +434,8 @@ func (this *OpenGLES3InstancedMesh3D) GetNumIndices() uint32 {
 }
 
 func (this *OpenGLES3InstancedMesh3D) recreateBuffer(numInstances uint32) {
-	verticesSize := this.numVertices * MESH3DVERTEX_SIZE
-	indicesSize := this.numIndices * gohome.INDEX_SIZE
+	verticesSize := this.numVertices * gohome.MESH3DVERTEXSIZE
+	indicesSize := this.numIndices * gohome.INDEXSIZE
 	this.instancedSize = this.getInstancedSize() * numInstances
 	bufferSize := int(verticesSize) + int(indicesSize) + int(this.instancedSize)
 	var tempBuffer uint32
@@ -742,8 +742,8 @@ func (this *OpenGLES3Renderer) InstancedMesh3DFromLoadedMesh3D(mesh gohome.Mesh3
 
 	ioglmesh.numInstances = 0
 
-	var verticesSize uint32 = ioglmesh.numVertices * MESH3DVERTEX_SIZE
-	var indicesSize uint32 = ioglmesh.numIndices * gohome.INDEX_SIZE
+	var verticesSize uint32 = ioglmesh.numVertices * gohome.MESH3DVERTEXSIZE
+	var indicesSize uint32 = ioglmesh.numIndices * gohome.INDEXSIZE
 	ioglmesh.instancedSize = 0
 	bufferSize := int(verticesSize) + int(indicesSize)
 	var usage uint32

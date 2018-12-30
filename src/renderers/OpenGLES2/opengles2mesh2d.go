@@ -42,9 +42,9 @@ func (oglm *OpenGLES2Mesh2D) attributePointer() {
 	gl.GetError()
 	gl.BindBuffer(gl.ARRAY_BUFFER, oglm.vbo)
 	handleOpenGLError("Mesh2D", oglm.Name, "glBindBuffer vbo in attributePointer: ")
-	gl.VertexAttribPointer(0, 2, gl.FLOAT, gl.FALSE, int32(gohome.MESH2DVERTEX_SIZE), gl.PtrOffset(0))
+	gl.VertexAttribPointer(0, 2, gl.FLOAT, gl.FALSE, int32(gohome.MESH2DVERTEXSIZE), gl.PtrOffset(0))
 	handleOpenGLError("Mesh2D", oglm.Name, "glVertexAttribPointer 0 in attributePointer: ")
-	gl.VertexAttribPointer(1, 2, gl.FLOAT, gl.FALSE, int32(gohome.MESH2DVERTEX_SIZE), gl.PtrOffset(2*4))
+	gl.VertexAttribPointer(1, 2, gl.FLOAT, gl.FALSE, int32(gohome.MESH2DVERTEXSIZE), gl.PtrOffset(2*4))
 	handleOpenGLError("Mesh2D", oglm.Name, "glVertexAttribPointer 1 in attributePointer: ")
 	gl.EnableVertexAttribArray(0)
 	gl.EnableVertexAttribArray(1)
@@ -56,7 +56,7 @@ func (oglm *OpenGLES2Mesh2D) attributePointer() {
 func (oglm *OpenGLES2Mesh2D) Load() {
 	oglm.numVertices = uint32(len(oglm.vertices))
 	oglm.numIndices = uint32(len(oglm.indices))
-	var verticesSize uint32 = oglm.numVertices * gohome.MESH2DVERTEX_SIZE
+	var verticesSize uint32 = oglm.numVertices * gohome.MESH2DVERTEXSIZE
 	var indicesSize uint32 = oglm.numIndices
 
 	var buf [1]uint32

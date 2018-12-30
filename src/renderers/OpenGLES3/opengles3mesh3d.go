@@ -10,7 +10,7 @@ import (
 
 const (
 	NUM_GO_ROUTINES_TANGENTS_CALCULATING uint32 = 10
-	MESH3DVERTEX_SIZE                    uint32 = 3*4 + 3*4 + 2*4 + 3*4 // 3*sizeof(float32)+3*sizeof(float32)+2*sizeof(float32)+3*sizeof(float32)
+	gohome.MESH3DVERTEXSIZE                    uint32 = 3*4 + 3*4 + 2*4 + 3*4 // 3*sizeof(float32)+3*sizeof(float32)+2*sizeof(float32)+3*sizeof(float32)
 )
 
 type OpenGLES3Mesh3D struct {
@@ -167,10 +167,10 @@ func (oglm *OpenGLES3Mesh3D) deleteElements() {
 
 func (oglm *OpenGLES3Mesh3D) attributePointer() {
 	gl.BindBuffer(gl.ARRAY_BUFFER, oglm.buffer)
-	gl.VertexAttribPointer(0, 3, gl.FLOAT, gl.FALSE, int32(MESH3DVERTEX_SIZE), gl.PtrOffset(0))
-	gl.VertexAttribPointer(1, 3, gl.FLOAT, gl.FALSE, int32(MESH3DVERTEX_SIZE), gl.PtrOffset(3*4))
-	gl.VertexAttribPointer(2, 2, gl.FLOAT, gl.FALSE, int32(MESH3DVERTEX_SIZE), gl.PtrOffset(3*4+3*4))
-	gl.VertexAttribPointer(3, 3, gl.FLOAT, gl.FALSE, int32(MESH3DVERTEX_SIZE), gl.PtrOffset(3*4+3*4+2*4))
+	gl.VertexAttribPointer(0, 3, gl.FLOAT, gl.FALSE, int32(gohome.MESH3DVERTEXSIZE), gl.PtrOffset(0))
+	gl.VertexAttribPointer(1, 3, gl.FLOAT, gl.FALSE, int32(gohome.MESH3DVERTEXSIZE), gl.PtrOffset(3*4))
+	gl.VertexAttribPointer(2, 2, gl.FLOAT, gl.FALSE, int32(gohome.MESH3DVERTEXSIZE), gl.PtrOffset(3*4+3*4))
+	gl.VertexAttribPointer(3, 3, gl.FLOAT, gl.FALSE, int32(gohome.MESH3DVERTEXSIZE), gl.PtrOffset(3*4+3*4+2*4))
 
 	gl.EnableVertexAttribArray(0)
 	gl.EnableVertexAttribArray(1)
@@ -192,8 +192,8 @@ func (oglm *OpenGLES3Mesh3D) Load() {
 		return
 	}
 
-	var verticesSize uint32 = oglm.numVertices * MESH3DVERTEX_SIZE
-	var indicesSize uint32 = oglm.numIndices * gohome.INDEX_SIZE
+	var verticesSize uint32 = oglm.numVertices * gohome.MESH3DVERTEXSIZE
+	var indicesSize uint32 = oglm.numIndices * gohome.INDEXSIZE
 
 	oglm.CalculateTangents()
 
@@ -235,7 +235,7 @@ func (oglm *OpenGLES3Mesh3D) Render() {
 	}
 	gl.BindVertexArray(oglm.vao)
 	gl.GetError()
-	gl.DrawElements(gl.TRIANGLES, int32(oglm.numIndices), gl.UNSIGNED_INT, gl.PtrOffset(int(oglm.numVertices*MESH3DVERTEX_SIZE)))
+	gl.DrawElements(gl.TRIANGLES, int32(oglm.numIndices), gl.UNSIGNED_INT, gl.PtrOffset(int(oglm.numVertices*gohome.MESH3DVERTEXSIZE)))
 	handleOpenGLES3Error("Mesh3D", oglm.Name, "RenderError: ")
 	gl.BindVertexArray(0)
 }
