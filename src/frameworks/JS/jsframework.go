@@ -74,14 +74,6 @@ func (this *JSFramework) Init(ml *gohome.MainLoop) error {
 	return nil
 }
 
-func (*JSFramework) Update() {
-
-}
-
-func (*JSFramework) Terminate() {
-
-}
-
 func (*JSFramework) PollEvents() {
 	lock_events = true
 
@@ -116,9 +108,6 @@ func (this *JSFramework) CreateWindow(windowWidth, windowHeight uint32, title st
 	}
 	body.Call("appendChild", this.Canvas)
 	return nil
-}
-func (*JSFramework) WindowClosed() bool {
-	return false
 }
 
 func (this *JSFramework) WindowSetSize(size mgl32.Vec2) {
@@ -164,9 +153,7 @@ func (this *JSFramework) WindowIsFullscreen() bool {
 
 	return false
 }
-func (*JSFramework) MonitorGetSize() mgl32.Vec2 {
-	return [2]float32{0.0, 0.0}
-}
+
 func (this *JSFramework) CurserShow() {
 	this.Canvas.Get("style").Set("cursor", "")
 	js.Global.Get("document").Call("exitPointerLock")
