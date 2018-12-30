@@ -8,6 +8,7 @@ A Game Engine for 2D/3D Games written in go
 ## Features
 
 ##### General
+* Multiple Platform support: Windows, Linux, Mac, Android, Browser
 * Loading Shaders
 * Dynamic Shader Generation
 * Multiple Viewports/Cameras
@@ -43,8 +44,8 @@ A Game Engine for 2D/3D Games written in go
 
 |				|Windows| Linux		| Mac		| Android 	| iOS	| Browser |
 |---------------|-------|-----------|-----------|-----------|-------|---------|
-|Tested 		|	Yes |	Yes		|	No 		|	Yes		|	No 	|	No    |
-|Implemented  	|   Yes |   Yes		|	Yes		|   Yes		|   No  |   No    |
+|Tested 		|	Yes |	Yes		|	No 		|	Yes		|	No 	|	Yes   |
+|Implemented  	|   Yes |   Yes		|	Yes		|   Yes		|   No  |   Yes   |
 
 ## Dependencies
 
@@ -66,6 +67,9 @@ A Game Engine for 2D/3D Games written in go
 ##### SDL2Framework
 + [go-sdl2](https://github.com/PucklaMotzer09/go-sdl2) ([Forked from here](https://github.com/veandco/go-sdl2)) ([License](https://github.com/PucklaMotzer09/go-sdl2/blob/master/LICENSE))
 
+##### JSFramework
++ [gopherjs](https://github.com/gopherjs/gopherjs) ([License](https://github.com/gopherjs/gopherjs/blob/master/LICENSE))
+
 ##### OpenGLRenderer
 + [go-gl/gl](https://github.com/go-gl/gl) ([License](https://github.com/go-gl/gl/blob/master/LICENSE))
 
@@ -77,6 +81,9 @@ A Game Engine for 2D/3D Games written in go
 
 ##### OpenGLES31Renderer
 + [android-go](https://github.com/PucklaMotzer09/android-go) ([Forked from here](https://github.com/xlab/android-go)) ([License](https://github.com/PucklaMotzer09/android-go/blob/master/LICENSE.txt))
+
+##### WebGLRenderer
++ [webgl](https://github.com/PucklaMotzer09/webgl) ([Forked from here](https://github.com/gopherjs/webgl)) ([License](https://github.com/PucklaMotzer09/webgl/blob/master/LICENSE))
 
 ## Installation
 1. Install the c-Dependencies:<br>
@@ -123,6 +130,9 @@ A Game Engine for 2D/3D Games written in go
 	// For SDL2
 	go get -u github.com/PucklaMotzer09/go-sdl2/sdl
 
+	// For JS
+	go get -u github.com/gopherjs/gopherjs
+
 	// For OpenGL
 	go get -u github.com/go-gl/gl/all-core/gl
 
@@ -134,6 +144,9 @@ A Game Engine for 2D/3D Games written in go
 
 	// For OpenGLES31
 	go get -u github.com/PucklaMotzer09/android-go/gles31
+
+	// For WebGL
+	go get -u github.com/PucklaMotzer09/webgl
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 3. Compile one of the examples to test:<br>
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

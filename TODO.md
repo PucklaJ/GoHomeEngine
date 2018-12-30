@@ -1,7 +1,6 @@
 ## General
 
 + Controller Input
-+ Browser support
 + Simple Loading Screen
 + Add DirectXRenderer
 + WorldEditor (3D, 2D)
@@ -43,6 +42,8 @@
     - SDL_mixer or OpenSL
 + Fix OpenAL errors
     - device not closed
++ Add Audio to browser
++ Add Audio to android
 
 ## 2D
 
