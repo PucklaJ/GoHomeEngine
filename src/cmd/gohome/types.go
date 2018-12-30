@@ -21,3 +21,6 @@ type DesktopBuild struct {
 
 type AndroidBuild struct {
 }
+
+type JSBuild struct {
+}

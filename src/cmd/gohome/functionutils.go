@@ -161,6 +161,8 @@ func getBuild() Build {
 		return &DesktopBuild{}
 	case "android":
 		return &AndroidBuild{}
+	case "browser":
+		return &JSBuild{}
 	}
 
 	return nil
@@ -231,3 +233,26 @@ func valuesChanged() bool {
 
 	return false
 }
+
+func createIndexHTML(path string) {
+	slash := GetSlash()
+	file, err := os.Create(path + slash + "index.html")
+	if err != nil {
+		fmt.Println("Failed to create index.html:", err)
+		os.Exit(1)
+	}
+	str := INDEX_HTML
+	str = strings.Replace(str, "%PACKAGE_NAME%", PackageName(), -1)
+	file.WriteString(str)
+	file.Close()
+}
+
+const INDEX_HTML = `<!DOCTYPE html>
+<html>
+	<head>
+		<title>%PACKAGE_NAME%</title>
+	<head>
+	<body>
+		<script src="%PACKAGE_NAME%.js"></script>
+	<body>
+</html>`

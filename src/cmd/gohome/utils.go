@@ -172,3 +172,14 @@ func LowerCaseAndNoNumber(str string) string {
 	}
 	return str
 }
+
+func OpenBrowser(url string) {
+	switch runtime.GOOS {
+	case "linux":
+		exec.Command("xdg-open", url).Start()
+	case "windows":
+		exec.Command("rundll32", "url.dll,FileProtocolHandler", url).Start()
+	case "darwin":
+		exec.Command("open", url).Start()
+	}
+}

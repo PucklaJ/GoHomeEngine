@@ -104,9 +104,26 @@ func generateMain(forandroid bool) (str string) {
 }
 
 func (this *DesktopBuild) Generate() {
+	if VAR_FRAME == "JS" {
+		fmt.Println("Desktop is not compatible with JS")
+		AssertValue(&VAR_FRAME, "JS", "Framework")
+	}
 	if VAR_FRAME == "GTK" && VAR_RENDER != "OpenGL" {
 		fmt.Println(VAR_FRAME, "is not compatible with", VAR_RENDER)
 		os.Exit(1)
+	}
+	if VAR_RENDER == "WebGL" {
+		fmt.Println("Desktop is not compatible with WebGL")
+		fmt.Println("(1) OpenGL")
+		fmt.Println("(2) OpenGLES2")
+		fmt.Print("Which renderer: ")
+		render := ConsoleReadi()
+		switch render {
+		case 1:
+			VAR_RENDER = "OpenGL"
+		case 2:
+			VAR_RENDER = "OpenGLES2"
+		}
 	}
 
 	if VAR_RENDER == "OpenGLES3" || VAR_RENDER == "OpenGLES31" {
@@ -121,9 +138,9 @@ func (this *DesktopBuild) Generate() {
 		}
 	}
 
-	this.title = GetCustomValue("TITLE")
-	this.width = GetCustomValuei("WIDTH", 1280)
-	this.height = GetCustomValuei("HEIGHT", 720)
+	GetCustomValue("TITLE")
+	GetCustomValuei("WIDTH", 1280)
+	GetCustomValuei("HEIGHT", 720)
 
 	if VAR_FRAME == "GTK" {
 		this.gtkwholewindow = GetCustomValueb("USEWHOLEWINDOWASGLAREA", true)
@@ -141,7 +158,22 @@ func (this *DesktopBuild) Generate() {
 	file.Close()
 }
 func (*DesktopBuild) IsGenerated() bool {
-	return FileExists(WorkingDir() + "main.go")
+	if !FileExists("main.go") {
+		return false
+	}
+
+	file, err := os.Open("main.go")
+	if err != nil {
+		return false
+	}
+	defer file.Close()
+	contents, err := ioutil.ReadAll(file)
+	if err != nil {
+		return false
+	}
+	str := string(contents)
+
+	return (strings.Contains(str, "GLFW") || strings.Contains(str, "SDL") || strings.Contains(str, "GTK")) && strings.Contains(str, "OpenGL")
 }
 func (*DesktopBuild) Run() bool {
 	pack := PackageName()
@@ -333,6 +365,27 @@ func copyAssets() {
 }
 
 func (*AndroidBuild) Generate() {
+	if VAR_FRAME != "SDL" {
+		fmt.Println("Android is only compatible with SDL")
+		VAR_FRAME = "SDL"
+	}
+	if !strings.Contains(VAR_RENDER, "OpenGLES") {
+		fmt.Println("Android is only compatible with OpenGLES")
+		fmt.Println("(1) OpenGLES2")
+		fmt.Println("(2) OpenGLES3")
+		fmt.Println("(3) OpenGLES31")
+		fmt.Print("Which version: ")
+		version := ConsoleReadi()
+		switch version {
+		case 1:
+			VAR_RENDER = "OpenGLES2"
+		case 2:
+			VAR_RENDER = "OpenGLES3"
+		case 3:
+			VAR_RENDER = "OpenGLES31"
+		}
+	}
+
 	slash := GetSlash()
 	gopath := os.Getenv("GOPATH") + slash
 	androidpath := gopath + "src" + slash + "github.com" + slash + "PucklaMotzer09" + slash + "GoHomeEngine" + slash + "android" + slash
@@ -392,7 +445,22 @@ func (*AndroidBuild) Generate() {
 	file.Close()
 }
 func (*AndroidBuild) IsGenerated() bool {
-	return FileExists(WorkingDir()+"main.go") && FileExists(WorkingDir()+"gradlew")
+	if !FileExists("main.go") || !FileExists("gradlew") {
+		return false
+	}
+
+	file, err := os.Open("main.go")
+	if err != nil {
+		return false
+	}
+	defer file.Close()
+	contents, err := ioutil.ReadAll(file)
+	if err != nil {
+		return false
+	}
+	str := string(contents)
+
+	return strings.Contains(str, "SDL") && strings.Contains(str, "OpenGLES")
 }
 func (*AndroidBuild) Run() bool {
 	if !installAPK() {
@@ -422,4 +490,87 @@ func (*AndroidBuild) Clean() {
 }
 func (*AndroidBuild) Env() {
 	printEnv(true)
+}
+
+func (this *JSBuild) Build() bool {
+	if VAR_CONFIG == "DEBUG" {
+		if err := ExecCommand("gopherjs", "build"); err != nil {
+			return false
+		}
+	} else {
+		if err := ExecCommand("gopherjs", "build", "-m"); err != nil {
+			return false
+		}
+	}
+
+	return true
+}
+func (this *JSBuild) Install() bool {
+	return this.Build()
+}
+func (this *JSBuild) Generate() {
+	if VAR_FRAME != "JS" {
+		fmt.Println("browser is only compatible with JS")
+		VAR_FRAME = "JS"
+	}
+
+	if VAR_RENDER != "WebGL" {
+		fmt.Println("browser is only compatible with WebGL")
+		VAR_RENDER = "WebGL"
+	}
+
+	AssertValue(&VAR_START, "", "StartScene")
+	GetCustomValue("TITLE")
+	GetCustomValuei("WIDTH", 640)
+	GetCustomValuei("HEIGHT", 480)
+
+	str := generateMain(false)
+	file, err := os.Create("main.go")
+	if err != nil {
+		fmt.Println("Failed to create main.go:", err)
+		os.Exit(1)
+	}
+	file.WriteString(str)
+	file.Close()
+
+	createIndexHTML(".")
+}
+func (this *JSBuild) IsGenerated() bool {
+	if !FileExists("main.go") || !FileExists("index.html") {
+		return false
+	}
+
+	file, err := os.Open("main.go")
+	if err != nil {
+		return false
+	}
+	defer file.Close()
+	contents, err := ioutil.ReadAll(file)
+	if err != nil {
+		return false
+	}
+	str := string(contents)
+
+	return strings.Contains(str, "JS") && strings.Contains(str, "WebGL")
+}
+func (this *JSBuild) Run() bool {
+	WriteConfigFile()
+	OpenBrowser("http://localhost:8000")
+	ExecCommand("python", "-m", "SimpleHTTPServer", "8000")
+	return true
+}
+func (this *JSBuild) Export() {
+	slash := GetSlash()
+	ExecCommand("mkdir", "-p", "export"+slash+"browser")
+	ExecCommand("cp", PackageName()+".js", "export"+slash+"browser")
+	ExecCommand("cp", PackageName()+".js.map", "export"+slash+"browser")
+	ExecCommand("cp", "-r", "assets", "export"+slash+"browser")
+	createIndexHTML("export" + slash + "browser")
+}
+func (this *JSBuild) Clean() {
+	ExecCommand("rm", "main.go", PackageName()+".js", PackageName()+".js.map", "index.html")
+	ExecCommand("go", "clean", "-r", "--cache")
+}
+func (this *JSBuild) Env() {
+	printEnv(false)
 }
