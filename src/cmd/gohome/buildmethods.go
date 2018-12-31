@@ -173,7 +173,7 @@ func (*DesktopBuild) IsGenerated() bool {
 	}
 	str := string(contents)
 
-	return (strings.Contains(str, "GLFW") || strings.Contains(str, "SDL") || strings.Contains(str, "GTK")) && strings.Contains(str, "OpenGL")
+	return (strings.Contains(str, VAR_FRAME) && strings.Contains(str, VAR_RENDER)) && ((strings.Contains(str, "GLFW") || strings.Contains(str, "SDL") || strings.Contains(str, "GTK")) && strings.Contains(str, "OpenGL"))
 }
 func (*DesktopBuild) Run() bool {
 	pack := PackageName()
