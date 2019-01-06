@@ -2,7 +2,6 @@ package framework
 
 import (
 	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
-	"github.com/PucklaMotzer09/GoHomeEngine/src/loaders/obj"
 	"github.com/PucklaMotzer09/go-sdl2/sdl"
 )
 
@@ -254,12 +253,4 @@ func sdlMouseButtonTogohomeKeys(mb uint8) gohome.Key {
 	}
 
 	return gohome.MouseButtonLast
-}
-
-func loadLevelOBJ(rsmgr *gohome.ResourceManager, name, path string, loadToGPU bool) *gohome.Level {
-	return loader.LoadLevelOBJ(rsmgr, name, path, loadToGPU)
-}
-
-func loadLevelOBJString(rsmgr *gohome.ResourceManager, name, contents, fileName string, loadToGPU bool) *gohome.Level {
-	return loader.LoadLevelOBJString(rsmgr, name, contents, fileName, loadToGPU)
 }

@@ -3,6 +3,7 @@ package framework
 import (
 	"github.com/PucklaMotzer09/GoHomeEngine/src/audio"
 	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
+	"github.com/PucklaMotzer09/GoHomeEngine/src/loaders/defaultlevel"
 	"github.com/PucklaMotzer09/mathgl/mgl32"
 	"github.com/go-gl/glfw/v3.2/glfw"
 	"log"
@@ -12,7 +13,8 @@ import (
 )
 
 type GLFWFramework struct {
-	gohome.NilFramework
+	defaultlevel.Loader
+
 	window           *glfw.Window
 	prevMousePos     [2]int16
 	prevWindowWidth  int
@@ -508,15 +510,6 @@ func (gfw *GLFWFramework) OpenFile(file string) (gohome.File, error) {
 	return os.Open(file)
 }
 
-func (gfw *GLFWFramework) LoadLevel(rsmgr *gohome.ResourceManager, name, path string, loadToGPU bool) *gohome.Level {
-	extension := getFileExtension(path)
-	if equalIgnoreCase(extension, "obj") {
-		return loadLevelOBJ(rsmgr, name, path, loadToGPU)
-	}
-	gohome.ErrorMgr.Error("Level", name, "The extension "+extension+" is not supported")
-	return nil
-}
-
 func (gfw *GLFWFramework) ShowYesNoDialog(title, message string) uint8 {
 	return gohome.DIALOG_CANCELLED
 }
@@ -563,8 +556,4 @@ func (gfw *GLFWFramework) MonitorGetSize() mgl32.Vec2 {
 	} else {
 		return gfw.WindowGetSize()
 	}
-}
-
-func (gfw *GLFWFramework) LoadLevelString(rsmgr *gohome.ResourceManager, name, contents, fileName string, loadToGPU bool) *gohome.Level {
-	return loadLevelOBJString(rsmgr, name, contents, fileName, loadToGPU)
 }

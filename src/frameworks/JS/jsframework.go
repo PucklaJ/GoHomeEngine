@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
+	"github.com/PucklaMotzer09/GoHomeEngine/src/loaders/defaultlevel"
 	"github.com/PucklaMotzer09/mathgl/mgl32"
 	"github.com/gopherjs/gopherjs/js"
 	"io"
@@ -14,7 +15,7 @@ import (
 )
 
 type JSFramework struct {
-	gohome.NilFramework
+	defaultlevel.Loader
 	Canvas *js.Object
 }
 
@@ -203,17 +204,6 @@ func (*JSFramework) OpenFile(file string) (gohome.File, error) {
 	}
 
 	return resp.Body, nil
-}
-func (*JSFramework) LoadLevel(rsmgr *gohome.ResourceManager, name, path string, loadToGPU bool) *gohome.Level {
-	extension := getFileExtension(path)
-	if equalIgnoreCase(extension, "obj") {
-		return loadLevelOBJ(rsmgr, name, path, loadToGPU)
-	}
-	gohome.ErrorMgr.Error("Level", name, "The extension "+extension+" is not supported")
-	return nil
-}
-func (*JSFramework) LoadLevelString(rsmgr *gohome.ResourceManager, name, contents, fileName string, loadToGPU bool) *gohome.Level {
-	return loadLevelOBJString(rsmgr, name, contents, fileName, loadToGPU)
 }
 
 func (*JSFramework) Log(a ...interface{}) {

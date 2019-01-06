@@ -3,15 +3,15 @@ package framework
 import (
 	"fmt"
 	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
+	"github.com/PucklaMotzer09/GoHomeEngine/src/loaders/defaultlevel"
 	"github.com/PucklaMotzer09/go-sdl2/sdl"
 	"github.com/PucklaMotzer09/mathgl/mgl32"
 	"os"
 	"runtime"
-	"strings"
 )
 
 type SDL2Framework struct {
-	gohome.NilFramework
+	defaultlevel.Loader
 
 	window          *sdl.Window
 	context         sdl.GLContext
@@ -241,54 +241,6 @@ func (this *SDL2Framework) OpenFile(file string) (gohome.File, error) {
 	}
 }
 
-func getFileExtension(file string) string {
-	index := strings.LastIndex(file, ".")
-	if index == -1 {
-		return ""
-	}
-	return file[index+1:]
-}
-
-func equalIgnoreCase(str1, str string) bool {
-	if len(str1) != len(str) {
-		return false
-	}
-	for i := 0; i < len(str1); i++ {
-		if str1[i] != str[i] {
-			if str1[i] >= 65 && str1[i] <= 90 {
-				if str[i] >= 97 && str[i] <= 122 {
-					if str1[i]+32 != str[i] {
-						return false
-					}
-				} else {
-					return false
-				}
-			} else if str1[i] >= 97 && str1[i] <= 122 {
-				if str[i] >= 65 && str[i] <= 90 {
-					if str1[i]-32 != str[i] {
-						return false
-					}
-				} else {
-					return false
-				}
-			} else {
-				return false
-			}
-		}
-	}
-
-	return true
-}
-
-func (this *SDL2Framework) LoadLevel(rsmgr *gohome.ResourceManager, name, path string, loadToGPU bool) *gohome.Level {
-	extension := getFileExtension(path)
-	if equalIgnoreCase(extension, "obj") {
-		return loadLevelOBJ(rsmgr, name, path, loadToGPU)
-	}
-	gohome.ErrorMgr.Error("Level", name, "The extension "+extension+" is not supported")
-	return nil
-}
-
 func (this *SDL2Framework) ShowYesNoDialog(title, message string) uint8 {
 	var data sdl.MessageBoxData
 	data.Title = title
@@ -359,8 +311,4 @@ func (this *SDL2Framework) EndTextInput() {
 
 func (this *SDL2Framework) MonitorGetSize() mgl32.Vec2 {
 	return this.WindowGetSize()
-}
-
-func (this *SDL2Framework) LoadLevelString(rsmgr *gohome.ResourceManager, name, contents, fileName string, loadToGPU bool) *gohome.Level {
-	return loadLevelOBJString(rsmgr, name, contents, fileName, loadToGPU)
 }

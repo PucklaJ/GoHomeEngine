@@ -3,8 +3,8 @@ package framework
 import (
 	"errors"
 	"github.com/PucklaMotzer09/GoHomeEngine/src/audio"
+	"github.com/PucklaMotzer09/GoHomeEngine/src/loaders/defaultlevel"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/PucklaMotzer09/GoHomeEngine/src/frameworks/GTK/gtk"
@@ -13,7 +13,7 @@ import (
 )
 
 type GTKFramework struct {
-	gohome.NilFramework
+	defaultlevel.Loader
 	startOtherThanPaint time.Time
 	endOtherThanPaint   time.Time
 
@@ -119,53 +119,6 @@ func (this *GTKFramework) CursorDisabled() bool {
 
 func (this *GTKFramework) OpenFile(file string) (gohome.File, error) {
 	return os.Open(file)
-}
-
-func getFileExtension(file string) string {
-	index := strings.LastIndex(file, ".")
-	if index == -1 {
-		return ""
-	}
-	return file[index+1:]
-}
-
-func equalIgnoreCase(str1, str string) bool {
-	if len(str1) != len(str) {
-		return false
-	}
-	for i := 0; i < len(str1); i++ {
-		if str1[i] != str[i] {
-			if str1[i] >= 65 && str1[i] <= 90 {
-				if str[i] >= 97 && str[i] <= 122 {
-					if str1[i]+32 != str[i] {
-						return false
-					}
-				} else {
-					return false
-				}
-			} else if str1[i] >= 97 && str1[i] <= 122 {
-				if str[i] >= 65 && str[i] <= 90 {
-					if str1[i]-32 != str[i] {
-						return false
-					}
-				} else {
-					return false
-				}
-			} else {
-				return false
-			}
-		}
-	}
-
-	return true
-}
-
-func (this *GTKFramework) LoadLevel(rsmgr *gohome.ResourceManager, name, path string, loadToGPU bool) *gohome.Level {
-	return loadLevelOBJ(rsmgr, name, path, loadToGPU)
-}
-
-func (this *GTKFramework) LoadLevelString(rsmgr *gohome.ResourceManager, name, contents, fileName string, loadToGPU bool) *gohome.Level {
-	return loadLevelOBJString(rsmgr, name, contents, fileName, loadToGPU)
 }
 
 func (this *GTKFramework) ShowYesNoDialog(title, message string) uint8 {
