@@ -27,7 +27,7 @@ type SDL2Framework struct {
 func (this *SDL2Framework) Init(ml *gohome.MainLoop) error {
 	this.window = nil
 	this.running = true
-	if err := sdl.Init(sdl.INIT_VIDEO); err != nil {
+	if err := sdl.Init(sdl.INIT_VIDEO | sdl.INIT_AUDIO); err != nil {
 		return err
 	}
 	ml.DoStuff()

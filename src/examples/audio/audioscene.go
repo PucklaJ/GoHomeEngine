@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
+	"runtime"
 )
 
 type AudioScene struct {
@@ -18,7 +19,7 @@ func (this *AudioScene) Init() {
 }
 
 func (this *AudioScene) Update(delta_time float32) {
-	if gohome.InputMgr.JustPressed(gohome.Key1) {
+	if gohome.InputMgr.JustPressed(gohome.Key1) || (runtime.GOOS == "android" && gohome.InputMgr.JustPressed(gohome.KeyBack)) {
 		if this.music == nil {
 			this.music = gohome.ResourceMgr.GetMusic("TownTheme")
 			if this.music != nil {
@@ -33,7 +34,7 @@ func (this *AudioScene) Update(delta_time float32) {
 		}
 	}
 
-	if gohome.InputMgr.JustPressed(gohome.Key2) {
+	if gohome.InputMgr.JustPressed(gohome.Key2) || (runtime.GOOS == "android" && gohome.InputMgr.JustPressed(gohome.MouseButtonLeft)) {
 		if this.sound == nil {
 			this.sound = gohome.ResourceMgr.GetSound("Bottle")
 			if this.sound != nil {
