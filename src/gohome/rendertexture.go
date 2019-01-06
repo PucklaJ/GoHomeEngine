@@ -6,8 +6,8 @@ import (
 )
 
 type RenderTexture interface {
-	Load(data []byte, width, height int, shadowMap bool) error // Is not used. It there just make RenderTexture able to be a Texture
-	LoadFromImage(img image.Image) error
+	Load(data []byte, width, height int, shadowMap bool) // Is not used. It there just make RenderTexture able to be a Texture
+	LoadFromImage(img image.Image)
 	GetName() string
 	SetAsTarget()
 	UnsetAsTarget()
@@ -32,11 +32,9 @@ type RenderTexture interface {
 type NilRenderTexture struct {
 }
 
-func (*NilRenderTexture) Load(data []byte, width, height int, shadowMap bool) error {
-	return nil
+func (*NilRenderTexture) Load(data []byte, width, height int, shadowMap bool) {
 }
-func (*NilRenderTexture) LoadFromImage(img image.Image) error {
-	return nil
+func (*NilRenderTexture) LoadFromImage(img image.Image) {
 }
 func (*NilRenderTexture) GetName() string {
 	return ""

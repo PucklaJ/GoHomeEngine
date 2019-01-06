@@ -161,12 +161,10 @@ func (this *WebGLRenderTexture) Create(name string, width, height, textures uint
 	this.UnsetAsTarget()
 }
 
-func (this *WebGLRenderTexture) Load(data []byte, width, height int, shadowMap bool) error {
-	return &WebGLError{errorString: "The Load method of RenderTexture is not used!"}
+func (this *WebGLRenderTexture) Load(data []byte, width, height int, shadowMap bool) {
 }
 
-func (ogltex *WebGLRenderTexture) LoadFromImage(img image.Image) error {
-	return &WebGLError{errorString: "The LoadFromImage method of RenderTexture is not used!"}
+func (ogltex *WebGLRenderTexture) LoadFromImage(img image.Image) {
 }
 
 func (this *WebGLRenderTexture) GetName() string {

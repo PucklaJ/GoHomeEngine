@@ -73,3 +73,22 @@ func (this *Model3D) Copy() *Model3D {
 	model.AABB = this.AABB
 	return &model
 }
+
+func (this *Model3D) Load() {
+	for _, m := range this.meshes {
+		m.Load()
+		mat := m.GetMaterial()
+		if mat.DiffuseTexture != nil {
+			data := preloadedTextureData[mat.DiffuseTexture]
+			mat.DiffuseTexture.Load(data.data, data.width, data.height, false)
+		}
+		if mat.SpecularTexture != nil {
+			data := preloadedTextureData[mat.SpecularTexture]
+			mat.SpecularTexture.Load(data.data, data.width, data.height, false)
+		}
+		if mat.NormalMap != nil {
+			data := preloadedTextureData[mat.NormalMap]
+			mat.NormalMap.Load(data.data, data.width, data.height, false)
+		}
+	}
+}

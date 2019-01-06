@@ -73,7 +73,7 @@ func printOGLTexture2DError(ogltex *OpenGLTexture, data []byte, width, height in
 	}
 }
 
-func (ogltex *OpenGLTexture) Load(data []byte, width, height int, shadowMap bool) error {
+func (ogltex *OpenGLTexture) Load(data []byte, width, height int, shadowMap bool) {
 	ogltex.width = width
 	ogltex.height = height
 
@@ -117,9 +117,6 @@ func (ogltex *OpenGLTexture) Load(data []byte, width, height int, shadowMap bool
 	gl.GenerateMipmap(ogltex.bindingPoint())
 
 	gl.BindTexture(ogltex.bindingPoint(), 0)
-
-	return nil
-
 }
 
 func loadImageData(img_data *[]byte, img image.Image, start_width, end_width, max_width, max_height uint32, wg *sync.WaitGroup) {
@@ -142,7 +139,7 @@ func loadImageData(img_data *[]byte, img image.Image, start_width, end_width, ma
 	}
 }
 
-func (ogltex *OpenGLTexture) LoadFromImage(img image.Image) error {
+func (ogltex *OpenGLTexture) LoadFromImage(img image.Image) {
 
 	width := img.Bounds().Size().X
 	height := img.Bounds().Size().Y
@@ -159,8 +156,6 @@ func (ogltex *OpenGLTexture) LoadFromImage(img image.Image) error {
 	wg1.Wait()
 
 	ogltex.Load(img_data, width, height, false)
-
-	return nil
 }
 
 func toTextureUnit(unit uint32) uint32 {

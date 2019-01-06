@@ -19,8 +19,8 @@ const (
 )
 
 type Texture interface {
-	Load(data []byte, width, height int, shadowMap bool) error
-	LoadFromImage(img image.Image) error
+	Load(data []byte, width, height int, shadowMap bool)
+	LoadFromImage(img image.Image)
 	Bind(unit uint32)
 	Unbind(unit uint32)
 	GetWidth() int
@@ -94,11 +94,9 @@ func GetColorFromData(x, y int, data []byte, width int) color.Color {
 type NilTexture struct {
 }
 
-func (*NilTexture) Load(data []byte, width, height int, shadowMap bool) error {
-	return nil
+func (*NilTexture) Load(data []byte, width, height int, shadowMap bool) {
 }
-func (*NilTexture) LoadFromImage(img image.Image) error {
-	return nil
+func (*NilTexture) LoadFromImage(img image.Image) {
 }
 func (*NilTexture) Bind(unit uint32) {
 

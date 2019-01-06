@@ -81,7 +81,7 @@ func isPowerOfTwo(width, height int) bool {
 	return widthis && heightis
 }
 
-func (ogltex *WebGLTexture) Load(data []byte, width, height int, shadowMap bool) error {
+func (ogltex *WebGLTexture) Load(data []byte, width, height int, shadowMap bool) {
 	ogltex.width = width
 	ogltex.height = height
 
@@ -112,9 +112,6 @@ func (ogltex *WebGLTexture) Load(data []byte, width, height int, shadowMap bool)
 	printOGLTexture2DError(ogltex, data, width, height)
 
 	gl.BindTexture(ogltex.bindingPoint(), nil)
-
-	return nil
-
 }
 
 func loadImageData(img_data *[]byte, img image.Image, start_width, end_width, max_width, max_height uint32, wg *sync.WaitGroup) {
@@ -137,7 +134,7 @@ func loadImageData(img_data *[]byte, img image.Image, start_width, end_width, ma
 	}
 }
 
-func (ogltex *WebGLTexture) LoadFromImage(img image.Image) error {
+func (ogltex *WebGLTexture) LoadFromImage(img image.Image) {
 
 	width := img.Bounds().Size().X
 	height := img.Bounds().Size().Y
@@ -154,8 +151,6 @@ func (ogltex *WebGLTexture) LoadFromImage(img image.Image) error {
 	wg1.Wait()
 
 	ogltex.Load(img_data, width, height, false)
-
-	return nil
 }
 
 func toTextureUnit(unit uint32) int {

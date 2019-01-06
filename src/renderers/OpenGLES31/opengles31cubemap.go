@@ -26,7 +26,7 @@ func CreateOpenGLES31CubeMap(name string) *OpenGLES31CubeMap {
 	return cubeMap
 }
 
-func (this *OpenGLES31CubeMap) Load(data []byte, width, height int, shadowMap bool) error {
+func (this *OpenGLES31CubeMap) Load(data []byte, width, height int, shadowMap bool) {
 	this.width = uint32(width)
 	this.height = uint32(height)
 	this.shadowMap = shadowMap
@@ -50,12 +50,9 @@ func (this *OpenGLES31CubeMap) Load(data []byte, width, height int, shadowMap bo
 	gl.TexParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
 	gl.TexParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
 	gl.TexParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_R, gl.CLAMP_TO_EDGE)
-
-	return nil
 }
 
-func (this *OpenGLES31CubeMap) LoadFromImage(img image.Image) error {
-	return nil
+func (this *OpenGLES31CubeMap) LoadFromImage(img image.Image) {
 }
 
 func (this *OpenGLES31CubeMap) Bind(unit uint32) {

@@ -152,12 +152,10 @@ func (this *OpenGLES2RenderTexture) Create(name string, width, height, textures 
 	this.UnsetAsTarget()
 }
 
-func (this *OpenGLES2RenderTexture) Load(data []byte, width, height int, shadowMap bool) error {
-	return &OpenGLError{errorString: "The Load method of RenderTexture is not used!"}
+func (this *OpenGLES2RenderTexture) Load(data []byte, width, height int, shadowMap bool) {
 }
 
-func (ogltex *OpenGLES2RenderTexture) LoadFromImage(img image.Image) error {
-	return &OpenGLError{errorString: "The LoadFromImage method of RenderTexture is not used!"}
+func (ogltex *OpenGLES2RenderTexture) LoadFromImage(img image.Image) {
 }
 
 func (this *OpenGLES2RenderTexture) GetName() string {

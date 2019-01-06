@@ -26,7 +26,7 @@ func CreateWebGLCubeMap(name string) *WebGLCubeMap {
 	return cubeMap
 }
 
-func (this *WebGLCubeMap) Load(data []byte, width, height int, shadowMap bool) error {
+func (this *WebGLCubeMap) Load(data []byte, width, height int, shadowMap bool) {
 	this.width = uint32(width)
 	this.height = uint32(height)
 	this.shadowMap = shadowMap
@@ -46,12 +46,9 @@ func (this *WebGLCubeMap) Load(data []byte, width, height int, shadowMap bool) e
 	gl.TexParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
 	gl.TexParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
 	gl.TexParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
-
-	return nil
 }
 
-func (this *WebGLCubeMap) LoadFromImage(img image.Image) error {
-	return nil
+func (this *WebGLCubeMap) LoadFromImage(img image.Image) {
 }
 
 func (this *WebGLCubeMap) Bind(unit uint32) {

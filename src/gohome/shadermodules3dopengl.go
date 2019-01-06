@@ -741,12 +741,12 @@ func GetShaderName3D(flags uint32) string {
 
 func GenerateShader3D(shader_type uint8, flags uint32) (n, v, f string) {
 	if shader_type == SHADER_TYPE_3D {
+		if flags&SHADER_FLAG_NO_LIGHTING != 0 {
+			flags |= SHADER_FLAG_NO_SHADOWS
+		}
 		startFlags := flags
 		if !Render.HasFunctionAvailable("INSTANCED") {
 			flags &= ^SHADER_FLAG_INSTANCED
-		}
-		if flags&SHADER_FLAG_NO_LIGHTING != 0 {
-			flags |= SHADER_FLAG_NO_SHADOWS
 		}
 		if flags&SHADER_FLAG_NOUV != 0 {
 			flags |= SHADER_FLAG_NO_DIFTEX | SHADER_FLAG_NO_SPECTEX | SHADER_FLAG_NO_NORMAP

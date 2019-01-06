@@ -177,12 +177,10 @@ func (this *OpenGLRenderTexture) Create(name string, width, height, textures uin
 	this.UnsetAsTarget()
 }
 
-func (this *OpenGLRenderTexture) Load(data []byte, width, height int, shadowMap bool) error {
-	return &OpenGLError{errorString: "The Load method of RenderTexture is not used!"}
+func (this *OpenGLRenderTexture) Load(data []byte, width, height int, shadowMap bool) {
 }
 
-func (ogltex *OpenGLRenderTexture) LoadFromImage(img image.Image) error {
-	return &OpenGLError{errorString: "The LoadFromImage method of RenderTexture is not used!"}
+func (ogltex *OpenGLRenderTexture) LoadFromImage(img image.Image) {
 }
 
 func (this *OpenGLRenderTexture) GetName() string {

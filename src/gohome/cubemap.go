@@ -6,8 +6,8 @@ import (
 )
 
 type CubeMap interface {
-	Load(data []byte, width, height int, shadowMap bool) error
-	LoadFromImage(img image.Image) error
+	Load(data []byte, width, height int, shadowMap bool)
+	LoadFromImage(img image.Image)
 	Bind(unit uint32)
 	Unbind(unit uint32)
 	GetWidth() int
@@ -28,11 +28,9 @@ type CubeMap interface {
 type NilCubeMap struct {
 }
 
-func (*NilCubeMap) Load(data []byte, width, height int, shadowMap bool) error {
-	return nil
+func (*NilCubeMap) Load(data []byte, width, height int, shadowMap bool) {
 }
-func (*NilCubeMap) LoadFromImage(img image.Image) error {
-	return nil
+func (*NilCubeMap) LoadFromImage(img image.Image) {
 }
 func (*NilCubeMap) Bind(unit uint32) {
 
