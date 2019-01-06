@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
+	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
 	"golang.org/x/image/colornames"
 )
 
@@ -28,14 +28,13 @@ type SpriteAnimationScene struct {
 
 func (this *SpriteAnimationScene) Init() {
 	gohome.Init2DShaders()
-	gohome.ResourceMgr.PreloadTexture("Mage1", "mage-1-85x94.png")
-	gohome.ResourceMgr.PreloadTexture("Mage2", "mage-2-122x110.png")
-	gohome.ResourceMgr.PreloadTexture("Mage3", "mage-3-87x110.png")
-	gohome.ResourceMgr.PreloadTexture("Andromalius", "andromalius-57x88.png")
-	gohome.ResourceMgr.PreloadTexture("Shadow", "shadow-80x70.png")
-	gohome.ResourceMgr.PreloadTexture("Acid", "acid2-14x67.png")
-	gohome.ResourceMgr.PreloadTexture("Natsu", "Natsu.png")
-	gohome.ResourceMgr.LoadPreloadedResources()
+	gohome.ResourceMgr.LoadTexture("Mage1", "mage-1-85x94.png")
+	gohome.ResourceMgr.LoadTexture("Mage2", "mage-2-122x110.png")
+	gohome.ResourceMgr.LoadTexture("Mage3", "mage-3-87x110.png")
+	gohome.ResourceMgr.LoadTexture("Andromalius", "andromalius-57x88.png")
+	gohome.ResourceMgr.LoadTexture("Shadow", "shadow-80x70.png")
+	gohome.ResourceMgr.LoadTexture("Acid", "acid2-14x67.png")
+	gohome.ResourceMgr.LoadTexture("Natsu", "Natsu.png")
 
 	gohome.Render.SetBackgroundColor(colornames.White)
 

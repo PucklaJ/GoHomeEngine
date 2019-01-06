@@ -44,8 +44,49 @@ func loadShader(path, name_shader, name string) (string, bool) {
 }
 
 func (rsmgr *ResourceManager) LoadShader(name, vertex_path, fragment_path, geometry_path, tesselletion_control_path, eveluation_path, compute_path string) Shader {
+	_, already := rsmgr.shaders[name]
+	if already {
+		ErrorMgr.Message(ERROR_LEVEL_LOG, "Shader", name, "Has already been loaded!")
+		return nil
+	}
 
-	shader := rsmgr.loadShader(name, vertex_path, fragment_path, geometry_path, tesselletion_control_path, eveluation_path, compute_path, false)
+	var contents [6]string
+	var err bool
+	var erro error
+
+	contents[VERTEX], err = loadShader(vertex_path, name, "Vertex File")
+	if err {
+		return nil
+	}
+	contents[FRAGMENT], err = loadShader(fragment_path, name, "Fragment File")
+	if err {
+		return nil
+	}
+	contents[GEOMETRY], err = loadShader(geometry_path, name, "Geometry File")
+	if err {
+		return nil
+	}
+	contents[TESSELLETION], err = loadShader(tesselletion_control_path, name, "Tesselletion File")
+	if err {
+		return nil
+	}
+	contents[EVELUATION], err = loadShader(eveluation_path, name, "Eveluation File")
+	if err {
+		return nil
+	}
+	contents[COMPUTE], err = loadShader(compute_path, name, "Compute File")
+	if err {
+		return nil
+	}
+
+	var shader Shader
+
+	shader, erro = Render.LoadShader(name, contents[VERTEX], contents[FRAGMENT], contents[GEOMETRY], contents[TESSELLETION], contents[EVELUATION], contents[COMPUTE])
+	if erro != nil {
+		ErrorMgr.MessageError(ERROR_LEVEL_ERROR, "Shader", name, erro)
+		return nil
+	}
+
 	if shader != nil {
 		rsmgr.shaders[name] = shader
 		ErrorMgr.Log("Shader", name, "Finished loading!")
@@ -85,77 +126,6 @@ func (rsmgr *ResourceManager) GetShader(name string) Shader {
 	return s
 }
 
-func (rsmgr *ResourceManager) PreloadShader(name, vertex_path, fragment_path, geometry_path, tesselletion_control_path, eveluation_path, compute_path string) {
-	shader := preloadedShader{
-		name,
-		vertex_path,
-		fragment_path,
-		geometry_path,
-		tesselletion_control_path,
-		eveluation_path,
-		compute_path,
-	}
-
-	if !rsmgr.checkPreloadedShader(&shader) {
-		return
-	}
-
-	rsmgr.preloader.preloadedShaders = append(rsmgr.preloader.preloadedShaders, shader)
-}
-
-func (rsmgr *ResourceManager) loadShader(name, vertex_path, fragment_path, geometry_path, tesselletion_control_path, eveluation_path, compute_path string, preloaded bool) Shader {
-	_, already := rsmgr.shaders[name]
-	if already {
-		ErrorMgr.Message(ERROR_LEVEL_LOG, "Shader", name, "Has already been loaded!")
-		return nil
-	}
-
-	var contents [6]string
-	var err bool
-	var erro error
-
-	contents[VERTEX], err = loadShader(vertex_path, name, "Vertex File")
-	if err {
-		return nil
-	}
-	contents[FRAGMENT], err = loadShader(fragment_path, name, "Fragment File")
-	if err {
-		return nil
-	}
-	contents[GEOMETRY], err = loadShader(geometry_path, name, "Geometry File")
-	if err {
-		return nil
-	}
-	contents[TESSELLETION], err = loadShader(tesselletion_control_path, name, "Tesselletion File")
-	if err {
-		return nil
-	}
-	contents[EVELUATION], err = loadShader(eveluation_path, name, "Eveluation File")
-	if err {
-		return nil
-	}
-	contents[COMPUTE], err = loadShader(compute_path, name, "Compute File")
-	if err {
-		return nil
-	}
-
-	var shader Shader = nil
-	if !preloaded {
-		shader, erro = Render.LoadShader(name, contents[VERTEX], contents[FRAGMENT], contents[GEOMETRY], contents[TESSELLETION], contents[EVELUATION], contents[COMPUTE])
-		if erro != nil {
-			ErrorMgr.MessageError(ERROR_LEVEL_ERROR, "Shader", name, erro)
-			return nil
-		}
-	} else {
-		rsmgr.preloader.preloadedShaderDataChan <- preloadedShaderData{
-			name,
-			contents,
-		}
-	}
-
-	return shader
-}
-
 func (rsmgr *ResourceManager) SetShader(name string, name1 string) {
 	s := rsmgr.shaders[name1]
 	if s == nil {
@@ -164,21 +134,6 @@ func (rsmgr *ResourceManager) SetShader(name string, name1 string) {
 	}
 	rsmgr.shaders[name] = s
 	ErrorMgr.Message(ERROR_LEVEL_LOG, "Shader", name, "Set to "+name1)
-}
-
-func (rsmgr *ResourceManager) checkPreloadedShader(shader *preloadedShader) bool {
-	if _, ok := rsmgr.shaders[shader.Name]; ok {
-		ErrorMgr.Message(ERROR_LEVEL_LOG, "Shader", shader.Name, "Has already been loaded!")
-		return false
-	}
-	for i := 0; i < len(rsmgr.preloadedShaders); i++ {
-		if rsmgr.preloadedShaders[i].Name == shader.Name {
-			ErrorMgr.Message(ERROR_LEVEL_LOG, "Shader", shader.Name, "Has already been preloaded!")
-			return false
-		}
-	}
-
-	return true
 }
 
 func (rsmgr *ResourceManager) DeleteShader(name string) {

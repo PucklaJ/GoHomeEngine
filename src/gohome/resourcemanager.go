@@ -6,8 +6,6 @@ import (
 )
 
 type ResourceManager struct {
-	preloader
-
 	textures          map[string]Texture
 	shaders           map[string]Shader
 	Models            map[string]*Model3D
@@ -31,8 +29,6 @@ func (rsmgr *ResourceManager) Init() {
 	rsmgr.sounds = make(map[string]Sound)
 	rsmgr.tmxmaps = make(map[string]*tmx.Map)
 	rsmgr.resourceFileNames = make(map[string]string)
-
-	rsmgr.preloader.Init()
 
 	tga.RegisterFormat()
 	rsmgr.LoadModelsWithSameName = false
@@ -71,10 +67,6 @@ func (rsmgr *ResourceManager) Terminate() {
 	for k := range rsmgr.tmxmaps {
 		delete(rsmgr.tmxmaps, k)
 	}
-}
-
-func (rsmgr *ResourceManager) LoadPreloadedResources() {
-	rsmgr.preloader.loadPreloadedResources()
 }
 
 func (rsmgr *ResourceManager) deleteResourceFileName(name string) {

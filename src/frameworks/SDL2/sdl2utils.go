@@ -256,10 +256,10 @@ func sdlMouseButtonTogohomeKeys(mb uint8) gohome.Key {
 	return gohome.MouseButtonLast
 }
 
-func loadLevelOBJ(rsmgr *gohome.ResourceManager, name, path string, preloaded, loadToGPU bool) *gohome.Level {
-	return loader.LoadLevelOBJ(rsmgr, name, path, preloaded, loadToGPU)
+func loadLevelOBJ(rsmgr *gohome.ResourceManager, name, path string, loadToGPU bool) *gohome.Level {
+	return loader.LoadLevelOBJ(rsmgr, name, path, loadToGPU)
 }
 
-func loadLevelOBJString(rsmgr *gohome.ResourceManager, name, contents, fileName string, preloaded, loadToGPU bool) *gohome.Level {
-	return loader.LoadLevelOBJString(rsmgr, name, contents, fileName, preloaded, loadToGPU)
+func loadLevelOBJString(rsmgr *gohome.ResourceManager, name, contents, fileName string, loadToGPU bool) *gohome.Level {
+	return loader.LoadLevelOBJString(rsmgr, name, contents, fileName, loadToGPU)
 }

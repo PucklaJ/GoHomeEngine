@@ -47,8 +47,8 @@ type Framework interface {
 	CursorDisabled() bool
 
 	OpenFile(file string) (File, error)
-	LoadLevel(rsmgr *ResourceManager, name, path string, preloaded, loadToGPU bool) *Level
-	LoadLevelString(rsmgr *ResourceManager, name, contents, fileName string, preloaded, loadToGPU bool) *Level
+	LoadLevel(rsmgr *ResourceManager, name, path string, loadToGPU bool) *Level
+	LoadLevelString(rsmgr *ResourceManager, name, contents, fileName string, loadToGPU bool) *Level
 
 	ShowYesNoDialog(title, message string) uint8
 	Log(a ...interface{})
@@ -127,10 +127,10 @@ func (*NilFramework) CursorDisabled() bool {
 func (*NilFramework) OpenFile(file string) (File, error) {
 	return nil, nil
 }
-func (*NilFramework) LoadLevel(rsmgr *ResourceManager, name, path string, preloaded, loadToGPU bool) *Level {
+func (*NilFramework) LoadLevel(rsmgr *ResourceManager, name, path string, loadToGPU bool) *Level {
 	return nil
 }
-func (*NilFramework) LoadLevelString(rsmgr *ResourceManager, name, contents, fileName string, preloaded, loadToGPU bool) *Level {
+func (*NilFramework) LoadLevelString(rsmgr *ResourceManager, name, contents, fileName string, loadToGPU bool) *Level {
 	return nil
 }
 func (*NilFramework) ShowYesNoDialog(title, message string) uint8 {

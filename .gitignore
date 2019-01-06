@@ -1,7 +1,3 @@
-*.sublime-project
-*.sublime-workspace
-*gohomeengine.sublime-workspace*
-*gohomeengine.sublime-project*
 *.exe
 *.apk
 .*

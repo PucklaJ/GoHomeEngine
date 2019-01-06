@@ -2,8 +2,8 @@ package main
 
 import (
 	"github.com/ByteArena/box2d"
-	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
-	"github.com/PucklaMotzer09/gohomeengine/src/physics2d"
+	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
+	"github.com/PucklaMotzer09/GoHomeEngine/src/physics2d"
 	"github.com/PucklaMotzer09/mathgl/mgl32"
 )
 

@@ -30,19 +30,6 @@ func (rsmgr *ResourceManager) GetLevel(name string) *Level {
 	return l
 }
 
-func (rsmgr *ResourceManager) PreloadLevel(name, path string, loadToGPU bool) {
-	level := preloadedLevel{
-		name,
-		path,
-		loadToGPU,
-		false,
-	}
-	if !rsmgr.checkPreloadedLevel(&level) {
-		return
-	}
-	rsmgr.preloader.preloadedLevels = append(rsmgr.preloader.preloadedLevels, level)
-}
-
 func (rsmgr *ResourceManager) SetLevel(name string, name1 string) {
 	s := rsmgr.Levels[name1]
 	if s == nil {
@@ -65,36 +52,6 @@ func getNameForAlreadyLoadedLevel(rsmgr *ResourceManager, name string) string {
 	return newName
 }
 
-func (rsmgr *ResourceManager) checkPreloadedLevel(level *preloadedLevel) bool {
-	var alreadyLoaded = false
-	if _, alreadyLoaded = rsmgr.Levels[level.Name]; alreadyLoaded && !rsmgr.LoadModelsWithSameName {
-		ErrorMgr.Message(ERROR_LEVEL_LOG, "Level", level.Name, "Has already been loaded!")
-		return false
-	}
-	if alreadyLoaded {
-		(*level).Name = getNameForAlreadyLoadedLevel(rsmgr, level.Name)
-	}
-	if resName, ok := rsmgr.resourceFileNames[level.Path]; ok {
-		rsmgr.textures[level.Name] = rsmgr.textures[resName]
-		ErrorMgr.Message(ERROR_LEVEL_WARNING, "Level", level.Name, "Has already been loaded with this or another name!")
-		return false
-	}
-	for i := 0; i < len(rsmgr.preloadedLevels); i++ {
-		if rsmgr.preloadedLevels[i].Name == level.Name {
-			ErrorMgr.Message(ERROR_LEVEL_LOG, "Level", level.Name, "Has already been preloaded!")
-			return false
-		} else if rsmgr.preloadedLevels[i].Path == level.Path {
-			ErrorMgr.Message(ERROR_LEVEL_WARNING, "Level", level.Name, "Has already been preloaded with this or another name!")
-			level.fileAlreadyPreloaded = true
-			return true
-		}
-	}
-
-	level.fileAlreadyPreloaded = false
-
-	return true
-}
-
 func (rsmgr *ResourceManager) DeleteLevel(name string) {
 	if _, ok := rsmgr.Levels[name]; ok {
 		delete(rsmgr.Levels, name)
@@ -106,7 +63,7 @@ func (rsmgr *ResourceManager) DeleteLevel(name string) {
 }
 
 func (rsmgr *ResourceManager) LoadLevelString(name, contents, fileName string, loadToGPU bool) *Level {
-	level := rsmgr.loadLevelString(name, contents, fileName, false, loadToGPU)
+	level := Framew.LoadLevelString(rsmgr, name, contents, fileName, loadToGPU)
 	if level != nil {
 		rsmgr.Levels[level.Name] = level
 		ErrorMgr.Log("Level", level.Name, "Finished loading!")
@@ -115,28 +72,20 @@ func (rsmgr *ResourceManager) LoadLevelString(name, contents, fileName string, l
 }
 
 func (rsmgr *ResourceManager) LoadLevel(name, path string, loadToGPU bool) *Level {
-	level := rsmgr.loadLevel(name, path, false, loadToGPU)
+	if resName, ok := rsmgr.resourceFileNames[path]; ok {
+		rsmgr.Levels[name] = rsmgr.Levels[resName]
+		ErrorMgr.Message(ERROR_LEVEL_WARNING, "Level", name, "Has already been loaded with this or another name!")
+		return nil
+	}
+
+	level := Framew.LoadLevel(rsmgr, name, path, loadToGPU)
+
 	if level != nil {
 		rsmgr.Levels[level.Name] = level
 		rsmgr.resourceFileNames[path] = level.Name
 		ErrorMgr.Log("Level", level.Name, "Finished loading!")
 	}
 	return level
-}
-
-func (rsmgr *ResourceManager) loadLevelString(name, contents, fileName string, preloaded, loadToGPU bool) *Level {
-	return Framew.LoadLevelString(rsmgr, name, contents, fileName, preloaded, loadToGPU)
-}
-
-func (rsmgr *ResourceManager) loadLevel(name, path string, preloaded, loadToGPU bool) *Level {
-	if !preloaded {
-		if resName, ok := rsmgr.resourceFileNames[path]; ok {
-			rsmgr.Levels[name] = rsmgr.Levels[resName]
-			ErrorMgr.Message(ERROR_LEVEL_WARNING, "Level", name, "Has already been loaded with this or another name!")
-			return nil
-		}
-	}
-	return Framew.LoadLevel(rsmgr, name, path, preloaded, loadToGPU)
 }
 
 func (rsmgr *ResourceManager) GetModel(name string) *Model3D {

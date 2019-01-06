@@ -508,10 +508,10 @@ func (gfw *GLFWFramework) OpenFile(file string) (gohome.File, error) {
 	return os.Open(file)
 }
 
-func (gfw *GLFWFramework) LoadLevel(rsmgr *gohome.ResourceManager, name, path string, preloaded, loadToGPU bool) *gohome.Level {
+func (gfw *GLFWFramework) LoadLevel(rsmgr *gohome.ResourceManager, name, path string, loadToGPU bool) *gohome.Level {
 	extension := getFileExtension(path)
 	if equalIgnoreCase(extension, "obj") {
-		return loadLevelOBJ(rsmgr, name, path, preloaded, loadToGPU)
+		return loadLevelOBJ(rsmgr, name, path, loadToGPU)
 	}
 	gohome.ErrorMgr.Error("Level", name, "The extension "+extension+" is not supported")
 	return nil
@@ -565,6 +565,6 @@ func (gfw *GLFWFramework) MonitorGetSize() mgl32.Vec2 {
 	}
 }
 
-func (gfw *GLFWFramework) LoadLevelString(rsmgr *gohome.ResourceManager, name, contents, fileName string, preloaded, loadToGPU bool) *gohome.Level {
-	return loadLevelOBJString(rsmgr, name, contents, fileName, preloaded, loadToGPU)
+func (gfw *GLFWFramework) LoadLevelString(rsmgr *gohome.ResourceManager, name, contents, fileName string, loadToGPU bool) *gohome.Level {
+	return loadLevelOBJString(rsmgr, name, contents, fileName, loadToGPU)
 }

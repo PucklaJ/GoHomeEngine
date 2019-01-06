@@ -3,9 +3,9 @@ package main
 import (
 	"log"
 
-	"github.com/PucklaMotzer09/gohomeengine/src/frameworks/GTK"
-	"github.com/PucklaMotzer09/gohomeengine/src/frameworks/GTK/gtk"
-	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
+	"github.com/PucklaMotzer09/GoHomeEngine/src/frameworks/GTK"
+	"github.com/PucklaMotzer09/GoHomeEngine/src/frameworks/GTK/gtk"
+	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
 	"github.com/PucklaMotzer09/mathgl/mgl32"
 )
 

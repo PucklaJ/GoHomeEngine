@@ -32,33 +32,9 @@ func (rsmgr *ResourceManager) checkFont(name, path string) bool {
 	return true
 }
 
-func (rsmgr *ResourceManager) checkPreloadedFont(name string) bool {
-	for i := 0; i < len(rsmgr.preloader.preloadedFonts); i++ {
-		f := rsmgr.preloader.preloadedFonts[i]
-		if f.Name == name {
-			ErrorMgr.Warning("Font", name, "Has already been preloaded")
-			return false
-		}
-	}
-
-	return true
-}
-
-func (rsmgr *ResourceManager) PreloadFont(name, path string) {
-	if rsmgr.checkFont(name, path) && rsmgr.checkPreloadedFont(name) {
-		rsmgr.preloader.preloadedFonts = append(rsmgr.preloader.preloadedFonts, preloadedFont{name, path})
-	}
-}
-
 func (rsmgr *ResourceManager) LoadFont(name, path string) *Font {
-	return rsmgr.loadFont(name, path, false)
-}
-
-func (rsmgr *ResourceManager) loadFont(name, path string, preloaded bool) *Font {
-	if !preloaded {
-		if !rsmgr.checkFont(name, path) {
-			return nil
-		}
+	if !rsmgr.checkFont(name, path) {
+		return nil
 	}
 
 	reader, _, err := OpenFileWithPaths(path, FONT_PATHS[:])
@@ -82,20 +58,10 @@ func (rsmgr *ResourceManager) loadFont(name, path string, preloaded bool) *Font 
 	var font Font
 	font.Init(ttf)
 
-	if !preloaded {
-		rsmgr.fonts[name] = &font
-		rsmgr.resourceFileNames[path] = name
-		ErrorMgr.Log("Font", name, "Finished Loading!")
-		return &font
-	} else {
-		rsmgr.preloader.preloadedFontChan <- preloadedFontData{
-			preloadedFont{
-				name,
-				path,
-			},
-			font,
-		}
-	}
+	rsmgr.fonts[name] = &font
+	rsmgr.resourceFileNames[path] = name
+	ErrorMgr.Log("Font", name, "Finished Loading!")
+	return &font
 
 	return nil
 }

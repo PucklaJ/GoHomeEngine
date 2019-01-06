@@ -35,52 +35,18 @@ func (rsmgr *ResourceManager) checkMusic(name, path string) bool {
 	return true
 }
 
-func (rsmgr *ResourceManager) checkPreloadedMusic(name string) bool {
-	for i := 0; i < len(rsmgr.preloader.preloadedMusics); i++ {
-		f := rsmgr.preloader.preloadedMusics[i]
-		if f.Name == name {
-			ErrorMgr.Warning("Music", name, "Has already been preloaded")
-			return false
-		}
-	}
-
-	return true
-}
-
-func (rsmgr *ResourceManager) PreloadMusic(name, path string) {
-	if rsmgr.checkMusic(name, path) && rsmgr.checkPreloadedMusic(name) {
-		rsmgr.preloadedMusics = append(rsmgr.preloadedMusics, preloadedMusic{name, path})
-	}
-}
-
 func (rsmgr *ResourceManager) LoadMusic(name, path string) Music {
-	return rsmgr.loadMusic(name, path, false)
-}
-
-func (rsmgr *ResourceManager) loadMusic(name, path string, preloaded bool) Music {
-	if !preloaded {
-		if !rsmgr.checkMusic(name, path) {
-			return nil
-		}
+	if !rsmgr.checkMusic(name, path) {
+		return nil
 	}
 
 	music := Framew.GetAudioManager().LoadMusic(name, path)
 
 	if music != nil {
-		if !preloaded {
-			rsmgr.musics[name] = music
-			rsmgr.resourceFileNames[path] = name
-			ErrorMgr.Log("Music", name, "Finished Loading!")
-			return music
-		} else {
-			rsmgr.preloadedMusicChan <- preloadedMusicData{
-				preloadedMusic{
-					name,
-					path,
-				},
-				music,
-			}
-		}
+		rsmgr.musics[name] = music
+		rsmgr.resourceFileNames[path] = name
+		ErrorMgr.Log("Music", name, "Finished Loading!")
+		return music
 	}
 
 	return nil
@@ -100,52 +66,18 @@ func (rsmgr *ResourceManager) checkSound(name, path string) bool {
 	return true
 }
 
-func (rsmgr *ResourceManager) checkPreloadedSound(name string) bool {
-	for i := 0; i < len(rsmgr.preloader.preloadedSounds); i++ {
-		f := rsmgr.preloader.preloadedSounds[i]
-		if f.Name == name {
-			ErrorMgr.Warning("Sound", name, "Has already been preloaded")
-			return false
-		}
-	}
-
-	return true
-}
-
-func (rsmgr *ResourceManager) PreloadSound(name, path string) {
-	if rsmgr.checkSound(name, path) && rsmgr.checkPreloadedSound(name) {
-		rsmgr.preloadedSounds = append(rsmgr.preloadedSounds, preloadedSound{name, path})
-	}
-}
-
 func (rsmgr *ResourceManager) LoadSound(name, path string) Sound {
-	return rsmgr.loadSound(name, path, false)
-}
-
-func (rsmgr *ResourceManager) loadSound(name, path string, preloaded bool) Sound {
-	if !preloaded {
-		if !rsmgr.checkSound(name, path) {
-			return nil
-		}
+	if !rsmgr.checkSound(name, path) {
+		return nil
 	}
 
 	sound := Framew.GetAudioManager().LoadSound(name, path)
 
 	if sound != nil {
-		if !preloaded {
-			rsmgr.sounds[name] = sound
-			rsmgr.resourceFileNames[path] = name
-			ErrorMgr.Log("Sound", name, "Finished Loading!")
-			return sound
-		} else {
-			rsmgr.preloadedSoundChan <- preloadedSoundData{
-				preloadedSound{
-					name,
-					path,
-				},
-				sound,
-			}
-		}
+		rsmgr.sounds[name] = sound
+		rsmgr.resourceFileNames[path] = name
+		ErrorMgr.Log("Sound", name, "Finished Loading!")
+		return sound
 	}
 
 	return nil

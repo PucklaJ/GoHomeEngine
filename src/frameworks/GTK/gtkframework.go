@@ -160,17 +160,12 @@ func equalIgnoreCase(str1, str string) bool {
 	return true
 }
 
-func (this *GTKFramework) LoadLevel(rsmgr *gohome.ResourceManager, name, path string, preloaded, loadToGPU bool) *gohome.Level {
-	// extension := getFileExtension(path)
-	// if equalIgnoreCase(extension, "obj") {
-	// 	return loadLevelOBJ(rsmgr, name, path, preloaded, loadToGPU)
-	// }
-	// return loader.LoadLevelAssimp(rsmgr, name, path, preloaded, loadToGPU)
-	return loadLevelOBJ(rsmgr, name, path, preloaded, loadToGPU)
+func (this *GTKFramework) LoadLevel(rsmgr *gohome.ResourceManager, name, path string, loadToGPU bool) *gohome.Level {
+	return loadLevelOBJ(rsmgr, name, path, loadToGPU)
 }
 
-func (this *GTKFramework) LoadLevelString(rsmgr *gohome.ResourceManager, name, contents, fileName string, preloaded, loadToGPU bool) *gohome.Level {
-	return loadLevelOBJString(rsmgr, name, contents, fileName, preloaded, loadToGPU)
+func (this *GTKFramework) LoadLevelString(rsmgr *gohome.ResourceManager, name, contents, fileName string, loadToGPU bool) *gohome.Level {
+	return loadLevelOBJString(rsmgr, name, contents, fileName, loadToGPU)
 }
 
 func (this *GTKFramework) ShowYesNoDialog(title, message string) uint8 {

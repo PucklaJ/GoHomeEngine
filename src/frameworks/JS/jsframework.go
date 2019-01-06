@@ -204,16 +204,16 @@ func (*JSFramework) OpenFile(file string) (gohome.File, error) {
 
 	return resp.Body, nil
 }
-func (*JSFramework) LoadLevel(rsmgr *gohome.ResourceManager, name, path string, preloaded, loadToGPU bool) *gohome.Level {
+func (*JSFramework) LoadLevel(rsmgr *gohome.ResourceManager, name, path string, loadToGPU bool) *gohome.Level {
 	extension := getFileExtension(path)
 	if equalIgnoreCase(extension, "obj") {
-		return loadLevelOBJ(rsmgr, name, path, preloaded, loadToGPU)
+		return loadLevelOBJ(rsmgr, name, path, loadToGPU)
 	}
 	gohome.ErrorMgr.Error("Level", name, "The extension "+extension+" is not supported")
 	return nil
 }
-func (*JSFramework) LoadLevelString(rsmgr *gohome.ResourceManager, name, contents, fileName string, preloaded, loadToGPU bool) *gohome.Level {
-	return loadLevelOBJString(rsmgr, name, contents, fileName, preloaded, loadToGPU)
+func (*JSFramework) LoadLevelString(rsmgr *gohome.ResourceManager, name, contents, fileName string, loadToGPU bool) *gohome.Level {
+	return loadLevelOBJString(rsmgr, name, contents, fileName, loadToGPU)
 }
 
 func (*JSFramework) Log(a ...interface{}) {
