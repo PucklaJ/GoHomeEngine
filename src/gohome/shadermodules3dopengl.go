@@ -711,7 +711,7 @@ var (
 		"Instanced",
 		"NoUV",
 		"NoShadows",
-		"NoShadows NoLighting",
+		"NoLighting",
 		"NoDiftex",
 		"NoSpectex",
 		"NoNormap",
