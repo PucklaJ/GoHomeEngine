@@ -2,7 +2,7 @@ package gohome
 
 import (
 	"io"
-	"io/ioutil"
+	"strings"
 )
 
 var (
@@ -24,22 +24,27 @@ func loadShaderFile(path string) (string, error) {
 		if err1 != nil {
 			return "", err1
 		}
-		contents, err := ioutil.ReadAll(reader)
+		contents, err := ReadAll(reader)
 		if err != nil {
 			return "", err
-		} else {
-			return string(contents[:len(contents)]), nil
 		}
+		return contents, nil
 	}
 }
 
-func loadShader(path, name_shader, name string) (string, bool) {
-	contents, err := loadShaderFile(path)
-	if err != nil {
-		ErrorMgr.Error("Shader", name_shader, "Couldn't load "+name+": "+err.Error())
-		return "", true
-	}
-	return contents, false
+func loadShader(path, name_shader, name string) chan string {
+	rv := make(chan string)
+
+	go func() {
+		contents, err := loadShaderFile(path)
+		if err != nil {
+			rv <- "Couldn't load " + name + ": " + err.Error()
+		} else {
+			rv <- contents
+		}
+	}()
+
+	return rv
 }
 
 func (rsmgr *ResourceManager) LoadShader(name, vertex_path, fragment_path, geometry_path, tesselletion_control_path, eveluation_path, compute_path string) Shader {
@@ -50,39 +55,46 @@ func (rsmgr *ResourceManager) LoadShader(name, vertex_path, fragment_path, geome
 	}
 
 	var contents [6]string
-	var err bool
-	var erro error
+	paths := [6]string{
+		vertex_path,
+		fragment_path,
+		geometry_path,
+		tesselletion_control_path,
+		eveluation_path,
+		compute_path,
+	}
+	names := [6]string{
+		"Vertex File",
+		"Fragment File",
+		"Geometry File",
+		"Tesselletion File",
+		"Eveluation File",
+		"Compute File",
+	}
+	var chans [6]chan string
 
-	contents[VERTEX], err = loadShader(vertex_path, name, "Vertex File")
-	if err {
-		return nil
-	}
-	contents[FRAGMENT], err = loadShader(fragment_path, name, "Fragment File")
-	if err {
-		return nil
-	}
-	contents[GEOMETRY], err = loadShader(geometry_path, name, "Geometry File")
-	if err {
-		return nil
-	}
-	contents[TESSELLETION], err = loadShader(tesselletion_control_path, name, "Tesselletion File")
-	if err {
-		return nil
-	}
-	contents[EVELUATION], err = loadShader(eveluation_path, name, "Eveluation File")
-	if err {
-		return nil
-	}
-	contents[COMPUTE], err = loadShader(compute_path, name, "Compute File")
-	if err {
-		return nil
+	for i := 0; i < 6; i++ {
+		chans[i] = loadShader(paths[i], name, names[i])
 	}
 
-	var shader Shader
+	var failed = false
 
-	shader, erro = Render.LoadShader(name, contents[VERTEX], contents[FRAGMENT], contents[GEOMETRY], contents[TESSELLETION], contents[EVELUATION], contents[COMPUTE])
-	if erro != nil {
-		ErrorMgr.MessageError(ERROR_LEVEL_ERROR, "Shader", name, erro)
+	for i := 0; i < 6; i++ {
+		contents[i] = <-chans[i]
+		close(chans[i])
+		if strings.HasPrefix(contents[i], "Couldn't") {
+			failed = true
+			ErrorMgr.Error("Shader", name, contents[i])
+		}
+	}
+
+	if failed {
+		return nil
+	}
+
+	shader, err := Render.LoadShader(name, contents[VERTEX], contents[FRAGMENT], contents[GEOMETRY], contents[TESSELLETION], contents[EVELUATION], contents[COMPUTE])
+	if err != nil {
+		ErrorMgr.MessageError(ERROR_LEVEL_ERROR, "Shader", name, err)
 		return nil
 	}
 
