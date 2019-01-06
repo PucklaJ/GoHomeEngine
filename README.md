@@ -104,28 +104,17 @@ A Game Engine for 2D/3D Games written in go
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 2. Install the go-Dependencies:<br>
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	// Default (GLFW,OpenGL)
-	go get -u github.com/PucklaMotzer09/mathgl/mgl32
-	go get -u github.com/PucklaMotzer09/tmx
-	go get -u github.com/ByteArena/box2d
-	go get -u github.com/PucklaMotzer09/GLSLGenerator
-	go get -u github.com/go-gl/glfw/v3.2
-	go get -u github.com/timshannon/go-openal/openal
-	go get -u github.com/PucklaMotzer09/go-wav
-	go get -u github.com/hajimehoshi/go-mp3
-	go get -u github.com/go-gl/gl/all-core/gl
+	// Default (GLFW,OpenGL) if you only want to build desktop applications only execute this command
+	go get -u github.com/PucklaMotzer09/mathgl/mgl32 github.com/PucklaMotzer09/tmx github.com/ByteArena/box2d github.com/PucklaMotzer09/GLSLGenerator github.com/go-gl/glfw/v3.2 github.com/timshannon/go-openal/openal github.com/PucklaMotzer09/go-wav github.com/hajimehoshi/go-mp3 github.com/go-gl/gl/all-core/gl
+
+	// Use some of the following commands to build for a different platform or if you want to use
+	// a different Framework or Renderer
 
 	// Always Needed
-	go get -u github.com/PucklaMotzer09/mathgl/mgl32
-	go get -u github.com/PucklaMotzer09/tmx
-	go get -u github.com/ByteArena/box2d
-	go get -u github.com/PucklaMotzer09/GLSLGenerator
+	go get -u github.com/PucklaMotzer09/mathgl/mgl32 github.com/PucklaMotzer09/tmx github.com/ByteArena/box2d github.com/PucklaMotzer09/GLSLGenerator
 
 	// For GLFW
-	go get -u github.com/go-gl/glfw/v3.2
-	go get -u github.com/timshannon/go-openal/openal
-	go get -u github.com/PucklaMotzer09/go-wav
-	go get -u github.com/hajimehoshi/go-mp3
+	go get -u github.com/go-gl/glfw/v3.2 github.com/timshannon/go-openal/openal github.com/PucklaMotzer09/go-wav github.com/hajimehoshi/go-mp3
 
 	// For SDL2
 	go get -u github.com/PucklaMotzer09/go-sdl2/sdl
@@ -154,6 +143,32 @@ A Game Engine for 2D/3D Games written in go
 	go build && ./basic
 	// You should see a gopher in the middle
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Optional: Install libraries for audio on android<br>
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // If you want to use audio on android you first have to install SDL_mixer with mp3 and ogg support
+	// This guide is only for linux ubuntu and debian. For other platforms it should be similiar or the
+	// default precompiled binaries already include mp3 and ogg support.
+
+	// go to some directory where you want to store the respositories
+	cd $GIT_HOME
+	// clone and install mpg123
+	git clone https://github.com/kepstin/mpg123.git
+	cd mpg123
+	./configure
+	make -j4
+	sudo make install
+	cd ..
+	// install libvorbis
+	sudo apt-get install libvorbis-dev
+	// clone and install SDL_mixer
+	git clone https://github.com/SDL-mirror/SDL_mixer.git
+	cd SDL_mixer
+	./configure --enable-music-mp3 --enable-music-ogg
+	make -j4
+	sudo make install
+	// Now you are ready to use audio on android
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ## Tutorial
 
