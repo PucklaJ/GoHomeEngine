@@ -336,14 +336,6 @@ func (this *OpenGLES3Renderer) HasFunctionAvailable(function string) bool {
 	return ok && v
 }
 
-func (this *OpenGLES3Renderer) FilterShaderFiles(name, file, shader_type string) string {
-	return file
-}
-
-func (this *OpenGLES3Renderer) FilterShaderSource(name, source, shader_type string) string {
-	return source
-}
-
 func (this *OpenGLES3Renderer) SetBackgroundColor(bgColor color.Color) {
 	this.backgroundColor = bgColor
 }

@@ -309,14 +309,6 @@ func (this *WebGLRenderer) HasFunctionAvailable(function string) bool {
 	return ok && v
 }
 
-func (this *WebGLRenderer) FilterShaderFiles(name, file, shader_type string) string {
-	return file
-}
-
-func (this *WebGLRenderer) FilterShaderSource(name, source, shader_type string) string {
-	return source
-}
-
 func (this *WebGLRenderer) SetBackgroundColor(bgColor color.Color) {
 	this.backgroundColor = bgColor
 }

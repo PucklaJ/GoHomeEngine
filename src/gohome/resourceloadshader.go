@@ -34,7 +34,6 @@ func loadShaderFile(path string) (string, error) {
 }
 
 func loadShader(path, name_shader, name string) (string, bool) {
-	path = Render.FilterShaderFiles(name_shader, path, name)
 	contents, err := loadShaderFile(path)
 	if err != nil {
 		ErrorMgr.Error("Shader", name_shader, "Couldn't load "+name+": "+err.Error())
@@ -94,23 +93,11 @@ func (rsmgr *ResourceManager) LoadShader(name, vertex_path, fragment_path, geome
 	return shader
 }
 
-func filterShaderSource(name, vertex, fragment, geometry, tesselletion_control, eveluation, compute string) (string, string, string, string, string, string) {
-	vertex = Render.FilterShaderSource(name, vertex, "Vertex File")
-	fragment = Render.FilterShaderSource(name, fragment, "Fragment File")
-	geometry = Render.FilterShaderSource(name, geometry, "Geometry File")
-	tesselletion_control = Render.FilterShaderSource(name, tesselletion_control, "Tesselation Control File")
-	eveluation = Render.FilterShaderSource(name, eveluation, "Eveluation File")
-	compute = Render.FilterShaderSource(name, compute, "Compute File")
-
-	return vertex, fragment, geometry, tesselletion_control, eveluation, compute
-}
-
 func (rsmgr *ResourceManager) LoadShaderSource(name, vertex, fragment, geometry, tesselletion_control, eveluation, compute string) Shader {
 	if _, ok := rsmgr.shaders[name]; ok {
 		ErrorMgr.Error("Shader", name, "Has already been loaded")
 		return rsmgr.shaders[name]
 	}
-	vertex, fragment, geometry, tesselletion_control, eveluation, compute = filterShaderSource(name, vertex, fragment, geometry, tesselletion_control, eveluation, compute)
 	shader, err := Render.LoadShader(name, vertex, fragment, geometry, tesselletion_control, eveluation, compute)
 	if err != nil {
 		ErrorMgr.Error("Shader", name, "Loading source: "+err.Error())

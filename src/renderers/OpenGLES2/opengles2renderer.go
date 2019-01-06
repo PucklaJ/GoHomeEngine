@@ -293,14 +293,6 @@ func (this *OpenGLES2Renderer) HasFunctionAvailable(function string) bool {
 	return false
 }
 
-func (this *OpenGLES2Renderer) FilterShaderFiles(name, file, shader_type string) string {
-	return file
-}
-
-func (this *OpenGLES2Renderer) FilterShaderSource(name, source, shader_type string) string {
-	return source
-}
-
 func (this *OpenGLES2Renderer) SetBackgroundColor(bgColor color.Color) {
 	this.backgroundColor = bgColor
 }

@@ -355,14 +355,6 @@ func (this *OpenGLRenderer) HasFunctionAvailable(function string) bool {
 	return ok && v
 }
 
-func (this *OpenGLRenderer) FilterShaderFiles(name, file, shader_type string) string {
-	return file
-}
-
-func (this *OpenGLRenderer) FilterShaderSource(name, source, shader_type string) string {
-	return source
-}
-
 func (this *OpenGLRenderer) SetBackgroundColor(bgColor color.Color) {
 	this.backgroundColor = bgColor
 }
