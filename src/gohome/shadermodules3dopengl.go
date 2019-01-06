@@ -741,120 +741,125 @@ func GetShaderName3D(flags uint32) string {
 
 func GenerateShader3D(shader_type uint8, flags uint32) (n, v, f string) {
 	if shader_type == SHADER_TYPE_3D {
-		if flags&SHADER_FLAG_NO_LIGHTING != 0 {
-			flags |= SHADER_FLAG_NO_SHADOWS
-		}
-		startFlags := flags
-		if !Render.HasFunctionAvailable("INSTANCED") {
-			flags &= ^SHADER_FLAG_INSTANCED
-		}
-		if flags&SHADER_FLAG_NOUV != 0 {
-			flags |= SHADER_FLAG_NO_DIFTEX | SHADER_FLAG_NO_SPECTEX | SHADER_FLAG_NO_NORMAP
-		}
-
-		rname := Render.GetName()
-		if rname == "OpenGLES2" || rname == "WebGL" {
-			flags |= SHADER_FLAG_NO_SHADOWS | SHADER_FLAG_NO_NORMAP
-		}
-
-		var vertex glslgen.VertexGenerator
-		var fragment glslgen.FragmentGenerator
-		if rname == "WebGL" {
-			vertex.SetVersion("WebGL")
-			fragment.SetVersion("WebGL")
-		} else if strings.Contains(rname, "OpenGLES") {
-			vertex.SetVersion("100")
-			fragment.SetVersion("100")
-		} else {
-			vertex.SetVersion(ShaderVersion)
-			fragment.SetVersion(ShaderVersion)
-		}
-
-		vertex.AddAttributes(Attributes3D)
-		if flags&SHADER_FLAG_INSTANCED != 0 {
-			vertex.AddAttributes(AttributesInstanced3D)
-		}
-		vertex.AddOutputs(InputsFragment3D)
-		if flags&SHADER_FLAG_NOUV == 0 && (rname != "OpenGLES2" && rname != "WebGL") {
-			vertex.AddOutputs(InputsNormalFragment3D)
-		}
-		if rname == "OpenGLES2" || rname == "WebGL" {
-			vertex.AddOutput(glslgen.Variable{"vec2", "highp", "fragTexCoord"})
-		}
-		vertex.AddModule(UniformModuleVertex3D)
-		if flags&SHADER_FLAG_INSTANCED == 0 {
-			vertex.AddModule(UniformNormalModuleVertex3D)
-		}
-		vertex.AddModule(CalculatePositionModule3D)
-		vertex.AddModule(SetOutputsModuleVertex3D)
-		if flags&SHADER_FLAG_NOUV == 0 && (rname != "OpenGLES2" && rname != "WebGL") {
-			vertex.AddModule(SetOutputsNormalModuleVertex3D)
-		} else {
-			vertex.AddModule(SetOutputsNoUVModuleVertex3D)
-		}
-		if flags&SHADER_FLAG_NOUV == 0 {
-			vertex.AddModule(SetOutputTexCoordModuleVertex3D)
-		}
-
-		if flags&SHADER_FLAG_NO_LIGHTING == 0 {
-			fragment.AddMakros(LightMakrosFragment3D)
-		}
-		fragment.AddGlobals(GlobalsFragment3D)
-
-		fragment.AddInputs(InputsFragment3D)
-		if flags&SHADER_FLAG_NOUV == 0 && (rname != "OpenGLES2" && rname != "WebGL") {
-			fragment.AddInputs(InputsNormalFragment3D)
-		}
-		if flags&SHADER_FLAG_NOUV == 0 && (rname == "OpenGLES2" || rname == "WebGL") {
-			fragment.AddInput(glslgen.Variable{"vec2", "highp", "fragTexCoord"})
-		}
-		fragment.AddModule(InitialiseModuleFragment3D)
-		if flags&SHADER_FLAG_NOUV == 0 && (rname != "OpenGLES2" && rname != "WebGL") {
-			fragment.AddModule(InitialiseNormalModuleFragment3D)
-		} else {
-			fragment.AddModule(InitialiseNoUVModuleFragment3D)
-		}
-		if flags&(SHADER_FLAG_NO_NORMAP|SHADER_FLAG_NOUV) == 0 {
-			fragment.AddModule(NormalMapModule3D)
-		}
-		if flags&SHADER_FLAG_NO_LIGHTING == 0 {
-			fragment.AddModule(LightUniformsModule3D)
-			if flags&SHADER_FLAG_NOUV == 0 && (rname != "OpenGLES2" && rname != "WebGL") {
-				fragment.AddModule(LightCalcSpotAmountNormalModule3D)
-			} else {
-				fragment.AddModule(LightCalcSpotAmountNoUVModule3D)
-			}
-			if flags&SHADER_FLAG_NO_SHADOWS == 0 {
-				if flags&SHADER_FLAG_NOUV == 0 && (rname != "OpenGLES2" && rname != "WebGL") {
-					fragment.AddModule(LightsAndShadowsFunctions3D)
-					fragment.AddModule(LightsAndShadowsCalculationModule3D)
-				} else {
-					fragment.AddModule(LightsAndShadowsFunctionsNoUV3D)
-					fragment.AddModule(LightsAndShadowsCalculationNoUVModule3D)
-				}
-			} else {
-				if flags&SHADER_FLAG_NOUV == 0 && (rname != "OpenGLES2" && rname != "WebGL") {
-					fragment.AddModule(LightCalculationModel3D)
-				} else {
-					fragment.AddModule(LightCalculationNoUVModule3D)
-				}
-			}
-		}
-		fragment.AddModule(MaterialModule3D)
-		if flags&SHADER_FLAG_NO_DIFTEX == 0 {
-			fragment.AddModule(DiffuseTextureModule3D)
-		}
-		if flags&SHADER_FLAG_NO_SPECTEX == 0 {
-			fragment.AddModule(SpecularTextureModule3D)
-		}
-		fragment.AddModule(FinalModuleFragment3D)
-
-		v = vertex.String()
-		f = fragment.String()
-		n = GetShaderName3D(startFlags)
+		n, v, f = generateShader3D(flags)
 	} else {
 		n, v, f = generateShaderShape3D()
 	}
 
+	return
+}
+
+func generateShader3D(flags uint32) (n, v, f string) {
+	if flags&SHADER_FLAG_NO_LIGHTING != 0 {
+		flags |= SHADER_FLAG_NO_SHADOWS
+	}
+	startFlags := flags
+	if !Render.HasFunctionAvailable("INSTANCED") {
+		flags &= ^SHADER_FLAG_INSTANCED
+	}
+	if flags&SHADER_FLAG_NOUV != 0 {
+		flags |= SHADER_FLAG_NO_DIFTEX | SHADER_FLAG_NO_SPECTEX | SHADER_FLAG_NO_NORMAP
+	}
+
+	rname := Render.GetName()
+	if rname == "OpenGLES2" || rname == "WebGL" {
+		flags |= SHADER_FLAG_NO_SHADOWS | SHADER_FLAG_NO_NORMAP
+	}
+
+	var vertex glslgen.VertexGenerator
+	var fragment glslgen.FragmentGenerator
+	if rname == "WebGL" {
+		vertex.SetVersion("WebGL")
+		fragment.SetVersion("WebGL")
+	} else if strings.Contains(rname, "OpenGLES") {
+		vertex.SetVersion("100")
+		fragment.SetVersion("100")
+	} else {
+		vertex.SetVersion(ShaderVersion)
+		fragment.SetVersion(ShaderVersion)
+	}
+
+	vertex.AddAttributes(Attributes3D)
+	if flags&SHADER_FLAG_INSTANCED != 0 {
+		vertex.AddAttributes(AttributesInstanced3D)
+	}
+	vertex.AddOutputs(InputsFragment3D)
+	if flags&SHADER_FLAG_NOUV == 0 && (rname != "OpenGLES2" && rname != "WebGL") {
+		vertex.AddOutputs(InputsNormalFragment3D)
+	}
+	if rname == "OpenGLES2" || rname == "WebGL" {
+		vertex.AddOutput(glslgen.Variable{"vec2", "highp", "fragTexCoord"})
+	}
+	vertex.AddModule(UniformModuleVertex3D)
+	if flags&SHADER_FLAG_INSTANCED == 0 {
+		vertex.AddModule(UniformNormalModuleVertex3D)
+	}
+	vertex.AddModule(CalculatePositionModule3D)
+	vertex.AddModule(SetOutputsModuleVertex3D)
+	if flags&SHADER_FLAG_NOUV == 0 && (rname != "OpenGLES2" && rname != "WebGL") {
+		vertex.AddModule(SetOutputsNormalModuleVertex3D)
+	} else {
+		vertex.AddModule(SetOutputsNoUVModuleVertex3D)
+	}
+	if flags&SHADER_FLAG_NOUV == 0 {
+		vertex.AddModule(SetOutputTexCoordModuleVertex3D)
+	}
+
+	if flags&SHADER_FLAG_NO_LIGHTING == 0 {
+		fragment.AddMakros(LightMakrosFragment3D)
+	}
+	fragment.AddGlobals(GlobalsFragment3D)
+
+	fragment.AddInputs(InputsFragment3D)
+	if flags&SHADER_FLAG_NOUV == 0 && (rname != "OpenGLES2" && rname != "WebGL") {
+		fragment.AddInputs(InputsNormalFragment3D)
+	}
+	if flags&SHADER_FLAG_NOUV == 0 && (rname == "OpenGLES2" || rname == "WebGL") {
+		fragment.AddInput(glslgen.Variable{"vec2", "highp", "fragTexCoord"})
+	}
+	fragment.AddModule(InitialiseModuleFragment3D)
+	if flags&SHADER_FLAG_NOUV == 0 && (rname != "OpenGLES2" && rname != "WebGL") {
+		fragment.AddModule(InitialiseNormalModuleFragment3D)
+	} else {
+		fragment.AddModule(InitialiseNoUVModuleFragment3D)
+	}
+	if flags&(SHADER_FLAG_NO_NORMAP|SHADER_FLAG_NOUV) == 0 {
+		fragment.AddModule(NormalMapModule3D)
+	}
+	if flags&SHADER_FLAG_NO_LIGHTING == 0 {
+		fragment.AddModule(LightUniformsModule3D)
+		if flags&SHADER_FLAG_NOUV == 0 && (rname != "OpenGLES2" && rname != "WebGL") {
+			fragment.AddModule(LightCalcSpotAmountNormalModule3D)
+		} else {
+			fragment.AddModule(LightCalcSpotAmountNoUVModule3D)
+		}
+		if flags&SHADER_FLAG_NO_SHADOWS == 0 {
+			if flags&SHADER_FLAG_NOUV == 0 && (rname != "OpenGLES2" && rname != "WebGL") {
+				fragment.AddModule(LightsAndShadowsFunctions3D)
+				fragment.AddModule(LightsAndShadowsCalculationModule3D)
+			} else {
+				fragment.AddModule(LightsAndShadowsFunctionsNoUV3D)
+				fragment.AddModule(LightsAndShadowsCalculationNoUVModule3D)
+			}
+		} else {
+			if flags&SHADER_FLAG_NOUV == 0 && (rname != "OpenGLES2" && rname != "WebGL") {
+				fragment.AddModule(LightCalculationModel3D)
+			} else {
+				fragment.AddModule(LightCalculationNoUVModule3D)
+			}
+		}
+	}
+	fragment.AddModule(MaterialModule3D)
+	if flags&SHADER_FLAG_NO_DIFTEX == 0 {
+		fragment.AddModule(DiffuseTextureModule3D)
+	}
+	if flags&SHADER_FLAG_NO_SPECTEX == 0 {
+		fragment.AddModule(SpecularTextureModule3D)
+	}
+	fragment.AddModule(FinalModuleFragment3D)
+
+	v = vertex.String()
+	f = fragment.String()
+	n = GetShaderName3D(startFlags)
 	return
 }
