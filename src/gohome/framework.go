@@ -49,8 +49,6 @@ type Framework interface {
 	OpenFile(file string) (File, error)
 	LoadLevel(rsmgr *ResourceManager, name, path string, preloaded, loadToGPU bool) *Level
 	LoadLevelString(rsmgr *ResourceManager, name, contents, fileName string, preloaded, loadToGPU bool) *Level
-	LoadSound(name, path string) Sound
-	LoadMusic(name, path string) Music
 
 	ShowYesNoDialog(title, message string) uint8
 	Log(a ...interface{})
@@ -134,12 +132,6 @@ func (*NilFramework) LoadLevel(rsmgr *ResourceManager, name, path string, preloa
 }
 func (*NilFramework) LoadLevelString(rsmgr *ResourceManager, name, contents, fileName string, preloaded, loadToGPU bool) *Level {
 	return nil
-}
-func (*NilFramework) LoadSound(name, path string) Sound {
-	return &NilSound{}
-}
-func (*NilFramework) LoadMusic(name, path string) Music {
-	return &NilMusic{}
 }
 func (*NilFramework) ShowYesNoDialog(title, message string) uint8 {
 	return DIALOG_ERROR

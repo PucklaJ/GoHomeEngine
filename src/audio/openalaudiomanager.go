@@ -2,6 +2,8 @@ package audio
 
 import (
 	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
+	loadmp3 "github.com/PucklaMotzer09/GoHomeEngine/src/loaders/mp3"
+	loadwav "github.com/PucklaMotzer09/GoHomeEngine/src/loaders/wav"
 	al "github.com/timshannon/go-openal/openal"
 	"strconv"
 	"time"
@@ -304,6 +306,47 @@ func (this *OpenALAudioManager) SetVolume(vol float32) {
 	for _, m := range this.musics {
 		m.setVolumeHard(m.volume * vol)
 	}
+}
+
+func (this *OpenALAudioManager) LoadSound(name, path string) gohome.Sound {
+	wavReader, err := loadwav.LoadWAVFile(path)
+	if err != nil {
+		gohome.ErrorMgr.MessageError(gohome.ERROR_LEVEL_ERROR, "Sound", name, err)
+		return nil
+	}
+	format := loadwav.GetAudioFormat(wavReader)
+	if format == gohome.AUDIO_FORMAT_UNKNOWN {
+		gohome.ErrorMgr.Error("Sound", name, "The audio format is unknow: C: "+strconv.Itoa(int(wavReader.NumChannels))+" B: "+strconv.Itoa(int(wavReader.BitsPerSample)))
+		return nil
+	}
+	samples, err := loadwav.ReadAllSamples(wavReader)
+	if err != nil {
+		gohome.ErrorMgr.MessageError(gohome.ERROR_LEVEL_ERROR, "Sound", name, err)
+		return nil
+	}
+	sampleRate := wavReader.SampleRate
+
+	sound := this.CreateSound(name, samples, format, sampleRate)
+
+	return sound
+}
+
+func (this *OpenALAudioManager) LoadMusic(name, path string) gohome.Music {
+	decoder, err := loadmp3.LoadMP3File(path)
+	if err != nil {
+		gohome.ErrorMgr.MessageError(gohome.ERROR_LEVEL_ERROR, "Music", name, err)
+		return nil
+	}
+	format := loadmp3.GetAudioFormat(decoder)
+	sampleRate := uint32(decoder.SampleRate())
+	samples, err := loadmp3.ReadAllSamples(decoder)
+	if err != nil {
+		gohome.ErrorMgr.MessageError(gohome.ERROR_LEVEL_ERROR, "Music", name, err)
+		return nil
+	}
+
+	music := this.CreateMusic(name, samples, format, sampleRate)
+	return music
 }
 
 func (this *OpenALAudioManager) GetVolume() float32 {

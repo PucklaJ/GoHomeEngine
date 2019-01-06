@@ -64,7 +64,7 @@ func (rsmgr *ResourceManager) loadMusic(name, path string, preloaded bool) Music
 		}
 	}
 
-	music := Framew.LoadMusic(name, path)
+	music := Framew.GetAudioManager().LoadMusic(name, path)
 
 	if music != nil {
 		if !preloaded {
@@ -128,7 +128,8 @@ func (rsmgr *ResourceManager) loadSound(name, path string, preloaded bool) Sound
 			return nil
 		}
 	}
-	sound := Framew.LoadSound(name, path)
+
+	sound := Framew.GetAudioManager().LoadSound(name, path)
 
 	if sound != nil {
 		if !preloaded {

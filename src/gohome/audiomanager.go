@@ -40,6 +40,8 @@ type AudioManager interface {
 	Init()
 	CreateSound(name string, samples []byte, format uint8, sampleRate uint32) Sound
 	CreateMusic(name string, samples []byte, format uint8, sampleRate uint32) Music
+	LoadSound(name, path string) Sound
+	LoadMusic(name, path string) Music
 	SetVolume(vol float32)
 	GetVolume() float32
 	Terminate()
@@ -137,4 +139,12 @@ func (*NilAudioManager) GetVolume() float32 {
 }
 func (*NilAudioManager) Terminate() {
 
+}
+
+func (*NilAudioManager) LoadSound(name, path string) Sound {
+	return &NilSound{}
+}
+
+func (*NilAudioManager) LoadMusic(name, path string) Music {
+	return &NilMusic{}
 }
