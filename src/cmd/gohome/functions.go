@@ -8,6 +8,10 @@ import (
 const CONFIG_FILE_NAME = ".gohome.config"
 
 func HandleConfigFile() {
+	if len(os.Args) == 1 {
+		fmt.Println("No Arguments")
+		os.Exit(1)
+	}
 	CustomValues = make(map[string]string)
 	old_CustomValues = make(map[string]string)
 	wd := WorkingDir()
@@ -20,23 +24,10 @@ func HandleConfigFile() {
 		}
 		readVariables(file)
 		file.Close()
-	} else {
-		file, err := os.Create(fn)
-		if err != nil {
-			fmt.Println("Failed to create", CONFIG_FILE_NAME, ":", err)
-			os.Exit(1)
-		}
-		writeVariables(file)
-		file.Close()
 	}
 }
 
 func HandleArguments() {
-	if len(os.Args) == 1 {
-		fmt.Println("No Arguments")
-		return
-	}
-
 	for _, arg := range os.Args[1:] {
 		if isCommandArg(arg) {
 			COMMAND = arg
@@ -75,6 +66,7 @@ func ExecuteCommands() {
 	}
 
 	var success = true
+	var writeConfig = true
 
 	switch COMMAND {
 	case "build":
@@ -104,7 +96,7 @@ func ExecuteCommands() {
 	case "reset":
 		resetParameters()
 		ExecCommand("rm", ".gohome.config")
-		os.Exit(0)
+		writeConfig = false
 	case "export":
 		if !build.IsGenerated() || valuesChanged() {
 			build.Generate()
@@ -113,11 +105,20 @@ func ExecuteCommands() {
 		if success {
 			build.Export()
 		}
+	case "help":
+		printHelpMessage()
+		writeConfig = false
 	}
 
 	if !success {
-		WriteConfigFile()
+		if writeConfig {
+			WriteConfigFile()
+		}
 		os.Exit(1)
+	}
+
+	if !writeConfig {
+		os.Exit(0)
 	}
 }
 

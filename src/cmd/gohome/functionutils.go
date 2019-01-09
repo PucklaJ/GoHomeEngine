@@ -11,7 +11,7 @@ import (
 )
 
 func isCommandArg(arg string) bool {
-	return arg == "build" || arg == "install" || arg == "run" || arg == "generate" || arg == "clean" || arg == "env" || arg == "set" || arg == "reset" || arg == "export"
+	return arg == "build" || arg == "install" || arg == "run" || arg == "generate" || arg == "clean" || arg == "env" || arg == "set" || arg == "reset" || arg == "export" || arg == "help"
 }
 
 func isValueArg(arg string) bool {
@@ -256,3 +256,37 @@ const INDEX_HTML = `<!DOCTYPE html>
 		<script src="%PACKAGE_NAME%.js"></script>
 	<body>
 </html>`
+
+const HELP_MSG = `---- gohome build tool ----
+ - gohome build|install|run|generate|clean|env|set|reset|export|help OS={place_os_here} ARCH={place_arch_here} FRAME={GLFW|SDL2|GTK|JS} RENDER={OpenGL|OpenGLES2|OpenGLES3|OpenGLES31|WebGL} START={name_of_start_scene_struct} RELEASE|DEBUG
+
+ - gohome build
+    - builds the application for the choosen OS and ARCH
+ - gohome install
+    - uses go install or adb install on android
+ - gohome run
+    - runs the built application or runs the app on android
+    - if OS=browser a server starts using python and a browser
+    - starts with localhost:8000
+ - gohome generate OS=... FRAME=... RENDER=... START=...
+    - generates the files needed for building
+    - a main.go file is generated when not already there
+        * In there the framework, renderer and start scene gets set
+ - gohome clean
+    - executes go clean -r --cache and deletes all build files
+ - gohome env
+    - prints all set values for OS,ARCH etc.
+    - if --all or -a is provided go env is executed additionally
+ - gohome set OS=... FRAME= ... etc.
+    - sets all the paramters
+ - gohome reset
+    - resets all the parameters and deletes the .gohome.config file
+ - gohome export
+    - builds the game and packages all files into an export folder so that it can
+    - be published
+
+---------------------------`
+
+func printHelpMessage() {
+	fmt.Println(HELP_MSG)
+}

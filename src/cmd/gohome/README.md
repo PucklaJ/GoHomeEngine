@@ -42,5 +42,5 @@ To install the tool go into cmd/gohome and execute go install
 + **gohome reset**
     - resets all the parameters and deletes the .gohome.config file
 + **gohome export**
-    - builds the game packages all files into an export folder so that it can
+    - builds the game and packages all files into an export folder so that it can
     - be published
