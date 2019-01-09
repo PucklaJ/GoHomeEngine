@@ -49,40 +49,19 @@ A Game Engine for 2D/3D Games written in go
 
 ## Dependencies
 
-##### General
 + [mathgl](https://github.com/PucklaMotzer09/mathgl) ([Forked from here](https://github.com/go-gl/mathgl))([License](https://github.com/PucklaMotzer09/mathgl/blob/master/LICENSE))
 + [tga](https://github.com/blezek/tga) ([License](https://github.com/blezek/tga/blob/master/LICENSE.MIT))
-+ [go-openal](https://github.com/timshannon/go-openal) ([Forked from here](https://github.com/phf/go-openal)) ([License](https://github.com/timshannon/go-openal/blob/master/LICENSE))
++ [go-openal](https://github.com/PucklaMotzer09/go-openal) ([Forked from here](https://github.com/timshannon/go-openal)) ([License](https://github.com/PucklaMotzer09/go-openal/blob/master/LICENSE))
 + [go-wav](https://github.com/PucklaMotzer09/go-wav) ([Forked from here](https://github.com/sdobz/go-wav)) ([License](https://github.com/verdverm/go-wav/blob/master/LICENSE.md))
 + [go-mp3](https://github.com/hajimehoshi/go-mp3) ([License](https://github.com/hajimehoshi/go-mp3/blob/master/LICENSE))
 + [box2d](https://github.com/ByteArena/box2d) ([License](https://github.com/ByteArena/box2d/blob/master/LICENSE.md))
 + [tmx](https://github.com/PucklaMotzer09/tmx) ([Forked from here](https://github.com/elliotmr/tmx)) ([License](https://github.com/PucklaMotzer09/tmx/blob/master/LICENSE))
-
-##### GLFWFramework
 + [glfw](https://github.com/glfw/glfw) ([License](https://github.com/glfw/glfw/blob/master/LICENSE.md))
-
-##### GTKFramework
 + [gtk](https://gtk.org) ([License](http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html))
-
-##### SDL2Framework
 + [go-sdl2](https://github.com/PucklaMotzer09/go-sdl2) ([Forked from here](https://github.com/veandco/go-sdl2)) ([License](https://github.com/PucklaMotzer09/go-sdl2/blob/master/LICENSE))
-
-##### JSFramework
 + [gopherjs](https://github.com/gopherjs/gopherjs) ([License](https://github.com/gopherjs/gopherjs/blob/master/LICENSE))
-
-##### OpenGLRenderer
 + [go-gl/gl](https://github.com/go-gl/gl) ([License](https://github.com/go-gl/gl/blob/master/LICENSE))
-
-##### OpenGLES2Renderer
 + [android-go](https://github.com/PucklaMotzer09/android-go) ([Forked from here](https://github.com/xlab/android-go)) ([License](https://github.com/PucklaMotzer09/android-go/blob/master/LICENSE.txt))
-
-##### OpenGLES3Renderer
-+ [android-go](https://github.com/PucklaMotzer09/android-go) ([Forked from here](https://github.com/xlab/android-go)) ([License](https://github.com/PucklaMotzer09/android-go/blob/master/LICENSE.txt))
-
-##### OpenGLES31Renderer
-+ [android-go](https://github.com/PucklaMotzer09/android-go) ([Forked from here](https://github.com/xlab/android-go)) ([License](https://github.com/PucklaMotzer09/android-go/blob/master/LICENSE.txt))
-
-##### WebGLRenderer
 + [webgl](https://github.com/PucklaMotzer09/webgl) ([Forked from here](https://github.com/gopherjs/webgl)) ([License](https://github.com/PucklaMotzer09/webgl/blob/master/LICENSE))
 
 ## Installation
@@ -104,8 +83,9 @@ A Game Engine for 2D/3D Games written in go
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 2. Install the go-Dependencies:<br>
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // Desktop
 	// Default (GLFW,OpenGL) if you only want to build desktop applications only execute this command
-	go get -u github.com/PucklaMotzer09/mathgl/mgl32 github.com/PucklaMotzer09/tmx github.com/ByteArena/box2d github.com/PucklaMotzer09/GLSLGenerator github.com/go-gl/glfw/v3.2 github.com/timshannon/go-openal/openal github.com/PucklaMotzer09/go-wav github.com/hajimehoshi/go-mp3 github.com/go-gl/gl/all-core/gl
+	go get -u github.com/PucklaMotzer09/mathgl/mgl32 github.com/PucklaMotzer09/tmx github.com/ByteArena/box2d github.com/PucklaMotzer09/GLSLGenerator github.com/go-gl/glfw/v3.2 github.com/PucklaMotzer09/go-openal/openal github.com/PucklaMotzer09/go-wav github.com/hajimehoshi/go-mp3 github.com/go-gl/gl/all-core/gl
 
 	// Use some of the following commands to build for a different platform or if you want to use
 	// a different Framework or Renderer
@@ -114,16 +94,22 @@ A Game Engine for 2D/3D Games written in go
 	go get -u github.com/PucklaMotzer09/mathgl/mgl32 github.com/PucklaMotzer09/tmx github.com/ByteArena/box2d github.com/PucklaMotzer09/GLSLGenerator
 
 	// For GLFW
-	go get -u github.com/go-gl/glfw/v3.2 github.com/timshannon/go-openal/openal github.com/PucklaMotzer09/go-wav github.com/hajimehoshi/go-mp3
+	go get -u github.com/go-gl/glfw/v3.2 github.com/PucklaMotzer09/go-openal/openal github.com/PucklaMotzer09/go-wav github.com/hajimehoshi/go-mp3
 
 	// For SDL2
-	go get -u github.com/PucklaMotzer09/go-sdl2/sdl
+	go get -u github.com/PucklaMotzer09/go-sdl2/sdl github.com/PucklaMotzer09/go-openal/openal github.com/PucklaMotzer09/go-wav github.com/hajimehoshi/go-mp3
 
-	// For JS
-	go get -u github.com/gopherjs/gopherjs
+	// For GTK
+	go get -u github.com/PucklaMotzer09/go-openal/openal github.com/PucklaMotzer09/go-wav github.com/hajimehoshi/go-mp3
 
 	// For OpenGL
 	go get -u github.com/go-gl/gl/all-core/gl
+    
+	// Browser
+	go get -u github.com/gopherjs/gopherjs github.com/PucklaMotzer09/webgl
+
+	// Android
+	go get -u github.com/PucklaMotzer09/go-sdl2/sdl github.com/PucklaMotzer09/android-go/gles2
 
 	// For OpenGLES2
 	go get -u github.com/PucklaMotzer09/android-go/gles2
@@ -133,9 +119,6 @@ A Game Engine for 2D/3D Games written in go
 
 	// For OpenGLES31
 	go get -u github.com/PucklaMotzer09/android-go/gles31
-
-	// For WebGL
-	go get -u github.com/PucklaMotzer09/webgl
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 3. Compile one of the examples to test:<br>
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -205,3 +188,8 @@ func main() {
 ```
 
 This program opens a window with a black background. To learn more you can look at the examples in src/examples
+
+## Build tool
+
+There is a build tool available with which you can build your games easily for different platforms
+Read more [here](https://github.com/PucklaMotzer09/GoHomeEngine/blob/master/src/cmd/gohome/README.md).
