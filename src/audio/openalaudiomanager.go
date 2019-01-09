@@ -4,7 +4,7 @@ import (
 	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
 	loadmp3 "github.com/PucklaMotzer09/GoHomeEngine/src/loaders/mp3"
 	loadwav "github.com/PucklaMotzer09/GoHomeEngine/src/loaders/wav"
-	al "github.com/timshannon/go-openal/openal"
+	al "github.com/PucklaMotzer09/go-openal/openal"
 	"strconv"
 	"time"
 )
