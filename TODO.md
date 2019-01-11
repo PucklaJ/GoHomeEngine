@@ -9,13 +9,11 @@
 + Collada loader
 + Parent System for Sprite2D
 + OBJLoader load non-triangulate faces
-+ Add Build command gohome
 + Add more sprites to spriteanimation example
 + Add PostProcessing
     - interface with DoPostProcessing()
     - add GlowShader
     - with GLOW_BIT RenderType
-+ Remove audio manager from framework
 + Add indirect rendering
     - add mesh/model to IndirectRender struct (?)
     - and then call Render on this struct
@@ -38,12 +36,9 @@
 + Change obj loading to be concurrent
 + Remove audio manager from framework
 	- Add InitAudio method to gohome which takes a AudioManager pointer
-+ Add audio to android
-    - SDL_mixer or OpenSL
 + Fix OpenAL errors
     - device not closed
 + Add Audio to browser
-+ Add Audio to android
 
 ## 2D
 
