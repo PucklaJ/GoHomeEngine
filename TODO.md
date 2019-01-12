@@ -34,8 +34,6 @@
 + Add Changeable MAX_POINT_LIGHTS, MAX_DIRECTIONAL_LIGHTS, etc. to LightMgr
     - maybe all makros (APLHA_DISCARD_PADDING)
 + Change obj loading to be concurrent
-+ Remove audio manager from framework
-	- Add InitAudio method to gohome which takes a AudioManager pointer
 + Fix OpenAL errors
     - device not closed
 
