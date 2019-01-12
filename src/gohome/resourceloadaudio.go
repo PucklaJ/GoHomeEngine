@@ -40,7 +40,7 @@ func (rsmgr *ResourceManager) LoadMusic(name, path string) Music {
 		return nil
 	}
 
-	music := Framew.GetAudioManager().LoadMusic(name, path)
+	music := AudioMgr.LoadMusic(name, path)
 
 	if music != nil {
 		rsmgr.musics[name] = music
@@ -71,7 +71,7 @@ func (rsmgr *ResourceManager) LoadSound(name, path string) Sound {
 		return nil
 	}
 
-	sound := Framew.GetAudioManager().LoadSound(name, path)
+	sound := AudioMgr.LoadSound(name, path)
 
 	if sound != nil {
 		rsmgr.sounds[name] = sound

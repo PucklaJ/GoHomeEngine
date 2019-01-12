@@ -2,7 +2,6 @@ package framework
 
 import (
 	"errors"
-	"github.com/PucklaMotzer09/GoHomeEngine/src/audio"
 	"github.com/PucklaMotzer09/GoHomeEngine/src/loaders/defaultlevel"
 	"os"
 	"time"
@@ -24,8 +23,6 @@ type GTKFramework struct {
 	UseWholeWindowAsGLArea bool
 	UseExternalWindow      bool
 	MenuBarFix             bool
-
-	audioManager audio.OpenALAudioManager
 }
 
 func (this *GTKFramework) InitStuff(ml *gohome.MainLoop) {
@@ -131,10 +128,6 @@ func (this *GTKFramework) GetGtkWindow() gtk.Window {
 
 func (this *GTKFramework) MonitorGetSize() mgl32.Vec2 {
 	return this.WindowGetSize()
-}
-
-func (this *GTKFramework) GetAudioManager() gohome.AudioManager {
-	return &this.audioManager
 }
 
 func (this *GTKFramework) InitExternalDefault(window *gtk.Window, glarea *gtk.GLArea) {

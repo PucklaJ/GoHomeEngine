@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/PucklaMotzer09/GoHomeEngine/src/audio"
 	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
 	"runtime"
 )
@@ -12,7 +13,7 @@ type AudioScene struct {
 }
 
 func (this *AudioScene) Init() {
-	gohome.Framew.GetAudioManager().Init()
+	audio.InitAudio()
 	gohome.ResourceMgr.LoadSound("Bottle", "bottle.wav")
 	gohome.ResourceMgr.LoadMusic("TownTheme", "TownTheme.mp3")
 }
@@ -54,5 +55,5 @@ func (this *AudioScene) Update(delta_time float32) {
 }
 
 func (this *AudioScene) Terminate() {
-	gohome.Framew.GetAudioManager().Terminate()
+	gohome.AudioMgr.Terminate()
 }

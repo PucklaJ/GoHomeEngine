@@ -1,7 +1,6 @@
 package framework
 
 import (
-	"github.com/PucklaMotzer09/GoHomeEngine/src/audio"
 	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
 	"github.com/PucklaMotzer09/GoHomeEngine/src/loaders/defaultlevel"
 	"github.com/PucklaMotzer09/mathgl/mgl32"
@@ -29,7 +28,6 @@ type GLFWFramework struct {
 
 	textInputStarted bool
 	textInputBuffer  string
-	audioManager     audio.OpenALAudioManager
 }
 
 func (gfw *GLFWFramework) Init(ml *gohome.MainLoop) error {
@@ -539,10 +537,6 @@ func (gfw *GLFWFramework) GetTextInput() string {
 func (gfw *GLFWFramework) EndTextInput() {
 	gfw.textInputStarted = false
 	gfw.textInputBuffer = ""
-}
-
-func (gfw *GLFWFramework) GetAudioManager() gohome.AudioManager {
-	return &gfw.audioManager
 }
 
 func (gfw *GLFWFramework) MonitorGetSize() mgl32.Vec2 {

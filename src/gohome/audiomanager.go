@@ -47,6 +47,8 @@ type AudioManager interface {
 	Terminate()
 }
 
+var AudioMgr AudioManager
+
 type NilSound struct {
 }
 

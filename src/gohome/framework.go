@@ -61,8 +61,6 @@ type Framework interface {
 	StartTextInput()
 	GetTextInput() string
 	EndTextInput()
-
-	GetAudioManager() AudioManager
 }
 
 var Framew Framework
@@ -165,8 +163,4 @@ func (*NilFramework) GetTextInput() string {
 }
 func (*NilFramework) EndTextInput() {
 
-}
-
-func (*NilFramework) GetAudioManager() AudioManager {
-	return &NilAudioManager{}
 }
