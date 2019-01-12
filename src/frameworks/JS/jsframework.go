@@ -214,4 +214,8 @@ func (*JSFramework) Log(a ...interface{}) {
 	println(str)
 }
 
+func (*JSFramework) GetAudioManager() gohome.AudioManager {
+	return &audioManager
+}
+
 var framew *JSFramework

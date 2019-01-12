@@ -38,7 +38,6 @@
 	- Add InitAudio method to gohome which takes a AudioManager pointer
 + Fix OpenAL errors
     - device not closed
-+ Add Audio to browser
 
 ## 2D
 
