@@ -27,13 +27,10 @@ func (this *JSAudioManager) CreateMusic(name string, samples []byte, format uint
 
 func (this *JSAudioManager) loadAudio(name, path string) *JSAudio {
 	var rv JSAudio
-	for i := 0; rv.audio == nil && i < len(gohome.MUSIC_SOUND_PATHS); i++ {
-		rv.audio = js.Global.Get("Audio").New(gohome.MUSIC_SOUND_PATHS[i] + path)
-		if rv.audio != nil {
-			break
-		}
-		rv.audio = js.Global.Get("Audio").New(gohome.MUSIC_SOUND_PATHS[i] + gohome.GetFileFromPath(path))
-	}
+	rv.audio = js.Global.Get("Audio").New(path)
+	rv.audio.Set("onerror", func() {
+		gohome.ErrorMgr.Error("Audio", name, "Error: "+rv.audio.Get("error").Get("message").String())
+	})
 	rv.volume = 1.0
 	return &rv
 }
