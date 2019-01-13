@@ -33,7 +33,6 @@
 + Parallax Mapping / Parallax Occlusion Mapping / Steep Parallax Mapping
 + Add Changeable MAX_POINT_LIGHTS, MAX_DIRECTIONAL_LIGHTS, etc. to LightMgr
     - maybe all makros (APLHA_DISCARD_PADDING)
-+ Change obj loading to be concurrent
 + Fix OpenAL errors
     - device not closed
 
