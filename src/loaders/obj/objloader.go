@@ -73,6 +73,13 @@ type OBJLoader struct {
 	materialPaths    []string
 	openMaterialFile func(path string) (gohome.File, error)
 	directory        string
+
+	currentModel *OBJModel
+	currentMesh  *OBJMesh
+
+	verticesWG sync.WaitGroup
+	facesWG    sync.WaitGroup
+	materialWG sync.WaitGroup
 }
 
 func (this *OBJLoader) Load(path string) error {
@@ -277,6 +284,14 @@ func (this *OBJLoader) processTokens(tokens []string) error {
 	length := len(tokens)
 	if length != 0 {
 		if tokens[0] == "f" {
+			if len(this.Models) == 0 {
+				this.Models = append(this.Models, OBJModel{Name: "Default"})
+				this.currentModel = &this.Models[len(this.Models)-1]
+			}
+			if len(this.currentModel.Meshes) == 0 {
+				this.currentModel.Meshes = append(this.currentModel.Meshes, OBJMesh{Name: "Default"})
+				this.currentMesh = &this.currentModel.Meshes[len(this.currentModel.Meshes)-1]
+			}
 			if err := this.processFace(tokens[1:length]); err != nil {
 				return err
 			}
@@ -300,11 +315,14 @@ func (this *OBJLoader) processTokens(tokens []string) error {
 					}
 				} else if tokens[0] == "o" {
 					this.Models = append(this.Models, OBJModel{Name: tokens[1]})
+					this.currentModel = &this.Models[len(this.Models)-1]
 				} else if tokens[0] == "usemtl" {
 					if len(this.Models) == 0 {
 						this.Models = append(this.Models, OBJModel{Name: "Default"})
+						this.currentModel = &this.Models[len(this.Models)-1]
 					}
-					this.Models[len(this.Models)-1].Meshes = append(this.Models[len(this.Models)-1].Meshes, OBJMesh{})
+					this.currentModel.Meshes = append(this.currentModel.Meshes, OBJMesh{})
+					this.currentMesh = &this.currentModel.Meshes[len(this.currentModel.Meshes)-1]
 					this.processMaterial(tokens[1])
 				}
 			}
@@ -325,20 +343,13 @@ func (this *OBJLoader) getMaterial(name string) *OBJMaterial {
 }
 
 func (this *OBJLoader) processMaterial(token string) {
-	this.Models[len(this.Models)-1].Meshes[len(this.Models[len(this.Models)-1].Meshes)-1].Name = token
-	this.Models[len(this.Models)-1].Meshes[len(this.Models[len(this.Models)-1].Meshes)-1].Material = this.getMaterial(token)
+	this.currentMesh.Name = token
+	this.currentMesh.Material = this.getMaterial(token)
 }
 
 func (this *OBJLoader) processFace(tokens []string) error {
 	if len(tokens) != 3 && len(tokens) != 4 {
 		return &OBJError{"Face type not supported: " + strconv.FormatInt(int64(len(tokens)), 10) + "! Use triangles or quads!"}
-	}
-
-	if len(this.Models) == 0 {
-		this.Models = append(this.Models, OBJModel{Name: "Default"})
-	}
-	if len(this.Models[len(this.Models)-1].Meshes) == 0 {
-		this.Models[len(this.Models)-1].Meshes = append(this.Models[len(this.Models)-1].Meshes, OBJMesh{Name: "Default"})
 	}
 
 	this.faceMethod = 0
@@ -374,10 +385,10 @@ func (this *OBJLoader) processFace(tokens []string) error {
 	for i := 0; i < len(vertices); i++ {
 		index, isNew := this.searchIndex(vertices[i])
 		if isNew {
-			this.Models[len(this.Models)-1].Meshes[len(this.Models[len(this.Models)-1].Meshes)-1].Vertices = append(this.Models[len(this.Models)-1].Meshes[len(this.Models[len(this.Models)-1].Meshes)-1].Vertices, vertices[i])
-			this.Models[len(this.Models)-1].Meshes[len(this.Models[len(this.Models)-1].Meshes)-1].Indices = append(this.Models[len(this.Models)-1].Meshes[len(this.Models[len(this.Models)-1].Meshes)-1].Indices, uint32(len(this.Models[len(this.Models)-1].Meshes[len(this.Models[len(this.Models)-1].Meshes)-1].Vertices)-1))
+			this.currentMesh.Vertices = append(this.currentMesh.Vertices, vertices[i])
+			this.currentMesh.Indices = append(this.currentMesh.Indices, uint32(len(this.currentMesh.Vertices))-1)
 		} else {
-			this.Models[len(this.Models)-1].Meshes[len(this.Models[len(this.Models)-1].Meshes)-1].Indices = append(this.Models[len(this.Models)-1].Meshes[len(this.Models[len(this.Models)-1].Meshes)-1].Indices, index)
+			this.currentMesh.Indices = append(this.currentMesh.Indices, index)
 		}
 	}
 
@@ -385,10 +396,8 @@ func (this *OBJLoader) processFace(tokens []string) error {
 }
 
 func (this *OBJLoader) searchIndex(vertex gohome.Mesh3DVertex) (uint32, bool) {
-	mesh := &this.Models[len(this.Models)-1].Meshes[len(this.Models[len(this.Models)-1].Meshes)-1]
-
-	for i := 0; i < len(mesh.Vertices); i++ {
-		if Equals(&vertex, &mesh.Vertices[i]) {
+	for i := 0; i < len(this.currentMesh.Vertices); i++ {
+		if Equals(&vertex, &this.currentMesh.Vertices[i]) {
 			return uint32(i), false
 		}
 	}
