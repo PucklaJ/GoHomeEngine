@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/PucklaMotzer09/GoHomeEngine/src/audio"
 	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
 	"runtime"
@@ -16,14 +15,18 @@ func (this *AudioScene) Init() {
 	audio.InitAudio()
 	gohome.ResourceMgr.LoadSound("Bottle", "assets/bottle.wav")
 	gohome.ResourceMgr.LoadMusic("TownTheme", "assets/TownTheme.mp3")
+
+	gohome.ResourceMgr.GetMusic("TownTheme").Play(true)
 }
 
 func (this *AudioScene) Update(delta_time float32) {
 	if gohome.InputMgr.JustPressed(gohome.Key1) || (runtime.GOOS == "android" && gohome.InputMgr.JustPressed(gohome.KeyBack)) {
 		if this.music == nil {
 			this.music = gohome.ResourceMgr.GetMusic("TownTheme")
-			if this.music != nil {
+			if this.music != nil && !this.music.IsPlaying() {
 				this.music.Play(true)
+			} else if this.music != nil {
+				this.music.Pause()
 			}
 		} else {
 			if this.music.IsPlaying() {
@@ -47,10 +50,6 @@ func (this *AudioScene) Update(delta_time float32) {
 				this.sound.Resume()
 			}
 		}
-	}
-
-	if this.music != nil {
-		fmt.Println("Music:", this.music.GetPlayingDuration())
 	}
 }
 

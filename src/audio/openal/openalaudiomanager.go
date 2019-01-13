@@ -5,6 +5,8 @@ import (
 	loadmp3 "github.com/PucklaMotzer09/GoHomeEngine/src/loaders/mp3"
 	loadwav "github.com/PucklaMotzer09/GoHomeEngine/src/loaders/wav"
 	al "github.com/PucklaMotzer09/go-openal/openal"
+	"github.com/hajimehoshi/go-mp3"
+	"io"
 	"strconv"
 	"time"
 )
@@ -72,10 +74,11 @@ type OpenALMusic struct {
 	Name     string
 	Duration time.Duration
 
-	buffer  al.Buffer
-	source  al.Source
-	playing bool
-	volume  float32
+	buffers    []al.Buffer
+	source     al.Source
+	playing    bool
+	volume     float32
+	terminated bool
 }
 
 func (this *OpenALMusic) Play(loop bool) {
@@ -97,8 +100,11 @@ func (this *OpenALMusic) Stop() {
 	this.playing = false
 }
 func (this *OpenALMusic) Terminate() {
+	this.terminated = true
 	this.source.Delete()
-	this.buffer.Delete()
+	for _, b := range this.buffers {
+		b.Delete()
+	}
 	this.playing = false
 	audioManager.removeMusicFromSlice(this)
 }
@@ -201,7 +207,7 @@ func (this *OpenALAudioManager) CreateSound(name string, samples []byte, format 
 func (this *OpenALAudioManager) CreateMusic(name string, samples []byte, format uint8, sampleRate uint32) gohome.Music {
 	music := &OpenALMusic{}
 	music.Name = name
-	music.buffer = al.NewBuffer()
+	music.buffers = append(music.buffers, al.NewBuffer())
 	if err := al.Err(); err != nil {
 		gohome.ErrorMgr.Error("Music", name, "Couldn't create buffer: "+err.Error())
 		return nil
@@ -209,12 +215,12 @@ func (this *OpenALAudioManager) CreateMusic(name string, samples []byte, format 
 	music.source = al.NewSource()
 	if err := al.Err(); err != nil {
 		gohome.ErrorMgr.Error("Music", name, "Couldn't create source: "+err.Error())
-		music.buffer.Delete()
+		music.buffers[0].Delete()
 		return nil
 	}
 
-	music.buffer.SetData(getOpenALFormat(format), samples, int32(sampleRate))
-	music.source.SetBuffer(music.buffer)
+	music.buffers[0].SetData(getOpenALFormat(format), samples, int32(sampleRate))
+	music.source.SetBuffer(music.buffers[0])
 
 	var microSeconds int64
 	switch format {
@@ -236,6 +242,95 @@ func (this *OpenALAudioManager) CreateMusic(name string, samples []byte, format 
 
 	return music
 }
+
+const SAMPLE_SIZE_MP3 = 2 * 2
+const SAMPLE_RATE_MP3 = 44100
+const BUFFER_SIZE_MP3 = SAMPLE_RATE_MP3 / 10 * SAMPLE_SIZE_MP3
+
+func readSamples(decoder *mp3.Decoder) ([BUFFER_SIZE_MP3]byte, int, error) {
+	var samples [BUFFER_SIZE_MP3]byte
+	var num int
+	var err error
+	var n int
+
+	for num < BUFFER_SIZE_MP3 && err == nil {
+		n, err = decoder.Read(samples[num:])
+		num += n
+	}
+
+	return samples, num, err
+}
+
+func (this *OpenALAudioManager) createMusicMP3(name string, decoder *mp3.Decoder) gohome.Music {
+	format := loadmp3.GetAudioFormat()
+	sampleRate := decoder.SampleRate()
+
+	music := &OpenALMusic{}
+	music.Name = name
+	music.buffers = append(music.buffers, al.NewBuffer())
+	if err := al.Err(); err != nil {
+		gohome.ErrorMgr.Error("Music", name, "Couldn't create buffer: "+err.Error())
+		return nil
+	}
+	music.source = al.NewSource()
+	if err := al.Err(); err != nil {
+		gohome.ErrorMgr.Error("Music", name, "Couldn't create source: "+err.Error())
+		music.buffers[0].Delete()
+		return nil
+	}
+
+	samples, num, err := readSamples(decoder)
+	if err != nil && err != io.EOF {
+		gohome.ErrorMgr.Error("Music", name, err.Error())
+		return nil
+	}
+
+	music.buffers[0].SetData(getOpenALFormat(format), samples[:num], int32(sampleRate))
+	music.source.QueueBuffer(music.buffers[0])
+	go func() {
+		var err error
+		var samples [BUFFER_SIZE_MP3]byte
+		var num int
+		var numBuffers int
+		for err == nil && !music.terminated {
+			buffer := al.NewBuffer()
+			samples, num, err = readSamples(decoder)
+			buffer.SetData(getOpenALFormat(format), samples[:num], int32(decoder.SampleRate()))
+			music.source.QueueBuffer(buffer)
+			music.buffers = append(music.buffers, buffer)
+			numBuffers++
+		}
+		decoder.Close()
+		if err != nil && err != io.EOF {
+			gohome.ErrorMgr.Error("Music", name, err.Error())
+		} else if err != nil && err == io.EOF {
+			gohome.ErrorMgr.Log("Music", name, "Read all samples! B: "+strconv.FormatInt(int64(numBuffers), 10))
+		}
+	}()
+
+	length := decoder.Length()
+
+	var microSeconds int64
+	switch format {
+	case gohome.AUDIO_FORMAT_MONO8:
+		microSeconds = int64((float64(length) * 8.0 / 8.0 * (1.0 / float64(sampleRate))) * 1000000.0)
+	case gohome.AUDIO_FORMAT_MONO16:
+		microSeconds = int64((float64(length) * 8.0 / 16.0 * (1.0 / float64(sampleRate))) * 1000000.0)
+	case gohome.AUDIO_FORMAT_STEREO8:
+		microSeconds = int64((float64(length) * 8.0 / 8.0 / 2.0 * (1.0 / float64(sampleRate))) * 1000000.0)
+	case gohome.AUDIO_FORMAT_STEREO16:
+		microSeconds = int64((float64(length) * 8.0 / 16.0 / 2.0 * (1.0 / float64(sampleRate))) * 1000000.0)
+	}
+
+	music.Duration, _ = time.ParseDuration(strconv.Itoa(int(microSeconds)) + "µs")
+
+	this.musics = append(this.musics, music)
+
+	music.SetVolume(1.0)
+
+	return music
+}
+
 func (this *OpenALAudioManager) Terminate() {
 	this.context.Destroy()
 	this.device.CloseDevice()
@@ -334,15 +429,8 @@ func (this *OpenALAudioManager) LoadMusic(name, path string) gohome.Music {
 		gohome.ErrorMgr.MessageError(gohome.ERROR_LEVEL_ERROR, "Music", name, err)
 		return nil
 	}
-	format := loadmp3.GetAudioFormat(decoder)
-	sampleRate := uint32(decoder.SampleRate())
-	samples, err := loadmp3.ReadAllSamples(decoder)
-	if err != nil {
-		gohome.ErrorMgr.MessageError(gohome.ERROR_LEVEL_ERROR, "Music", name, err)
-		return nil
-	}
 
-	music := this.CreateMusic(name, samples, format, sampleRate)
+	music := this.createMusicMP3(name, decoder)
 	return music
 }
 
