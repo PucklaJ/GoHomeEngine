@@ -63,7 +63,7 @@ func (rsmgr *ResourceManager) DeleteLevel(name string) {
 }
 
 func (rsmgr *ResourceManager) LoadLevelString(name, contents, fileName string, loadToGPU bool) *Level {
-	level := Framew.LoadLevelString(rsmgr, name, contents, fileName, loadToGPU)
+	level := Framew.LoadLevelString(name, contents, fileName, loadToGPU)
 	if level != nil {
 		rsmgr.Levels[level.Name] = level
 		ErrorMgr.Log("Level", level.Name, "Finished loading!")
@@ -78,7 +78,7 @@ func (rsmgr *ResourceManager) LoadLevel(name, path string, loadToGPU bool) *Leve
 		return nil
 	}
 
-	level := Framew.LoadLevel(rsmgr, name, path, loadToGPU)
+	level := Framew.LoadLevel(name, path, loadToGPU)
 
 	if level != nil {
 		rsmgr.Levels[level.Name] = level

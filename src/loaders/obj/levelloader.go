@@ -2,59 +2,25 @@ package loader
 
 import (
 	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
+	"runtime"
 	"strconv"
 )
 
-func loadFile(path string, objLoader *OBJLoader) error {
-	reader, err := gohome.Framew.OpenFile(path)
-	if err != nil {
-		return err
-	}
-	objLoader.SetDirectory(gohome.GetPathFromFile(path))
-	objLoader.SetOpenMaterialFile(gohome.Framew.OpenFile)
-	objLoader.SetMaterialPaths(gohome.MATERIAL_PATHS[:])
-	err1 := objLoader.LoadReader(reader)
-	if err1 != nil {
-		return err1
-	}
-	return nil
-}
-
-func loadFileWithPaths(path string, paths []string, objLoader *OBJLoader) error {
-	var worked bool = false
-	var err error
-	for i := 0; i < len(paths); i++ {
-		if err = loadFile(paths[i]+path, objLoader); err == nil {
-			worked = true
-			break
-		} else if err = loadFile(paths[i]+gohome.GetFileFromPath(path), objLoader); err == nil {
-			worked = true
-			break
-		}
-	}
-
-	if !worked {
-		return err
-	}
-
-	return nil
-}
-
-func getNameForAlreadyLoadedModel(rsmgr *gohome.ResourceManager, name string) string {
+func getNameForAlreadyLoadedModel(name string) string {
 	var alreadyLoaded = true
 	var count = 1
 	var newName string
 	for alreadyLoaded {
 		newName = name + strconv.FormatInt(int64(count), 10)
-		_, alreadyLoaded = rsmgr.Models[newName]
+		_, alreadyLoaded = gohome.ResourceMgr.Models[newName]
 		count++
 	}
 	return newName
 }
 
-func processModel(rsmgr *gohome.ResourceManager, level *gohome.Level, objLoader *OBJLoader, model *OBJModel, loadToGPU bool) {
+func processModel(level *gohome.Level, objLoader *OBJLoader, model *OBJModel, loadToGPU bool) {
 	var alreadyLoaded = false
-	if _, alreadyLoaded = rsmgr.Models[model.Name]; !rsmgr.LoadModelsWithSameName && alreadyLoaded {
+	if _, alreadyLoaded = gohome.ResourceMgr.Models[model.Name]; !gohome.ResourceMgr.LoadModelsWithSameName && alreadyLoaded {
 		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_LOG, "Model", model.Name, "It has already been loaded!")
 		return
 	}
@@ -72,7 +38,7 @@ func processModel(rsmgr *gohome.ResourceManager, level *gohome.Level, objLoader 
 	if !alreadyLoaded {
 		model3d.Name = model.Name
 	} else {
-		model3d.Name = getNameForAlreadyLoadedModel(rsmgr, model.Name)
+		model3d.Name = getNameForAlreadyLoadedModel(model.Name)
 	}
 	for i := 0; i < len(model.Meshes); i++ {
 		mesh3d := gohome.Render.CreateMesh3D(model.Meshes[i].Name)
@@ -80,7 +46,7 @@ func processModel(rsmgr *gohome.ResourceManager, level *gohome.Level, objLoader 
 		model3d.AddMesh3D(mesh3d)
 	}
 	lvlObj.Model3D = &model3d
-	rsmgr.Models[model3d.Name] = &model3d
+	gohome.ResourceMgr.Models[model3d.Name] = &model3d
 	gohome.ErrorMgr.Log("Model", model.Name, "Finished loading!")
 }
 
@@ -167,63 +133,63 @@ func processMesh(objLoader *OBJLoader, mesh3d gohome.Mesh3D, mesh *OBJMesh, load
 	}
 }
 
-func toGohomeLevel(rsmgr *gohome.ResourceManager, name string, objLoader *OBJLoader, loadToGPU bool) *gohome.Level {
+func toGohomeLevel(name string, objLoader *OBJLoader, loadToGPU bool) *gohome.Level {
 	level := &gohome.Level{Name: name}
 	for i := 0; i < len(objLoader.Models); i++ {
-		processModel(rsmgr, level, objLoader, &objLoader.Models[i], loadToGPU)
+		processModel(level, objLoader, &objLoader.Models[i], loadToGPU)
 	}
 	return level
 }
 
-func getNameForAlreadyLoadedLevel(rsmgr *gohome.ResourceManager, name string) string {
+func getNameForAlreadyLoadedLevel(name string) string {
 	var alreadyLoaded = true
 	var count = 1
 	var newName string
 	for alreadyLoaded {
 		newName = name + strconv.FormatInt(int64(count), 10)
-		_, alreadyLoaded = rsmgr.Levels[newName]
+		_, alreadyLoaded = gohome.ResourceMgr.Levels[newName]
 		count++
 	}
 	return newName
 }
 
-func LoadLevelOBJ(rsmgr *gohome.ResourceManager, name, path string, loadToGPU bool) *gohome.Level {
+func LoadLevelOBJ(name, path string, loadToGPU bool) *gohome.Level {
 	var alreadyLoaded = false
-	if _, alreadyLoaded = rsmgr.Levels[name]; alreadyLoaded && !rsmgr.LoadModelsWithSameName {
+	if _, alreadyLoaded = gohome.ResourceMgr.Levels[name]; alreadyLoaded && !gohome.ResourceMgr.LoadModelsWithSameName {
 		gohome.ErrorMgr.Log("Level", name, "Has already been loaded!")
 		return nil
 	}
 	if alreadyLoaded {
-		name = getNameForAlreadyLoadedLevel(rsmgr, name)
+		name = getNameForAlreadyLoadedLevel(name)
 	}
 	var objLoader OBJLoader
-	if err := loadFileWithPaths(path, gohome.LEVEL_PATHS[:], &objLoader); err != nil {
+	objLoader.DisableGoRoutines = runtime.GOARCH == "js"
+	if err := objLoader.Load(path); err != nil {
 		gohome.ErrorMgr.Error("Level", name, "Couldn't load "+path+": "+err.Error())
 		return nil
 	}
-	lvl := toGohomeLevel(rsmgr, name, &objLoader, loadToGPU)
+	lvl := toGohomeLevel(name, &objLoader, loadToGPU)
 	lvl.Name = name
 	return lvl
 }
 
-func LoadLevelOBJString(rsmgr *gohome.ResourceManager, name, contents, fileName string, loadToGPU bool) *gohome.Level {
+func LoadLevelOBJString(name, contents, fileName string, loadToGPU bool) *gohome.Level {
 	var alreadyLoaded = false
-	if _, alreadyLoaded = rsmgr.Levels[name]; alreadyLoaded && !rsmgr.LoadModelsWithSameName {
+	if _, alreadyLoaded = gohome.ResourceMgr.Levels[name]; alreadyLoaded && !gohome.ResourceMgr.LoadModelsWithSameName {
 		gohome.ErrorMgr.Log("Level", name, "Has already been loaded!")
 		return nil
 	}
 	if alreadyLoaded {
-		name = getNameForAlreadyLoadedLevel(rsmgr, name)
+		name = getNameForAlreadyLoadedLevel(name)
 	}
 	var objLoader OBJLoader
 	objLoader.SetDirectory(gohome.GetPathFromFile(fileName))
-	objLoader.SetOpenMaterialFile(gohome.Framew.OpenFile)
-	objLoader.SetMaterialPaths(gohome.MATERIAL_PATHS[:])
+	objLoader.DisableGoRoutines = runtime.GOARCH == "js"
 	if err := objLoader.LoadString(contents); err != nil {
 		gohome.ErrorMgr.MessageError(gohome.ERROR_LEVEL_ERROR, "Level", name, err)
 		return nil
 	}
-	lvl := toGohomeLevel(rsmgr, name, &objLoader, loadToGPU)
+	lvl := toGohomeLevel(name, &objLoader, loadToGPU)
 	lvl.Name = name
 	return lvl
 }

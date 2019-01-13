@@ -2,7 +2,6 @@ package loader
 
 import (
 	"bufio"
-	"bytes"
 	"errors"
 	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
 	"io"
@@ -100,18 +99,17 @@ type MTLLoader struct {
 }
 
 type OBJLoader struct {
-	Models         []OBJModel
-	MaterialLoader MTLLoader
+	Models            []OBJModel
+	MaterialLoader    MTLLoader
+	DisableGoRoutines bool
 
-	positions        [][3]float32
-	normals          [][3]float32
-	texCoords        [][2]float32
-	faceMethod       uint8
-	normalsLoaded    bool
-	texCoordsLoaded  bool
-	materialPaths    []string
-	openMaterialFile func(path string) (gohome.File, error)
-	directory        string
+	positions       [][3]float32
+	normals         [][3]float32
+	texCoords       [][2]float32
+	faceMethod      uint8
+	normalsLoaded   bool
+	texCoordsLoaded bool
+	directory       string
 
 	currentModel *OBJModel
 	currentMesh  *OBJMesh
@@ -132,11 +130,11 @@ type OBJLoader struct {
 }
 
 func (this *OBJLoader) Load(path string) error {
-	reader, err := os.Open(path)
+	reader, filename, err := gohome.OpenFileWithPaths(path, gohome.LEVEL_PATHS[:])
 	if err != nil {
 		return err
 	}
-	this.directory = getPathFromFile(path)
+	this.directory = gohome.GetPathFromFile(filename)
 	return this.LoadReader(reader)
 }
 
@@ -149,11 +147,10 @@ func handleAndroidReadError(err error) error {
 }
 
 func (this *OBJLoader) LoadReader(reader io.ReadCloser) error {
-	this.positionChan = make(chan positionData)
-	this.normalChan = make(chan normalData)
-	this.texCoordChan = make(chan texCoordData)
-	this.facesChan = make(chan []gohome.Mesh3DVertex)
-	this.errorChan = make(chan error)
+	if !this.DisableGoRoutines {
+		this.openChannels()
+		defer this.closeChannels()
+	}
 
 	var err error
 	var line string
@@ -188,19 +185,38 @@ func (this *OBJLoader) LoadReader(reader io.ReadCloser) error {
 		}
 	}
 
-	if err := this.waitForDataToFinish(); err != nil {
-		return err
+	if !this.DisableGoRoutines {
+		if err := this.waitForDataToFinish(); err != nil {
+			return err
+		}
 	}
 
 	return nil
 }
 
+func (this *OBJLoader) openChannels() {
+	if !this.DisableGoRoutines {
+		this.positionChan = make(chan positionData)
+		this.normalChan = make(chan normalData)
+		this.texCoordChan = make(chan texCoordData)
+		this.facesChan = make(chan []gohome.Mesh3DVertex)
+		this.errorChan = make(chan error)
+	}
+}
+
+func (this *OBJLoader) closeChannels() {
+	close(this.positionChan)
+	close(this.normalChan)
+	close(this.texCoordChan)
+	close(this.facesChan)
+	close(this.errorChan)
+}
+
 func (this *OBJLoader) LoadString(contents string) error {
-	this.positionChan = make(chan positionData)
-	this.normalChan = make(chan normalData)
-	this.texCoordChan = make(chan texCoordData)
-	this.facesChan = make(chan []gohome.Mesh3DVertex)
-	this.errorChan = make(chan error)
+	if !this.DisableGoRoutines {
+		this.openChannels()
+		defer this.closeChannels()
+	}
 
 	var curChar int = 0
 	var finished = false
@@ -217,15 +233,13 @@ func (this *OBJLoader) LoadString(contents string) error {
 		}
 	}
 
+	if !this.DisableGoRoutines {
+		if err := this.waitForDataToFinish(); err != nil {
+			return err
+		}
+	}
+
 	return nil
-}
-
-func (this *OBJLoader) SetMaterialPaths(paths []string) {
-	this.materialPaths = paths
-}
-
-func (this *OBJLoader) SetOpenMaterialFile(function func(path string) (gohome.File, error)) {
-	this.openMaterialFile = function
 }
 
 func (this *OBJLoader) SetDirectory(dir string) {
@@ -268,8 +282,7 @@ func readLineString(contents string, curChar int) (string, int, bool) {
 func toTokens(line string) []string {
 	var curByte byte
 	var readToken bool = false
-	var tokens []bytes.Buffer
-	var tokensString []string
+	var tokens []string
 
 	for i := 0; i < len(line); i++ {
 		curByte = line[i]
@@ -277,105 +290,74 @@ func toTokens(line string) []string {
 			readToken = false
 		} else {
 			if readToken {
-				tokens[len(tokens)-1].WriteByte(curByte)
+				tokens[len(tokens)-1] += string(curByte)
 			} else {
-				tokens = append(tokens, bytes.Buffer{})
-				tokens[len(tokens)-1].WriteByte(curByte)
+				tokens = append(tokens, "")
+				tokens[len(tokens)-1] += string(curByte)
 				readToken = true
 			}
 		}
 	}
 
-	tokensString = make([]string, len(tokens))
-	for i := 0; i < len(tokens); i++ {
-		tokensString[i] = tokens[i].String()
-	}
-
-	return tokensString
-}
-
-func getFileFromPath(path string) string {
-	if index := strings.LastIndex(path, "/"); index != -1 {
-		return path[index+1:]
-	} else {
-		return path
-	}
-}
-
-func getPathFromFile(path string) string {
-	if index := strings.LastIndex(path, "/"); index != -1 {
-		return path[:index+1]
-	} else {
-		return ""
-	}
+	return tokens
 }
 
 func (this *OBJLoader) loadMaterialFile(path string) error {
 	var err error
 	var reader io.ReadCloser
 
-	if len(this.materialPaths) == 0 {
-		this.materialPaths = append(this.materialPaths, "")
-	}
-	if this.openMaterialFile == nil {
-		this.openMaterialFile = func(path string) (gohome.File, error) {
-			return os.Open(path)
-		}
-	}
-	for i := 0; i < len(this.materialPaths); i++ {
-		reader, err = this.openMaterialFile(this.directory + path)
-		if err != nil {
-			reader, err = this.openMaterialFile(this.directory + getFileFromPath(path))
-			if err != nil {
-				reader, err = this.openMaterialFile(this.materialPaths[i] + path)
-				if err != nil {
-					reader, err = this.openMaterialFile(this.materialPaths[i] + getFileFromPath(path))
-				}
-			}
-		}
-		if err == nil {
-			err = this.MaterialLoader.LoadReader(reader)
-			if err != nil {
-				return err
-			}
-			break
-		}
+	reader, _, err = gohome.OpenFileWithPaths(path, append([]string{this.directory}, gohome.MATERIAL_PATHS[:]...))
+
+	if err == nil {
+		err = this.MaterialLoader.LoadReader(reader)
 	}
 
 	return err
 }
 
 func (this *OBJLoader) newPosition(tokens []string) {
-	this.positionIndex++
-	this.verticesWG.Add(1)
-	go func(index uint32) {
-		this.positionChan <- positionData{process3Floats(tokens[1:]), index}
-		this.verticesWG.Done()
-	}(this.positionIndex - 1)
+	if this.DisableGoRoutines {
+		this.positions = append(this.positions, process3Floats(tokens[1:]))
+	} else {
+		this.positionIndex++
+		this.verticesWG.Add(1)
+		go func(index uint32) {
+			this.positionChan <- positionData{process3Floats(tokens[1:]), index}
+			this.verticesWG.Done()
+		}(this.positionIndex - 1)
+	}
 }
 
 func (this *OBJLoader) newNormal(tokens []string) {
-	this.normalIndex++
-	this.verticesWG.Add(1)
-	go func(index uint32) {
-		this.normalChan <- normalData{process3Floats(tokens[1:]), index}
-		this.verticesWG.Done()
-	}(this.normalIndex - 1)
+	if this.DisableGoRoutines {
+		this.normals = append(this.normals, process3Floats(tokens[1:]))
+	} else {
+		this.normalIndex++
+		this.verticesWG.Add(1)
+		go func(index uint32) {
+			this.normalChan <- normalData{process3Floats(tokens[1:]), index}
+			this.verticesWG.Done()
+		}(this.normalIndex - 1)
+	}
 }
 
 func (this *OBJLoader) newTexCoord(tokens []string) {
-	this.texCoordIndex++
-	this.verticesWG.Add(1)
-	go func(index uint32) {
-		vt := process2Floats(tokens[1:])
-		vt[1] = 1.0 - vt[1]
-		this.texCoordChan <- texCoordData{vt, index}
+	if this.DisableGoRoutines {
+		this.texCoords = append(this.texCoords, process2Floats(tokens[1:]))
+	} else {
+		this.texCoordIndex++
+		this.verticesWG.Add(1)
+		go func(index uint32) {
+			vt := process2Floats(tokens[1:])
+			vt[1] = 1.0 - vt[1]
+			this.texCoordChan <- texCoordData{vt, index}
 
-		this.verticesWG.Done()
-	}(this.texCoordIndex - 1)
+			this.verticesWG.Done()
+		}(this.texCoordIndex - 1)
+	}
 }
 
-func (this *OBJLoader) newFace(tokens []string) {
+func (this *OBJLoader) newFace(tokens []string) error {
 	if len(this.Models) == 0 {
 		this.Models = append(this.Models, OBJModel{Name: "Default"})
 		this.currentModel = &this.Models[len(this.Models)-1]
@@ -383,30 +365,50 @@ func (this *OBJLoader) newFace(tokens []string) {
 	if len(this.currentModel.Meshes) == 0 {
 		this.currentModel.Meshes = append(this.currentModel.Meshes, OBJMesh{Name: "Default"})
 		this.currentMesh = &this.currentModel.Meshes[len(this.currentModel.Meshes)-1]
-		this.waitForDataToFinish()
-	}
-	this.facesWG.Add(1)
-	go func() {
-		if err := this.processFace(tokens[1:]); err != nil {
-			this.errorChan <- err
+		if !this.DisableGoRoutines {
+			this.waitForDataToFinish()
 		}
-		this.facesWG.Done()
-	}()
+	}
+	if this.DisableGoRoutines {
+		if err := this.processFace(tokens[1:]); err != nil {
+			return err
+		}
+	} else {
+		this.facesWG.Add(1)
+		go func() {
+			if err := this.processFace(tokens[1:]); err != nil {
+				this.errorChan <- err
+			}
+			this.facesWG.Done()
+		}()
+	}
+
+	return nil
 }
 
-func (this *OBJLoader) newMaterialFile(tokens []string) {
-	this.materialWG.Add(1)
-	go func() {
+func (this *OBJLoader) newMaterialFile(tokens []string) error {
+	if this.DisableGoRoutines {
 		if err := this.loadMaterialFile(tokens[1]); err != nil {
-			this.errorChan <- errors.New("Couldn't load material file " + tokens[1] + ": " + err.Error())
+			return errors.New("Couldn't load material file " + tokens[1] + ": " + err.Error())
 		}
-		this.materialWG.Done()
-	}()
+	} else {
+		this.materialWG.Add(1)
+		go func() {
+			if err := this.loadMaterialFile(tokens[1]); err != nil {
+				this.errorChan <- errors.New("Couldn't load material file " + tokens[1] + ": " + err.Error())
+			}
+			this.materialWG.Done()
+		}()
+	}
+
+	return nil
 }
 
 func (this *OBJLoader) newModel(tokens []string) error {
-	if err := this.waitForDataToFinish(); err != nil {
-		return err
+	if !this.DisableGoRoutines {
+		if err := this.waitForDataToFinish(); err != nil {
+			return err
+		}
 	}
 
 	this.positions = this.positions[:0]
@@ -423,9 +425,12 @@ func (this *OBJLoader) newModel(tokens []string) error {
 }
 
 func (this *OBJLoader) newMesh(tokens []string) error {
-	if err := this.waitForDataToFinish(); err != nil {
-		return err
+	if !this.DisableGoRoutines {
+		if err := this.waitForDataToFinish(); err != nil {
+			return err
+		}
 	}
+
 	if len(this.Models) == 0 {
 		this.Models = append(this.Models, OBJModel{Name: "Default"})
 		this.currentModel = &this.Models[len(this.Models)-1]
@@ -441,7 +446,9 @@ func (this *OBJLoader) processTokens(tokens []string) error {
 	length := len(tokens)
 	if length != 0 {
 		if tokens[0] == "f" {
-			this.newFace(tokens)
+			if err := this.newFace(tokens); err != nil {
+				return err
+			}
 		} else {
 			if length == 4 {
 				if tokens[0] == "v" {
@@ -455,7 +462,9 @@ func (this *OBJLoader) processTokens(tokens []string) error {
 				}
 			} else if length == 2 {
 				if tokens[0] == "mtllib" {
-					this.newMaterialFile(tokens)
+					if err := this.newMaterialFile(tokens); err != nil {
+						return err
+					}
 				} else if tokens[0] == "o" {
 					if err := this.newModel(tokens); err != nil {
 						return err
@@ -592,7 +601,11 @@ func (this *OBJLoader) processFace(tokens []string) error {
 
 	vertices := this.processFaceData(elements)
 
-	this.facesChan <- vertices
+	if this.DisableGoRoutines {
+		this.addFace(vertices)
+	} else {
+		this.facesChan <- vertices
+	}
 
 	return nil
 }
