@@ -68,6 +68,11 @@ type texCoordData struct {
 	index    uint32
 }
 
+type tokenData struct {
+	tokens []string
+	index  uint32
+}
+
 type OBJColor [3]float32
 
 type OBJMaterial struct {
@@ -111,22 +116,27 @@ type OBJLoader struct {
 	texCoordsLoaded bool
 	directory       string
 
+	tokens [][]string
+
 	currentModel *OBJModel
 	currentMesh  *OBJMesh
 
 	verticesWG OBJWaitGroup
 	facesWG    OBJWaitGroup
 	materialWG OBJWaitGroup
+	tokensWG   OBJWaitGroup
 
 	positionChan chan positionData
 	normalChan   chan normalData
 	texCoordChan chan texCoordData
 	facesChan    chan []gohome.Mesh3DVertex
 	errorChan    chan error
+	tokensChan   chan tokenData
 
 	positionIndex uint32
 	normalIndex   uint32
 	texCoordIndex uint32
+	tokensIndex   uint32
 }
 
 func (this *OBJLoader) Load(path string) error {
@@ -146,35 +156,67 @@ func handleAndroidReadError(err error) error {
 	return err
 }
 
-func (this *OBJLoader) LoadReader(reader io.ReadCloser) error {
-	if !this.DisableGoRoutines {
-		this.openChannels()
-		defer this.closeChannels()
+func (this *OBJLoader) addToken(token tokenData) {
+	if len(this.tokens) == 0 {
+		this.tokens = make([][]string, token.index+1)
+	} else if token.index+1 > uint32(len(this.tokens)) {
+		this.tokens = append(this.tokens, make([][]string, token.index+1-uint32(len(this.tokens)))...)
 	}
+	this.tokens[token.index] = token.tokens
+}
+
+func (this *OBJLoader) waitForTokens() {
+	for !this.tokensWG.WaitForDone() {
+		select {
+		case token := <-this.tokensChan:
+			this.addToken(token)
+		default:
+		}
+	}
+}
+
+func (this *OBJLoader) readTokens(reader io.ReadCloser) error {
+	this.tokensChan = make(chan tokenData)
+	defer close(this.tokensChan)
+	defer this.waitForTokens()
 
 	var err error
 	var line string
 	var rd *bufio.Reader
-	if runtime.GOOS == "android" {
-		str, err1 := gohome.ReadAll(reader)
-		reader.Close()
-		if err1 != nil {
-			err1 = handleAndroidReadError(err1)
-			if err1 != io.EOF {
-				return err1
-			}
-		}
-		rd = bufio.NewReader(strings.NewReader(str))
-	} else {
-		rd = bufio.NewReader(reader)
-		defer reader.Close()
-	}
+
+	rd = bufio.NewReader(reader)
+	defer reader.Close()
 
 	for err != io.EOF {
 		line, err = readLine(rd)
-		if err != nil && runtime.GOOS == "android" {
-			err = handleAndroidReadError(err)
+
+		if err != nil && err != io.EOF {
+			return err
 		}
+		this.tokensIndex++
+		this.tokensWG.Add(1)
+		go func(_line string, index uint32) {
+			if _line != "" {
+				tokens := toTokens(_line)
+				this.tokensChan <- tokenData{tokens, index}
+			}
+			this.tokensWG.Done()
+		}(line, this.tokensIndex-1)
+	}
+
+	return nil
+}
+
+func (this *OBJLoader) parseFileWithoutGoRoutines(reader io.ReadCloser) error {
+	var err error
+	var line string
+	var rd *bufio.Reader
+
+	rd = bufio.NewReader(reader)
+	defer reader.Close()
+
+	for err != io.EOF {
+		line, err = readLine(rd)
 		if err != nil && err != io.EOF {
 			return err
 		}
@@ -185,13 +227,34 @@ func (this *OBJLoader) LoadReader(reader io.ReadCloser) error {
 		}
 	}
 
-	if !this.DisableGoRoutines {
-		if err := this.waitForDataToFinish(); err != nil {
-			return err
+	return nil
+}
+
+func (this *OBJLoader) parseFileWithGoRoutines(reader io.ReadCloser) (err error) {
+	this.openChannels()
+	defer this.closeChannels()
+	defer func() {
+		if err = this.waitForDataToFinish(); err != nil {
+			return
+		}
+	}()
+
+	this.readTokens(reader)
+	for _, t := range this.tokens {
+		if err = this.processTokens(t); err != nil {
+			return
 		}
 	}
 
-	return nil
+	return
+}
+
+func (this *OBJLoader) LoadReader(reader io.ReadCloser) error {
+	if this.DisableGoRoutines {
+		return this.parseFileWithoutGoRoutines(reader)
+	} else {
+		return this.parseFileWithGoRoutines(reader)
+	}
 }
 
 func (this *OBJLoader) openChannels() {
@@ -628,7 +691,10 @@ func (this *OBJLoader) processTriangleFace(posIndices, normalIndices, texCoordIn
 		}
 		if this.normalsLoaded {
 			for j := 0; j < 3; j++ {
-				rv[i][j+3] = this.normals[normalIndices[i]-1][j]
+				ni := normalIndices[i] - 1
+				normal := this.normals[ni]
+				float := normal[j]
+				rv[i][j+3] = float
 			}
 		}
 		if this.texCoordsLoaded {
