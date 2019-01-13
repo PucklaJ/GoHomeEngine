@@ -9,25 +9,12 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+	"sync"
 )
 
-type OBJVertex struct {
-	Position     [3]float32
-	TextureCoord [2]float32
-	Normal       [3]float32
-}
-
-func (this *OBJVertex) Equals(other *OBJVertex) bool {
-	for i := 0; i < 3; i++ {
-		if this.Position[i] != other.Position[i] {
-			return false
-		}
-		if this.Normal[i] != other.Normal[i] {
-			return false
-		}
-	}
-	for i := 0; i < 2; i++ {
-		if this.TextureCoord[i] != other.TextureCoord[i] {
+func Equals(this *gohome.Mesh3DVertex, other *gohome.Mesh3DVertex) bool {
+	for i := 0; i < len(*this); i++ {
+		if (*this)[i] != (*other)[i] {
 			return false
 		}
 	}
@@ -50,7 +37,7 @@ type OBJMaterial struct {
 
 type OBJMesh struct {
 	Name     string
-	Vertices []OBJVertex
+	Vertices []gohome.Mesh3DVertex
 	Indices  []uint32
 	Material *OBJMaterial
 }
@@ -397,11 +384,11 @@ func (this *OBJLoader) processFace(tokens []string) error {
 	return nil
 }
 
-func (this *OBJLoader) searchIndex(vertex OBJVertex) (uint32, bool) {
+func (this *OBJLoader) searchIndex(vertex gohome.Mesh3DVertex) (uint32, bool) {
 	mesh := &this.Models[len(this.Models)-1].Meshes[len(this.Models[len(this.Models)-1].Meshes)-1]
 
 	for i := 0; i < len(mesh.Vertices); i++ {
-		if vertex.Equals(&mesh.Vertices[i]) {
+		if Equals(&vertex, &mesh.Vertices[i]) {
 			return uint32(i), false
 		}
 	}
@@ -409,49 +396,73 @@ func (this *OBJLoader) searchIndex(vertex OBJVertex) (uint32, bool) {
 	return 0, true
 }
 
-func (this *OBJLoader) processTriangleFace(posIndices, normalIndices, texCoordIndices []uint32) (rv []OBJVertex) {
-	rv = make([]OBJVertex, 3)
+func (this *OBJLoader) processTriangleFace(posIndices, normalIndices, texCoordIndices []uint32) (rv []gohome.Mesh3DVertex) {
+	rv = make([]gohome.Mesh3DVertex, 3)
 	for i := 0; i < 3; i++ {
-		rv[i].Position = this.positions[posIndices[i]-1]
-		if this.texCoordsLoaded {
-			rv[i].TextureCoord = this.texCoords[texCoordIndices[i]-1]
+		for j := 0; j < 3; j++ {
+			rv[i][j] = this.positions[posIndices[i]-1][j]
 		}
 		if this.normalsLoaded {
-			rv[i].Normal = this.normals[normalIndices[i]-1]
+			for j := 0; j < 3; j++ {
+				rv[i][j+3] = this.normals[normalIndices[i]-1][j]
+			}
+		}
+		if this.texCoordsLoaded {
+			for j := 0; j < 2; j++ {
+				rv[i][j+3+3] = this.texCoords[texCoordIndices[i]-1][j]
+			}
 		}
 	}
 	return
 }
 
-func (this *OBJLoader) processQuadFace(posIndices, normalIndices, texCoordIndices []uint32) (rv []OBJVertex) {
-	rv = make([]OBJVertex, 6)
-	rv[0].Position = this.positions[posIndices[0]-1]
-	rv[1].Position = this.positions[posIndices[1]-1]
-	rv[2].Position = this.positions[posIndices[2]-1]
-	rv[3].Position = this.positions[posIndices[2]-1]
-	rv[4].Position = this.positions[posIndices[3]-1]
-	rv[5].Position = this.positions[posIndices[0]-1]
-	if this.texCoordsLoaded {
-		rv[0].TextureCoord = this.texCoords[texCoordIndices[0]-1]
-		rv[1].TextureCoord = this.texCoords[texCoordIndices[1]-1]
-		rv[2].TextureCoord = this.texCoords[texCoordIndices[2]-1]
-		rv[3].TextureCoord = this.texCoords[texCoordIndices[2]-1]
-		rv[4].TextureCoord = this.texCoords[texCoordIndices[3]-1]
-		rv[5].TextureCoord = this.texCoords[texCoordIndices[0]-1]
-	}
+var quadIs = [6]int{
+	0, 1, 2, 2, 3, 0,
+}
+
+func (this *OBJLoader) processQuadFace(posIndices, normalIndices, texCoordIndices []uint32) (rv []gohome.Mesh3DVertex) {
+	rv = make([]gohome.Mesh3DVertex, 6)
+
+	var wg sync.WaitGroup
+	wg.Add(1)
+
+	go func() {
+		for i := 0; i < 6; i++ {
+			for j := 0; j < 3; j++ {
+				rv[i][j] = this.positions[posIndices[quadIs[i]]-1][j]
+			}
+		}
+		wg.Done()
+	}()
 	if this.normalsLoaded {
-		rv[0].Normal = this.normals[normalIndices[0]-1]
-		rv[1].Normal = this.normals[normalIndices[1]-1]
-		rv[2].Normal = this.normals[normalIndices[2]-1]
-		rv[3].Normal = this.normals[normalIndices[2]-1]
-		rv[4].Normal = this.normals[normalIndices[3]-1]
-		rv[5].Normal = this.normals[normalIndices[0]-1]
+		wg.Add(1)
+		go func() {
+			for i := 0; i < 6; i++ {
+				for j := 0; j < 3; j++ {
+					rv[i][j+3] = this.normals[normalIndices[quadIs[i]]-1][j]
+				}
+			}
+			wg.Done()
+		}()
 	}
+	if this.texCoordsLoaded {
+		wg.Add(1)
+		go func() {
+			for i := 0; i < 6; i++ {
+				for j := 0; j < 2; j++ {
+					rv[i][j+3+3] = this.texCoords[texCoordIndices[quadIs[i]]-1][j]
+				}
+			}
+			wg.Done()
+		}()
+	}
+
+	wg.Wait()
 
 	return
 }
 
-func (this *OBJLoader) processFaceData(elements [][]string) (rv []OBJVertex) {
+func (this *OBJLoader) processFaceData(elements [][]string) (rv []gohome.Mesh3DVertex) {
 	var posIndices []uint32
 	var normalIndices []uint32
 	var texCoordIndices []uint32

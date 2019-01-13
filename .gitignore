@@ -14,6 +14,7 @@ src/examples/*/build.gradle
 src/examples/*/gradlew*
 *.html
 src/examples/*/gradle
+src/examples/*/main.go
 
 src/examples/*/3dmodel
 src/examples/*/audio

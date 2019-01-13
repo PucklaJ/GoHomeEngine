@@ -84,22 +84,6 @@ func processModel(rsmgr *gohome.ResourceManager, level *gohome.Level, objLoader 
 	gohome.ErrorMgr.Log("Model", model.Name, "Finished loading!")
 }
 
-func toMesh3DVertex(vertex *OBJVertex) gohome.Mesh3DVertex {
-	var rv gohome.Mesh3DVertex
-	rv[0] = vertex.Position[0]
-	rv[1] = vertex.Position[1]
-	rv[2] = vertex.Position[2]
-
-	rv[3] = vertex.Normal[0]
-	rv[4] = vertex.Normal[1]
-	rv[5] = vertex.Normal[2]
-
-	rv[6] = vertex.TextureCoord[0]
-	rv[7] = vertex.TextureCoord[1]
-
-	return rv
-}
-
 func toGohomeColor(color OBJColor) *gohome.Color {
 	var rv gohome.Color
 	rv.R = uint8(color[0] * 255.0)
@@ -171,18 +155,11 @@ func processMaterial(objLoader *OBJLoader, material *gohome.Material, mat *OBJMa
 }
 
 func processMesh(objLoader *OBJLoader, mesh3d gohome.Mesh3D, mesh *OBJMesh, loadToGPU bool) {
-	var vertices []gohome.Mesh3DVertex
-	vertices = make([]gohome.Mesh3DVertex, len(mesh.Vertices))
-	for i := 0; i < len(vertices); i++ {
-		vertices[i] = toMesh3DVertex(&mesh.Vertices[i])
-	}
+	mesh3d.AddVertices(mesh.Vertices, mesh.Indices)
 	var mat gohome.Material
 	mat.InitDefault()
 	processMaterial(objLoader, &mat, mesh.Material, loadToGPU)
 	mesh3d.SetMaterial(&mat)
-	if len(vertices) != 0 && len(mesh.Indices) != 0 {
-		mesh3d.AddVertices(vertices, mesh.Indices)
-	}
 
 	if loadToGPU {
 		mesh3d.Load()

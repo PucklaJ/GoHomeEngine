@@ -22,6 +22,10 @@ func (this *ModelScene) Init() {
 
 func (this *ModelScene) Update(delta_time float32) {
 	this.gopher.Transform.Rotation = this.gopher.Transform.Rotation.Mul(mgl32.QuatRotate(mgl32.DegToRad(30.0)*delta_time, mgl32.Vec3{0.0, 1.0, 0.0}))
+
+	if gohome.InputMgr.JustPressed(gohome.KeyW) {
+		gohome.RenderMgr.WireFrameMode = !gohome.RenderMgr.WireFrameMode
+	}
 }
 
 func (this *ModelScene) Terminate() {
