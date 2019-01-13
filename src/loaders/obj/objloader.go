@@ -23,6 +23,52 @@ func Equals(this *gohome.Mesh3DVertex, other *gohome.Mesh3DVertex) bool {
 	return true
 }
 
+type OBJWaitGroup struct {
+	activeRoutines int
+	waitChannel    chan byte
+}
+
+func (this *OBJWaitGroup) Add(i int) {
+	if this.waitChannel == nil {
+		this.waitChannel = make(chan byte)
+	}
+	this.activeRoutines += i
+}
+
+func (this *OBJWaitGroup) Done() {
+	this.waitChannel <- '0'
+}
+
+func (this *OBJWaitGroup) WaitForDone() bool {
+	if this.waitChannel == nil {
+		return true
+	}
+	select {
+	case <-this.waitChannel:
+		this.activeRoutines--
+		if this.activeRoutines == 0 {
+			close(this.waitChannel)
+			this.waitChannel = nil
+			return true
+		}
+	default:
+	}
+
+	return false
+}
+
+type positionData struct {
+	position [3]float32
+	index    uint32
+}
+
+type normalData positionData
+
+type texCoordData struct {
+	texCoord [2]float32
+	index    uint32
+}
+
 type OBJColor [3]float32
 
 type OBJMaterial struct {
@@ -58,8 +104,8 @@ type OBJLoader struct {
 	MaterialLoader MTLLoader
 
 	positions        [][3]float32
-	texCoords        [][2]float32
 	normals          [][3]float32
+	texCoords        [][2]float32
 	faceMethod       uint8
 	normalsLoaded    bool
 	texCoordsLoaded  bool
@@ -70,9 +116,19 @@ type OBJLoader struct {
 	currentModel *OBJModel
 	currentMesh  *OBJMesh
 
-	verticesWG sync.WaitGroup
-	facesWG    sync.WaitGroup
-	materialWG sync.WaitGroup
+	verticesWG OBJWaitGroup
+	facesWG    OBJWaitGroup
+	materialWG OBJWaitGroup
+
+	positionChan chan positionData
+	normalChan   chan normalData
+	texCoordChan chan texCoordData
+	facesChan    chan []gohome.Mesh3DVertex
+	errorChan    chan error
+
+	positionIndex uint32
+	normalIndex   uint32
+	texCoordIndex uint32
 }
 
 func (this *OBJLoader) Load(path string) error {
@@ -93,6 +149,12 @@ func handleAndroidReadError(err error) error {
 }
 
 func (this *OBJLoader) LoadReader(reader io.ReadCloser) error {
+	this.positionChan = make(chan positionData)
+	this.normalChan = make(chan normalData)
+	this.texCoordChan = make(chan texCoordData)
+	this.facesChan = make(chan []gohome.Mesh3DVertex)
+	this.errorChan = make(chan error)
+
 	var err error
 	var line string
 	var rd *bufio.Reader
@@ -126,10 +188,20 @@ func (this *OBJLoader) LoadReader(reader io.ReadCloser) error {
 		}
 	}
 
+	if err := this.waitForDataToFinish(); err != nil {
+		return err
+	}
+
 	return nil
 }
 
 func (this *OBJLoader) LoadString(contents string) error {
+	this.positionChan = make(chan positionData)
+	this.normalChan = make(chan normalData)
+	this.texCoordChan = make(chan texCoordData)
+	this.facesChan = make(chan []gohome.Mesh3DVertex)
+	this.errorChan = make(chan error)
+
 	var curChar int = 0
 	var finished = false
 	var line string = ""
@@ -273,56 +345,199 @@ func (this *OBJLoader) loadMaterialFile(path string) error {
 	return err
 }
 
+func (this *OBJLoader) newPosition(tokens []string) {
+	this.positionIndex++
+	this.verticesWG.Add(1)
+	go func(index uint32) {
+		this.positionChan <- positionData{process3Floats(tokens[1:]), index}
+		this.verticesWG.Done()
+	}(this.positionIndex - 1)
+}
+
+func (this *OBJLoader) newNormal(tokens []string) {
+	this.normalIndex++
+	this.verticesWG.Add(1)
+	go func(index uint32) {
+		this.normalChan <- normalData{process3Floats(tokens[1:]), index}
+		this.verticesWG.Done()
+	}(this.normalIndex - 1)
+}
+
+func (this *OBJLoader) newTexCoord(tokens []string) {
+	this.texCoordIndex++
+	this.verticesWG.Add(1)
+	go func(index uint32) {
+		vt := process2Floats(tokens[1:])
+		vt[1] = 1.0 - vt[1]
+		this.texCoordChan <- texCoordData{vt, index}
+
+		this.verticesWG.Done()
+	}(this.texCoordIndex - 1)
+}
+
+func (this *OBJLoader) newFace(tokens []string) {
+	if len(this.Models) == 0 {
+		this.Models = append(this.Models, OBJModel{Name: "Default"})
+		this.currentModel = &this.Models[len(this.Models)-1]
+	}
+	if len(this.currentModel.Meshes) == 0 {
+		this.currentModel.Meshes = append(this.currentModel.Meshes, OBJMesh{Name: "Default"})
+		this.currentMesh = &this.currentModel.Meshes[len(this.currentModel.Meshes)-1]
+		this.waitForDataToFinish()
+	}
+	this.facesWG.Add(1)
+	go func() {
+		if err := this.processFace(tokens[1:]); err != nil {
+			this.errorChan <- err
+		}
+		this.facesWG.Done()
+	}()
+}
+
+func (this *OBJLoader) newMaterialFile(tokens []string) {
+	this.materialWG.Add(1)
+	go func() {
+		if err := this.loadMaterialFile(tokens[1]); err != nil {
+			this.errorChan <- errors.New("Couldn't load material file " + tokens[1] + ": " + err.Error())
+		}
+		this.materialWG.Done()
+	}()
+}
+
+func (this *OBJLoader) newModel(tokens []string) error {
+	if err := this.waitForDataToFinish(); err != nil {
+		return err
+	}
+
+	this.positions = this.positions[:0]
+	this.normals = this.normals[:0]
+	this.texCoords = this.texCoords[:0]
+	this.positionIndex = 0
+	this.normalIndex = 0
+	this.texCoordIndex = 0
+
+	this.Models = append(this.Models, OBJModel{Name: tokens[1]})
+	this.currentModel = &this.Models[len(this.Models)-1]
+
+	return nil
+}
+
+func (this *OBJLoader) newMesh(tokens []string) error {
+	if err := this.waitForDataToFinish(); err != nil {
+		return err
+	}
+	if len(this.Models) == 0 {
+		this.Models = append(this.Models, OBJModel{Name: "Default"})
+		this.currentModel = &this.Models[len(this.Models)-1]
+	}
+	this.currentModel.Meshes = append(this.currentModel.Meshes, OBJMesh{})
+	this.currentMesh = &this.currentModel.Meshes[len(this.currentModel.Meshes)-1]
+	this.processMaterial(tokens[1])
+
+	return nil
+}
+
 func (this *OBJLoader) processTokens(tokens []string) error {
 	length := len(tokens)
 	if length != 0 {
 		if tokens[0] == "f" {
-			if len(this.Models) == 0 {
-				this.Models = append(this.Models, OBJModel{Name: "Default"})
-				this.currentModel = &this.Models[len(this.Models)-1]
-			}
-			if len(this.currentModel.Meshes) == 0 {
-				this.currentModel.Meshes = append(this.currentModel.Meshes, OBJMesh{Name: "Default"})
-				this.currentMesh = &this.currentModel.Meshes[len(this.currentModel.Meshes)-1]
-			}
-			if err := this.processFace(tokens[1:length]); err != nil {
-				return err
-			}
+			this.newFace(tokens)
 		} else {
 			if length == 4 {
 				if tokens[0] == "v" {
-					this.positions = append(this.positions, process3Floats(tokens[1:length]))
+					this.newPosition(tokens)
 				} else if tokens[0] == "vn" {
-					this.normals = append(this.normals, process3Floats(tokens[1:length]))
+					this.newNormal(tokens)
 				}
 			} else if length == 3 {
 				if tokens[0] == "vt" {
-					uv := process2Floats(tokens[1:length])
-					uv[1] = 1.0 - uv[1]
-					this.texCoords = append(this.texCoords, uv)
+					this.newTexCoord(tokens)
 				}
 			} else if length == 2 {
 				if tokens[0] == "mtllib" {
-					if err := this.loadMaterialFile(tokens[1]); err != nil {
-						return errors.New("Couldn't load material file " + tokens[1] + ": " + err.Error())
-					}
+					this.newMaterialFile(tokens)
 				} else if tokens[0] == "o" {
-					this.Models = append(this.Models, OBJModel{Name: tokens[1]})
-					this.currentModel = &this.Models[len(this.Models)-1]
-				} else if tokens[0] == "usemtl" {
-					if len(this.Models) == 0 {
-						this.Models = append(this.Models, OBJModel{Name: "Default"})
-						this.currentModel = &this.Models[len(this.Models)-1]
+					if err := this.newModel(tokens); err != nil {
+						return err
 					}
-					this.currentModel.Meshes = append(this.currentModel.Meshes, OBJMesh{})
-					this.currentMesh = &this.currentModel.Meshes[len(this.currentModel.Meshes)-1]
-					this.processMaterial(tokens[1])
+				} else if tokens[0] == "usemtl" {
+					if err := this.newMesh(tokens); err != nil {
+						return err
+					}
 				}
 			}
 		}
 	}
 
 	return nil
+}
+
+func (this *OBJLoader) addPosition(pos positionData) {
+	if len(this.positions) == 0 {
+		this.positions = make([][3]float32, pos.index+1)
+	} else if pos.index+1 > uint32(len(this.positions)) {
+		this.positions = append(this.positions, make([][3]float32, pos.index+1-uint32(len(this.positions)))...)
+	}
+
+	this.positions[pos.index] = pos.position
+}
+
+func (this *OBJLoader) addNormal(norm normalData) {
+	if len(this.normals) == 0 {
+		this.normals = make([][3]float32, norm.index+1)
+	} else if norm.index+1 > uint32(len(this.normals)) {
+		this.normals = append(this.normals, make([][3]float32, norm.index+1-uint32(len(this.normals)))...)
+	}
+
+	this.normals[norm.index] = norm.position
+}
+
+func (this *OBJLoader) addTexCoord(texCoord texCoordData) {
+	if len(this.texCoords) == 0 {
+		this.texCoords = make([][2]float32, texCoord.index+1)
+	} else if texCoord.index+1 > uint32(len(this.texCoords)) {
+		this.texCoords = append(this.texCoords, make([][2]float32, texCoord.index+1-uint32(len(this.texCoords)))...)
+	}
+
+	this.texCoords[texCoord.index] = texCoord.texCoord
+}
+
+func (this *OBJLoader) addFace(face []gohome.Mesh3DVertex) {
+	for i := 0; i < len(face); i++ {
+		index, isNew := this.searchIndex(face[i])
+		if isNew {
+			this.currentMesh.Vertices = append(this.currentMesh.Vertices, face[i])
+			this.currentMesh.Indices = append(this.currentMesh.Indices, uint32(len(this.currentMesh.Vertices))-1)
+		} else {
+			this.currentMesh.Indices = append(this.currentMesh.Indices, index)
+		}
+	}
+}
+
+func (this *OBJLoader) waitForDataToFinish() (err1 error) {
+	for {
+		select {
+		case pos := <-this.positionChan:
+			this.addPosition(pos)
+		case norm := <-this.normalChan:
+			this.addNormal(norm)
+		case texCoord := <-this.texCoordChan:
+			this.addTexCoord(texCoord)
+		case face := <-this.facesChan:
+			this.addFace(face)
+		case err := <-this.errorChan:
+			if err1 == nil {
+				err1 = err
+			}
+		default:
+		}
+
+		if this.verticesWG.WaitForDone() && this.materialWG.WaitForDone() && this.facesWG.WaitForDone() {
+			break
+		}
+	}
+
+	return
 }
 
 func (this *OBJLoader) getMaterial(name string) *OBJMaterial {
@@ -345,28 +560,30 @@ func (this *OBJLoader) processFace(tokens []string) error {
 		return errors.New("Face type not supported: " + strconv.FormatInt(int64(len(tokens)), 10) + "! Use triangles or quads!")
 	}
 
-	this.faceMethod = 0
 	var elements [][]string
 	elements = make([][]string, len(tokens))
 	for i := 0; i < len(tokens); i++ {
 		elements[i] = strings.Split(tokens[i], "/")
 	}
-	if len(elements[0]) == 1 {
-		this.faceMethod = 1
-		this.normalsLoaded = false
-		this.texCoordsLoaded = false
-	} else if len(elements[0]) == 2 {
-		this.faceMethod = 2
-		this.normalsLoaded = false
-		this.texCoordsLoaded = true
-	} else if len(elements[0]) == 3 && elements[0][1] == "" {
-		this.faceMethod = 3
-		this.normalsLoaded = true
-		this.texCoordsLoaded = false
-	} else if len(elements[0]) == 3 && elements[0][1] != "" {
-		this.faceMethod = 4
-		this.normalsLoaded = true
-		this.texCoordsLoaded = true
+
+	if this.faceMethod == 0 {
+		if len(elements[0]) == 1 {
+			this.faceMethod = 1
+			this.normalsLoaded = false
+			this.texCoordsLoaded = false
+		} else if len(elements[0]) == 2 {
+			this.faceMethod = 2
+			this.normalsLoaded = false
+			this.texCoordsLoaded = true
+		} else if len(elements[0]) == 3 && elements[0][1] == "" {
+			this.faceMethod = 3
+			this.normalsLoaded = true
+			this.texCoordsLoaded = false
+		} else if len(elements[0]) == 3 && elements[0][1] != "" {
+			this.faceMethod = 4
+			this.normalsLoaded = true
+			this.texCoordsLoaded = true
+		}
 	}
 
 	if this.faceMethod == 0 {
@@ -375,15 +592,7 @@ func (this *OBJLoader) processFace(tokens []string) error {
 
 	vertices := this.processFaceData(elements)
 
-	for i := 0; i < len(vertices); i++ {
-		index, isNew := this.searchIndex(vertices[i])
-		if isNew {
-			this.currentMesh.Vertices = append(this.currentMesh.Vertices, vertices[i])
-			this.currentMesh.Indices = append(this.currentMesh.Indices, uint32(len(this.currentMesh.Vertices))-1)
-		} else {
-			this.currentMesh.Indices = append(this.currentMesh.Indices, index)
-		}
-	}
+	this.facesChan <- vertices
 
 	return nil
 }
@@ -646,6 +855,7 @@ func (this *MTLLoader) LoadReader(reader io.ReadCloser) error {
 			this.processTokens(toTokens(line))
 		}
 	}
+
 	return nil
 }
 

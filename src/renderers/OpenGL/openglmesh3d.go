@@ -128,6 +128,9 @@ func (oglm *OpenGLMesh3D) AddVertices(vertices []gohome.Mesh3DVertex, indices []
 }
 
 func (oglm *OpenGLMesh3D) checkAABB() {
+	if len(oglm.vertices) == 0 {
+		return
+	}
 	var max, min mgl32.Vec3 = [3]float32{oglm.vertices[0][0], oglm.vertices[0][1], oglm.vertices[0][2]}, [3]float32{oglm.vertices[0][0], oglm.vertices[0][1], oglm.vertices[0][2]}
 	var current gohome.Mesh3DVertex
 	for i := 0; i < len(oglm.vertices); i++ {
