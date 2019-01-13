@@ -3,6 +3,7 @@ package loader
 import (
 	"bufio"
 	"bytes"
+	"errors"
 	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
 	"io"
 	"os"
@@ -45,14 +46,6 @@ type OBJMesh struct {
 type OBJModel struct {
 	Name   string
 	Meshes []OBJMesh
-}
-
-type OBJError struct {
-	errorString string
-}
-
-func (this *OBJError) Error() string {
-	return this.errorString
 }
 
 type MTLLoader struct {
@@ -311,7 +304,7 @@ func (this *OBJLoader) processTokens(tokens []string) error {
 			} else if length == 2 {
 				if tokens[0] == "mtllib" {
 					if err := this.loadMaterialFile(tokens[1]); err != nil {
-						return &OBJError{"Couldn't load material file " + tokens[1] + ": " + err.Error()}
+						return errors.New("Couldn't load material file " + tokens[1] + ": " + err.Error())
 					}
 				} else if tokens[0] == "o" {
 					this.Models = append(this.Models, OBJModel{Name: tokens[1]})
@@ -349,7 +342,7 @@ func (this *OBJLoader) processMaterial(token string) {
 
 func (this *OBJLoader) processFace(tokens []string) error {
 	if len(tokens) != 3 && len(tokens) != 4 {
-		return &OBJError{"Face type not supported: " + strconv.FormatInt(int64(len(tokens)), 10) + "! Use triangles or quads!"}
+		return errors.New("Face type not supported: " + strconv.FormatInt(int64(len(tokens)), 10) + "! Use triangles or quads!")
 	}
 
 	this.faceMethod = 0
@@ -377,7 +370,7 @@ func (this *OBJLoader) processFace(tokens []string) error {
 	}
 
 	if this.faceMethod == 0 {
-		return &OBJError{"Format of faces is not supported"}
+		return errors.New("Format of faces is not supported")
 	}
 
 	vertices := this.processFaceData(elements)
