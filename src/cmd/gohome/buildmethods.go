@@ -394,7 +394,6 @@ func (*AndroidBuild) Generate() {
 		doCopy(androidpath + "android")
 		doCopy(androidpath + "gradle")
 		doCopy(androidpath + "build.gradle")
-		doCopy(androidpath + "build_libraries.sh")
 		doCopy(androidpath + "gradlew")
 		doCopy(androidpath + "gradlew.bat")
 		doCopy(androidpath + "settings.gradle")

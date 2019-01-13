@@ -6,7 +6,6 @@ import (
 	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
 	"io"
 	"os"
-	"runtime"
 	"strconv"
 	"strings"
 	"sync"
@@ -148,14 +147,6 @@ func (this *OBJLoader) Load(path string) error {
 	return this.LoadReader(reader)
 }
 
-func handleAndroidReadError(err error) error {
-	if strings.Contains(err.Error(), "java.io.FileNotFoundException") ||
-		strings.Contains(err.Error(), "multiple Read calls") {
-		err = io.EOF
-	}
-	return err
-}
-
 func (this *OBJLoader) addToken(token tokenData) {
 	if len(this.tokens) == 0 {
 		this.tokens = make([][]string, token.index+1)
@@ -193,15 +184,17 @@ func (this *OBJLoader) readTokens(reader io.ReadCloser) error {
 		if err != nil && err != io.EOF {
 			return err
 		}
-		this.tokensIndex++
-		this.tokensWG.Add(1)
-		go func(_line string, index uint32) {
-			if _line != "" {
+
+		if line != "" {
+			this.tokensIndex++
+			this.tokensWG.Add(1)
+			go func(_line string, index uint32) {
 				tokens := toTokens(_line)
 				this.tokensChan <- tokenData{tokens, index}
-			}
-			this.tokensWG.Done()
-		}(line, this.tokensIndex-1)
+				this.tokensWG.Done()
+			}(line, this.tokensIndex-1)
+		}
+
 	}
 
 	return nil
@@ -234,13 +227,17 @@ func (this *OBJLoader) parseFileWithGoRoutines(reader io.ReadCloser) (err error)
 	this.openChannels()
 	defer this.closeChannels()
 	defer func() {
-		if err = this.waitForDataToFinish(); err != nil {
-			return
+		var err1 error
+		if err1 = this.waitForDataToFinish(); err1 != nil {
+			if err == nil {
+				err = err1
+			}
 		}
 	}()
 
 	this.readTokens(reader)
 	for _, t := range this.tokens {
+		gohome.Framew.Log("Process Token:", t)
 		if err = this.processTokens(t); err != nil {
 			return
 		}
@@ -370,7 +367,6 @@ func (this *OBJLoader) loadMaterialFile(path string) error {
 	var reader io.ReadCloser
 
 	reader, _, err = gohome.OpenFileWithPaths(path, append([]string{this.directory}, gohome.MATERIAL_PATHS[:]...))
-
 	if err == nil {
 		err = this.MaterialLoader.LoadReader(reader)
 	}
@@ -908,27 +904,13 @@ func (this *MTLLoader) Load(path string) error {
 func (this *MTLLoader) LoadReader(reader io.ReadCloser) error {
 	var err error
 	var line string
-	var rd *bufio.Reader
-	if runtime.GOOS == "android" {
-		str, err1 := gohome.ReadAll(reader)
-		reader.Close()
-		if err1 != nil {
-			err1 = handleAndroidReadError(err1)
-			if err1 != io.EOF {
-				return err1
-			}
-		}
-		rd = bufio.NewReader(strings.NewReader(str))
-	} else {
-		rd = bufio.NewReader(reader)
-		defer reader.Close()
-	}
+
+	rd := bufio.NewReader(reader)
+	defer reader.Close()
 
 	for err != io.EOF {
 		line, err = readLine(rd)
-		if err != nil && runtime.GOOS == "android" {
-			err = handleAndroidReadError(err)
-		}
+
 		if err != nil && err != io.EOF {
 			return err
 		}
