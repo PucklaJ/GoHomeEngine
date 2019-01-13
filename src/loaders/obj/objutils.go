@@ -19,25 +19,6 @@ func readLine(rd *bufio.Reader) (string, error) {
 	return str, err
 }
 
-func readLineString(contents string, curChar int) (string, int, bool) {
-	var line string
-	var finished = false
-	var i int
-
-	for i = curChar; i < len(contents); i++ {
-		if i == len(contents)-1 {
-			finished = true
-		}
-		if contents[i] == '\n' || contents[i] == '\r' {
-			i++
-			break
-		}
-		line += string(contents[i])
-	}
-
-	return line, i, finished
-}
-
 func toTokens(line string) []string {
 	var curByte byte
 	var readToken bool = false

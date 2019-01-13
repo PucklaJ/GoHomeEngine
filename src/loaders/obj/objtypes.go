@@ -2,6 +2,7 @@ package loader
 
 import (
 	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
+	"image/color"
 )
 
 type OBJWaitGroup struct {
@@ -59,8 +60,8 @@ type OBJColor [3]float32
 
 type OBJMaterial struct {
 	Name             string
-	DiffuseColor     OBJColor
-	SpecularColor    OBJColor
+	DiffuseColor     color.Color
+	SpecularColor    color.Color
 	Transperancy     float32
 	SpecularExponent float32
 	DiffuseTexture   string

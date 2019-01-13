@@ -74,10 +74,10 @@ func (this *MTLLoader) processTokens(tokens []string) {
 		} else if length == 4 {
 			if tokens[0] == "Kd" {
 				this.checkCurrentMaterial()
-				this.currentMaterial.DiffuseColor = process3Floats(tokens[1:])
+				this.currentMaterial.DiffuseColor = toGohomeColor(process3Floats(tokens[1:]))
 			} else if tokens[0] == "Ks" {
 				this.checkCurrentMaterial()
-				this.currentMaterial.SpecularColor = process3Floats(tokens[1:])
+				this.currentMaterial.SpecularColor = toGohomeColor(process3Floats(tokens[1:]))
 			}
 		}
 	}

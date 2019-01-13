@@ -59,36 +59,6 @@ func (this *OBJLoader) LoadReader(reader io.ReadCloser) error {
 	}
 }
 
-func (this *OBJLoader) LoadString(contents string) error {
-	if !this.DisableGoRoutines {
-		this.openChannels()
-		defer this.closeChannels()
-	}
-
-	var curChar int = 0
-	var finished = false
-	var line string = ""
-	for !finished {
-		line, curChar, finished = readLineString(contents, curChar)
-		if line != "" {
-			if err := this.processTokens(toTokens(line)); err != nil {
-				return err
-			}
-		}
-		if finished {
-			break
-		}
-	}
-
-	if !this.DisableGoRoutines {
-		if err := this.waitForDataToFinish(); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
 func (this *OBJLoader) SetDirectory(dir string) {
 	this.directory = dir
 }
