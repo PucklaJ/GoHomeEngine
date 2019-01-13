@@ -28,6 +28,16 @@ func (m *Mesh2DVertex) TexCoord(u, v float32) {
 
 type Mesh3DVertex [3 + 3 + 2 + 3]float32
 
+func (this *Mesh3DVertex) Equals(other *Mesh3DVertex) bool {
+	for i := 0; i < len(*this); i++ {
+		if (*this)[i] != (*other)[i] {
+			return false
+		}
+	}
+
+	return true
+}
+
 func VertexPosIndex(which int) int {
 	return which
 }
