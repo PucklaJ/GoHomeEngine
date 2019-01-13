@@ -472,13 +472,6 @@ func (this *OBJLoader) newModel(tokens []string) error {
 		}
 	}
 
-	this.positions = this.positions[:0]
-	this.normals = this.normals[:0]
-	this.texCoords = this.texCoords[:0]
-	this.positionIndex = 0
-	this.normalIndex = 0
-	this.texCoordIndex = 0
-
 	this.Models = append(this.Models, OBJModel{Name: tokens[1]})
 	this.currentModel = &this.Models[len(this.Models)-1]
 
