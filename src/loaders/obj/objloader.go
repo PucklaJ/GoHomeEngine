@@ -406,7 +406,9 @@ func (this *OBJLoader) newNormal(tokens []string) {
 
 func (this *OBJLoader) newTexCoord(tokens []string) {
 	if this.DisableGoRoutines {
-		this.texCoords = append(this.texCoords, process2Floats(tokens[1:]))
+		vt := process2Floats(tokens[1:])
+		vt[1] = 1.0 - vt[1]
+		this.texCoords = append(this.texCoords, vt)
 	} else {
 		this.texCoordIndex++
 		this.verticesWG.Add(1)

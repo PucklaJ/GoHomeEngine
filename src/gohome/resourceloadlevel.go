@@ -2,6 +2,7 @@ package gohome
 
 import (
 	"strconv"
+	"time"
 )
 
 var (
@@ -63,15 +64,18 @@ func (rsmgr *ResourceManager) DeleteLevel(name string) {
 }
 
 func (rsmgr *ResourceManager) LoadLevelString(name, contents, fileName string, loadToGPU bool) *Level {
+	start := time.Now()
 	level := Framew.LoadLevelString(name, contents, fileName, loadToGPU)
 	if level != nil {
 		rsmgr.Levels[level.Name] = level
-		ErrorMgr.Log("Level", level.Name, "Finished loading!")
+		end := time.Now()
+		ErrorMgr.Log("Level", level.Name, "Finished loading! T: "+strconv.FormatFloat(end.Sub(start).Seconds(), 'f', 3, 64)+"s")
 	}
 	return level
 }
 
 func (rsmgr *ResourceManager) LoadLevel(name, path string, loadToGPU bool) *Level {
+	start := time.Now()
 	if resName, ok := rsmgr.resourceFileNames[path]; ok {
 		rsmgr.Levels[name] = rsmgr.Levels[resName]
 		ErrorMgr.Message(ERROR_LEVEL_WARNING, "Level", name, "Has already been loaded with this or another name!")
@@ -83,7 +87,8 @@ func (rsmgr *ResourceManager) LoadLevel(name, path string, loadToGPU bool) *Leve
 	if level != nil {
 		rsmgr.Levels[level.Name] = level
 		rsmgr.resourceFileNames[path] = level.Name
-		ErrorMgr.Log("Level", level.Name, "Finished loading!")
+		end := time.Now()
+		ErrorMgr.Log("Level", level.Name, "Finished loading! T: "+strconv.FormatFloat(end.Sub(start).Seconds(), 'f', 3, 64)+"s")
 	}
 	return level
 }

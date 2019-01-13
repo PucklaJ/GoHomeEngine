@@ -2,7 +2,6 @@ package loader
 
 import (
 	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
-	"runtime"
 	"strconv"
 )
 
@@ -163,7 +162,7 @@ func LoadLevelOBJ(name, path string, loadToGPU bool) *gohome.Level {
 		name = getNameForAlreadyLoadedLevel(name)
 	}
 	var objLoader OBJLoader
-	objLoader.DisableGoRoutines = runtime.GOARCH == "js"
+	objLoader.DisableGoRoutines = true
 	if err := objLoader.Load(path); err != nil {
 		gohome.ErrorMgr.Error("Level", name, "Couldn't load "+path+": "+err.Error())
 		return nil
@@ -184,7 +183,7 @@ func LoadLevelOBJString(name, contents, fileName string, loadToGPU bool) *gohome
 	}
 	var objLoader OBJLoader
 	objLoader.SetDirectory(gohome.GetPathFromFile(fileName))
-	objLoader.DisableGoRoutines = runtime.GOARCH == "js"
+	objLoader.DisableGoRoutines = true
 	if err := objLoader.LoadString(contents); err != nil {
 		gohome.ErrorMgr.MessageError(gohome.ERROR_LEVEL_ERROR, "Level", name, err)
 		return nil
