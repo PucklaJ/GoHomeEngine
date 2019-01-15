@@ -1,7 +1,7 @@
 package renderer
 
 import (
-	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
+	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
 	"github.com/go-gl/gl/all-core/gl"
 	"image"
 	"image/color"
@@ -27,7 +27,7 @@ func CreateOpenGLCubeMap(name string) *OpenGLCubeMap {
 	return cubeMap
 }
 
-func (this *OpenGLCubeMap) Load(data []byte, width, height int, shadowMap bool) error {
+func (this *OpenGLCubeMap) Load(data []byte, width, height int, shadowMap bool) {
 	this.width = uint32(width)
 	this.height = uint32(height)
 	this.shadowMap = shadowMap
@@ -49,12 +49,9 @@ func (this *OpenGLCubeMap) Load(data []byte, width, height int, shadowMap bool) 
 	gl.TexParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
 	gl.TexParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
 	gl.TexParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_R, gl.CLAMP_TO_EDGE)
-
-	return nil
 }
 
-func (this *OpenGLCubeMap) LoadFromImage(img image.Image) error {
-	return nil
+func (this *OpenGLCubeMap) LoadFromImage(img image.Image) {
 }
 
 func (this *OpenGLCubeMap) Bind(unit uint32) {

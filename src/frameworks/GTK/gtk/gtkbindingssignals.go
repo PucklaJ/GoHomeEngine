@@ -6,7 +6,6 @@ package gtk
 */
 import "C"
 import (
-	"log"
 	"unsafe"
 )
 
@@ -85,7 +84,6 @@ func (this Widget) eventSignalConnect(signal string, callback func(widget Widget
 	if widgetEventSignalCallbacks[name] == nil {
 		widgetEventSignalCallbacks[name] = make(map[string]func(widget Widget, event Event))
 	}
-	log.Println("Checking connected")
 	var alreadyConnected1 = false
 	if _, ok := widgetEventSignalCallbacks[name]; ok {
 		if _, ok1 := widgetEventSignalCallbacks[name][signal]; ok1 {
@@ -93,13 +91,11 @@ func (this Widget) eventSignalConnect(signal string, callback func(widget Widget
 		}
 	}
 	if !alreadyConnected1 {
-		log.Println("Not connected")
 		signalcs := C.CString(signal)
 		namecs := C.CString(name)
 
 		if signal == "" {
 		} else {
-			log.Println("Connecting:", signal, "to", name)
 			C.eventSignalConnectWidget(this.Handle, signalcs, namecs)
 		}
 

@@ -2,8 +2,8 @@ package main
 
 import (
 	"github.com/ByteArena/box2d"
-	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
-	"github.com/PucklaMotzer09/gohomeengine/src/physics2d"
+	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
+	"github.com/PucklaMotzer09/GoHomeEngine/src/physics2d"
 	"github.com/PucklaMotzer09/mathgl/mgl32"
 )
 
@@ -20,8 +20,6 @@ func (this *PhysicsScene) Init() {
 	this.AddBox(gohome.Framew.WindowGetSize().Mul(0.5))
 
 	this.PhysicsMgr.CreateStaticBox(mgl32.Vec2{640.0 / 2.0, 480}, mgl32.Vec2{720, 20})
-
-	gohome.RenderMgr.EnableBackBuffer = false
 }
 
 func (this *PhysicsScene) AddBox(pos mgl32.Vec2) {

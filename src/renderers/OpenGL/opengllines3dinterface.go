@@ -1,7 +1,7 @@
 package renderer
 
 import (
-	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
+	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
 	"github.com/go-gl/gl/all-core/gl"
 )
 
@@ -18,7 +18,7 @@ type OpenGLLines3DInterface struct {
 
 func (this *OpenGLLines3DInterface) Init() {
 	render := gohome.Render.(*OpenGLRenderer)
-	this.canUseVaos = render.hasFunctionAvailable("VERTEX_ARRAY")
+	this.canUseVaos = render.HasFunctionAvailable("VERTEX_ARRAY")
 	this.loaded = false
 }
 
@@ -37,8 +37,8 @@ func (this *OpenGLLines3DInterface) GetLines() []gohome.Line3D {
 
 func (this *OpenGLLines3DInterface) attributePointer() {
 	gl.BindBuffer(gl.ARRAY_BUFFER, this.vbo)
-	gl.VertexAttribPointer(0, 3, gl.FLOAT, false, int32(gohome.LINE3D_VERTEX_SIZE), gl.PtrOffset(0))
-	gl.VertexAttribPointer(1, 4, gl.FLOAT, false, int32(gohome.LINE3D_VERTEX_SIZE), gl.PtrOffset(3*4))
+	gl.VertexAttribPointer(0, 3, gl.FLOAT, false, gohome.LINE3DVERTEXSIZE, gl.PtrOffset(0))
+	gl.VertexAttribPointer(1, 4, gl.FLOAT, false, gohome.LINE3DVERTEXSIZE, gl.PtrOffset(3*4))
 
 	gl.EnableVertexAttribArray(0)
 	gl.EnableVertexAttribArray(1)
@@ -61,7 +61,7 @@ func (this *OpenGLLines3DInterface) Load() {
 	}
 
 	gl.BindBuffer(gl.ARRAY_BUFFER, this.vbo)
-	gl.BufferData(gl.ARRAY_BUFFER, int(gohome.LINE3D_VERTEX_SIZE*this.numVertices), gl.Ptr(this.lines), gl.STATIC_DRAW)
+	gl.BufferData(gl.ARRAY_BUFFER, int(gohome.LINE3DVERTEXSIZE*this.numVertices), gl.Ptr(this.lines), gl.STATIC_DRAW)
 	gl.BindBuffer(gl.ARRAY_BUFFER, 0)
 
 	if this.canUseVaos {

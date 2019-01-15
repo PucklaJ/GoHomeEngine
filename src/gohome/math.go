@@ -8,9 +8,10 @@ import (
 )
 
 const (
-	MESH2DVERTEX_SIZE  uint32 = 2 * 2 * 4 // 2*2*sizeof(float32)
-	INDEX_SIZE         uint32 = 4         // sizeof(uint32)
-	LINE3D_VERTEX_SIZE uint32 = 3*4 + 4*4
+	MESH2DVERTEXSIZE  = 2 * 2 * 4 // 2*2*sizeof(float32)
+	INDEXSIZE         = 4         // sizeof(uint32)
+	LINE3DVERTEXSIZE  = 3*4 + 4*4
+	SHAPE2DVERTEXSIZE = 2*4 + 4*4
 )
 
 type Mesh2DVertex [4]float32
@@ -26,6 +27,16 @@ func (m *Mesh2DVertex) TexCoord(u, v float32) {
 }
 
 type Mesh3DVertex [3 + 3 + 2 + 3]float32
+
+func (this *Mesh3DVertex) Equals(other *Mesh3DVertex) bool {
+	for i := 0; i < len(*this); i++ {
+		if (*this)[i] != (*other)[i] {
+			return false
+		}
+	}
+
+	return true
+}
 
 func VertexPosIndex(which int) int {
 	return which

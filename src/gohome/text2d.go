@@ -61,14 +61,13 @@ func (this *Text2D) Init(font string, fontSize uint32, str string) {
 	this.NotRelativeToCamera = -1
 	this.FontSize = fontSize
 	this.Text = str
-	this.shader = ResourceMgr.GetShader(TEXT_2D_SHADER_NAME)
-	if this.shader == nil {
-		ResourceMgr.LoadShaderSource(TEXT_2D_SHADER_NAME, SPRITE_2D_SHADER_VERTEX_SOURCE_OPENGL, TEXT_2D_SHADER_FRAGMENT_SOURCE_OPENGL, "", "", "", "")
-		this.shader = ResourceMgr.GetShader(TEXT_2D_SHADER_NAME)
+	if this.shader = ResourceMgr.GetShader(GetShaderName2D(SHADER_TYPE_TEXT2D, 0)); this.shader == nil {
+		this.shader = LoadGeneratedShader2D(SHADER_TYPE_TEXT2D, 0)
 	}
 	this.Depth = 0
 	this.Color = colornames.White
 	this.Flip = FLIP_NONE
+	this.renderType = TYPE_2D_NORMAL
 
 	this.updateText()
 }
@@ -97,7 +96,6 @@ func (this *Text2D) setUniforms() {
 		}
 		shader.SetUniformI(FLIP_UNIFORM_NAME, int32(flip))
 		shader.SetUniformF(DEPTH_UNIFORM_NAME, convertDepth(this.Depth))
-		shader.SetUniformI(ENABLE_TEXTURE_REGION_UNIFORM_NAME, 0)
 		shader.SetUniformV4(COLOR_UNIFORM_NAME, ColorToVec4(this.Color))
 	}
 }

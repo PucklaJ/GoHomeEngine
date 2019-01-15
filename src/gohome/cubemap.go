@@ -6,8 +6,8 @@ import (
 )
 
 type CubeMap interface {
-	Load(data []byte, width, height int, shadowMap bool) error
-	LoadFromImage(img image.Image) error
+	Load(data []byte, width, height int, shadowMap bool)
+	LoadFromImage(img image.Image)
 	Bind(unit uint32)
 	Unbind(unit uint32)
 	GetWidth() int
@@ -23,4 +23,58 @@ type CubeMap interface {
 	SetModColor(col color.Color)
 	GetName() string
 	GetData() ([]byte, int, int)
+}
+
+type NilCubeMap struct {
+}
+
+func (*NilCubeMap) Load(data []byte, width, height int, shadowMap bool) {
+}
+func (*NilCubeMap) LoadFromImage(img image.Image) {
+}
+func (*NilCubeMap) Bind(unit uint32) {
+
+}
+func (*NilCubeMap) Unbind(unit uint32) {
+
+}
+func (*NilCubeMap) GetWidth() int {
+	return 0
+}
+func (*NilCubeMap) GetHeight() int {
+	return 0
+}
+func (*NilCubeMap) GetKeyColor() color.Color {
+	return nil
+}
+func (*NilCubeMap) GetModColor() color.Color {
+	return nil
+}
+func (*NilCubeMap) Terminate() {
+
+}
+func (*NilCubeMap) SetFiltering(filtering uint32) {
+
+}
+func (*NilCubeMap) SetWrapping(wrapping uint32) {
+
+}
+func (*NilCubeMap) SetBorderColor(col color.Color) {
+
+}
+func (*NilCubeMap) SetBorderDepth(depth float32) {
+
+}
+func (*NilCubeMap) SetKeyColor(col color.Color) {
+
+}
+func (*NilCubeMap) SetModColor(col color.Color) {
+
+}
+func (*NilCubeMap) GetName() string {
+	return ""
+}
+func (*NilCubeMap) GetData() ([]byte, int, int) {
+	var data []byte
+	return data, 0, 0
 }

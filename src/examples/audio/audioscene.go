@@ -1,8 +1,9 @@
 package main
 
 import (
-	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
-	"fmt"
+	"github.com/PucklaMotzer09/GoHomeEngine/src/audio"
+	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
+	"runtime"
 )
 
 type AudioScene struct {
@@ -11,18 +12,21 @@ type AudioScene struct {
 }
 
 func (this *AudioScene) Init() {
-	gohome.Framew.GetAudioManager().Init()
-	gohome.ResourceMgr.PreloadSound("Bottle","bottle.wav")
-	gohome.ResourceMgr.PreloadMusic("TownTheme","TownTheme.mp3")
-	gohome.ResourceMgr.LoadPreloadedResources()
+	audio.InitAudio()
+	gohome.ResourceMgr.LoadSound("Bottle", "assets/bottle.wav")
+	gohome.ResourceMgr.LoadMusic("TownTheme", "assets/TownTheme.mp3")
+
+	gohome.ResourceMgr.GetMusic("TownTheme").Play(true)
 }
 
 func (this *AudioScene) Update(delta_time float32) {
-	if gohome.InputMgr.JustPressed(gohome.Key1) {
+	if gohome.InputMgr.JustPressed(gohome.Key1) || (runtime.GOOS == "android" && gohome.InputMgr.JustPressed(gohome.KeyBack)) {
 		if this.music == nil {
 			this.music = gohome.ResourceMgr.GetMusic("TownTheme")
-			if this.music != nil {
+			if this.music != nil && !this.music.IsPlaying() {
 				this.music.Play(true)
+			} else if this.music != nil {
+				this.music.Pause()
 			}
 		} else {
 			if this.music.IsPlaying() {
@@ -33,7 +37,7 @@ func (this *AudioScene) Update(delta_time float32) {
 		}
 	}
 
-	if gohome.InputMgr.JustPressed(gohome.Key2) {
+	if gohome.InputMgr.JustPressed(gohome.Key2) || (runtime.GOOS == "android" && gohome.InputMgr.JustPressed(gohome.MouseButtonLeft)) {
 		if this.sound == nil {
 			this.sound = gohome.ResourceMgr.GetSound("Bottle")
 			if this.sound != nil {
@@ -47,12 +51,8 @@ func (this *AudioScene) Update(delta_time float32) {
 			}
 		}
 	}
-
-	if this.music != nil {
-		fmt.Println("Music:",this.music.GetPlayingDuration())
-	}
 }
 
 func (this *AudioScene) Terminate() {
-	gohome.Framew.GetAudioManager().Terminate()
+	gohome.AudioMgr.Terminate()
 }

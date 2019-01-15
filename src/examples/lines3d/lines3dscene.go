@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
+	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
 	"github.com/PucklaMotzer09/mathgl/mgl32"
 )
 
@@ -81,8 +81,6 @@ func (this *Lines3DScene) Init() {
 	this.lines.Load()
 
 	gohome.RenderMgr.AddObject(&this.lines)
-
-	gohome.RenderMgr.EnableBackBuffer = false
 }
 
 func (this *Lines3DScene) Update(delta_time float32) {

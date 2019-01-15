@@ -4,7 +4,7 @@ import (
 	"image/color"
 	"strconv"
 
-	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
+	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
 	"github.com/PucklaMotzer09/mathgl/mgl32"
 	"github.com/go-gl/gl/all-core/gl"
 )
@@ -56,20 +56,24 @@ func (this *OpenGLRenderer) Init() error {
 		return err
 	}
 	version := gl.GoStr(gl.GetString(gl.VERSION))
+	versioni := this.GetVersioni()
+	if version == "" {
+		version = strconv.FormatUint(uint64(versioni), 10)
+	}
 	gohome.ErrorMgr.Log("Renderer", "OpenGL\t", "Version: "+version)
-	if this.GetVersioni() < 21 {
+	if versioni < 21 {
 		gohome.ErrorMgr.Warning("Renderer", "OpenGL", "You don't have a graphics card or your graphics card is not supported! Minimum: OpenGL 2.1")
 	}
-
-	gl.GenVertexArrays(1, &this.BackBufferVao)
 
 	this.CurrentTextureUnit = 0
 
 	this.availableFunctions = make(map[string]bool)
 	this.gatherAvailableFunctions()
 
-	if !this.hasFunctionAvailable("VERTEX_ID") || !this.hasFunctionAvailable("MULTISAMPLE") {
+	if !this.HasFunctionAvailable("VERTEX_ID") || !this.HasFunctionAvailable("MULTISAMPLE") {
 		this.createBackBufferMesh()
+	} else {
+		gl.GenVertexArrays(1, &this.BackBufferVao)
 	}
 
 	return nil
@@ -255,31 +259,29 @@ func (this *OpenGLRenderer) SetNativeResolution(width, height uint32) {
 	previous := gohome.Viewport{
 		X:      0,
 		Y:      0,
-		Width:  gohome.RenderMgr.BackBuffer.GetWidth(),
-		Height: gohome.RenderMgr.BackBuffer.GetHeight(),
+		Width:  gohome.RenderMgr.BackBufferMS.GetWidth(),
+		Height: gohome.RenderMgr.BackBufferMS.GetHeight(),
 	}
 
 	gohome.RenderMgr.BackBufferMS.ChangeSize(width, height)
-	gohome.RenderMgr.BackBuffer.ChangeSize(width, height)
 	gohome.RenderMgr.BackBuffer2D.ChangeSize(width, height)
 	gohome.RenderMgr.BackBuffer3D.ChangeSize(width, height)
 
 	gohome.RenderMgr.BackBufferMS.SetFiltering(gohome.FILTERING_LINEAR)
-	gohome.RenderMgr.BackBuffer.SetFiltering(gohome.FILTERING_LINEAR)
 	gohome.RenderMgr.BackBuffer2D.SetFiltering(gohome.FILTERING_LINEAR)
 	gohome.RenderMgr.BackBuffer3D.SetFiltering(gohome.FILTERING_LINEAR)
 
 	current := gohome.Viewport{
 		X:      0,
 		Y:      0,
-		Width:  gohome.RenderMgr.BackBuffer.GetWidth(),
-		Height: gohome.RenderMgr.BackBuffer.GetHeight(),
+		Width:  gohome.RenderMgr.BackBufferMS.GetWidth(),
+		Height: gohome.RenderMgr.BackBufferMS.GetHeight(),
 	}
 
 	gohome.RenderMgr.UpdateViewports(current, previous)
 }
 func (this *OpenGLRenderer) GetNativeResolution() mgl32.Vec2 {
-	return [2]float32{float32(gohome.RenderMgr.BackBuffer.GetWidth()), float32(gohome.RenderMgr.BackBuffer.GetHeight())}
+	return [2]float32{float32(gohome.RenderMgr.BackBufferMS.GetWidth()), float32(gohome.RenderMgr.BackBufferMS.GetHeight())}
 }
 func (this *OpenGLRenderer) OnResize(newWidth, newHeight uint32) {
 	gl.Viewport(0, 0, int32(newWidth), int32(newHeight))
@@ -332,6 +334,8 @@ func (this *OpenGLRenderer) gatherAvailableFunctions() {
 	if combined >= 30 {
 		this.availableFunctions["VERTEX_ID"] = true
 		this.availableFunctions["VERTEX_ARRAY"] = true
+		this.availableFunctions["BLIT_FRAMEBUFFER"] = true
+		this.availableFunctions["BLIT_FRAMEBUFFER_SCREEN"] = true
 	}
 	if combined >= 31 {
 		this.availableFunctions["INSTANCED"] = true
@@ -346,69 +350,9 @@ func (this *OpenGLRenderer) gatherAvailableFunctions() {
 	}
 }
 
-func (this *OpenGLRenderer) hasFunctionAvailable(function string) bool {
+func (this *OpenGLRenderer) HasFunctionAvailable(function string) bool {
 	v, ok := this.availableFunctions[function]
 	return ok && v
-}
-
-func (this *OpenGLRenderer) FilterShaderFiles(name, file, shader_type string) string {
-	if name == "BackBufferShader" {
-		if !this.hasFunctionAvailable("MULTISAMPLE") {
-			if shader_type == "Vertex File" {
-				file = "backBufferShaderNoMSVert.glsl"
-			} else if shader_type == "Fragment File" {
-				file = "backBufferShaderNoMSFrag.glsl"
-			}
-		}
-	} else if name == "PostProcessingShader" {
-		if !this.hasFunctionAvailable("MULTISAMPLE") {
-			if shader_type == "Vertex File" {
-				file = "postProcessingShaderNoMSVert.glsl"
-			} else if shader_type == "Fragment File" {
-				file = "postProcessingShaderNoMSFrag.glsl"
-			}
-		}
-	} else if name == "RenderScreenShader" {
-		if !this.hasFunctionAvailable("MULTISAMPLE") {
-			if shader_type == "Vertex File" {
-				file = "postProcessingShaderNoMSVert.glsl"
-			} else if shader_type == "Fragment File" {
-				file = "renderScreenNoMSFrag.glsl"
-			}
-		}
-	}
-
-	return file
-}
-
-func (this *OpenGLRenderer) FilterShaderSource(name, source, shader_type string) string {
-	if name == "BackBufferShader" {
-		if !this.hasFunctionAvailable("MULTISAMPLE") {
-			if shader_type == "Vertex File" {
-				source = gohome.BACKBUFFER_NOMS_SHADER_VERTEX_SOURCE_OPENGL
-			} else if shader_type == "Fragment File" {
-				source = gohome.BACKBUFFER_NOMS_SHADER_FRAGMENT_SOURCE_OPENGL
-			}
-		}
-	} else if name == "PostProcessingShader" {
-		if !this.hasFunctionAvailable("MULTISAMPLE") {
-			if shader_type == "Vertex File" {
-				source = gohome.POST_PROCESSING_SHADER_NOMS_VERTEX_SOURCE_OPENGL
-			} else if shader_type == "Fragment File" {
-				source = gohome.POST_PROCESSING_SHADER_NOMS_FRAGMENT_SOURCE_OPENGL
-			}
-		}
-	} else if name == "RenderScreenShader" {
-		if !this.hasFunctionAvailable("MULTISAMPLE") {
-			if shader_type == "Vertex File" {
-				source = gohome.POST_PROCESSING_SHADER_NOMS_VERTEX_SOURCE_OPENGL
-			} else if shader_type == "Fragment File" {
-				source = gohome.RENDER_SCREEN_NOMS_SHADER_FRAGMENT_SOURCE_OPENGL
-			}
-		}
-	}
-
-	return source
 }
 
 func (this *OpenGLRenderer) SetBackgroundColor(bgColor color.Color) {
@@ -426,10 +370,26 @@ func handleOpenGLError(tag, objectName, errorPrefix string) {
 		switch err {
 		case gl.INVALID_OPERATION:
 			errString = "INVALID_OPERATION"
+		case gl.INVALID_VALUE:
+			errString = "INVALID_VALUE"
+		case gl.INVALID_ENUM:
+			errString = "INVALID_ENUM"
+		case gl.STACK_OVERFLOW:
+			errString = "STACK_OVERFLOW"
+		case gl.STACK_UNDERFLOW:
+			errString = "STACK_UNDERFLOW"
+		case gl.OUT_OF_MEMORY:
+			errString = "OUT_OF_MEMORY"
+		case gl.INVALID_FRAMEBUFFER_OPERATION:
+			errString = "INVALID_FRAMEBUFFER_OPERATION"
+		case gl.CONTEXT_LOST:
+			errString = "CONTEXT_LOST"
+		case 0x8031:
+			errString = "TABLE_TOO_LARGE"
 		default:
 			errString = strconv.Itoa(int(err))
 		}
-		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, tag, objectName, errorPrefix+"ErrorCode: "+errString)
+		gohome.ErrorMgr.Error(tag, objectName, errorPrefix+" ErrorCode: "+errString)
 	}
 }
 
@@ -445,4 +405,14 @@ func (this *OpenGLRenderer) SetDepthTesting(b bool) {
 	} else {
 		gl.Disable(gl.DEPTH_TEST)
 	}
+}
+
+func (this *OpenGLRenderer) GetName() string {
+	return "OpenGL"
+}
+
+func maxMultisampleSamples() int32 {
+	var data int32
+	gl.GetIntegerv(gl.MAX_INTEGER_SAMPLES, &data)
+	return data
 }

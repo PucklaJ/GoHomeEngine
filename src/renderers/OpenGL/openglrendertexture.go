@@ -1,7 +1,7 @@
 package renderer
 
 import (
-	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
+	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
 	"github.com/go-gl/gl/all-core/gl"
 	"image"
 	"image/color"
@@ -58,7 +58,7 @@ func (this *OpenGLRenderTexture) loadTextures(width, height, textures uint32, cu
 		}
 		if this.shadowMap {
 			if cubeMap {
-				if render.hasFunctionAvailable("FRAMEBUFFER_TEXTURE") {
+				if render.HasFunctionAvailable("FRAMEBUFFER_TEXTURE") {
 					gl.GetError()
 					gl.FramebufferTexture(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, oglcubemap.oglName, 0)
 					handleOpenGLError("RenderTexture", this.Name, "glFramebufferTexture with depthBuffer and CubeMap")
@@ -74,7 +74,7 @@ func (this *OpenGLRenderTexture) loadTextures(width, height, textures uint32, cu
 			}
 		} else {
 			if cubeMap {
-				if render.hasFunctionAvailable("FRAMEBUFFER_TEXTURE") {
+				if render.HasFunctionAvailable("FRAMEBUFFER_TEXTURE") {
 					gl.GetError()
 					gl.FramebufferTexture(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0+i, oglcubemap.oglName, 0)
 					handleOpenGLError("RenderTexture", this.Name, "glFramebufferTexture with CubeMap")
@@ -113,7 +113,8 @@ func (this *OpenGLRenderTexture) loadRenderBuffer(width, height uint32) {
 		gl.BindRenderbuffer(gl.RENDERBUFFER, this.rbo)
 		handleOpenGLError("RenderTexture", this.Name, "glBindRenderbuffer")
 		if this.multiSampled {
-			gl.RenderbufferStorageMultisample(gl.RENDERBUFFER, 8, gl.DEPTH24_STENCIL8, int32(width), int32(height))
+			samples := maxMultisampleSamples()
+			gl.RenderbufferStorageMultisample(gl.RENDERBUFFER, gohome.Mini(4, samples), gl.DEPTH24_STENCIL8, int32(width), int32(height))
 			handleOpenGLError("RenderTexture", this.Name, "glRenderbufferStorageMultisample")
 		} else {
 			gl.RenderbufferStorage(gl.RENDERBUFFER, gl.DEPTH24_STENCIL8, int32(width), int32(height))
@@ -135,7 +136,7 @@ func (this *OpenGLRenderTexture) Create(name string, width, height, textures uin
 
 	this.Name = name
 	this.shadowMap = shadowMap
-	this.multiSampled = multiSampled && render.hasFunctionAvailable("MULTISAMPLE")
+	this.multiSampled = multiSampled && render.HasFunctionAvailable("MULTISAMPLE")
 	this.depthBuffer = depthBuffer && !shadowMap
 	this.cubeMap = cubeMap
 
@@ -157,6 +158,8 @@ func (this *OpenGLRenderTexture) Create(name string, width, height, textures uin
 	if gl.CheckFramebufferStatus(gl.FRAMEBUFFER) != gl.FRAMEBUFFER_COMPLETE {
 		handleOpenGLError("RenderTexture", this.Name, "glCheckFramebufferStatus")
 		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "RenderTexture", this.Name, "Framebuffer is not complete")
+		gl.BindFramebuffer(gl.FRAMEBUFFER, uint32(screenFramebuffer))
+		currentlyBoundRT = this.prevRT
 		return
 	}
 	gl.BindFramebuffer(gl.FRAMEBUFFER, 0)
@@ -174,12 +177,10 @@ func (this *OpenGLRenderTexture) Create(name string, width, height, textures uin
 	this.UnsetAsTarget()
 }
 
-func (this *OpenGLRenderTexture) Load(data []byte, width, height int, shadowMap bool) error {
-	return &OpenGLError{errorString: "The Load method of RenderTexture is not used!"}
+func (this *OpenGLRenderTexture) Load(data []byte, width, height int, shadowMap bool) {
 }
 
-func (ogltex *OpenGLRenderTexture) LoadFromImage(img image.Image) error {
-	return &OpenGLError{errorString: "The LoadFromImage method of RenderTexture is not used!"}
+func (ogltex *OpenGLRenderTexture) LoadFromImage(img image.Image) {
 }
 
 func (this *OpenGLRenderTexture) GetName() string {
@@ -211,18 +212,22 @@ func (this *OpenGLRenderTexture) UnsetAsTarget() {
 }
 
 func (this *OpenGLRenderTexture) Blit(rtex gohome.RenderTexture) {
+	var ortex *OpenGLRenderTexture
+	if rtex != nil {
+		ortex = rtex.(*OpenGLRenderTexture)
+	}
 	var width int32
 	var height int32
 	var x int32
 	var y int32
 	if rtex != nil {
-		rtex.SetAsTarget()
+		gl.BindFramebuffer(gl.DRAW_FRAMEBUFFER, ortex.fbo)
 		width = int32(rtex.GetWidth())
 		height = int32(rtex.GetHeight())
 		x = 0
 		y = 0
 	} else {
-		gl.BindFramebuffer(gl.DRAW_FRAMEBUFFER, 0)
+		gl.BindFramebuffer(gl.DRAW_FRAMEBUFFER, uint32(screenFramebuffer))
 		handleOpenGLError("RenderTexture", this.Name, "glBindFramebuffer with GL_DRAW_FRAMEBUFFER in Blit")
 		width = int32(this.prevViewport.Width)
 		height = int32(this.prevViewport.Height)
@@ -233,14 +238,11 @@ func (this *OpenGLRenderTexture) Blit(rtex gohome.RenderTexture) {
 	handleOpenGLError("RenderTexture", this.Name, "glBindFramebuffer with GL_READ_FRAMEBUFFER in Blit")
 	gl.BlitFramebuffer(0, 0, int32(this.GetWidth()), int32(this.GetHeight()), x, y, width, height, gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT|gl.STENCIL_BUFFER_BIT, gl.NEAREST)
 	handleOpenGLError("RenderTexture", this.Name, "glBlitFramebuffer")
-	if rtex != nil {
-		rtex.UnsetAsTarget()
-	} else {
-		gl.BindFramebuffer(gl.READ_FRAMEBUFFER, 0)
-		handleOpenGLError("RenderTexture", this.Name, "glBindFramebuffer with GL_READ_FRAMEBUFFER and 0 in Blit")
-		gl.BindFramebuffer(gl.DRAW_FRAMEBUFFER, 0)
-		handleOpenGLError("RenderTexture", this.Name, "glBindFramebuffer with GL_DRAW_FRAMEBUFFER and 0 in Blit")
-	}
+
+	gl.BindFramebuffer(gl.READ_FRAMEBUFFER, 0)
+	handleOpenGLError("RenderTexture", this.Name, "glBindFramebuffer with GL_READ_FRAMEBUFFER and 0 in Blit")
+	gl.BindFramebuffer(gl.DRAW_FRAMEBUFFER, 0)
+	handleOpenGLError("RenderTexture", this.Name, "glBindFramebuffer with GL_DRAW_FRAMEBUFFER and 0 in Blit")
 }
 
 func (this *OpenGLRenderTexture) Bind(unit uint32) {
@@ -352,5 +354,19 @@ func (this *OpenGLRenderTexture) GetData() ([]byte, int, int) {
 	if len(this.textures) == 0 {
 		return nil, 0, 0
 	}
+	if tex, ok := this.textures[0].(*OpenGLTexture); ok {
+		if !tex.multiSampled {
+			return tex.GetData()
+		} else {
+			if gohome.Render.HasFunctionAvailable("BLIT_FRAMEBUFFER") {
+				rtex := CreateOpenGLRenderTexture("Temp", uint32(this.GetWidth()), uint32(this.GetHeight()), 1, false, false, false, false)
+				this.Blit(rtex)
+				data, width, height := rtex.GetData()
+				rtex.Terminate()
+				return data, width, height
+			}
+		}
+	}
+
 	return this.textures[0].GetData()
 }

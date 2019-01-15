@@ -1,7 +1,7 @@
 package framework
 
 import (
-	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
+	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
 	"github.com/go-gl/glfw/v3.3/glfw"
 )
 
@@ -16,13 +16,12 @@ func onKey(w *glfw.Window, key glfw.Key, scancode int, action glfw.Action, mods 
 func onMousePosChanged(w *glfw.Window, xpos, ypos float64) {
 	gohome.InputMgr.Mouse.Pos[0] = int16(xpos)
 	gohome.InputMgr.Mouse.Pos[1] = int16(ypos)
-	framework, ok := gohome.Framew.(*GLFWFramework)
-	if ok {
-		gohome.InputMgr.Mouse.DPos[0] = gohome.InputMgr.Mouse.Pos[0] - framework.prevMousePos[0]
-		gohome.InputMgr.Mouse.DPos[1] = gohome.InputMgr.Mouse.Pos[1] - framework.prevMousePos[1]
-		framework.prevMousePos[0] = gohome.InputMgr.Mouse.Pos[0]
-		framework.prevMousePos[1] = gohome.InputMgr.Mouse.Pos[1]
-	}
+	framework := gohome.Framew.(*GLFWFramework)
+
+	gohome.InputMgr.Mouse.DPos[0] = gohome.InputMgr.Mouse.Pos[0] - framework.prevMousePos[0]
+	gohome.InputMgr.Mouse.DPos[1] = gohome.InputMgr.Mouse.Pos[1] - framework.prevMousePos[1]
+	framework.prevMousePos[0] = gohome.InputMgr.Mouse.Pos[0]
+	framework.prevMousePos[1] = gohome.InputMgr.Mouse.Pos[1]
 
 	inputTouch := gohome.InputMgr.Touches[0]
 	inputTouch.Pos = gohome.InputMgr.Mouse.Pos

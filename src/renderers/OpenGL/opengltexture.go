@@ -2,7 +2,7 @@ package renderer
 
 import (
 	// "fmt"
-	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
+	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
 	"github.com/go-gl/gl/all-core/gl"
 	"image"
 	"image/color"
@@ -73,7 +73,7 @@ func printOGLTexture2DError(ogltex *OpenGLTexture, data []byte, width, height in
 	}
 }
 
-func (ogltex *OpenGLTexture) Load(data []byte, width, height int, shadowMap bool) error {
+func (ogltex *OpenGLTexture) Load(data []byte, width, height int, shadowMap bool) {
 	ogltex.width = width
 	ogltex.height = height
 
@@ -97,7 +97,8 @@ func (ogltex *OpenGLTexture) Load(data []byte, width, height int, shadowMap bool
 	}
 
 	if ogltex.multiSampled {
-		gl.TexImage2DMultisample(ogltex.bindingPoint(), 8, gl.RGBA, int32(ogltex.width), int32(ogltex.height), true)
+		samples := maxMultisampleSamples()
+		gl.TexImage2DMultisample(ogltex.bindingPoint(), gohome.Mini(4, samples), gl.RGBA, int32(ogltex.width), int32(ogltex.height), true)
 	} else {
 		var ptr unsafe.Pointer
 		if data == nil {
@@ -116,9 +117,6 @@ func (ogltex *OpenGLTexture) Load(data []byte, width, height int, shadowMap bool
 	gl.GenerateMipmap(ogltex.bindingPoint())
 
 	gl.BindTexture(ogltex.bindingPoint(), 0)
-
-	return nil
-
 }
 
 func loadImageData(img_data *[]byte, img image.Image, start_width, end_width, max_width, max_height uint32, wg *sync.WaitGroup) {
@@ -141,7 +139,7 @@ func loadImageData(img_data *[]byte, img image.Image, start_width, end_width, ma
 	}
 }
 
-func (ogltex *OpenGLTexture) LoadFromImage(img image.Image) error {
+func (ogltex *OpenGLTexture) LoadFromImage(img image.Image) {
 
 	width := img.Bounds().Size().X
 	height := img.Bounds().Size().Y
@@ -158,8 +156,6 @@ func (ogltex *OpenGLTexture) LoadFromImage(img image.Image) error {
 	wg1.Wait()
 
 	ogltex.Load(img_data, width, height, false)
-
-	return nil
 }
 
 func toTextureUnit(unit uint32) uint32 {
@@ -274,8 +270,14 @@ func (ogltex *OpenGLTexture) GetData() (data []byte, width int, height int) {
 	width = ogltex.GetWidth()
 	height = ogltex.GetHeight()
 	data = make([]byte, width*height*4)
-	gl.BindTexture(gl.TEXTURE_2D, ogltex.oglName)
-	gl.GetTexImage(gl.TEXTURE_2D, 0, gl.RGBA, gl.UNSIGNED_BYTE, unsafe.Pointer(&data[0]))
-	gl.BindTexture(gl.TEXTURE_2D, 0)
+	var target uint32
+	if ogltex.multiSampled {
+		target = gl.TEXTURE_2D_MULTISAMPLE
+	} else {
+		target = gl.TEXTURE_2D
+	}
+	gl.BindTexture(target, ogltex.oglName)
+	gl.GetTexImage(target, 0, gl.RGBA, gl.UNSIGNED_BYTE, unsafe.Pointer(&data[0]))
+	gl.BindTexture(target, 0)
 	return
 }

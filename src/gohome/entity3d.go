@@ -1,6 +1,8 @@
 package gohome
 
-import "github.com/PucklaMotzer09/mathgl/mgl32"
+import (
+	"github.com/PucklaMotzer09/mathgl/mgl32"
+)
 
 const (
 	ENTITY3D_SHADER_NAME                  string = "3D"
@@ -36,19 +38,64 @@ func (this *Entity3D) commonInit() {
 	this.NotRelativeToCamera = -1
 	this.RenderLast = false
 	this.DepthTesting = true
-	this.RenderType = TYPE_3D_NORMAL
-	this.Shader = ResourceMgr.GetShader(ENTITY3D_SHADER_NAME)
-	if this.Model3D != nil && !this.Model3D.HasUV() {
-		this.Shader = ResourceMgr.GetShader(ENTITY3D_NO_UV_SHADER_NAME)
+	this.RenderType = TYPE_3D_NORMAL | TYPE_CASTS_SHADOWS
+	this.configureShader()
+}
+
+func (this *Entity3D) configureShaderFlags() uint32 {
+	var flags uint32 = 0
+	if !this.Model3D.HasUV() {
+		flags |= SHADER_FLAG_NOUV
+	}
+	if LightMgr.CurrentLightCollection == -1 {
+		flags |= SHADER_FLAG_NO_LIGHTING
+	}
+	if this.Model3D.HasUV() {
+		var hasDif, hasSpec, hasNorm = false, false, false
+		for i := 0; i < len(this.Model3D.meshes); i++ {
+			m := this.Model3D.meshes[i]
+			mat := m.GetMaterial()
+			if mat.DiffuseColor != nil {
+				hasDif = true
+			}
+			if mat.SpecularTexture != nil {
+				hasSpec = true
+			}
+			if mat.NormalMap != nil {
+				hasNorm = true
+			}
+		}
+		if !hasDif {
+			flags |= SHADER_FLAG_NO_DIFTEX
+		}
+		if !hasSpec {
+			flags |= SHADER_FLAG_NO_SPECTEX
+		}
+		if !hasNorm {
+			flags |= SHADER_FLAG_NO_NORMAP
+		}
+	}
+
+	return flags
+}
+
+func (this *Entity3D) configureShader() {
+	if this.Model3D == nil {
+		return
+	}
+	flags := this.configureShaderFlags()
+	name := GetShaderName3D(flags)
+	this.Shader = ResourceMgr.GetShader(name)
+	if this.Shader == nil {
+		LoadGeneratedShader3D(SHADER_TYPE_3D, flags)
+		this.Shader = ResourceMgr.GetShader(name)
 		if this.Shader == nil {
-			ResourceMgr.LoadShaderSource(ENTITY3D_NO_UV_SHADER_NAME, ENTITY_3D_NOUV_SHADER_VERTEX_SOURCE_OPENGL, ENTITY_3D_NOUV_SHADER_FRAGMENT_SOURCE_OPENGL, "", "", "", "")
-			this.Shader = ResourceMgr.GetShader(ENTITY3D_NO_UV_SHADER_NAME)
+			flags |= SHADER_FLAG_NO_SHADOWS
+			name = GetShaderName3D(flags)
+			this.Shader = ResourceMgr.GetShader(name)
 			if this.Shader == nil {
-				ResourceMgr.LoadShaderSource(ENTITY3D_NO_UV_NO_SHADOWS_SHADER_NAME, ENTITY_3D_NOUV_SHADER_VERTEX_SOURCE_OPENGL, ENTITY_3D_NOUV_NO_SHADOWS_SHADER_FRAGMENT_SOURCE_OPENGL, "", "", "", "")
-				this.Shader = ResourceMgr.GetShader(ENTITY3D_NO_UV_NO_SHADOWS_SHADER_NAME)
-				if this.Shader != nil {
-					ResourceMgr.SetShader(ENTITY3D_NO_UV_SHADER_NAME, ENTITY3D_NO_UV_NO_SHADOWS_SHADER_NAME)
-				}
+				LoadGeneratedShader3D(SHADER_TYPE_3D, flags)
+				this.Shader = ResourceMgr.GetShader(name)
 			}
 		}
 	}
@@ -153,16 +200,20 @@ func (this *Entity3D) GetTransform3D() *TransformableObject3D {
 	return this.Transform
 }
 
+func (this *Entity3D) SetChildChannel(channel chan bool, tobj *TransformableObject3D) {
+	this.Transform.SetChildChannel(channel, tobj)
+}
+
 func (this *Entity3D) RendersLast() bool {
 	return this.RenderLast
 }
 
 func (this *Entity3D) SetParent(parent interface{}) {
 	this.parent = parent
-	if tobj, ok := parent.(TweenableObject3D); ok {
-		this.Transform.Parent = tobj
+	if tobj, ok := parent.(ParentObject3D); ok {
+		this.Transform.SetParent(tobj)
 	} else {
-		this.Transform.Parent = nil
+		this.Transform.SetParent(nil)
 	}
 }
 

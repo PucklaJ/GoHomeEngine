@@ -19,8 +19,8 @@ const (
 )
 
 type Texture interface {
-	Load(data []byte, width, height int, shadowMap bool) error
-	LoadFromImage(img image.Image) error
+	Load(data []byte, width, height int, shadowMap bool)
+	LoadFromImage(img image.Image)
 	Bind(unit uint32)
 	Unbind(unit uint32)
 	GetWidth() int
@@ -41,6 +41,9 @@ type Texture interface {
 func TextureToImage(tex Texture, flipX, flipY bool) image.Image {
 	var wg sync.WaitGroup
 	data, width, height := tex.GetData()
+	if data == nil || len(data) == 0 {
+		return nil
+	}
 	img := image.NewRGBA(image.Rect(0, 0, width, height))
 	wg.Add(width * height)
 	for x := 0; x < width; x++ {
@@ -86,4 +89,58 @@ func GetColorFromData(x, y int, data []byte, width int) color.Color {
 		B: data[(x+y*width)*4+2],
 		A: data[(x+y*width)*4+3],
 	}
+}
+
+type NilTexture struct {
+}
+
+func (*NilTexture) Load(data []byte, width, height int, shadowMap bool) {
+}
+func (*NilTexture) LoadFromImage(img image.Image) {
+}
+func (*NilTexture) Bind(unit uint32) {
+
+}
+func (*NilTexture) Unbind(unit uint32) {
+
+}
+func (*NilTexture) GetWidth() int {
+	return 0
+}
+func (*NilTexture) GetHeight() int {
+	return 0
+}
+func (*NilTexture) GetKeyColor() color.Color {
+	return nil
+}
+func (*NilTexture) GetModColor() color.Color {
+	return nil
+}
+func (*NilTexture) Terminate() {
+
+}
+func (*NilTexture) SetFiltering(filtering uint32) {
+
+}
+func (*NilTexture) SetWrapping(wrapping uint32) {
+
+}
+func (*NilTexture) SetBorderColor(col color.Color) {
+
+}
+func (*NilTexture) SetBorderDepth(depth float32) {
+
+}
+func (*NilTexture) SetKeyColor(col color.Color) {
+
+}
+func (*NilTexture) SetModColor(col color.Color) {
+
+}
+func (*NilTexture) GetName() string {
+	return ""
+}
+func (*NilTexture) GetData() ([]byte, int, int) {
+	var data []byte
+	return data, 0, 0
 }

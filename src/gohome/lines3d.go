@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	LINES3D_SHADER_NAME string = "Lines3DShader"
+	SHAPE3D_SHADER_NAME string = "Shape3D"
 )
 
 type Lines3D struct {
@@ -23,8 +23,8 @@ type Lines3D struct {
 }
 
 func (this *Lines3D) Init() {
-	if ResourceMgr.GetShader(LINES3D_SHADER_NAME) == nil {
-		ResourceMgr.LoadShaderSource(LINES3D_SHADER_NAME, LINES_3D_SHADER_VERTEX_SOURCE_OPENGL, LINES_3D_SHADER_FRAGMENT_SOURCE_OPENGL, "", "", "", "")
+	if ResourceMgr.GetShader(SHAPE3D_SHADER_NAME) == nil {
+		LoadGeneratedShader3D(SHADER_TYPE_SHAPE3D, 0)
 	}
 	this.linesInterface = Render.CreateLines3DInterface(this.Name)
 	this.linesInterface.Init()
@@ -68,7 +68,7 @@ func (this *Lines3D) SetShader(s Shader) {
 }
 func (this *Lines3D) GetShader() Shader {
 	if this.shader == nil {
-		this.shader = ResourceMgr.GetShader(LINES3D_SHADER_NAME)
+		this.shader = ResourceMgr.GetShader(SHAPE3D_SHADER_NAME)
 	}
 	return this.shader
 }

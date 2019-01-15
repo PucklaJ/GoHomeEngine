@@ -2,20 +2,19 @@ package framework
 
 import (
 	"errors"
-	"github.com/PucklaMotzer09/gohomeengine/src/audio"
-	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
-	loadmp3 "github.com/PucklaMotzer09/gohomeengine/src/loaders/mp3"
-	loadwav "github.com/PucklaMotzer09/gohomeengine/src/loaders/wav"
+	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
+	"github.com/PucklaMotzer09/GoHomeEngine/src/loaders/defaultlevel"
 	"github.com/PucklaMotzer09/mathgl/mgl32"
 	"github.com/go-gl/glfw/v3.3/glfw"
 	"log"
 	"math"
 	"os"
-	"strconv"
 	"strings"
 )
 
 type GLFWFramework struct {
+	defaultlevel.Loader
+
 	window           *glfw.Window
 	prevMousePos     [2]int16
 	prevWindowWidth  int
@@ -30,7 +29,6 @@ type GLFWFramework struct {
 
 	textInputStarted bool
 	textInputBuffer  string
-	audioManager     audio.OpenALAudioManager
 }
 
 func (gfw *GLFWFramework) Init(ml *gohome.MainLoop) error {
@@ -68,8 +66,13 @@ func (gfw *GLFWFramework) createWindowProfile(windowWidth, windowHeight uint32, 
 	if setprofile {
 		setProfile()
 	}
-	glfw.WindowHint(glfw.Samples, 8)
+
+	glfw.WindowHint(glfw.Samples, 4)
+
 	gfw.window = glfw.CreateWindow(int(windowWidth), int(windowHeight), title, nil, nil)
+	if gfw.window == nil {
+		return glfw.GetError()
+	}
 
 	gfw.window.MakeContextCurrent()
 	gfw.window.SetKeyCallback(onKey)
@@ -503,60 +506,8 @@ func (gfw *GLFWFramework) WindowIsFullscreen() bool {
 	return gfw.window.GetMonitor() != nil
 }
 
-func (gfw *GLFWFramework) OpenFile(file string) (*gohome.File, error) {
-	gFile := &gohome.File{}
-	osFile, err := os.Open(file)
-	gFile.ReadSeeker = osFile
-	gFile.Closer = osFile
-	return gFile, err
-}
-
-func getFileExtension(file string) string {
-	index := strings.LastIndex(file, ".")
-	if index == -1 {
-		return ""
-	}
-	return file[index+1:]
-}
-
-func equalIgnoreCase(str1, str string) bool {
-	if len(str1) != len(str) {
-		return false
-	}
-	for i := 0; i < len(str1); i++ {
-		if str1[i] != str[i] {
-			if str1[i] >= 65 && str1[i] <= 90 {
-				if str[i] >= 97 && str[i] <= 122 {
-					if str1[i]+32 != str[i] {
-						return false
-					}
-				} else {
-					return false
-				}
-			} else if str1[i] >= 97 && str1[i] <= 122 {
-				if str[i] >= 65 && str[i] <= 90 {
-					if str1[i]-32 != str[i] {
-						return false
-					}
-				} else {
-					return false
-				}
-			} else {
-				return false
-			}
-		}
-	}
-
-	return true
-}
-
-func (gfw *GLFWFramework) LoadLevel(rsmgr *gohome.ResourceManager, name, path string, preloaded, loadToGPU bool) *gohome.Level {
-	extension := getFileExtension(path)
-	if equalIgnoreCase(extension, "obj") {
-		return loadLevelOBJ(rsmgr, name, path, preloaded, loadToGPU)
-	}
-	gohome.ErrorMgr.Error("Level", name, "The extension "+extension+" is not supported")
-	return nil
+func (gfw *GLFWFramework) OpenFile(file string) (gohome.File, error) {
+	return os.Open(file)
 }
 
 func (gfw *GLFWFramework) ShowYesNoDialog(title, message string) uint8 {
@@ -590,50 +541,6 @@ func (gfw *GLFWFramework) EndTextInput() {
 	gfw.textInputBuffer = ""
 }
 
-func (gfw *GLFWFramework) GetAudioManager() gohome.AudioManager {
-	return &gfw.audioManager
-}
-
-func (gfw *GLFWFramework) LoadSound(name, path string) gohome.Sound {
-	wavReader, err := loadwav.LoadWAVFile(path)
-	if err != nil {
-		gohome.ErrorMgr.MessageError(gohome.ERROR_LEVEL_ERROR, "Sound", name, err)
-		return nil
-	}
-	format := loadwav.GetAudioFormat(wavReader)
-	if format == gohome.AUDIO_FORMAT_UNKNOWN {
-		gohome.ErrorMgr.Error("Sound", name, "The audio format is unknow: C: "+strconv.Itoa(int(wavReader.NumChannels))+" B: "+strconv.Itoa(int(wavReader.BitsPerSample)))
-		return nil
-	}
-	samples, err := loadwav.ReadAllSamples(wavReader)
-	if err != nil {
-		gohome.ErrorMgr.MessageError(gohome.ERROR_LEVEL_ERROR, "Sound", name, err)
-		return nil
-	}
-	sampleRate := wavReader.SampleRate
-
-	sound := gfw.audioManager.CreateSound(name, samples, format, sampleRate)
-
-	return sound
-}
-func (gfw *GLFWFramework) LoadMusic(name, path string) gohome.Music {
-	decoder, err := loadmp3.LoadMP3File(path)
-	if err != nil {
-		gohome.ErrorMgr.MessageError(gohome.ERROR_LEVEL_ERROR, "Music", name, err)
-		return nil
-	}
-	format := loadmp3.GetAudioFormat(decoder)
-	sampleRate := uint32(decoder.SampleRate())
-	samples, err := loadmp3.ReadAllSamples(decoder)
-	if err != nil {
-		gohome.ErrorMgr.MessageError(gohome.ERROR_LEVEL_ERROR, "Music", name, err)
-		return nil
-	}
-
-	music := gfw.audioManager.CreateMusic(name, samples, format, sampleRate)
-	return music
-}
-
 func (gfw *GLFWFramework) MonitorGetSize() mgl32.Vec2 {
 	m := getFocusedMonitor(gfw.window)
 	vm := m.GetVideoMode()
@@ -645,8 +552,4 @@ func (gfw *GLFWFramework) MonitorGetSize() mgl32.Vec2 {
 	} else {
 		return gfw.WindowGetSize()
 	}
-}
-
-func (gfw *GLFWFramework) LoadLevelString(rsmgr *gohome.ResourceManager, name, contents, fileName string, preloaded, loadToGPU bool) *gohome.Level {
-	return loadLevelOBJString(rsmgr, name, contents, fileName, preloaded, loadToGPU)
 }

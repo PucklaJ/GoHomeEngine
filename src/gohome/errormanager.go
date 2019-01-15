@@ -1,7 +1,6 @@
 package gohome
 
 import (
-	"log"
 	"os"
 )
 
@@ -92,14 +91,18 @@ func (this *ErrorManager) MessageError(errorLevel uint8, tag string, objectName 
 	}
 }
 
+type Stringer interface {
+	String() string
+}
+
 func (this *ErrorManager) onNewError(errMsg ErrorMessage) {
 	defer func() {
 		rec := recover()
 		if rec != nil {
-			log.Println("Recovered:", rec)
+			Framew.Log("Recovered: " + rec.(Stringer).String())
 		}
 	}()
-	log.Println(errMsg.Error())
+	Framew.Log(errMsg.Error())
 	if this.ShowMessageBoxes && (errMsg.ErrorLevel == ERROR_LEVEL_ERROR || errMsg.ErrorLevel == ERROR_LEVEL_FATAL) {
 		if Framew.ShowYesNoDialog("An Error accoured", errMsg.Error()+"\nContinue?") == DIALOG_NO {
 			MainLop.Quit()

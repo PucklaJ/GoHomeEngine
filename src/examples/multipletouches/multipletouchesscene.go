@@ -1,6 +1,6 @@
 package main
 
-import "github.com/PucklaMotzer09/gohomeengine/src/gohome"
+import "github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
 
 type MultipleTouchesScene struct {
 	targets [6]gohome.Sprite2D
@@ -20,8 +20,6 @@ func (this *MultipleTouchesScene) Init() {
 		this.targets[i].Visible = false
 		gohome.RenderMgr.AddObject(&this.targets[i])
 	}
-
-	gohome.RenderMgr.EnableBackBuffer = false
 }
 
 func (this *MultipleTouchesScene) Update(delta_time float32) {

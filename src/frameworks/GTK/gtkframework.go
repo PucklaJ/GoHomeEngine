@@ -2,16 +2,17 @@ package framework
 
 import (
 	"errors"
+	"github.com/PucklaMotzer09/GoHomeEngine/src/loaders/defaultlevel"
 	"os"
-	"strings"
 	"time"
 
-	"github.com/PucklaMotzer09/gohomeengine/src/frameworks/GTK/gtk"
-	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
+	"github.com/PucklaMotzer09/GoHomeEngine/src/frameworks/GTK/gtk"
+	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
 	"github.com/PucklaMotzer09/mathgl/mgl32"
 )
 
 type GTKFramework struct {
+	defaultlevel.Loader
 	startOtherThanPaint time.Time
 	endOtherThanPaint   time.Time
 
@@ -52,7 +53,6 @@ func (this *GTKFramework) Init(ml *gohome.MainLoop) error {
 	} else {
 		gohome.ErrorMgr.Init()
 	}
-	gohome.RenderMgr.EnableBackBuffer = false
 	ml.SetupStartScene()
 	if gtk.GetGLArea().ToWidget().GetParent().IsNULL() {
 		return errors.New("GLArea has not been added!")
@@ -71,17 +71,12 @@ func (this *GTKFramework) Update() {
 func (this *GTKFramework) Terminate() {
 	gtk.MainQuit()
 }
-func (this *GTKFramework) PollEvents() {
 
-}
 func (this *GTKFramework) CreateWindow(windowWidth, windowHeight uint32, title string) error {
 	return gtk.CreateWindow(windowWidth, windowHeight, title)
 }
 func (this *GTKFramework) WindowClosed() bool {
 	return false
-}
-func (this *GTKFramework) WindowSwap() {
-
 }
 
 func (this *GTKFramework) WindowSetSize(size mgl32.Vec2) {
@@ -119,108 +114,16 @@ func (this *GTKFramework) CursorDisabled() bool {
 	return gtk.CursorDisabled()
 }
 
-func (this *GTKFramework) OpenFile(file string) (*gohome.File, error) {
-	osFile, err := os.Open(file)
-	if err != nil {
-		return nil, err
-	}
-	gFile := &gohome.File{}
-	gFile.ReadSeeker = osFile
-	gFile.Closer = osFile
-	return gFile, nil
-}
-
-func getFileExtension(file string) string {
-	index := strings.LastIndex(file, ".")
-	if index == -1 {
-		return ""
-	}
-	return file[index+1:]
-}
-
-func equalIgnoreCase(str1, str string) bool {
-	if len(str1) != len(str) {
-		return false
-	}
-	for i := 0; i < len(str1); i++ {
-		if str1[i] != str[i] {
-			if str1[i] >= 65 && str1[i] <= 90 {
-				if str[i] >= 97 && str[i] <= 122 {
-					if str1[i]+32 != str[i] {
-						return false
-					}
-				} else {
-					return false
-				}
-			} else if str1[i] >= 97 && str1[i] <= 122 {
-				if str[i] >= 65 && str[i] <= 90 {
-					if str1[i]-32 != str[i] {
-						return false
-					}
-				} else {
-					return false
-				}
-			} else {
-				return false
-			}
-		}
-	}
-
-	return true
-}
-
-func (this *GTKFramework) LoadLevel(rsmgr *gohome.ResourceManager, name, path string, preloaded, loadToGPU bool) *gohome.Level {
-	// extension := getFileExtension(path)
-	// if equalIgnoreCase(extension, "obj") {
-	// 	return loadLevelOBJ(rsmgr, name, path, preloaded, loadToGPU)
-	// }
-	// return loader.LoadLevelAssimp(rsmgr, name, path, preloaded, loadToGPU)
-	return loadLevelOBJ(rsmgr, name, path, preloaded, loadToGPU)
-}
-
-func (this *GTKFramework) LoadLevelString(rsmgr *gohome.ResourceManager, name, contents, fileName string, preloaded, loadToGPU bool) *gohome.Level {
-	return loadLevelOBJString(rsmgr, name, contents, fileName, preloaded, loadToGPU)
+func (this *GTKFramework) OpenFile(file string) (gohome.File, error) {
+	return os.Open(file)
 }
 
 func (this *GTKFramework) ShowYesNoDialog(title, message string) uint8 {
 	return gohome.DIALOG_CANCELLED
 }
 
-func (this *GTKFramework) OnResize(callback func(newWidth, newHeight uint32)) {
-
-}
-func (this *GTKFramework) OnMove(callback func(newPosX, newPosY uint32)) {
-
-}
-func (this *GTKFramework) OnClose(callback func()) {
-
-}
-func (this *GTKFramework) OnFocus(callback func(focused bool)) {
-
-}
-
-func (this *GTKFramework) StartTextInput() {
-
-}
-func (this *GTKFramework) GetTextInput() string {
-	return ""
-}
-func (this *GTKFramework) EndTextInput() {
-
-}
 func (this *GTKFramework) GetGtkWindow() gtk.Window {
 	return gtk.GetWindow()
-}
-
-func (*GTKFramework) GetAudioManager() gohome.AudioManager {
-	return &gohome.NilAudioManager{}
-}
-
-func (*GTKFramework) LoadSound(name, path string) gohome.Sound {
-	return nil
-}
-func (*GTKFramework) LoadMusic(name, path string) gohome.Music {
-	return nil
 }
 
 func (this *GTKFramework) MonitorGetSize() mgl32.Vec2 {

@@ -16,7 +16,9 @@ type TransformableObject3D struct {
 	transformMatrix      mgl32.Mat4
 	camNotRelativeMatrix mgl32.Mat4
 
-	Parent                  TweenableObject3D
+	parent                  ParentObject3D
+	parentChannel           chan bool
+	childChannels           map[*TransformableObject3D]chan bool
 	IgnoreParentRotation    bool
 	IgnoreParentScale       bool
 	oldParentTransform      mgl32.Mat4
@@ -29,6 +31,9 @@ func (tobj *TransformableObject3D) valuesChanged() bool {
 }
 
 func (tobj *TransformableObject3D) CalculateTransformMatrix(rmgr *RenderManager, notRelativeToCamera int) {
+	if tobj.parent != nil && RenderMgr.calculatingTransformMatricesParallel {
+		<-tobj.parentChannel
+	}
 	var cam3d *Camera3D = nil
 	if rmgr != nil {
 		if notRelativeToCamera != -1 && len(rmgr.camera3Ds) > notRelativeToCamera {
@@ -60,6 +65,16 @@ func (tobj *TransformableObject3D) CalculateTransformMatrix(rmgr *RenderManager,
 	} else {
 		tobj.camNotRelativeMatrix = tobj.transformMatrix
 	}
+
+	if RenderMgr.calculatingTransformMatricesParallel {
+		if tobj.childChannels != nil {
+			for _, ch := range tobj.childChannels {
+				if ch != nil {
+					ch <- true
+				}
+			}
+		}
+	}
 }
 
 func (tobj *TransformableObject3D) GetTransformMatrix() mgl32.Mat4 {
@@ -71,15 +86,17 @@ func (tobj *TransformableObject3D) SetTransformMatrix(rmgr *RenderManager) {
 }
 
 func (tobj *TransformableObject3D) getParentTransform() mgl32.Mat4 {
-	if tobj.Parent != nil {
-		if ptobj, ok := tobj.Parent.(TweenableObject3D); ok {
+	if tobj.parent != nil {
+		if ptobj, ok := tobj.parent.(ParentObject3D); ok {
 			if transform := ptobj.GetTransform3D(); transform != nil {
 				if !tobj.IgnoreParentRotation && !tobj.IgnoreParentScale {
 					var nrc int = -1
-					if ent, ok := tobj.Parent.(*Entity3D); ok {
+					if ent, ok := tobj.parent.(*Entity3D); ok {
 						nrc = ent.NotRelativeCamera()
 					}
-					transform.CalculateTransformMatrix(&RenderMgr, nrc)
+					if !RenderMgr.calculatingTransformMatricesParallel {
+						transform.CalculateTransformMatrix(&RenderMgr, nrc)
+					}
 					return transform.GetTransformMatrix()
 				} else {
 					// T QR S
@@ -108,6 +125,39 @@ func (tobj *TransformableObject3D) getParentTransform() mgl32.Mat4 {
 func (tobj *TransformableObject3D) GetPosition() mgl32.Vec3 {
 	ptransform := tobj.getParentTransform()
 	return ptransform.Mul4x1(tobj.Position.Vec4(1.0)).Vec3()
+}
+
+func (tobj *TransformableObject3D) GetTransform3D() *TransformableObject3D {
+	return tobj
+}
+
+func (tobj *TransformableObject3D) GetParent() ParentObject3D {
+	return tobj.parent
+}
+
+func (tobj *TransformableObject3D) SetParent(parent ParentObject3D) {
+	if parent == nil {
+		if tobj.parent != nil {
+			close(tobj.parentChannel)
+			tobj.parent.SetChildChannel(nil, tobj)
+			tobj.parent = nil
+		}
+		return
+	}
+	if tobj.parent != nil {
+		close(tobj.parentChannel)
+		tobj.parent.SetChildChannel(nil, tobj)
+	}
+	tobj.parent = parent
+	tobj.parentChannel = make(chan bool)
+	tobj.parent.SetChildChannel(tobj.parentChannel, tobj)
+}
+
+func (tobj *TransformableObject3D) SetChildChannel(channel chan bool, tobj1 *TransformableObject3D) {
+	if tobj.childChannels == nil {
+		tobj.childChannels = make(map[*TransformableObject3D]chan bool)
+	}
+	tobj.childChannels[tobj1] = channel
 }
 
 func DefaultTransformableObject3D() *TransformableObject3D {

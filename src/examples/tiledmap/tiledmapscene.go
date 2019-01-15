@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
-	"github.com/PucklaMotzer09/gohomeengine/src/physics2d"
+	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
+	"github.com/PucklaMotzer09/GoHomeEngine/src/physics2d"
 )
 
 type TiledMapScene struct {
@@ -18,7 +18,6 @@ func (this *TiledMapScene) Init() {
 	gohome.RenderMgr.AddObject(&this.tiledMap)
 
 	gohome.RenderMgr.UpdateProjectionWithViewport = true
-	gohome.RenderMgr.EnableBackBuffer = false
 
 	w := this.tiledMap.Texture.GetWidth()
 	h := this.tiledMap.Texture.GetHeight()

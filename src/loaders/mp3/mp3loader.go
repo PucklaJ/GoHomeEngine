@@ -1,27 +1,27 @@
 package loader
 
 import (
+	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
 	"github.com/hajimehoshi/go-mp3"
-	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
 	"io/ioutil"
 )
 
-func LoadMP3File(fileName string) (*mp3.Decoder,error) {
-	file,err := gohome.Framew.OpenFile(fileName)
+func LoadMP3File(fileName string) (*mp3.Decoder, error) {
+	file, err := gohome.Framew.OpenFile(fileName)
 	if err != nil {
-		return nil,err
+		return nil, err
 	}
 	decoder, err := mp3.NewDecoder(file)
 	if err != nil {
-		return decoder,err
+		return decoder, err
 	}
-	return decoder,nil
+	return decoder, nil
 }
 
-func ReadAllSamples(decoder *mp3.Decoder) ([]byte,error) {
+func ReadAllSamples(decoder *mp3.Decoder) ([]byte, error) {
 	return ioutil.ReadAll(decoder)
 }
 
-func GetAudioFormat(decoder *mp3.Decoder) uint8 {
+func GetAudioFormat() uint8 {
 	return gohome.AUDIO_FORMAT_STEREO16
 }

@@ -1,45 +1,38 @@
 package main
 
 import (
-	"github.com/PucklaMotzer09/gohomeengine/src/gohome"
+	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
 	"github.com/PucklaMotzer09/mathgl/mgl32"
 	"golang.org/x/image/colornames"
+	"log"
+	"sync"
 )
 
-const SIZE int = 50
+const SIZE int = 20
 const USE_INSTANCING = true
 
 type InstancingScene struct {
-	ent gohome.Entity3D
+	ent gohome.InstancedEntity3D
 	cam gohome.Camera3D
 }
 
 func (this *InstancingScene) Init() {
 	cubeMesh := gohome.Box("Box", [3]float32{1.0, 1.0, 1.0}, false)
 	if USE_INSTANCING {
-		gohome.ResourceMgr.LoadShaderSource("3D Instanced", gohome.ENTITY_3D_INSTANCED_SHADER_VERTEX_SOURCE_OPENGL, gohome.ENTITY_3D_NOUV_NO_SHADOWS_SHADER_FRAGMENT_SOURCE_OPENGL, "", "", "", "")
-		cubeInstanced := gohome.Render.CreateInstancedMesh3D("Instanced Box")
-		cubeInstanced.AddVertices(cubeMesh.GetVertices(), cubeMesh.GetIndices())
-		cubeInstanced.SetNumInstances(uint32(SIZE * SIZE * SIZE))
-		cubeInstanced.AddValue(gohome.VALUE_MAT4)
-		cubeInstanced.SetName(0, gohome.VALUE_MAT4, "transformMatrix3D")
-		cubeInstanced.Load()
-		var transforms [SIZE * SIZE * SIZE]mgl32.Mat4
+		cubeInstanced := gohome.InstancedMesh3DFromMesh3D(cubeMesh)
+		this.ent.InitMesh(cubeInstanced, uint32(SIZE*SIZE*SIZE))
 		for x := 0; x < SIZE; x++ {
 			for y := 0; y < SIZE; y++ {
 				for z := 0; z < SIZE; z++ {
-					transforms[x+y*SIZE+z*SIZE*SIZE] = mgl32.Translate3D(float32(x)*2.0, float32(y)*2.0, float32(z)*2.0)
+					this.ent.Transforms[x+y*SIZE+z*SIZE*SIZE].Position = mgl32.Vec3{float32(x) * 2.0, float32(y) * 2.0, float32(z) * 2.0}
 				}
 			}
 		}
-		cubeInstanced.SetM4(0, transforms[:])
-		this.ent.InitMesh(cubeInstanced)
-		this.ent.Transform.Position = mgl32.Vec3{3.0, 0.0, 0.0}
-		this.ent.SetShader(gohome.ResourceMgr.GetShader("3D Instanced"))
-		this.ent.SetType(gohome.TYPE_3D_INSTANCED)
+
+		this.ent.UpdateInstancedValues()
+		this.ent.StopUpdatingInstancedValues = true
 		gohome.RenderMgr.AddObject(&this.ent)
 	} else {
-		gohome.Init3DShaders()
 		cubeMesh.Load()
 		for x := 0; x < SIZE; x++ {
 			for y := 0; y < SIZE; y++ {
@@ -58,7 +51,7 @@ func (this *InstancingScene) Init() {
 		&gohome.DirectionalLight{
 			Direction:     mgl32.Vec3{1.0, -1.0, -1.0},
 			DiffuseColor:  colornames.White,
-			SpecularColor: colornames.Black,
+			SpecularColor: colornames.Lime,
 			CastsShadows:  0,
 		}, 0,
 	)
@@ -72,10 +65,59 @@ func (this *InstancingScene) Init() {
 	gohome.RenderMgr.SetCamera3D(&this.cam, 0)
 }
 
-func (this *InstancingScene) Update(delta_time float32) {
+var addedRows int = 1
+var removedRows int = 0
 
+func (this *InstancingScene) addBoxes() {
+	this.ent.SetNumInstances(uint32((SIZE + addedRows) * (SIZE + addedRows) * (SIZE + addedRows)))
+	var wg sync.WaitGroup
+	wg.Add((SIZE + addedRows) * (SIZE + addedRows) * (SIZE + addedRows))
+	for x := 0; x < SIZE+addedRows; x++ {
+		for y := 0; y < SIZE+addedRows; y++ {
+			for z := 0; z < SIZE+addedRows; z++ {
+				go func(_x, _y, _z int) {
+					this.ent.Transforms[_x+_y*(SIZE+addedRows)+_z*(SIZE+addedRows)*(SIZE+addedRows)].Position = mgl32.Vec3{float32(_x) * 2.0, float32(_y) * 2.0, float32(_z) * 2.0}
+					wg.Done()
+				}(x, y, z)
+			}
+		}
+	}
+	wg.Wait()
+	this.ent.UpdateInstancedValues()
+	addedRows++
+	removedRows = 0
+}
+
+func (this *InstancingScene) Update(delta_time float32) {
+	if !USE_INSTANCING {
+		return
+	}
+	if gohome.InputMgr.IsPressed(gohome.KeyI) {
+		var wg sync.WaitGroup
+		wg.Add(len(this.ent.Transforms))
+		for _, t := range this.ent.Transforms {
+			go func(_t *gohome.TransformableObjectInstanced3D) {
+				_t.Position[0] += 0.5 * delta_time
+				wg.Done()
+			}(t)
+		}
+		wg.Wait()
+		this.ent.UpdateInstancedValues()
+	} else if gohome.InputMgr.JustPressed(gohome.KeyH) {
+		this.addBoxes()
+		log.Println("Size:", SIZE+addedRows)
+	} else if gohome.InputMgr.JustPressed(gohome.KeyJ) {
+		if addedRows < 2 {
+			return
+		}
+		addedRows -= 2
+		this.addBoxes()
+		log.Println("Size:", SIZE+addedRows)
+	} else if gohome.InputMgr.JustPressed(gohome.KeyK) {
+		this.ent.SetNumUsedInstances(this.ent.Model3D.GetNumUsedInstances() - 1)
+	}
 }
 
 func (this *InstancingScene) Terminate() {
-
+	this.ent.Terminate()
 }
