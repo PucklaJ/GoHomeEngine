@@ -2,7 +2,7 @@ package framework
 
 import (
 	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
-	"github.com/go-gl/glfw/v3.3/glfw"
+	"github.com/go-gl/glfw/v3.2/glfw"
 )
 
 func onKey(w *glfw.Window, key glfw.Key, scancode int, action glfw.Action, mods glfw.ModifierKey) {
