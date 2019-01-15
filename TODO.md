@@ -33,8 +33,6 @@
 + Parallax Mapping / Parallax Occlusion Mapping / Steep Parallax Mapping
 + Add Changeable MAX_POINT_LIGHTS, MAX_DIRECTIONAL_LIGHTS, etc. to LightMgr
     - maybe all makros (APLHA_DISCARD_PADDING)
-+ Fix OpenAL errors
-    - device not closed
 
 ## 2D
 

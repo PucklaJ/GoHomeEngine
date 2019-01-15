@@ -40,15 +40,22 @@ func (this *OpenALSound) Stop() {
 	this.source.Stop()
 	this.playing = false
 }
+
+func (this *OpenALSound) terminate() {
+	this.source.Delete()
+	handleOpenALError("Sound", this.Name, "Delete Source:")
+	this.buffer.Delete()
+	handleOpenALError("Sound", this.Name, "Delete Buffer:")
+	this.playing = false
+	this.terminated = true
+}
+
 func (this *OpenALSound) Terminate() {
-	if this.terminated {
+	if this.terminated || audioManager.terminated {
 		return
 	}
-	this.buffer.Delete()
-	this.source.Delete()
-	this.playing = false
+	this.terminate()
 	audioManager.removeSoundFromSlice(this)
-	this.terminated = true
 }
 func (this *OpenALSound) IsPlaying() bool {
 	return this.playing
@@ -104,17 +111,24 @@ func (this *OpenALMusic) Stop() {
 	this.source.Stop()
 	this.playing = false
 }
-func (this *OpenALMusic) Terminate() {
-	if this.terminated {
-		return
-	}
+
+func (this *OpenALMusic) terminate() {
 	this.source.Delete()
-	for _, b := range this.buffers {
+	handleOpenALError("Music", this.Name, "Delete Source:")
+	for i, b := range this.buffers {
 		b.Delete()
+		handleOpenALError("Music", this.Name, "Delete Buffer "+strconv.Itoa(i)+":")
 	}
 	this.playing = false
-	audioManager.removeMusicFromSlice(this)
 	this.terminated = true
+}
+
+func (this *OpenALMusic) Terminate() {
+	if this.terminated || audioManager.terminated {
+		return
+	}
+	this.terminate()
+	audioManager.removeMusicFromSlice(this)
 }
 func (this *OpenALMusic) IsPlaying() bool {
 	return this.playing
@@ -147,8 +161,9 @@ type OpenALAudioManager struct {
 	sounds  []*OpenALSound
 	musics  []*OpenALMusic
 
-	volume float32
-	failed bool
+	volume     float32
+	failed     bool
+	terminated bool
 }
 
 func (this *OpenALAudioManager) Init() {
@@ -215,7 +230,6 @@ func (this *OpenALAudioManager) CreateSound(name string, samples []byte, format 
 	}
 
 	sound.Duration, _ = time.ParseDuration(strconv.Itoa(int(microSeconds)) + "µs")
-
 	this.sounds = append(this.sounds, sound)
 
 	sound.SetVolume(1.0)
@@ -355,16 +369,17 @@ func (this *OpenALAudioManager) createMusicMP3(name string, decoder *mp3.Decoder
 
 func (this *OpenALAudioManager) Terminate() {
 	for _, s := range this.sounds {
-		s.Terminate()
+		s.terminate()
 	}
 	for _, m := range this.musics {
-		m.Terminate()
+		m.terminate()
 	}
 	this.sounds = this.sounds[:0]
 	this.musics = this.musics[:0]
 
 	this.context.Destroy()
 	this.device.CloseDevice()
+	this.terminated = true
 }
 func (this *OpenALAudioManager) Update(delta_time float32) {
 	for i := 0; i < len(this.musics); i++ {
@@ -482,6 +497,13 @@ func getOpenALFormat(gohomeformat uint8) al.Format {
 	}
 
 	return 0
+}
+
+func handleOpenALError(tag, name, prefix string) {
+	err := al.Err()
+	if err != nil {
+		gohome.ErrorMgr.Error(tag, name, prefix+" "+err.Error())
+	}
 }
 
 var audioManager *OpenALAudioManager

@@ -131,6 +131,9 @@ func (this *MainLoop) Quit() {
 		defer this.terminateSprite2DMesh()
 	}
 	defer ErrorMgr.Terminate()
+	if AudioMgr != nil {
+		defer AudioMgr.Terminate()
+	}
 }
 
 func Init3DShaders() {
