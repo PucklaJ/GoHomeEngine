@@ -15,10 +15,11 @@ type OpenALSound struct {
 	Name     string
 	Duration time.Duration
 
-	buffer  al.Buffer
-	source  al.Source
-	playing bool
-	volume  float32
+	buffer     al.Buffer
+	source     al.Source
+	playing    bool
+	volume     float32
+	terminated bool
 }
 
 func (this *OpenALSound) Play(loop bool) {
@@ -40,10 +41,14 @@ func (this *OpenALSound) Stop() {
 	this.playing = false
 }
 func (this *OpenALSound) Terminate() {
+	if this.terminated {
+		return
+	}
 	this.buffer.Delete()
 	this.source.Delete()
 	this.playing = false
 	audioManager.removeSoundFromSlice(this)
+	this.terminated = true
 }
 func (this *OpenALSound) IsPlaying() bool {
 	return this.playing
@@ -100,13 +105,16 @@ func (this *OpenALMusic) Stop() {
 	this.playing = false
 }
 func (this *OpenALMusic) Terminate() {
-	this.terminated = true
+	if this.terminated {
+		return
+	}
 	this.source.Delete()
 	for _, b := range this.buffers {
 		b.Delete()
 	}
 	this.playing = false
 	audioManager.removeMusicFromSlice(this)
+	this.terminated = true
 }
 func (this *OpenALMusic) IsPlaying() bool {
 	return this.playing
@@ -140,10 +148,14 @@ type OpenALAudioManager struct {
 	musics  []*OpenALMusic
 
 	volume float32
+	failed bool
 }
 
 func (this *OpenALAudioManager) Init() {
 	audioManager = this
+	defer func() {
+		this.failed = !this.failed
+	}()
 	this.device = al.OpenDevice("")
 	if err := this.device.Err(); err != nil {
 		gohome.ErrorMgr.Error("Audio", "OpenAL", "Couldn't open device: "+err.Error())
@@ -160,13 +172,19 @@ func (this *OpenALAudioManager) Init() {
 		gohome.ErrorMgr.Error("Audio", "OpenAL", "Couldn't activate context: "+err.Error())
 		this.context.Destroy()
 		this.device.CloseDevice()
+		return
 	}
 
 	gohome.UpdateMgr.AddObject(this)
 
 	this.volume = 1.0
+	this.failed = true
 }
 func (this *OpenALAudioManager) CreateSound(name string, samples []byte, format uint8, sampleRate uint32) gohome.Sound {
+	if this.failed {
+		gohome.ErrorMgr.Error("Sound", name, "Couldn't create because the initialisation failed!")
+		return &gohome.NilSound{}
+	}
 	sound := &OpenALSound{}
 	sound.Name = name
 	sound.buffer = al.NewBuffer()
@@ -205,6 +223,10 @@ func (this *OpenALAudioManager) CreateSound(name string, samples []byte, format 
 	return sound
 }
 func (this *OpenALAudioManager) CreateMusic(name string, samples []byte, format uint8, sampleRate uint32) gohome.Music {
+	if this.failed {
+		gohome.ErrorMgr.Error("Music", name, "Couldn't create because the initialisation failed!")
+		return &gohome.NilMusic{}
+	}
 	music := &OpenALMusic{}
 	music.Name = name
 	music.buffers = append(music.buffers, al.NewBuffer())
@@ -332,6 +354,15 @@ func (this *OpenALAudioManager) createMusicMP3(name string, decoder *mp3.Decoder
 }
 
 func (this *OpenALAudioManager) Terminate() {
+	for _, s := range this.sounds {
+		s.Terminate()
+	}
+	for _, m := range this.musics {
+		m.Terminate()
+	}
+	this.sounds = this.sounds[:0]
+	this.musics = this.musics[:0]
+
 	this.context.Destroy()
 	this.device.CloseDevice()
 }
