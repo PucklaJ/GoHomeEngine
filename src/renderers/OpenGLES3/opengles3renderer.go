@@ -156,8 +156,8 @@ func (*OpenGLES3Renderer) CreateInstancedMesh3D(name string) gohome.InstancedMes
 	return CreateOpenGLES3InstancedMesh3D(name)
 }
 
-func (*OpenGLES3Renderer) CreateLines3DInterface(name string) gohome.Lines3DInterface {
-	return &OpenGLES3Lines3DInterface{
+func (*OpenGLES3Renderer) CreateShape3DInterface(name string) gohome.Shape3DInterface {
+	return &OpenGLES3Shape3DInterface{
 		Name: name,
 	}
 }

@@ -144,8 +144,8 @@ func (*WebGLRenderer) CreateInstancedMesh3D(name string) gohome.InstancedMesh3D 
 	return CreateWebGLInstancedMesh3D(name)
 }
 
-func (*WebGLRenderer) CreateLines3DInterface(name string) gohome.Lines3DInterface {
-	return &WebGLLines3DInterface{
+func (*WebGLRenderer) CreateShape3DInterface(name string) gohome.Shape3DInterface {
+	return &WebGLShape3DInterface{
 		Name: name,
 	}
 }

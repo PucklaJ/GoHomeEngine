@@ -34,7 +34,7 @@
 + Add Changeable MAX_POINT_LIGHTS, MAX_DIRECTIONAL_LIGHTS, etc. to LightMgr
     - maybe all makros (APLHA_DISCARD_PADDING)
 + Add LoadTexture to Renderer
-+ Rename Line3D to Shape3D and add more 3D Shapes
++ Add more 3D Shapes
 + Replace uint32 with int where possible
 
 ## 2D

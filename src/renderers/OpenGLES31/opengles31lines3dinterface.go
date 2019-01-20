@@ -6,7 +6,7 @@ import (
 	"unsafe"
 )
 
-type OpenGLES31Lines3DInterface struct {
+type OpenGLES31Shape3DInterface struct {
 	Name   string
 	vbo    uint32
 	vao    uint32
@@ -16,24 +16,24 @@ type OpenGLES31Lines3DInterface struct {
 	numVertices uint32
 }
 
-func (this *OpenGLES31Lines3DInterface) Init() {
+func (this *OpenGLES31Shape3DInterface) Init() {
 	this.loaded = false
 }
 
-func (this *OpenGLES31Lines3DInterface) AddLines(lines []gohome.Line3D) {
+func (this *OpenGLES31Shape3DInterface) AddLines(lines []gohome.Line3D) {
 	if this.loaded {
-		gohome.ErrorMgr.Warning("Lines3DInterface", this.Name, "It has already been loaded to the GPU! You can't add any vertices anymore!")
+		gohome.ErrorMgr.Warning("Shape3DInterface", this.Name, "It has already been loaded to the GPU! You can't add any vertices anymore!")
 		return
 	}
 
 	this.lines = append(this.lines, lines...)
 }
 
-func (this *OpenGLES31Lines3DInterface) GetLines() []gohome.Line3D {
+func (this *OpenGLES31Shape3DInterface) GetLines() []gohome.Line3D {
 	return this.lines
 }
 
-func (this *OpenGLES31Lines3DInterface) attributePointer() {
+func (this *OpenGLES31Shape3DInterface) attributePointer() {
 	gl.BindBuffer(gl.ARRAY_BUFFER, this.vbo)
 	gl.VertexAttribPointer(0, 3, gl.FLOAT, gl.FALSE, int32(gohome.LINE3DVERTEXSIZE), gl.PtrOffset(0))
 	gl.VertexAttribPointer(1, 4, gl.FLOAT, gl.FALSE, int32(gohome.LINE3DVERTEXSIZE), gl.PtrOffset(3*4))
@@ -42,14 +42,14 @@ func (this *OpenGLES31Lines3DInterface) attributePointer() {
 	gl.EnableVertexAttribArray(1)
 }
 
-func (this *OpenGLES31Lines3DInterface) Load() {
+func (this *OpenGLES31Shape3DInterface) Load() {
 	if this.loaded {
 		return
 	}
 
 	this.numVertices = uint32(2 * len(this.lines))
 	if this.numVertices == 0 {
-		gohome.ErrorMgr.Error("Lines3DInterface", this.Name, "No Vertices have been added!")
+		gohome.ErrorMgr.Error("Shape3DInterface", this.Name, "No Vertices have been added!")
 		return
 	}
 
@@ -70,28 +70,28 @@ func (this *OpenGLES31Lines3DInterface) Load() {
 	this.loaded = true
 }
 
-func (this *OpenGLES31Lines3DInterface) Render() {
+func (this *OpenGLES31Shape3DInterface) Render() {
 	hasLoaded := this.loaded
 	if !hasLoaded {
 		this.Load()
 	}
 
 	if this.numVertices == 0 {
-		gohome.ErrorMgr.Error("Lines3DInterface", this.Name, "No Vertices have been added!")
+		gohome.ErrorMgr.Error("Shape3DInterface", this.Name, "No Vertices have been added!")
 		return
 	}
 
 	gl.BindVertexArray(this.vao)
 	gl.GetError()
 	gl.DrawArrays(gl.LINES, 0, int32(this.numVertices))
-	handleOpenGLES31Error("Lines3DInterface", this.Name, "RenderError: ")
+	handleOpenGLES31Error("Shape3DInterface", this.Name, "RenderError: ")
 	gl.BindVertexArray(0)
 
 	if !hasLoaded {
 		this.Terminate()
 	}
 }
-func (this *OpenGLES31Lines3DInterface) Terminate() {
+func (this *OpenGLES31Shape3DInterface) Terminate() {
 	var buf [1]uint32
 	buf[0] = this.vbo
 	defer gl.DeleteBuffers(1, buf[:])

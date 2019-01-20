@@ -25,10 +25,10 @@ src/examples/*/gtkbuilder
 src/examples/*/gtkgui
 src/examples/*/gui
 src/examples/*/instancing
-src/examples/*/lines3d
 src/examples/*/multipletouches
 src/examples/*/physics
 src/examples/*/shape2d
+src/examples/*/shape3d
 src/examples/*/spriteanimation
 src/examples/*/textinput
 src/examples/*/textrendering

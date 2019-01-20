@@ -17,7 +17,7 @@ type Renderer interface {
 	CreateRenderTexture(name string, width, height, textures uint32, depthBuffer, multiSampled, shadowMap, cubeMap bool) RenderTexture
 	CreateCubeMap(name string) CubeMap
 	CreateInstancedMesh3D(name string) InstancedMesh3D
-	CreateLines3DInterface(name string) Lines3DInterface
+	CreateShape3DInterface(name string) Shape3DInterface
 	CreateShape2DInterface(name string) Shape2DInterface
 	SetWireFrame(b bool)
 	SetViewport(viewport Viewport)
@@ -81,8 +81,8 @@ func (*NilRenderer) CreateCubeMap(name string) CubeMap {
 func (*NilRenderer) CreateInstancedMesh3D(name string) InstancedMesh3D {
 	return &NilInstancedMesh3D{}
 }
-func (*NilRenderer) CreateLines3DInterface(name string) Lines3DInterface {
-	return &NilLines3DInterface{}
+func (*NilRenderer) CreateShape3DInterface(name string) Shape3DInterface {
+	return &NilShape3DInterface{}
 }
 func (*NilRenderer) CreateShape2DInterface(name string) Shape2DInterface {
 	return &NilShape2DInterface{}

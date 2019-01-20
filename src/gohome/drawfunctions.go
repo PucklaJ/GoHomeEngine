@@ -13,7 +13,7 @@ var CircleDetail uint32 = 30
 
 func DrawLine3D(pos1, pos2 mgl32.Vec3) {
 	line := toLine3D(pos1, pos2)
-	var robj Lines3D
+	var robj Shape3D
 	robj.Init()
 	robj.AddLine(line)
 	robj.Load()

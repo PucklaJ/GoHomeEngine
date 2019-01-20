@@ -5,7 +5,7 @@ import (
 	"github.com/go-gl/gl/all-core/gl"
 )
 
-type OpenGLLines3DInterface struct {
+type OpenGLShape3DInterface struct {
 	Name       string
 	vbo        uint32
 	vao        uint32
@@ -16,26 +16,26 @@ type OpenGLLines3DInterface struct {
 	numVertices uint32
 }
 
-func (this *OpenGLLines3DInterface) Init() {
+func (this *OpenGLShape3DInterface) Init() {
 	render := gohome.Render.(*OpenGLRenderer)
 	this.canUseVaos = render.HasFunctionAvailable("VERTEX_ARRAY")
 	this.loaded = false
 }
 
-func (this *OpenGLLines3DInterface) AddLines(lines []gohome.Line3D) {
+func (this *OpenGLShape3DInterface) AddLines(lines []gohome.Line3D) {
 	if this.loaded {
-		gohome.ErrorMgr.Warning("Lines3DInterface", this.Name, "It has already been loaded to the GPU! You can't add any vertices anymore!")
+		gohome.ErrorMgr.Warning("Shape3DInterface", this.Name, "It has already been loaded to the GPU! You can't add any vertices anymore!")
 		return
 	}
 
 	this.lines = append(this.lines, lines...)
 }
 
-func (this *OpenGLLines3DInterface) GetLines() []gohome.Line3D {
+func (this *OpenGLShape3DInterface) GetLines() []gohome.Line3D {
 	return this.lines
 }
 
-func (this *OpenGLLines3DInterface) attributePointer() {
+func (this *OpenGLShape3DInterface) attributePointer() {
 	gl.BindBuffer(gl.ARRAY_BUFFER, this.vbo)
 	gl.VertexAttribPointer(0, 3, gl.FLOAT, false, gohome.LINE3DVERTEXSIZE, gl.PtrOffset(0))
 	gl.VertexAttribPointer(1, 4, gl.FLOAT, false, gohome.LINE3DVERTEXSIZE, gl.PtrOffset(3*4))
@@ -44,14 +44,14 @@ func (this *OpenGLLines3DInterface) attributePointer() {
 	gl.EnableVertexAttribArray(1)
 }
 
-func (this *OpenGLLines3DInterface) Load() {
+func (this *OpenGLShape3DInterface) Load() {
 	if this.loaded {
 		return
 	}
 
 	this.numVertices = uint32(2 * len(this.lines))
 	if this.numVertices == 0 {
-		gohome.ErrorMgr.Error("Lines3DInterface", this.Name, "No Vertices have been added!")
+		gohome.ErrorMgr.Error("Shape3DInterface", this.Name, "No Vertices have been added!")
 		return
 	}
 
@@ -73,14 +73,14 @@ func (this *OpenGLLines3DInterface) Load() {
 	this.loaded = true
 }
 
-func (this *OpenGLLines3DInterface) Render() {
+func (this *OpenGLShape3DInterface) Render() {
 	hasLoaded := this.loaded
 	if !hasLoaded {
 		this.Load()
 	}
 
 	if this.numVertices == 0 {
-		gohome.ErrorMgr.Error("Lines3DInterface", this.Name, "No Vertices have been added!")
+		gohome.ErrorMgr.Error("Shape3DInterface", this.Name, "No Vertices have been added!")
 		return
 	}
 
@@ -91,7 +91,7 @@ func (this *OpenGLLines3DInterface) Render() {
 	}
 	gl.GetError()
 	gl.DrawArrays(gl.LINES, 0, int32(this.numVertices))
-	handleOpenGLError("Lines3DInterface", this.Name, "RenderError: ")
+	handleOpenGLError("Shape3DInterface", this.Name, "RenderError: ")
 	if this.canUseVaos {
 		gl.BindVertexArray(0)
 	} else {
@@ -102,7 +102,7 @@ func (this *OpenGLLines3DInterface) Render() {
 		this.Terminate()
 	}
 }
-func (this *OpenGLLines3DInterface) Terminate() {
+func (this *OpenGLShape3DInterface) Terminate() {
 	defer gl.DeleteBuffers(1, &this.vbo)
 	if this.canUseVaos {
 		defer gl.DeleteVertexArrays(1, &this.vao)
