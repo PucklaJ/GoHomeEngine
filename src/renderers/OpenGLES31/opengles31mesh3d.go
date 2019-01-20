@@ -10,7 +10,6 @@ import (
 
 const (
 	NUM_GO_ROUTINES_TANGENTS_CALCULATING uint32 = 10
-	gohome.MESH3DVERTEXSIZE                    uint32 = 3*4 + 3*4 + 2*4 + 3*4 // 3*sizeof(float32)+3*sizeof(float32)+2*sizeof(float32)+3*sizeof(float32)
 )
 
 type OpenGLES31Mesh3D struct {

@@ -36,6 +36,7 @@
 + Add LoadTexture to Renderer
 + Add more 3D Shapes
 + Replace uint32 with int where possible
++ Add WebGL examples to example READMEs
 
 ## 2D
 

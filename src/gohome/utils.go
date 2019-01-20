@@ -78,21 +78,19 @@ func Mesh2DVerticesToFloatArray(vertices []Mesh2DVertex) (array []float32) {
 	return
 }
 
-func Lines3DToFloatArray(lines []Line3D) (array []float32) {
-	const NUM_FLOATS = SHAPE3DVERTEXSIZE / 4 * 2
-	array = make([]float32, len(lines)*NUM_FLOATS)
+func Shape3DVerticesToFloatArray(points []Shape3DVertex) (array []float32) {
+	const NUM_FLOATS = SHAPE3DVERTEXSIZE / 4
+	array = make([]float32, len(points)*NUM_FLOATS)
 	var wg sync.WaitGroup
 	wg.Add(len(array) / NUM_FLOATS)
 	var index = 0
-	for _, l := range lines {
-		go func(_index int, _l Line3D) {
-			for i := 0; i < 2; i++ {
-				for j := 0; j < 3+4; j++ {
-					array[_index+i*(3+4)+j] = _l[i][j]
-				}
+	for _, p := range points {
+		go func(_index int, _p Shape3DVertex) {
+			for j := 0; j < 3+4; j++ {
+				array[_index+j] = _p[j]
 			}
 			wg.Done()
-		}(index, l)
+		}(index, p)
 		index += NUM_FLOATS
 	}
 	wg.Wait()
