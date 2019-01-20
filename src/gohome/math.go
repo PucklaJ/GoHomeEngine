@@ -10,7 +10,7 @@ import (
 const (
 	MESH2DVERTEXSIZE  = 2 * 2 * 4 // 2*2*sizeof(float32)
 	INDEXSIZE         = 4         // sizeof(uint32)
-	LINE3DVERTEXSIZE  = 3*4 + 4*4
+	SHAPE3DVERTEXSIZE = 3*4 + 4*4
 	SHAPE2DVERTEXSIZE = 2*4 + 4*4
 )
 
@@ -81,12 +81,16 @@ func (this AxisAlignedBoundingBox) Intersects(thisPos mgl32.Vec3, other AxisAlig
 type Shape3DVertex [3 + 4]float32 // Position + Color
 type Line3D [2]Shape3DVertex
 
-func (this *Line3D) SetColor(col color.Color) {
+func (this *Shape3DVertex) SetColor(col color.Color) {
 	vec4Col := ColorToVec4(col)
+	for i := 0; i < 4; i++ {
+		(*this)[3+i] = vec4Col[i]
+	}
+}
+
+func (this *Line3D) SetColor(col color.Color) {
 	for j := 0; j < 2; j++ {
-		for i := 0; i < 4; i++ {
-			(*this)[j][i+3] = vec4Col[i]
-		}
+		(*this)[j].SetColor(col)
 	}
 }
 
@@ -98,6 +102,8 @@ func (this *Line3D) Color() color.Color {
 		A: uint8((*this)[0][6] * 255.0),
 	}
 }
+
+type Triangle3D [3]Shape3DVertex
 
 type TextureRegion struct {
 	Min [2]float32

@@ -2,8 +2,11 @@ package gohome
 
 type Shape3DInterface interface {
 	Init()
-	AddLines(lines []Line3D)
-	GetLines() []Line3D
+	AddPoints(points []Shape3DVertex)
+	GetPoints() []Shape3DVertex
+	SetDrawMode(drawMode uint8)
+	SetPointSize(size float32)
+	SetLineWidth(size float32)
 	Load()
 	Render()
 	Terminate()
@@ -15,13 +18,26 @@ type NilShape3DInterface struct {
 func (*NilShape3DInterface) Init() {
 
 }
-func (*NilShape3DInterface) AddLines(lines []Line3D) {
+func (*NilShape3DInterface) AddPoints(points []Shape3DVertex) {
 
 }
-func (*NilShape3DInterface) GetLines() []Line3D {
-	var lines []Line3D
-	return lines
+func (*NilShape3DInterface) GetPoints() []Shape3DVertex {
+	var points []Shape3DVertex
+	return points
 }
+
+func (*NilShape3DInterface) SetDrawMode(drawMode uint8) {
+
+}
+
+func (*NilShape3DInterface) SetPointSize(size float32) {
+
+}
+
+func (*NilShape3DInterface) SetLineWidth(size float32) {
+
+}
+
 func (*NilShape3DInterface) Load() {
 
 }

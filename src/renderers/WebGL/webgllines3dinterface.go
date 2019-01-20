@@ -33,8 +33,8 @@ func (this *WebGLShape3DInterface) GetLines() []gohome.Line3D {
 
 func (this *WebGLShape3DInterface) attributePointer() {
 	gl.BindBuffer(gl.ARRAY_BUFFER, this.vbo)
-	gl.VertexAttribPointer(0, 3, gl.FLOAT, false, gohome.LINE3DVERTEXSIZE, 0)
-	gl.VertexAttribPointer(1, 4, gl.FLOAT, false, gohome.LINE3DVERTEXSIZE, 3*4)
+	gl.VertexAttribPointer(0, 3, gl.FLOAT, false, gohome.SHAPE3DVERTEXSIZE, 0)
+	gl.VertexAttribPointer(1, 4, gl.FLOAT, false, gohome.SHAPE3DVERTEXSIZE, 3*4)
 
 	gl.EnableVertexAttribArray(0)
 	gl.EnableVertexAttribArray(1)
@@ -56,7 +56,7 @@ func (this *WebGLShape3DInterface) Load() {
 	this.vbo = gl.CreateBuffer()
 
 	gl.BindBuffer(gl.ARRAY_BUFFER, this.vbo)
-	gl.BufferData(gl.ARRAY_BUFFER, gohome.LINE3DVERTEXSIZE*this.numVertices, vertexBuffer, gl.STATIC_DRAW)
+	gl.BufferData(gl.ARRAY_BUFFER, gohome.SHAPE3DVERTEXSIZE*this.numVertices, vertexBuffer, gl.STATIC_DRAW)
 	gl.BindBuffer(gl.ARRAY_BUFFER, nil)
 
 	this.loaded = true

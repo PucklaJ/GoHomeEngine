@@ -79,7 +79,7 @@ func Mesh2DVerticesToFloatArray(vertices []Mesh2DVertex) (array []float32) {
 }
 
 func Lines3DToFloatArray(lines []Line3D) (array []float32) {
-	const NUM_FLOATS = LINE3DVERTEXSIZE / 4 * 2
+	const NUM_FLOATS = SHAPE3DVERTEXSIZE / 4 * 2
 	array = make([]float32, len(lines)*NUM_FLOATS)
 	var wg sync.WaitGroup
 	wg.Add(len(array) / NUM_FLOATS)

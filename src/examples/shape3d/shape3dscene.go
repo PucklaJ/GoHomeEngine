@@ -11,6 +11,7 @@ type Shape3DScene struct {
 
 func (this *Shape3DScene) Init() {
 	this.shape.Init()
+	this.shape.SetDrawMode(gohome.DRAW_MODE_LINES)
 	this.shape.AddLines([]gohome.Line3D{
 		{
 			{
