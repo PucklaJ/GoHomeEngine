@@ -11,16 +11,6 @@ var LineWidth float32 = 1.0
 var Filled bool = true
 var CircleDetail uint32 = 30
 
-func DrawLine3D(pos1, pos2 mgl32.Vec3) {
-	line := toLine3D(pos1, pos2)
-	var robj Shape3D
-	robj.Init()
-	robj.AddLine(line)
-	robj.Load()
-	RenderMgr.RenderRenderObject(&robj)
-	robj.Terminate()
-}
-
 func DrawPoint2D(point mgl32.Vec2) {
 	point2D := toPoint2D(point)
 	var robj Shape2D
@@ -139,4 +129,52 @@ func DrawTextureAdv(tex Texture, x, y, width, height int, texReg TextureRegion, 
 	spr.Flip = flip
 
 	RenderMgr.RenderRenderObject(&spr)
+}
+
+func DrawPoint3D(pos mgl32.Vec3) {
+	point := toVertex3D(pos)
+	var robj Shape3D
+	robj.Init()
+	robj.AddPoint(point)
+	robj.Load()
+	robj.SetDrawMode(DRAW_MODE_POINTS)
+	RenderMgr.RenderRenderObject(&robj)
+	robj.Terminate()
+}
+
+func DrawLine3D(pos1, pos2 mgl32.Vec3) {
+	line := toLine3D(pos1, pos2)
+	var robj Shape3D
+	robj.Init()
+	robj.AddLine(line)
+	robj.Load()
+	robj.SetDrawMode(DRAW_MODE_LINES)
+	RenderMgr.RenderRenderObject(&robj)
+	robj.Terminate()
+}
+
+func DrawTriangle3D(pos1, pos2, pos3 mgl32.Vec3) {
+	tri := toTriangle3D(pos1, pos2, pos3)
+	var robj Shape3D
+	robj.Init()
+	robj.AddTriangle(tri)
+	robj.Load()
+	robj.SetDrawMode(DRAW_MODE_TRIANGLES)
+	RenderMgr.RenderRenderObject(&robj)
+	robj.Terminate()
+}
+
+func DrawCube(pos mgl32.Vec3, width, height, depth, pitch, yaw, roll float32) {
+	tris := cubeToTriangle3Ds(width, height, depth)
+	var robj Shape3D
+	robj.Init()
+	robj.AddTriangles(tris[:])
+	robj.Load()
+	robj.SetDrawMode(DRAW_MODE_TRIANGLES)
+	robj.Transform.Position = pos
+	pitch, yaw, roll = mgl32.DegToRad(pitch), mgl32.DegToRad(yaw), mgl32.DegToRad(roll)
+
+	robj.Transform.Rotation = mgl32.QuatRotate(pitch, [3]float32{1.0, 0.0, 0.0}).Mul(mgl32.QuatRotate(yaw, [3]float32{0.0, 1.0, 0.0})).Mul(mgl32.QuatRotate(roll, [3]float32{0.0, 0.0, 1.0}))
+	RenderMgr.RenderRenderObject(&robj)
+	robj.Terminate()
 }

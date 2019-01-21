@@ -130,3 +130,71 @@ func toPolygon2D(positions ...mgl32.Vec2) (poly Polygon2D) {
 	}
 	return
 }
+
+func toVertex3D(pos mgl32.Vec3) (vert Shape3DVertex) {
+	for i := 0; i < 3; i++ {
+		vert[i] = pos[i]
+	}
+
+	vecCol := ColorToVec4(DrawColor)
+	for i := 0; i < 4; i++ {
+		vert[i+3] = vecCol[i]
+	}
+	return
+}
+
+func toTriangle3D(pos1, pos2, pos3 mgl32.Vec3) (tri Triangle3D) {
+	pos := [3]mgl32.Vec3{
+		pos1, pos2, pos3,
+	}
+
+	for i := 0; i < 3; i++ {
+		tri[i] = toVertex3D(pos[i])
+	}
+	return
+}
+
+func cubeToTriangle3Ds(width, height, depth float32) (tris [6 * 2]Triangle3D) {
+	const LDB = 0
+	const RDB = 1
+	const RDF = 2
+	const LDF = 3
+	const LUB = 4
+	const RUB = 5
+	const RUF = 6
+	const LUF = 7
+
+	p := [8]mgl32.Vec3{
+		mgl32.Vec3{-width / 2.0, -height / 2.0, -depth / 2.0}, // LDB
+		mgl32.Vec3{+width / 2.0, -height / 2.0, -depth / 2.0}, // RDB
+		mgl32.Vec3{+width / 2.0, -height / 2.0, +depth / 2.0}, // RDF
+		mgl32.Vec3{-width / 2.0, -height / 2.0, +depth / 2.0}, // LDF
+
+		mgl32.Vec3{-width / 2.0, +height / 2.0, -depth / 2.0}, // LUB
+		mgl32.Vec3{+width / 2.0, +height / 2.0, -depth / 2.0}, // RUB
+		mgl32.Vec3{+width / 2.0, +height / 2.0, +depth / 2.0}, // RUF
+		mgl32.Vec3{-width / 2.0, +height / 2.0, +depth / 2.0}, // LUF
+	}
+
+	tris = [6 * 2]Triangle3D{
+		toTriangle3D(p[LUF], p[LDF], p[RDF]), // FRONT
+		toTriangle3D(p[RDF], p[RUF], p[LUF]),
+
+		toTriangle3D(p[RUF], p[RDF], p[RDB]), // RIGHT
+		toTriangle3D(p[RDB], p[RUB], p[RUF]),
+
+		toTriangle3D(p[RUB], p[RDB], p[LDB]), // BACK
+		toTriangle3D(p[LDB], p[LUB], p[RUB]),
+
+		toTriangle3D(p[LUB], p[LDB], p[LDF]), // LEFT
+		toTriangle3D(p[LDF], p[LUF], p[LUB]),
+
+		toTriangle3D(p[LUB], p[LUF], p[RUF]), // UP
+		toTriangle3D(p[RUF], p[RUB], p[LUB]),
+
+		toTriangle3D(p[LDF], p[LDB], p[RDB]), // DOWN
+		toTriangle3D(p[RDB], p[RDF], p[LDF]),
+	}
+
+	return
+}

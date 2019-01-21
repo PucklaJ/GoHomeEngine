@@ -34,7 +34,7 @@
 + Add Changeable MAX_POINT_LIGHTS, MAX_DIRECTIONAL_LIGHTS, etc. to LightMgr
     - maybe all makros (APLHA_DISCARD_PADDING)
 + Add LoadTexture to Renderer
-+ Add more 3D Shapes
++ Add more Sphere to draw functions
 + Replace uint32 with int where possible
 + Add WebGL examples to example READMEs
 
