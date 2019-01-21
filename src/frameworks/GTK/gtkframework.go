@@ -72,7 +72,7 @@ func (this *GTKFramework) Terminate() {
 	gtk.MainQuit()
 }
 
-func (this *GTKFramework) CreateWindow(windowWidth, windowHeight uint32, title string) error {
+func (this *GTKFramework) CreateWindow(windowWidth, windowHeight int, title string) error {
 	return gtk.CreateWindow(windowWidth, windowHeight, title)
 }
 func (this *GTKFramework) WindowClosed() bool {

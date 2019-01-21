@@ -83,7 +83,7 @@ func (this *TiledMap) Init(tmxmapname string) {
 	}
 
 	this.Map = tmxmap
-	this.Texture = Render.CreateRenderTexture("TMXMapTexture", this.Width*this.TileWidth, this.Height*this.TileHeight, 1, false, false, false, false)
+	this.Texture = Render.CreateRenderTexture("TMXMapTexture", int(this.Width*this.TileWidth), int(this.Height*this.TileHeight), 1, false, false, false, false)
 	rt := this.Texture.(RenderTexture)
 	rt.SetFiltering(FILTERING_NEAREST)
 	rt.SetAsTarget()
@@ -102,15 +102,15 @@ func (this *TiledMap) Init(tmxmapname string) {
 	this.generateTextures()
 }
 
-func getTextureRegionFromID(ts *tmx.TileSet, id uint32) TextureRegion {
-	tilesWidth := ts.Columns
+func getTextureRegionFromID(ts *tmx.TileSet, id int) TextureRegion {
+	tilesWidth := int(ts.Columns)
 
 	x := id % tilesWidth
 	y := (id - x) / tilesWidth
 
 	var region TextureRegion
-	region.Min[0] = float32(x*(ts.TileWidth+ts.Spacing) + ts.Margin)
-	region.Min[1] = float32(y*(ts.TileHeight+ts.Spacing) + ts.Margin)
+	region.Min[0] = float32(x*int(ts.TileWidth+ts.Spacing) + int(ts.Margin))
+	region.Min[1] = float32(y*int(ts.TileHeight+ts.Spacing) + int(ts.Margin))
 	region.Max[0] = region.Min[0] + float32(ts.TileWidth)
 	region.Max[1] = region.Min[1] + float32(ts.TileHeight)
 
@@ -130,7 +130,7 @@ func getFlip(tile tmx.TileInstance) uint8 {
 }
 
 func (this *TiledMap) getSprite2DConfiguration(tile tmx.TileInstance) sprite2DConfiguration {
-	gid := tile.GID()
+	gid := int(tile.GID())
 	var ts *tmx.TileSet
 	var config sprite2DConfiguration
 	if len(this.TileSets) == 1 {
@@ -138,7 +138,7 @@ func (this *TiledMap) getSprite2DConfiguration(tile tmx.TileInstance) sprite2DCo
 	} else {
 		for i := 0; i < len(this.TileSets); i++ {
 			t := this.TileSets[i]
-			if gid >= t.FirstGID && gid <= t.FirstGID+(t.TileCount-1) {
+			if gid >= int(t.FirstGID) && gid <= int(t.FirstGID+(t.TileCount-1)) {
 				ts = t
 				break
 			}
@@ -153,7 +153,7 @@ func (this *TiledMap) getSprite2DConfiguration(tile tmx.TileInstance) sprite2DCo
 		}
 	}
 
-	id := gid - ts.FirstGID
+	id := gid - int(ts.FirstGID)
 	config.Region = getTextureRegionFromID(ts, id)
 	config.TextureName = ts.Name
 	config.Flip = getFlip(tile)
@@ -193,7 +193,7 @@ func (this *TiledMap) loadTileLayer(l *tmx.Layer) {
 		return
 	}
 
-	texture := Render.CreateRenderTexture(l.Name+" RenderTexture", this.Width*this.TileWidth, this.Height*this.TileHeight, 1, false, false, false, false)
+	texture := Render.CreateRenderTexture(l.Name+" RenderTexture", int(this.Width*this.TileWidth), int(this.Height*this.TileHeight), 1, false, false, false, false)
 	if texture == nil {
 		ErrorMgr.Error("TiledMap", l.Name, "Couldn't create the RenderTexture for the layer")
 		return
@@ -228,7 +228,7 @@ func (this *TiledMap) loadImageLayer(l *tmx.Layer) {
 }
 
 func (this *TiledMap) loadObjectGroup(l *tmx.Layer) {
-	texture := Render.CreateRenderTexture(l.Name+" RenderTexture", this.Width*this.TileWidth, this.Height*this.TileHeight, 1, false, false, false, false)
+	texture := Render.CreateRenderTexture(l.Name+" RenderTexture", int(this.Width*this.TileWidth), int(this.Height*this.TileHeight), 1, false, false, false, false)
 
 	var pos mgl32.Vec2
 	objs := l.Objects

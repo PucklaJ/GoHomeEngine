@@ -31,7 +31,7 @@ type InstancedEntity3D struct {
 	transformsChanged bool
 }
 
-func (this *InstancedEntity3D) commonInit(numInstances uint32) {
+func (this *InstancedEntity3D) commonInit(numInstances int) {
 	this.Visible = true
 	this.NotRelativeToCamera = -1
 	this.RenderLast = false
@@ -119,7 +119,7 @@ func (this *InstancedEntity3D) configureShader() {
 	}
 }
 
-func (this *InstancedEntity3D) InitMesh(mesh InstancedMesh3D, numInstances uint32) {
+func (this *InstancedEntity3D) InitMesh(mesh InstancedMesh3D, numInstances int) {
 	this.Model3D = &InstancedModel3D{
 		Name: mesh.GetName(),
 	}
@@ -128,7 +128,7 @@ func (this *InstancedEntity3D) InitMesh(mesh InstancedMesh3D, numInstances uint3
 	this.commonInit(numInstances)
 }
 
-func (this *InstancedEntity3D) InitModel(model *InstancedModel3D, numInstances uint32) {
+func (this *InstancedEntity3D) InitModel(model *InstancedModel3D, numInstances int) {
 	this.Model3D = model
 	if model != nil {
 		this.Name = model.Name
@@ -203,14 +203,14 @@ func (this *InstancedEntity3D) UpdateInstancedValues() {
 	this.CalculateTransformMatrix(&RenderMgr, this.NotRelativeToCamera)
 }
 
-func (this *InstancedEntity3D) SetNumInstances(n uint32) {
+func (this *InstancedEntity3D) SetNumInstances(n int) {
 	prev := this.Model3D.GetNumInstances()
 	this.Model3D.SetNumInstances(n)
 	if prev != n {
 		if n > prev {
 			this.Transforms = append(this.Transforms, make([]*TransformableObjectInstanced3D, n-prev)...)
 			this.transformMatrices = append(this.transformMatrices, make([]mgl32.Mat4, n-prev)...)
-			for i := uint32(0); i < n; i++ {
+			for i := 0; i < n; i++ {
 				if i >= prev {
 					this.Transforms[i] = &TransformableObjectInstanced3D{}
 					this.Transforms[i].Scale = [3]float32{1.0, 1.0, 1.0}
@@ -228,7 +228,7 @@ func (this *InstancedEntity3D) SetNumInstances(n uint32) {
 	}
 }
 
-func (this *InstancedEntity3D) SetNumUsedInstances(n uint32) {
+func (this *InstancedEntity3D) SetNumUsedInstances(n int) {
 	this.Model3D.SetNumUsedInstances(n)
 }
 

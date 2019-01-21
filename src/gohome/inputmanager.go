@@ -16,7 +16,7 @@ func (this *Mouse) ToWorldPosition2D() mgl32.Vec2 {
 	return this.ToWorldPosition2DAdv(0, 0)
 }
 
-func (this *Mouse) ToWorldPosition2DAdv(cameraIndex int32, viewportIndex uint32) mgl32.Vec2 {
+func (this *Mouse) ToWorldPosition2DAdv(cameraIndex int, viewportIndex int) mgl32.Vec2 {
 	screenPos := mgl32.Vec2{float32(this.Pos[0]), float32(this.Pos[1])}
 	if RenderMgr.EnableBackBuffer {
 		wsize := Framew.WindowGetSize()

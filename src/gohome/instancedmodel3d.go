@@ -39,8 +39,8 @@ func (this *InstancedModel3D) GetMesh(name string) InstancedMesh3D {
 	return nil
 }
 
-func (this *InstancedModel3D) GetMeshIndex(index uint32) InstancedMesh3D {
-	if index > uint32(len(this.meshes)-1) {
+func (this *InstancedModel3D) GetMeshIndex(index int) InstancedMesh3D {
+	if index > len(this.meshes)-1 {
 		return nil
 	} else {
 		return this.meshes[index]
@@ -133,13 +133,13 @@ func (this *InstancedModel3D) Load() {
 	}
 }
 
-func (this *InstancedModel3D) SetNumInstances(n uint32) {
+func (this *InstancedModel3D) SetNumInstances(n int) {
 	for _, m := range this.meshes {
 		m.SetNumInstances(n)
 	}
 }
 
-func (this *InstancedModel3D) GetNumInstances() uint32 {
+func (this *InstancedModel3D) GetNumInstances() int {
 	if len(this.meshes) == 0 {
 		return 0
 	} else {
@@ -147,13 +147,13 @@ func (this *InstancedModel3D) GetNumInstances() uint32 {
 	}
 }
 
-func (this *InstancedModel3D) SetNumUsedInstances(n uint32) {
+func (this *InstancedModel3D) SetNumUsedInstances(n int) {
 	for _, m := range this.meshes {
 		m.SetNumUsedInstances(n)
 	}
 }
 
-func (this *InstancedModel3D) GetNumUsedInstances() uint32 {
+func (this *InstancedModel3D) GetNumUsedInstances() int {
 	if len(this.meshes) == 0 {
 		return 0
 	} else {

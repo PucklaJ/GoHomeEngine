@@ -15,8 +15,8 @@ type CubeMap interface {
 	GetKeyColor() color.Color
 	GetModColor() color.Color
 	Terminate()
-	SetFiltering(filtering uint32)
-	SetWrapping(wrapping uint32)
+	SetFiltering(filtering int)
+	SetWrapping(wrapping int)
 	SetBorderColor(col color.Color)
 	SetBorderDepth(depth float32)
 	SetKeyColor(col color.Color)
@@ -53,10 +53,10 @@ func (*NilCubeMap) GetModColor() color.Color {
 func (*NilCubeMap) Terminate() {
 
 }
-func (*NilCubeMap) SetFiltering(filtering uint32) {
+func (*NilCubeMap) SetFiltering(filtering int) {
 
 }
-func (*NilCubeMap) SetWrapping(wrapping uint32) {
+func (*NilCubeMap) SetWrapping(wrapping int) {
 
 }
 func (*NilCubeMap) SetBorderColor(col color.Color) {

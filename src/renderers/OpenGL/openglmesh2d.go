@@ -9,8 +9,8 @@ import (
 type OpenGLMesh2D struct {
 	vertices    []gohome.Mesh2DVertex
 	indices     []uint32
-	numVertices uint32
-	numIndices  uint32
+	numVertices int
+	numIndices  int
 	Name        string
 	vbo         uint32
 	ibo         uint32
@@ -50,10 +50,10 @@ func (oglm *OpenGLMesh2D) attributePointer() {
 }
 
 func (oglm *OpenGLMesh2D) Load() {
-	oglm.numVertices = uint32(len(oglm.vertices))
-	oglm.numIndices = uint32(len(oglm.indices))
-	var verticesSize uint32 = oglm.numVertices * gohome.MESH2DVERTEXSIZE
-	var indicesSize uint32 = oglm.numIndices * gohome.INDEXSIZE
+	oglm.numVertices = len(oglm.vertices)
+	oglm.numIndices = len(oglm.indices)
+	verticesSize := oglm.numVertices * gohome.MESH2DVERTEXSIZE
+	indicesSize := oglm.numIndices * gohome.INDEXSIZE
 
 	if oglm.canUseVAOs {
 		gl.GenVertexArrays(1, &oglm.vao)

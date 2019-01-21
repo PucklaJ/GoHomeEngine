@@ -14,7 +14,7 @@ type Renderer interface {
 	CreateTexture(name string, multiSampled bool) Texture
 	CreateMesh2D(name string) Mesh2D
 	CreateMesh3D(name string) Mesh3D
-	CreateRenderTexture(name string, width, height, textures uint32, depthBuffer, multiSampled, shadowMap, cubeMap bool) RenderTexture
+	CreateRenderTexture(name string, width, height, textures int, depthBuffer, multiSampled, shadowMap, cubeMap bool) RenderTexture
 	CreateCubeMap(name string) CubeMap
 	CreateInstancedMesh3D(name string) InstancedMesh3D
 	CreateShape3DInterface(name string) Shape3DInterface
@@ -22,9 +22,9 @@ type Renderer interface {
 	SetWireFrame(b bool)
 	SetViewport(viewport Viewport)
 	GetViewport() Viewport
-	SetNativeResolution(width, height uint32)
+	SetNativeResolution(width, height int)
 	GetNativeResolution() mgl32.Vec2
-	OnResize(newWidth, newHeight uint32)
+	OnResize(newWidth, newHeight int)
 	PreRender()
 	AfterRender()
 	SetBackgroundColor(bgColor color.Color)
@@ -72,7 +72,7 @@ func (*NilRenderer) CreateMesh2D(name string) Mesh2D {
 func (*NilRenderer) CreateMesh3D(name string) Mesh3D {
 	return &NilMesh3D{}
 }
-func (*NilRenderer) CreateRenderTexture(name string, width, height, textures uint32, depthBuffer, multiSampled, shadowMap, cubeMap bool) RenderTexture {
+func (*NilRenderer) CreateRenderTexture(name string, width, height, textures int, depthBuffer, multiSampled, shadowMap, cubeMap bool) RenderTexture {
 	return &NilRenderTexture{}
 }
 func (*NilRenderer) CreateCubeMap(name string) CubeMap {
@@ -98,13 +98,13 @@ func (*NilRenderer) GetViewport() Viewport {
 		0, 0, 0, 0, 0, false,
 	}
 }
-func (*NilRenderer) SetNativeResolution(width, height uint32) {
+func (*NilRenderer) SetNativeResolution(width, height int) {
 
 }
 func (*NilRenderer) GetNativeResolution() mgl32.Vec2 {
 	return [2]float32{0.0, 0.0}
 }
-func (*NilRenderer) OnResize(newWidth, newHeight uint32) {
+func (*NilRenderer) OnResize(newWidth, newHeight int) {
 
 }
 func (*NilRenderer) PreRender() {

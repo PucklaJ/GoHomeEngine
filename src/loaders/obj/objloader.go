@@ -36,10 +36,10 @@ type OBJLoader struct {
 	errorChan    chan error
 	tokensChan   chan tokenData
 
-	positionIndex uint32
-	normalIndex   uint32
-	texCoordIndex uint32
-	tokensIndex   uint32
+	positionIndex int
+	normalIndex   int
+	texCoordIndex int
+	tokensIndex   int
 }
 
 func (this *OBJLoader) Load(path string) error {
@@ -130,7 +130,7 @@ func (this *OBJLoader) readTokens(reader io.ReadCloser) error {
 		if line != "" {
 			this.tokensIndex++
 			this.tokensWG.Add(1)
-			go func(_line string, index uint32) {
+			go func(_line string, index int) {
 				tokens := toTokens(_line)
 				this.tokensChan <- tokenData{tokens, index}
 				this.tokensWG.Done()

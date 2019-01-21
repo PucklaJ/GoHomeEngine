@@ -47,10 +47,10 @@ func onMouseButton(w *glfw.Window, button glfw.MouseButton, action glfw.Action, 
 }
 
 func onResize(window *glfw.Window, width, height int) {
-	gohome.Render.OnResize(uint32(width), uint32(height))
+	gohome.Render.OnResize(width, height)
 	gfw := gohome.Framew.(*GLFWFramework)
 	for i := 0; i < len(gfw.onResizeCallbacks); i++ {
-		gfw.onResizeCallbacks[i](uint32(width), uint32(height))
+		gfw.onResizeCallbacks[i](width, height)
 	}
 }
 
@@ -58,7 +58,7 @@ func onMove(window *glfw.Window, posx, posy int) {
 	gfw := gohome.Framew.(*GLFWFramework)
 
 	for i := 0; i < len(gfw.onMoveCallbacks); i++ {
-		gfw.onMoveCallbacks[i](uint32(posx), uint32(posy))
+		gfw.onMoveCallbacks[i](posx, posy)
 	}
 }
 

@@ -253,14 +253,14 @@ func FromPolar(radius float32, angle float32) mgl32.Vec2 {
 	}
 }
 
-func (this *Circle2D) ToTriangles(numTriangles uint32) (tris []Triangle2D) {
+func (this *Circle2D) ToTriangles(numTriangles int) (tris []Triangle2D) {
 	tris = append(tris, make([]Triangle2D, numTriangles)...)
 
 	var pos1, pos2, pos3 mgl32.Vec2
 	var vertex1, vertex2, vertex3 Shape2DVertex
 	pos3 = this.Position
 	vertex3.Make(pos3, this.Col)
-	for i := uint32(0); i < numTriangles; i++ {
+	for i := 0; i < numTriangles; i++ {
 		pos1 = FromPolar(this.Radius, -(float32(i) * 360.0 / float32(numTriangles))).Add(this.Position)
 		pos2 = FromPolar(this.Radius, -(float32(i+1) * 360.0 / float32(numTriangles))).Add(this.Position)
 
@@ -275,12 +275,12 @@ func (this *Circle2D) ToTriangles(numTriangles uint32) (tris []Triangle2D) {
 	return
 }
 
-func (this *Circle2D) ToLines(numLines uint32) (lines []Line2D) {
+func (this *Circle2D) ToLines(numLines int) (lines []Line2D) {
 	lines = append(lines, make([]Line2D, numLines)...)
 
 	var pos1, pos2 mgl32.Vec2
 	var vertex1, vertex2 Shape2DVertex
-	for i := uint32(0); i < numLines; i++ {
+	for i := 0; i < numLines; i++ {
 		pos1 = FromPolar(this.Radius, -(float32(i) * 360.0 / float32(numLines))).Add(this.Position)
 		pos2 = FromPolar(this.Radius, -(float32(i+1) * 360.0 / float32(numLines))).Add(this.Position)
 

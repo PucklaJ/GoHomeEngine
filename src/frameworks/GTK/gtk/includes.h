@@ -23,9 +23,9 @@ extern char *ErrorString;
 
 extern void initialise(int args, char **argv);
 
-extern int createWindow(unsigned int width, unsigned int height, const char *title);
+extern int createWindow(int width, int height, const char *title);
 extern GtkWindow *createWindowObject();
-extern void configureWindowParameters(GtkWindow *window, unsigned int width, unsigned int height, const char *title);
+extern void configureWindowParameters(GtkWindow *window, int width, int height, const char *title);
 extern void connectWindowSignals(GtkWindow *window);
 extern void createGLArea();
 extern void configureGLArea(GtkGLArea *area);

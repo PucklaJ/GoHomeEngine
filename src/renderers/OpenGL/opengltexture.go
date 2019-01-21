@@ -189,7 +189,7 @@ func (ogltex *OpenGLTexture) Terminate() {
 	gl.DeleteTextures(1, &ogltex.oglName)
 }
 
-func (ogltex *OpenGLTexture) SetFiltering(filtering uint32) {
+func (ogltex *OpenGLTexture) SetFiltering(filtering int) {
 	gl.BindTexture(ogltex.bindingPoint(), ogltex.oglName)
 	var filter int32
 	if filtering == gohome.FILTERING_NEAREST {
@@ -205,7 +205,7 @@ func (ogltex *OpenGLTexture) SetFiltering(filtering uint32) {
 	gl.BindTexture(ogltex.bindingPoint(), 0)
 }
 
-func (ogltex *OpenGLTexture) SetWrapping(wrapping uint32) {
+func (ogltex *OpenGLTexture) SetWrapping(wrapping int) {
 	gl.BindTexture(ogltex.bindingPoint(), ogltex.oglName)
 	var wrap int32
 	if wrapping == gohome.WRAPPING_REPEAT {

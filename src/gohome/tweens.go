@@ -159,7 +159,7 @@ type BlinkableObject interface {
 }
 
 type TweenBlink struct {
-	Amount    uint32
+	Amount    int
 	Time      float32
 	TweenType uint8
 

@@ -11,22 +11,22 @@ import (
 
 type valueTypeIndexOffset struct {
 	valueType uint32
-	index     uint32
-	offset    uint32
+	index     int
+	offset    int
 }
 
 type indexValueType struct {
-	index     uint32
+	index     int
 	valueType uint32
 }
 
 type OpenGLInstancedMesh3D struct {
 	vertices         []gohome.Mesh3DVertex
 	indices          []uint32
-	numVertices      uint32
-	numIndices       uint32
-	numInstances     uint32
-	numUsedInstances uint32
+	numVertices      int
+	numIndices       int
+	numInstances     int
+	numUsedInstances int
 
 	vao             uint32
 	buffer          uint32
@@ -42,8 +42,8 @@ type OpenGLInstancedMesh3D struct {
 	tangentsCalculated    bool
 	customValues          []uint32
 	valueTypeIndexOffsets []valueTypeIndexOffset
-	instancedSize         uint32
-	sizePerInstance       uint32
+	instancedSize         int
+	sizePerInstance       int
 
 	floats        [][]float32
 	vec2s         [][]mgl32.Vec2
@@ -164,7 +164,7 @@ func (this *OpenGLInstancedMesh3D) CalculateTangents() {
 	this.tangentsCalculated = true
 }
 
-func getSize(valueType uint32) uint32 {
+func getSize(valueType uint32) int {
 	switch valueType {
 	case gohome.VALUE_FLOAT:
 		return 4
@@ -185,8 +185,8 @@ func getSize(valueType uint32) uint32 {
 	return 0
 }
 
-func (this *OpenGLInstancedMesh3D) getInstancedSize() uint32 {
-	var sumSize uint32 = 0
+func (this *OpenGLInstancedMesh3D) getInstancedSize() int {
+	var sumSize = 0
 	for i := 0; i < len(this.customValues); i++ {
 		sumSize += getSize(this.customValues[i])
 	}
@@ -194,50 +194,50 @@ func (this *OpenGLInstancedMesh3D) getInstancedSize() uint32 {
 	return sumSize
 }
 
-func vertexAttribPointerForValueType(valueType uint32, offset *uint32, index *uint32, sizeOfOneInstance uint32) {
+func vertexAttribPointerForValueType(valueType uint32, offset, index *int, sizeOfOneInstance int) {
 	switch valueType {
 	case gohome.VALUE_FLOAT:
-		gl.VertexAttribPointer(*index, 1, gl.FLOAT, false, int32(sizeOfOneInstance), gl.PtrOffset(int(*offset)))
-		gl.VertexAttribDivisor(*index, 1)
+		gl.VertexAttribPointer(uint32(*index), 1, gl.FLOAT, false, int32(sizeOfOneInstance), gl.PtrOffset(int(*offset)))
+		gl.VertexAttribDivisor(uint32(*index), 1)
 		(*index)++
 		(*offset) += 4
 		break
 	case gohome.VALUE_VEC2:
-		gl.VertexAttribPointer(*index, 2, gl.FLOAT, false, int32(sizeOfOneInstance), gl.PtrOffset(int(*offset)))
-		gl.VertexAttribDivisor(*index, 1)
+		gl.VertexAttribPointer(uint32(*index), 2, gl.FLOAT, false, int32(sizeOfOneInstance), gl.PtrOffset(int(*offset)))
+		gl.VertexAttribDivisor(uint32(*index), 1)
 		(*index)++
 		(*offset) += 4 * 2
 		break
 	case gohome.VALUE_VEC3:
-		gl.VertexAttribPointer(*index, 3, gl.FLOAT, false, int32(sizeOfOneInstance), gl.PtrOffset(int(*offset)))
-		gl.VertexAttribDivisor(*index, 1)
+		gl.VertexAttribPointer(uint32(*index), 3, gl.FLOAT, false, int32(sizeOfOneInstance), gl.PtrOffset(int(*offset)))
+		gl.VertexAttribDivisor(uint32(*index), 1)
 		(*index)++
 		(*offset) += 4 * 3
 		break
 	case gohome.VALUE_VEC4:
-		gl.VertexAttribPointer(*index, 4, gl.FLOAT, false, int32(sizeOfOneInstance), gl.PtrOffset(int(*offset)))
-		gl.VertexAttribDivisor(*index, 1)
+		gl.VertexAttribPointer(uint32(*index), 4, gl.FLOAT, false, int32(sizeOfOneInstance), gl.PtrOffset(int(*offset)))
+		gl.VertexAttribDivisor(uint32(*index), 1)
 		(*index)++
 		(*offset) += 4 * 4
 		break
 	case gohome.VALUE_MAT2:
-		gl.VertexAttribPointer(*index, 4, gl.FLOAT, false, int32(sizeOfOneInstance), gl.PtrOffset(int(*offset)))
-		gl.VertexAttribDivisor(*index, 1)
+		gl.VertexAttribPointer(uint32(*index), 4, gl.FLOAT, false, int32(sizeOfOneInstance), gl.PtrOffset(int(*offset)))
+		gl.VertexAttribDivisor(uint32(*index), 1)
 		(*index)++
 		(*offset) += 4 * 2 * 2
 		break
 	case gohome.VALUE_MAT3:
 		for i := 0; i < 3; i++ {
-			gl.VertexAttribPointer(*index, 3, gl.FLOAT, false, int32(sizeOfOneInstance), gl.PtrOffset(int(*offset)))
-			gl.VertexAttribDivisor(*index, 1)
+			gl.VertexAttribPointer(uint32(*index), 3, gl.FLOAT, false, int32(sizeOfOneInstance), gl.PtrOffset(int(*offset)))
+			gl.VertexAttribDivisor(uint32(*index), 1)
 			(*index)++
 			(*offset) += 4 * 3
 		}
 		break
 	case gohome.VALUE_MAT4:
 		for i := 0; i < 4; i++ {
-			gl.VertexAttribPointer(*index, 4, gl.FLOAT, false, int32(sizeOfOneInstance), gl.PtrOffset(int(*offset)))
-			gl.VertexAttribDivisor(*index, 1)
+			gl.VertexAttribPointer(uint32(*index), 4, gl.FLOAT, false, int32(sizeOfOneInstance), gl.PtrOffset(int(*offset)))
+			gl.VertexAttribDivisor(uint32(*index), 1)
 			(*index)++
 			(*offset) += 4 * 4
 		}
@@ -245,9 +245,9 @@ func vertexAttribPointerForValueType(valueType uint32, offset *uint32, index *ui
 	}
 }
 
-func (this *OpenGLInstancedMesh3D) instancedVertexAttribPointer(verticesSize uint32, indicesSize uint32, sizeOfOneInstance uint32) {
+func (this *OpenGLInstancedMesh3D) instancedVertexAttribPointer(verticesSize, indicesSize, sizeOfOneInstance int) {
 	offset := verticesSize + indicesSize
-	var index uint32 = 4
+	var index = 4
 
 	for i := 0; i < len(this.customValues); i++ {
 		vertexAttribPointerForValueType(this.customValues[i], &offset, &index, sizeOfOneInstance)
@@ -292,9 +292,8 @@ func enableValueType(valueType uint32, index *uint32) {
 }
 
 func (this *OpenGLInstancedMesh3D) instancedEnableVertexAttribArray() {
-	var i uint32
 	var index uint32 = 4
-	for i = 0; i < uint32(len(this.customValues)); i++ {
+	for i := 0; i < len(this.customValues); i++ {
 		enableValueType(this.customValues[i], &index)
 	}
 }
@@ -305,9 +304,8 @@ func (this *OpenGLInstancedMesh3D) deleteElements() {
 }
 
 func (this *OpenGLInstancedMesh3D) calculateOffsets() {
-	var i uint32
-	var offset uint32 = this.numVertices*gohome.MESH3DVERTEXSIZE + this.numIndices*gohome.INDEXSIZE
-	for i = 0; i < uint32(len(this.valueTypeIndexOffsets)); i++ {
+	offset := this.numVertices*gohome.MESH3DVERTEXSIZE + this.numIndices*gohome.INDEXSIZE
+	for i := 0; i < len(this.valueTypeIndexOffsets); i++ {
 		this.valueTypeIndexOffsets[i].offset = offset
 		offset += getSize(this.valueTypeIndexOffsets[i].valueType)
 	}
@@ -337,8 +335,8 @@ func (this *OpenGLInstancedMesh3D) Load() {
 	defer func() {
 		this.loaded = true
 	}()
-	this.numVertices = uint32(len(this.vertices))
-	this.numIndices = uint32(len(this.indices))
+	this.numVertices = len(this.vertices)
+	this.numIndices = len(this.indices)
 
 	if this.numVertices == 0 || this.numIndices == 0 {
 		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "InstancedMesh3D", this.Name, "No vertices or indices have been added!")
@@ -349,8 +347,8 @@ func (this *OpenGLInstancedMesh3D) Load() {
 		this.numInstances = 1
 	}
 
-	var verticesSize uint32 = this.numVertices * gohome.MESH3DVERTEXSIZE
-	var indicesSize uint32 = this.numIndices * gohome.INDEXSIZE
+	verticesSize := this.numVertices * gohome.MESH3DVERTEXSIZE
+	indicesSize := this.numIndices * gohome.INDEXSIZE
 	if this.canUseInstanced {
 		this.instancedSize = this.getInstancedSize() * this.numInstances
 	}
@@ -433,7 +431,7 @@ func (this *OpenGLInstancedMesh3D) Render() {
 		gl.DrawElementsInstanced(gl.TRIANGLES, int32(this.numIndices), gl.UNSIGNED_INT, gl.PtrOffset(int(this.numVertices*gohome.MESH3DVERTEXSIZE)), int32(this.numUsedInstances))
 		handleOpenGLError("InstancedMesh3D", this.Name, "RenderError: ")
 	} else {
-		for i := uint32(0); i < this.numUsedInstances && i < this.numInstances; i++ {
+		for i := 0; i < this.numUsedInstances && i < this.numInstances; i++ {
 			this.setInstancedValuesUniforms(i)
 			gl.DrawElements(gl.TRIANGLES, int32(this.numIndices), gl.UNSIGNED_INT, gl.PtrOffset(int(this.numVertices*gohome.MESH3DVERTEXSIZE)))
 			handleOpenGLError("InstancedMesh3D", this.Name, "RenderError: ")
@@ -448,7 +446,7 @@ func (this *OpenGLInstancedMesh3D) Render() {
 	}
 }
 
-func (this *OpenGLInstancedMesh3D) setInstancedValuesUniforms(instance uint32) {
+func (this *OpenGLInstancedMesh3D) setInstancedValuesUniforms(instance int) {
 	shader := gohome.RenderMgr.CurrentShader
 	var ivt indexValueType
 	if shader == nil {
@@ -456,7 +454,7 @@ func (this *OpenGLInstancedMesh3D) setInstancedValuesUniforms(instance uint32) {
 	}
 	ivt.valueType = gohome.VALUE_FLOAT
 	for i := 0; i < len(this.floats); i++ {
-		ivt.index = uint32(i)
+		ivt.index = i
 		value := this.floats[i][instance]
 		name, ok := this.namesForIndex[ivt]
 		if ok {
@@ -467,7 +465,7 @@ func (this *OpenGLInstancedMesh3D) setInstancedValuesUniforms(instance uint32) {
 	}
 	ivt.valueType = gohome.VALUE_VEC2
 	for i := 0; i < len(this.vec2s); i++ {
-		ivt.index = uint32(i)
+		ivt.index = i
 		value := this.vec2s[i][instance]
 		name, ok := this.namesForIndex[ivt]
 		if ok {
@@ -478,7 +476,7 @@ func (this *OpenGLInstancedMesh3D) setInstancedValuesUniforms(instance uint32) {
 	}
 	ivt.valueType = gohome.VALUE_VEC3
 	for i := 0; i < len(this.vec3s); i++ {
-		ivt.index = uint32(i)
+		ivt.index = i
 		value := this.vec3s[i][instance]
 		name, ok := this.namesForIndex[ivt]
 		if ok {
@@ -489,7 +487,7 @@ func (this *OpenGLInstancedMesh3D) setInstancedValuesUniforms(instance uint32) {
 	}
 	ivt.valueType = gohome.VALUE_VEC4
 	for i := 0; i < len(this.vec4s); i++ {
-		ivt.index = uint32(i)
+		ivt.index = i
 		value := this.vec4s[i][instance]
 		name, ok := this.namesForIndex[ivt]
 		if ok {
@@ -500,7 +498,7 @@ func (this *OpenGLInstancedMesh3D) setInstancedValuesUniforms(instance uint32) {
 	}
 	ivt.valueType = gohome.VALUE_MAT2
 	for i := 0; i < len(this.mat2s); i++ {
-		ivt.index = uint32(i)
+		ivt.index = i
 		value := this.mat2s[i][instance]
 		name, ok := this.namesForIndex[ivt]
 		if ok {
@@ -511,7 +509,7 @@ func (this *OpenGLInstancedMesh3D) setInstancedValuesUniforms(instance uint32) {
 	}
 	ivt.valueType = gohome.VALUE_MAT3
 	for i := 0; i < len(this.mat3s); i++ {
-		ivt.index = uint32(i)
+		ivt.index = i
 		value := this.mat3s[i][instance]
 		name, ok := this.namesForIndex[ivt]
 		if ok {
@@ -522,7 +520,7 @@ func (this *OpenGLInstancedMesh3D) setInstancedValuesUniforms(instance uint32) {
 	}
 	ivt.valueType = gohome.VALUE_MAT4
 	for i := 0; i < len(this.mat4s); i++ {
-		ivt.index = uint32(i)
+		ivt.index = i
 		value := this.mat4s[i][instance]
 		name, ok := this.namesForIndex[ivt]
 		if ok {
@@ -554,15 +552,15 @@ func (this *OpenGLInstancedMesh3D) GetName() string {
 	return this.Name
 }
 
-func (this *OpenGLInstancedMesh3D) GetNumVertices() uint32 {
+func (this *OpenGLInstancedMesh3D) GetNumVertices() int {
 	return this.numVertices
 }
 
-func (this *OpenGLInstancedMesh3D) GetNumIndices() uint32 {
+func (this *OpenGLInstancedMesh3D) GetNumIndices() int {
 	return this.numIndices
 }
 
-func (this *OpenGLInstancedMesh3D) recreateBuffer(numInstances uint32) {
+func (this *OpenGLInstancedMesh3D) recreateBuffer(numInstances int) {
 	verticesSize := this.numVertices * gohome.MESH3DVERTEXSIZE
 	indicesSize := this.numIndices * gohome.INDEXSIZE
 	this.instancedSize = this.getInstancedSize() * numInstances
@@ -596,7 +594,7 @@ func (this *OpenGLInstancedMesh3D) recreateBuffer(numInstances uint32) {
 	this.calculateOffsets()
 }
 
-func (this *OpenGLInstancedMesh3D) changeNumInstancesUniforms(n uint32) {
+func (this *OpenGLInstancedMesh3D) changeNumInstancesUniforms(n int) {
 	if n > this.numInstances {
 		for i := 0; i < len(this.floats); i++ {
 			this.floats[i] = append(this.floats[i], make([]float32, n-this.numInstances)...)
@@ -644,7 +642,7 @@ func (this *OpenGLInstancedMesh3D) changeNumInstancesUniforms(n uint32) {
 	}
 }
 
-func (this *OpenGLInstancedMesh3D) SetNumInstances(n uint32) {
+func (this *OpenGLInstancedMesh3D) SetNumInstances(n int) {
 	if this.numInstances != n {
 		if this.loaded {
 			if this.canUseInstanced {
@@ -657,12 +655,12 @@ func (this *OpenGLInstancedMesh3D) SetNumInstances(n uint32) {
 		this.numUsedInstances = n
 	}
 }
-func (this *OpenGLInstancedMesh3D) GetNumInstances() uint32 {
+func (this *OpenGLInstancedMesh3D) GetNumInstances() int {
 	return this.numInstances
 }
 
 func (this *OpenGLInstancedMesh3D) addValueTypeIndexOffset(valueType uint32) {
-	var maxIndex uint32 = 0
+	var maxIndex = 0
 	for i := 0; i < len(this.valueTypeIndexOffsets); i++ {
 		if this.valueTypeIndexOffsets[i].valueType == valueType {
 			if this.valueTypeIndexOffsets[i].index >= maxIndex {
@@ -678,7 +676,7 @@ func (this *OpenGLInstancedMesh3D) addValueTypeIndexOffset(valueType uint32) {
 }
 
 func (this *OpenGLInstancedMesh3D) addValueTypeIndexOffsetFront(valueType uint32) {
-	var maxIndex uint32 = 0
+	var maxIndex = 0
 	for i := 0; i < len(this.valueTypeIndexOffsets); i++ {
 		if this.valueTypeIndexOffsets[i].valueType == valueType {
 			if this.valueTypeIndexOffsets[i].index >= maxIndex {
@@ -728,7 +726,7 @@ func (this *OpenGLInstancedMesh3D) AddValue(valueType uint32) {
 	}
 }
 
-func (this *OpenGLInstancedMesh3D) getOffset(valueType, index uint32) uint32 {
+func (this *OpenGLInstancedMesh3D) getOffset(valueType uint32, index int) int {
 	for i := 0; i < len(this.valueTypeIndexOffsets); i++ {
 		if this.valueTypeIndexOffsets[i].valueType == valueType && this.valueTypeIndexOffsets[i].index == index {
 			return this.valueTypeIndexOffsets[i].offset
@@ -740,19 +738,18 @@ func (this *OpenGLInstancedMesh3D) getOffset(valueType, index uint32) uint32 {
 
 func (this *OpenGLInstancedMesh3D) SetF(index uint32, value []float32) {
 	if this.canUseInstanced {
-		offset := this.getOffset(gohome.VALUE_FLOAT, index)
+		offset := this.getOffset(gohome.VALUE_FLOAT, int(index))
 		if offset == 0 {
 			return
 		}
-		if uint32(len(value)) < this.numInstances {
+		if len(value) < this.numInstances {
 			gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "InstancedMesh3D", this.Name, "Float value "+strconv.Itoa(int(index))+" is too small!")
 			return
 		}
 
 		gl.BindBuffer(gl.ARRAY_BUFFER, this.buffer)
 
-		var i uint32
-		for i = 0; i < this.numInstances; i++ {
+		for i := 0; i < this.numInstances; i++ {
 			gl.BufferSubData(gl.ARRAY_BUFFER, int(offset), int(getSize(gohome.VALUE_FLOAT)), gl.Ptr(&value[i]))
 			offset += this.sizePerInstance
 		}
@@ -765,19 +762,18 @@ func (this *OpenGLInstancedMesh3D) SetF(index uint32, value []float32) {
 }
 func (this *OpenGLInstancedMesh3D) SetV2(index uint32, value []mgl32.Vec2) {
 	if this.canUseInstanced {
-		offset := this.getOffset(gohome.VALUE_VEC2, index)
+		offset := this.getOffset(gohome.VALUE_VEC2, int(index))
 		if offset == 0 {
 			return
 		}
-		if uint32(len(value)) < this.numInstances {
+		if len(value) < this.numInstances {
 			gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "InstancedMesh3D", this.Name, "Vec2 value "+strconv.Itoa(int(index))+" is too small!")
 			return
 		}
 
 		gl.BindBuffer(gl.ARRAY_BUFFER, this.buffer)
 
-		var i uint32
-		for i = 0; i < this.numInstances; i++ {
+		for i := 0; i < this.numInstances; i++ {
 			gl.BufferSubData(gl.ARRAY_BUFFER, int(offset), int(getSize(gohome.VALUE_VEC2)), gl.Ptr(&value[i][0]))
 			offset += this.sizePerInstance
 		}
@@ -790,19 +786,18 @@ func (this *OpenGLInstancedMesh3D) SetV2(index uint32, value []mgl32.Vec2) {
 
 func (this *OpenGLInstancedMesh3D) SetV3(index uint32, value []mgl32.Vec3) {
 	if this.canUseInstanced {
-		offset := this.getOffset(gohome.VALUE_VEC3, index)
+		offset := this.getOffset(gohome.VALUE_VEC3, int(index))
 		if offset == 0 {
 			return
 		}
-		if uint32(len(value)) < this.numInstances {
+		if len(value) < this.numInstances {
 			gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "InstancedMesh3D", this.Name, "Vec3 value "+strconv.Itoa(int(index))+" is too small!")
 			return
 		}
 
 		gl.BindBuffer(gl.ARRAY_BUFFER, this.buffer)
 
-		var i uint32
-		for i = 0; i < this.numInstances; i++ {
+		for i := 0; i < this.numInstances; i++ {
 			gl.BufferSubData(gl.ARRAY_BUFFER, int(offset), int(getSize(gohome.VALUE_VEC3)), gl.Ptr(&value[i][0]))
 			offset += this.sizePerInstance
 		}
@@ -814,19 +809,18 @@ func (this *OpenGLInstancedMesh3D) SetV3(index uint32, value []mgl32.Vec3) {
 }
 func (this *OpenGLInstancedMesh3D) SetV4(index uint32, value []mgl32.Vec4) {
 	if this.canUseInstanced {
-		offset := this.getOffset(gohome.VALUE_VEC4, index)
+		offset := this.getOffset(gohome.VALUE_VEC4, int(index))
 		if offset == 0 {
 			return
 		}
-		if uint32(len(value)) < this.numInstances {
+		if len(value) < this.numInstances {
 			gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "InstancedMesh3D", this.Name, "Vec4 value "+strconv.Itoa(int(index))+" is too small!")
 			return
 		}
 
 		gl.BindBuffer(gl.ARRAY_BUFFER, this.buffer)
 
-		var i uint32
-		for i = 0; i < this.numInstances; i++ {
+		for i := 0; i < this.numInstances; i++ {
 			gl.BufferSubData(gl.ARRAY_BUFFER, int(offset), int(getSize(gohome.VALUE_VEC4)), gl.Ptr(&value[i][0]))
 			offset += this.sizePerInstance
 		}
@@ -838,19 +832,18 @@ func (this *OpenGLInstancedMesh3D) SetV4(index uint32, value []mgl32.Vec4) {
 }
 func (this *OpenGLInstancedMesh3D) SetM2(index uint32, value []mgl32.Mat2) {
 	if this.canUseInstanced {
-		offset := this.getOffset(gohome.VALUE_MAT2, index)
+		offset := this.getOffset(gohome.VALUE_MAT2, int(index))
 		if offset == 0 {
 			return
 		}
-		if uint32(len(value)) < this.numInstances {
+		if len(value) < this.numInstances {
 			gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "InstancedMesh3D", this.Name, "Mat2 value "+strconv.Itoa(int(index))+" is too small!")
 			return
 		}
 
 		gl.BindBuffer(gl.ARRAY_BUFFER, this.buffer)
 
-		var i uint32
-		for i = 0; i < this.numInstances; i++ {
+		for i := 0; i < this.numInstances; i++ {
 			gl.BufferSubData(gl.ARRAY_BUFFER, int(offset), int(getSize(gohome.VALUE_MAT2)), gl.Ptr(&value[i][0]))
 			offset += this.sizePerInstance
 		}
@@ -862,19 +855,18 @@ func (this *OpenGLInstancedMesh3D) SetM2(index uint32, value []mgl32.Mat2) {
 }
 func (this *OpenGLInstancedMesh3D) SetM3(index uint32, value []mgl32.Mat3) {
 	if this.canUseInstanced {
-		offset := this.getOffset(gohome.VALUE_MAT3, index)
+		offset := this.getOffset(gohome.VALUE_MAT3, int(index))
 		if offset == 0 {
 			return
 		}
-		if uint32(len(value)) < this.numInstances {
+		if len(value) < this.numInstances {
 			gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "InstancedMesh3D", this.Name, "Mat3 value "+strconv.Itoa(int(index))+" is too small!")
 			return
 		}
 
 		gl.BindBuffer(gl.ARRAY_BUFFER, this.buffer)
 
-		var i uint32
-		for i = 0; i < this.numInstances; i++ {
+		for i := 0; i < this.numInstances; i++ {
 			gl.BufferSubData(gl.ARRAY_BUFFER, int(offset), int(getSize(gohome.VALUE_MAT3)), gl.Ptr(&value[i][0]))
 			offset += this.sizePerInstance
 		}
@@ -887,19 +879,18 @@ func (this *OpenGLInstancedMesh3D) SetM3(index uint32, value []mgl32.Mat3) {
 }
 func (this *OpenGLInstancedMesh3D) SetM4(index uint32, value []mgl32.Mat4) {
 	if this.canUseInstanced {
-		offset := this.getOffset(gohome.VALUE_MAT4, index)
+		offset := this.getOffset(gohome.VALUE_MAT4, int(index))
 		if offset == 0 {
 			return
 		}
-		if uint32(len(value)) < this.numInstances {
+		if len(value) < this.numInstances {
 			gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "InstancedMesh3D", this.Name, "Mat4 value "+strconv.Itoa(int(index))+" is too small!")
 			return
 		}
 
 		gl.BindBuffer(gl.ARRAY_BUFFER, this.buffer)
 
-		var i uint32
-		for i = 0; i < this.numInstances; i++ {
+		for i := 0; i < this.numInstances; i++ {
 			gl.BufferSubData(gl.ARRAY_BUFFER, int(offset), int(getSize(gohome.VALUE_MAT4)), gl.Ptr(&value[i][0]))
 			offset += this.sizePerInstance
 		}
@@ -922,7 +913,7 @@ func (this *OpenGLInstancedMesh3D) SetName(index uint32, value_type uint32, valu
 	}
 
 	var ivt indexValueType
-	ivt.index = index
+	ivt.index = int(index)
 	ivt.valueType = value_type
 
 	this.namesForIndex[ivt] = value
@@ -962,11 +953,11 @@ func (this *OpenGLInstancedMesh3D) checkAABB() {
 	}
 }
 
-func (this *OpenGLInstancedMesh3D) SetNumUsedInstances(n uint32) {
+func (this *OpenGLInstancedMesh3D) SetNumUsedInstances(n int) {
 	this.numUsedInstances = n
 }
 
-func (this *OpenGLInstancedMesh3D) GetNumUsedInstances() uint32 {
+func (this *OpenGLInstancedMesh3D) GetNumUsedInstances() int {
 	return this.numUsedInstances
 }
 
@@ -982,8 +973,8 @@ func (this *OpenGLRenderer) InstancedMesh3DFromLoadedMesh3D(mesh gohome.Mesh3D) 
 
 	ioglmesh.numInstances = 0
 
-	var verticesSize uint32 = ioglmesh.numVertices * gohome.MESH3DVERTEXSIZE
-	var indicesSize uint32 = ioglmesh.numIndices * gohome.INDEXSIZE
+	verticesSize := ioglmesh.numVertices * gohome.MESH3DVERTEXSIZE
+	indicesSize := ioglmesh.numIndices * gohome.INDEXSIZE
 	if ioglmesh.canUseInstanced {
 		ioglmesh.instancedSize = 0
 	}

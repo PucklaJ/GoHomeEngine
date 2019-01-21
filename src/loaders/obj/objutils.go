@@ -42,23 +42,23 @@ func toTokens(line string) []string {
 	return tokens
 }
 
-func processFaceData1(elements [][]string) (rv []uint32) {
-	rv = make([]uint32, len(elements))
+func processFaceData1(elements [][]string) (rv []int) {
+	rv = make([]int, len(elements))
 	for i := 0; i < len(rv); i++ {
-		temp, _ := strconv.ParseUint(elements[i][0], 10, 32)
-		rv[i] = uint32(temp)
+		temp, _ := strconv.ParseInt(elements[i][0], 10, 32)
+		rv[i] = int(temp)
 	}
 	return
 }
 
-func processFaceData2(elements [][]string) (pos []uint32, tex []uint32) {
-	rv := make([]uint32, len(elements)*2)
-	pos = make([]uint32, len(elements))
-	tex = make([]uint32, len(elements))
+func processFaceData2(elements [][]string) (pos []int, tex []int) {
+	rv := make([]int, len(elements)*2)
+	pos = make([]int, len(elements))
+	tex = make([]int, len(elements))
 	for i := 0; i < 3; i++ {
 		for j := 0; j < 2; j++ {
-			temp, _ := strconv.ParseUint(elements[i][j], 10, 32)
-			rv[i*2+j] = uint32(temp)
+			temp, _ := strconv.ParseInt(elements[i][j], 10, 32)
+			rv[i*2+j] = int(temp)
 		}
 	}
 
@@ -70,20 +70,20 @@ func processFaceData2(elements [][]string) (pos []uint32, tex []uint32) {
 	return
 }
 
-func processFaceData3(elements [][]string) (pos []uint32, norm []uint32) {
-	rv := make([]uint32, len(elements)*2)
-	pos = make([]uint32, len(elements))
-	norm = make([]uint32, len(elements))
-	var readIndex uint32
+func processFaceData3(elements [][]string) (pos []int, norm []int) {
+	rv := make([]int, len(elements)*2)
+	pos = make([]int, len(elements))
+	norm = make([]int, len(elements))
+	var readIndex int
 	for i := 0; i < 3; i++ {
 		for j := 0; j < 2; j++ {
 			if j == 1 {
 				readIndex = 2
 			} else {
-				readIndex = uint32(j)
+				readIndex = j
 			}
-			temp, _ := strconv.ParseUint(elements[i][readIndex], 10, 32)
-			rv[i*2+j] = uint32(temp)
+			temp, _ := strconv.ParseInt(elements[i][readIndex], 10, 32)
+			rv[i*2+j] = int(temp)
 		}
 	}
 
@@ -95,15 +95,15 @@ func processFaceData3(elements [][]string) (pos []uint32, norm []uint32) {
 	return
 }
 
-func processFaceData4(elements [][]string) (pos []uint32, tex []uint32, norm []uint32) {
-	rv := make([]uint32, len(elements)*3)
-	pos = make([]uint32, len(elements))
-	tex = make([]uint32, len(elements))
-	norm = make([]uint32, len(elements))
+func processFaceData4(elements [][]string) (pos []int, tex []int, norm []int) {
+	rv := make([]int, len(elements)*3)
+	pos = make([]int, len(elements))
+	tex = make([]int, len(elements))
+	norm = make([]int, len(elements))
 	for i := 0; i < len(elements); i++ {
 		for j := 0; j < 3; j++ {
-			temp, _ := strconv.ParseUint(elements[i][j], 10, 32)
-			rv[i*3+j] = uint32(temp)
+			temp, _ := strconv.ParseInt(elements[i][j], 10, 32)
+			rv[i*3+j] = int(temp)
 		}
 	}
 

@@ -195,7 +195,7 @@ func (this *OpenALAudioManager) Init() {
 	this.volume = 1.0
 	this.failed = true
 }
-func (this *OpenALAudioManager) CreateSound(name string, samples []byte, format uint8, sampleRate uint32) gohome.Sound {
+func (this *OpenALAudioManager) CreateSound(name string, samples []byte, format uint8, sampleRate int) gohome.Sound {
 	if this.failed {
 		gohome.ErrorMgr.Error("Sound", name, "Couldn't create because the initialisation failed!")
 		return &gohome.NilSound{}
@@ -236,7 +236,7 @@ func (this *OpenALAudioManager) CreateSound(name string, samples []byte, format 
 
 	return sound
 }
-func (this *OpenALAudioManager) CreateMusic(name string, samples []byte, format uint8, sampleRate uint32) gohome.Music {
+func (this *OpenALAudioManager) CreateMusic(name string, samples []byte, format uint8, sampleRate int) gohome.Music {
 	if this.failed {
 		gohome.ErrorMgr.Error("Music", name, "Couldn't create because the initialisation failed!")
 		return &gohome.NilMusic{}
@@ -409,8 +409,8 @@ func (this *OpenALAudioManager) removeMusicFromSlice(music *OpenALMusic) {
 	} else if len(this.musics) == 0 {
 		return
 	} else {
-		var index, i uint32
-		for i = 0; i < uint32(len(this.musics)); i++ {
+		var index, i int
+		for i = 0; i < len(this.musics); i++ {
 			if this.musics[i] == music {
 				index = i
 				break
@@ -425,8 +425,8 @@ func (this *OpenALAudioManager) removeSoundFromSlice(sound *OpenALSound) {
 	} else if len(this.sounds) == 0 {
 		return
 	} else {
-		var index, i uint32
-		for i = 0; i < uint32(len(this.sounds)); i++ {
+		var index, i int
+		for i = 0; i < len(this.sounds); i++ {
 			if this.sounds[i] == sound {
 				index = i
 				break
@@ -464,7 +464,7 @@ func (this *OpenALAudioManager) LoadSound(name, path string) gohome.Sound {
 	}
 	sampleRate := wavReader.SampleRate
 
-	sound := this.CreateSound(name, samples, format, sampleRate)
+	sound := this.CreateSound(name, samples, format, int(sampleRate))
 
 	return sound
 }

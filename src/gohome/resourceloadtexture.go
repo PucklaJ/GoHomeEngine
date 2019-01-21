@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	NUM_GO_ROUTINES_TEXTURE_LOADING uint32 = 10
+	NUM_GO_ROUTINES_TEXTURE_LOADING = 10
 )
 
 var (
@@ -24,17 +24,16 @@ var (
 	}
 )
 
-func loadImageData(img_data *[]byte, img image.Image, start_width, end_width, max_width, max_height uint32, wg *sync.WaitGroup) {
+func loadImageData(img_data *[]byte, img image.Image, start_width, end_width, max_width, max_height int, wg *sync.WaitGroup) {
 	if wg != nil {
 		defer wg.Done()
 	}
-	var y uint32
-	var x uint32
+	var x, y int
 	var r, g, b, a uint32
 	var color color.Color
 	for x = start_width; x < max_width && x < end_width; x++ {
 		for y = 0; y < max_height; y++ {
-			color = img.At(int(x), int(y))
+			color = img.At(x, y)
 			r, g, b, a = color.RGBA()
 			(*img_data)[(x+y*max_width)*4+0] = byte(float64(r) / float64(0xffff) * float64(255.0))
 			(*img_data)[(x+y*max_width)*4+1] = byte(float64(g) / float64(0xffff) * float64(255.0))

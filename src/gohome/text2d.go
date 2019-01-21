@@ -7,17 +7,17 @@ import (
 )
 
 const (
-	LINE_PADDING    int32 = 0
-	FLIP_NONE       uint8 = 0
-	FLIP_HORIZONTAL uint8 = 1
-	FLIP_VERTICAL   uint8 = 2
-	FLIP_DIAGONALLY uint8 = 3
+	LINE_PADDING    = 0
+	FLIP_NONE       = 0
+	FLIP_HORIZONTAL = 1
+	FLIP_VERTICAL   = 2
+	FLIP_DIAGONALLY = 3
 )
 
 const (
-	TEXT_2D_SHADER_NAME string = "Text2D"
+	TEXT_2D_SHADER_NAME = "Text2D"
 
-	COLOR_UNIFORM_NAME string = "color"
+	COLOR_UNIFORM_NAME = "color"
 )
 
 type Text2D struct {
@@ -35,14 +35,14 @@ type Text2D struct {
 
 	Visible             bool
 	NotRelativeToCamera int
-	FontSize            uint32
+	FontSize            int
 	Text                string
 	Depth               uint8
 	Color               color.Color
 	Flip                uint8
 }
 
-func (this *Text2D) Init(font string, fontSize uint32, str string) {
+func (this *Text2D) Init(font string, fontSize int, str string) {
 	this.font = ResourceMgr.GetFont(font)
 	this.Transform = &TransformableObject2D{}
 	this.Transform.Scale = [2]float32{1.0, 1.0}
@@ -210,16 +210,16 @@ func (this *Text2D) updateText() {
 			}
 		}
 
-		var width, height uint32 = 0, 0
+		var width, height = 0, 0
 		if len(this.textures) > 1 {
 			for i := 0; i < len(this.textures); i++ {
 				if this.textures[i] != nil {
-					if uint32(this.textures[i].GetWidth()) > width {
-						width = uint32(this.textures[i].GetWidth())
+					if this.textures[i].GetWidth() > width {
+						width = this.textures[i].GetWidth()
 					}
-					height += uint32(int32(this.textures[i].GetHeight()) + LINE_PADDING)
+					height += this.textures[i].GetHeight() + LINE_PADDING
 				} else {
-					height += this.font.GetGlyphMaxHeight() + uint32(LINE_PADDING)
+					height += this.font.GetGlyphMaxHeight() + LINE_PADDING
 					if this.font.GetGlyphMaxWidth()*100 > width {
 						width = this.font.GetGlyphMaxWidth() * 100
 					}
@@ -228,8 +228,8 @@ func (this *Text2D) updateText() {
 			this.renderTexture.ChangeSize(width, height)
 			this.renderTexturesToRenderTexture()
 		} else if len(this.textures) > 0 && this.textures[0] != nil {
-			width = uint32(this.textures[0].GetWidth())
-			height = uint32(this.textures[0].GetHeight())
+			width = this.textures[0].GetWidth()
+			height = this.textures[0].GetHeight()
 		} else {
 			width = this.font.GetGlyphMaxWidth() * 100
 			height = this.font.GetGlyphMaxHeight()
@@ -248,19 +248,19 @@ func (this *Text2D) renderTexturesToRenderTexture() {
 	prevProj := RenderMgr.Projection2D
 	RenderMgr.SetProjection2DToTexture(this.renderTexture)
 
-	var x, y uint32 = 0, 0
+	var y = 0
 	for i := 0; i < len(this.textures); i++ {
 		height := this.font.GetGlyphMaxHeight()
 		if this.textures[i] != nil {
 			var spr Sprite2D
 			spr.InitTexture(this.textures[i])
-			spr.Transform.Position = [2]float32{float32(x), float32(y)}
+			spr.Transform.Position = [2]float32{0, float32(y)}
 			spr.NotRelativeToCamera = 0
 			RenderMgr.RenderRenderObject(&spr)
-			height = uint32(this.textures[i].GetHeight())
+			height = this.textures[i].GetHeight()
 		}
 
-		y += uint32(int32(height) + LINE_PADDING)
+		y += height + LINE_PADDING
 	}
 
 	this.renderTexture.UnsetAsTarget()

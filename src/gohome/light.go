@@ -8,35 +8,35 @@ import (
 )
 
 const (
-	AMBIENT_LIGHT_UNIFORM_NAME          string = "ambientLight"
-	POINT_LIGHTS_UNIFORM_NAME           string = "pointLights"
-	DIRECTIONAL_LIGHTS_UNIFORM_NAME     string = "directionalLights"
-	SPOT_LIGHTS_UNIFORM_NAME            string = "spotLights"
-	POSITION_UNIFORM_NAME               string = "position"
-	DIRECTION_UNIFORM_NAME              string = "direction"
-	DIFFUSE_COLOR_UNIFORM_NAME          string = "diffuseColor"
-	SPECULAR_COLOR_UNIFORM_NAME         string = "specularColor"
-	INNERCUTOFF_UNIFORM_NAME            string = "innerCutOff"
-	OUTERCUTOFF_UNIFORM_NAME            string = "outerCutOff"
-	ATTENTUATION_UNIFORM_NAME           string = "attentuation"
-	ATTENTUATION_CONSTANT_UNIFORM_NAME  string = "constant"
-	ATTENTUATION_LINEAR_UNIFORM_NAME    string = "linear"
-	ATTENTUATION_QUADRATIC_UNIFORM_NAME string = "quadratic"
-	NUM_POINT_LIGHTS_UNIFORM_NAME       string = "numPointLights"
-	NUM_DIRECTIONAL_LIGHTS_UNIFORM_NAME string = "numDirectionalLights"
-	NUM_SPOT_LIGHTS_UNIFORM_NAME        string = "numSpotLights"
-	LIGHT_SPACE_MATRIX_UNIFORM_NAME     string = "lightSpaceMatrix"
-	SHADOWMAP_UNIFORM_NAME              string = "shadowmap"
-	CASTSSHADOWS_UNIFORM_NAME           string = "castsShadows"
-	SHADOW_DISTANCE_UNIFORM_NAME        string = "shadowDistance"
-	FAR_PLANE_UNIFORM_NAME              string = "farPlane"
-	SHADOWMAP_SIZE_UNIFORM_NAME         string = "shadowMapSize"
+	AMBIENT_LIGHT_UNIFORM_NAME          = "ambientLight"
+	POINT_LIGHTS_UNIFORM_NAME           = "pointLights"
+	DIRECTIONAL_LIGHTS_UNIFORM_NAME     = "directionalLights"
+	SPOT_LIGHTS_UNIFORM_NAME            = "spotLights"
+	POSITION_UNIFORM_NAME               = "position"
+	DIRECTION_UNIFORM_NAME              = "direction"
+	DIFFUSE_COLOR_UNIFORM_NAME          = "diffuseColor"
+	SPECULAR_COLOR_UNIFORM_NAME         = "specularColor"
+	INNERCUTOFF_UNIFORM_NAME            = "innerCutOff"
+	OUTERCUTOFF_UNIFORM_NAME            = "outerCutOff"
+	ATTENTUATION_UNIFORM_NAME           = "attentuation"
+	ATTENTUATION_CONSTANT_UNIFORM_NAME  = "constant"
+	ATTENTUATION_LINEAR_UNIFORM_NAME    = "linear"
+	ATTENTUATION_QUADRATIC_UNIFORM_NAME = "quadratic"
+	NUM_POINT_LIGHTS_UNIFORM_NAME       = "numPointLights"
+	NUM_DIRECTIONAL_LIGHTS_UNIFORM_NAME = "numDirectionalLights"
+	NUM_SPOT_LIGHTS_UNIFORM_NAME        = "numSpotLights"
+	LIGHT_SPACE_MATRIX_UNIFORM_NAME     = "lightSpaceMatrix"
+	SHADOWMAP_UNIFORM_NAME              = "shadowmap"
+	CASTSSHADOWS_UNIFORM_NAME           = "castsShadows"
+	SHADOW_DISTANCE_UNIFORM_NAME        = "shadowDistance"
+	FAR_PLANE_UNIFORM_NAME              = "farPlane"
+	SHADOWMAP_SIZE_UNIFORM_NAME         = "shadowMapSize"
 
-	SHADOWMAP_SHADER_NAME           string = "ShadowMap"
-	SHADOWMAP_INSTANCED_SHADER_NAME string = "ShadowMap Instanced"
+	SHADOWMAP_SHADER_NAME           = "ShadowMap"
+	SHADOWMAP_INSTANCED_SHADER_NAME = "ShadowMap Instanced"
 
-	DEFAULT_DIRECTIONAL_LIGHTS_SHADOWMAP_SIZE uint32 = 1024 * 4
-	DEFAULT_SPOT_LIGHTS_SHADOWMAP_SIZE        uint32 = 1024
+	DEFAULT_DIRECTIONAL_LIGHTS_SHADOWMAP_SIZE = 1024 * 4
+	DEFAULT_SPOT_LIGHTS_SHADOWMAP_SIZE        = 1024
 )
 
 type Attentuation struct {
@@ -109,7 +109,7 @@ func (pl *DirectionalLight) SetUniforms(s Shader, arrayIndex uint32) {
 	}
 }
 
-func (this *DirectionalLight) InitShadowmap(width, height uint32) {
+func (this *DirectionalLight) InitShadowmap(width, height int) {
 	if this.CastsShadows == 0 {
 		return
 	}
@@ -327,7 +327,7 @@ func loadShadowMapShader() {
 	}
 }
 
-func (this *SpotLight) InitShadowmap(width, height uint32) {
+func (this *SpotLight) InitShadowmap(width, height int) {
 	if this.CastsShadows == 0 {
 		return
 	}

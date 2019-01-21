@@ -6,14 +6,14 @@ import (
 )
 
 const (
-	NEAR_LEFT_DOWN  uint32 = 0
-	NEAR_RIGHT_DOWN uint32 = 1
-	NEAR_RIGHT_UP   uint32 = 2
-	NEAR_LEFT_UP    uint32 = 3
-	FAR_LEFT_DOWN   uint32 = 4
-	FAR_RIGHT_DOWN  uint32 = 5
-	FAR_RIGHT_UP    uint32 = 6
-	FAR_LEFT_UP     uint32 = 7
+	NEAR_LEFT_DOWN  = 0
+	NEAR_RIGHT_DOWN = 1
+	NEAR_RIGHT_UP   = 2
+	NEAR_LEFT_UP    = 3
+	FAR_LEFT_DOWN   = 4
+	FAR_RIGHT_DOWN  = 5
+	FAR_RIGHT_UP    = 6
+	FAR_LEFT_UP     = 7
 )
 
 type Projection interface {

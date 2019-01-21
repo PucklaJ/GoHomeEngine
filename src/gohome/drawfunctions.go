@@ -9,7 +9,7 @@ var DrawColor color.Color = Color{255, 255, 255, 255}
 var PointSize float32 = 1.0
 var LineWidth float32 = 1.0
 var Filled bool = true
-var CircleDetail uint32 = 30
+var CircleDetail int = 30
 
 func DrawPoint2D(point mgl32.Vec2) {
 	point2D := toPoint2D(point)

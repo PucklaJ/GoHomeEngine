@@ -223,7 +223,7 @@ func (this *PhysicsDebugDraw2D) DrawEdge(f *box2d.B2Fixture, xf *box2d.B2Transfo
 	edge := f.GetShape().(*box2d.B2EdgeShape)
 	pos := ToPixelCoordinates(xf.P)
 	mat := mgl32.Translate2D(pos[0], pos[1]).Mul3(mgl32.Rotate2D(-float32(xf.Q.GetAngle())).Mat3())
-	var numVertices uint32 = 2
+	var numVertices = 2
 	if edge.M_hasVertex0 {
 		numVertices++
 	}

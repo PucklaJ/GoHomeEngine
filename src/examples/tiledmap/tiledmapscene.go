@@ -22,7 +22,7 @@ func (this *TiledMapScene) Init() {
 	w := this.tiledMap.Texture.GetWidth()
 	h := this.tiledMap.Texture.GetHeight()
 
-	gohome.Render.SetNativeResolution(uint32(w), uint32(h))
+	gohome.Render.SetNativeResolution(w, h)
 	gohome.Framew.WindowSetSize([2]float32{float32(w), float32(h)})
 
 	this.PhysicsMgr.Init([2]float32{0.0, 30.0})

@@ -36,11 +36,11 @@ func LoadWAVFile(fileName string) (*wav.WavData, error) {
 	return nil, errors.New("Cannot convert file to io.ReadSeeker")
 }
 
-func convert24BitTo16Bit(samples []byte, sampleCount uint32) []byte {
+func convert24BitTo16Bit(samples []byte, sampleCount int) []byte {
 	s24 := samples
 	newSamples := make([]byte, sampleCount*2)
-	var index uint32 = 0
-	for a := 0; uint32(a) < sampleCount*3; a += 3 {
+	var index = 0
+	for a := 0; a < sampleCount*3; a += 3 {
 		newSamples[index+0] = s24[a+1+0]
 		newSamples[index+1] = s24[a+1+1]
 		index += 2
@@ -53,7 +53,7 @@ func ReadAllSamples(data *wav.WavData) ([]byte, error) {
 	samples := data.Data
 
 	if data.BitsPerSample == 24 {
-		samples = convert24BitTo16Bit(samples, uint32(len(samples)*8/24))
+		samples = convert24BitTo16Bit(samples, len(samples)*8/24)
 	}
 
 	return samples, nil
