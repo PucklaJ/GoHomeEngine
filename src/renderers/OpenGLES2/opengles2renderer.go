@@ -9,11 +9,6 @@ import (
 	"github.com/PucklaMotzer09/mathgl/mgl32"
 )
 
-const (
-	GL_MAX_TEXTURE_MAX_ANISOTROPY uint32 = 0x84FF
-	GL_TEXTURE_MAX_ANISOTROPY     uint32 = 0x84FE
-)
-
 type OpenGLES2Renderer struct {
 	CurrentTextureUnit uint32
 
@@ -122,7 +117,7 @@ func (*OpenGLES2Renderer) CreateMesh3D(name string) gohome.Mesh3D {
 	return CreateOpenGLES2Mesh3D(name)
 }
 
-func (*OpenGLES2Renderer) CreateRenderTexture(name string, width, height, textures uint32, depthBuffer, multiSampled, shadowMap, cubeMap bool) gohome.RenderTexture {
+func (*OpenGLES2Renderer) CreateRenderTexture(name string, width, height, textures int, depthBuffer, multiSampled, shadowMap, cubeMap bool) gohome.RenderTexture {
 	return CreateOpenGLES2RenderTexture(name, width, height, textures, depthBuffer, multiSampled, shadowMap, cubeMap)
 }
 
@@ -218,7 +213,7 @@ func (this *OpenGLES2Renderer) GetViewport() gohome.Viewport {
 	}
 }
 
-func (this *OpenGLES2Renderer) SetNativeResolution(width, height uint32) {
+func (this *OpenGLES2Renderer) SetNativeResolution(width, height int) {
 	previous := gohome.Viewport{
 		X:      0,
 		Y:      0,
@@ -246,7 +241,7 @@ func (this *OpenGLES2Renderer) SetNativeResolution(width, height uint32) {
 func (this *OpenGLES2Renderer) GetNativeResolution() mgl32.Vec2 {
 	return [2]float32{float32(gohome.RenderMgr.BackBufferMS.GetWidth()), float32(gohome.RenderMgr.BackBufferMS.GetHeight())}
 }
-func (this *OpenGLES2Renderer) OnResize(newWidth, newHeight uint32) {
+func (this *OpenGLES2Renderer) OnResize(newWidth, newHeight int) {
 	gl.Viewport(0, 0, int32(newWidth), int32(newHeight))
 }
 
@@ -265,10 +260,10 @@ func (this *OpenGLES2Renderer) SetBacckFaceCulling(b bool) {
 	}
 }
 
-func (this *OpenGLES2Renderer) GetMaxTextures() int32 {
+func (this *OpenGLES2Renderer) GetMaxTextures() int {
 	var data [1]int32
 	gl.GetIntegerv(gl.MAX_TEXTURE_IMAGE_UNITS, data[:])
-	return data[0]
+	return int(data[0])
 }
 
 func (this *OpenGLES2Renderer) NextTextureUnit() uint32 {

@@ -9,8 +9,8 @@ import (
 type OpenGLES2Mesh2D struct {
 	vertices    []gohome.Mesh2DVertex
 	indices     []uint8
-	numVertices uint32
-	numIndices  uint32
+	numVertices int
+	numIndices  int
 	Name        string
 	vbo         uint32
 	ibo         uint32
@@ -54,10 +54,10 @@ func (oglm *OpenGLES2Mesh2D) attributePointer() {
 }
 
 func (oglm *OpenGLES2Mesh2D) Load() {
-	oglm.numVertices = uint32(len(oglm.vertices))
-	oglm.numIndices = uint32(len(oglm.indices))
-	var verticesSize uint32 = oglm.numVertices * gohome.MESH2DVERTEXSIZE
-	var indicesSize uint32 = oglm.numIndices
+	oglm.numVertices = len(oglm.vertices)
+	oglm.numIndices = len(oglm.indices)
+	verticesSize := oglm.numVertices * gohome.MESH2DVERTEXSIZE
+	indicesSize := oglm.numIndices
 
 	var buf [1]uint32
 	gl.GenBuffers(1, buf[:])
@@ -69,13 +69,13 @@ func (oglm *OpenGLES2Mesh2D) Load() {
 
 	gl.BindBuffer(gl.ARRAY_BUFFER, oglm.vbo)
 	handleOpenGLError("Mesh2D", oglm.Name, "glBindBuffer vbo in Load: ")
-	gl.BufferData(gl.ARRAY_BUFFER, int(verticesSize), unsafe.Pointer(&oglm.vertices[0]), gl.STATIC_DRAW)
+	gl.BufferData(gl.ARRAY_BUFFER, verticesSize, unsafe.Pointer(&oglm.vertices[0]), gl.STATIC_DRAW)
 	handleOpenGLError("Mesh2D", oglm.Name, "glBufferData vbo in Load: ")
 	gl.BindBuffer(gl.ARRAY_BUFFER, 0)
 
 	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, oglm.ibo)
 	handleOpenGLError("Mesh2D", oglm.Name, "glBindBuffer ibo in Load: ")
-	gl.BufferData(gl.ELEMENT_ARRAY_BUFFER, int(indicesSize), unsafe.Pointer(&oglm.indices[0]), gl.STATIC_DRAW)
+	gl.BufferData(gl.ELEMENT_ARRAY_BUFFER, indicesSize, unsafe.Pointer(&oglm.indices[0]), gl.STATIC_DRAW)
 	handleOpenGLError("Mesh2D", oglm.Name, "glBufferData ibo in Load: ")
 	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, 0)
 
