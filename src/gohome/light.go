@@ -45,10 +45,10 @@ type Attentuation struct {
 	Quadratic float32
 }
 
-func (a Attentuation) SetUniforms(s Shader, variableName string, arrayIndex uint32) {
-	s.SetUniformF(variableName+"["+strconv.Itoa(int(arrayIndex))+"]."+ATTENTUATION_UNIFORM_NAME+"."+ATTENTUATION_CONSTANT_UNIFORM_NAME, a.Constant)
-	s.SetUniformF(variableName+"["+strconv.Itoa(int(arrayIndex))+"]."+ATTENTUATION_UNIFORM_NAME+"."+ATTENTUATION_LINEAR_UNIFORM_NAME, a.Linear)
-	s.SetUniformF(variableName+"["+strconv.Itoa(int(arrayIndex))+"]."+ATTENTUATION_UNIFORM_NAME+"."+ATTENTUATION_QUADRATIC_UNIFORM_NAME, a.Quadratic)
+func (a Attentuation) SetUniforms(s Shader, variableName string, arrayIndex int) {
+	s.SetUniformF(variableName+"["+strconv.Itoa(arrayIndex)+"]."+ATTENTUATION_UNIFORM_NAME+"."+ATTENTUATION_CONSTANT_UNIFORM_NAME, a.Constant)
+	s.SetUniformF(variableName+"["+strconv.Itoa(arrayIndex)+"]."+ATTENTUATION_UNIFORM_NAME+"."+ATTENTUATION_LINEAR_UNIFORM_NAME, a.Linear)
+	s.SetUniformF(variableName+"["+strconv.Itoa(arrayIndex)+"]."+ATTENTUATION_UNIFORM_NAME+"."+ATTENTUATION_QUADRATIC_UNIFORM_NAME, a.Quadratic)
 }
 
 type PointLight struct {
@@ -60,7 +60,7 @@ type PointLight struct {
 	Attentuation
 }
 
-func (pl PointLight) SetUniforms(s Shader, arrayIndex uint32) {
+func (pl PointLight) SetUniforms(s Shader, arrayIndex int) {
 	s.SetUniformV3(POINT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+POSITION_UNIFORM_NAME, pl.Position)
 	s.SetUniformV3(POINT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+DIFFUSE_COLOR_UNIFORM_NAME, ColorToVec3(pl.DiffuseColor))
 	s.SetUniformV3(POINT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+SPECULAR_COLOR_UNIFORM_NAME, ColorToVec3(pl.SpecularColor))
@@ -82,11 +82,11 @@ type DirectionalLight struct {
 	lightCam Camera3D
 }
 
-func (pl *DirectionalLight) SetUniforms(s Shader, arrayIndex uint32) {
-	s.SetUniformV3(DIRECTIONAL_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+DIRECTION_UNIFORM_NAME, pl.Direction)
-	s.SetUniformV3(DIRECTIONAL_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+DIFFUSE_COLOR_UNIFORM_NAME, ColorToVec3(pl.DiffuseColor))
-	s.SetUniformV3(DIRECTIONAL_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+SPECULAR_COLOR_UNIFORM_NAME, ColorToVec3(pl.SpecularColor))
-	s.SetUniformM4(DIRECTIONAL_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+LIGHT_SPACE_MATRIX_UNIFORM_NAME, pl.LightSpaceMatrix)
+func (pl *DirectionalLight) SetUniforms(s Shader, arrayIndex int) {
+	s.SetUniformV3(DIRECTIONAL_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(arrayIndex)+"]."+DIRECTION_UNIFORM_NAME, pl.Direction)
+	s.SetUniformV3(DIRECTIONAL_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(arrayIndex)+"]."+DIFFUSE_COLOR_UNIFORM_NAME, ColorToVec3(pl.DiffuseColor))
+	s.SetUniformV3(DIRECTIONAL_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(arrayIndex)+"]."+SPECULAR_COLOR_UNIFORM_NAME, ColorToVec3(pl.SpecularColor))
+	s.SetUniformM4(DIRECTIONAL_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(arrayIndex)+"]."+LIGHT_SPACE_MATRIX_UNIFORM_NAME, pl.LightSpaceMatrix)
 	if pl.ShadowMap != nil {
 		size := make([]int32, 2)
 		size[0] = int32(pl.ShadowMap.GetWidth())
@@ -152,8 +152,7 @@ func calculateDirectionalLightShadowMapProjection(cam *Camera3D, lightCam *Camer
 
 	pointsViewSpace = proj.GetFrustum()
 
-	var i uint32
-	for i = 0; i < 8; i++ {
+	for i := 0; i < 8; i++ {
 		if ok {
 			if i == FAR_LEFT_DOWN {
 				shadowDistanceVector = mgl32.Vec3{-farPlaneHalfWidthShadowDistance, -farPlaneHalfHeightShadowDistance, -dl.ShadowDistance}
@@ -288,11 +287,11 @@ type SpotLight struct {
 	FarPlane         float32
 }
 
-func (pl *SpotLight) SetUniforms(s Shader, arrayIndex uint32) {
-	s.SetUniformV3(SPOT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+POSITION_UNIFORM_NAME, pl.Position)
-	s.SetUniformV3(SPOT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+DIRECTION_UNIFORM_NAME, pl.Direction)
-	s.SetUniformV3(SPOT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+DIFFUSE_COLOR_UNIFORM_NAME, ColorToVec3(pl.DiffuseColor))
-	s.SetUniformV3(SPOT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+SPECULAR_COLOR_UNIFORM_NAME, ColorToVec3(pl.SpecularColor))
+func (pl *SpotLight) SetUniforms(s Shader, arrayIndex int) {
+	s.SetUniformV3(SPOT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(arrayIndex)+"]."+POSITION_UNIFORM_NAME, pl.Position)
+	s.SetUniformV3(SPOT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(arrayIndex)+"]."+DIRECTION_UNIFORM_NAME, pl.Direction)
+	s.SetUniformV3(SPOT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(arrayIndex)+"]."+DIFFUSE_COLOR_UNIFORM_NAME, ColorToVec3(pl.DiffuseColor))
+	s.SetUniformV3(SPOT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(arrayIndex)+"]."+SPECULAR_COLOR_UNIFORM_NAME, ColorToVec3(pl.SpecularColor))
 	s.SetUniformF(SPOT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+INNERCUTOFF_UNIFORM_NAME, pl.InnerCutOff)
 	s.SetUniformF(SPOT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+OUTERCUTOFF_UNIFORM_NAME, pl.OuterCutOff)
 	pl.Attentuation.SetUniforms(s, SPOT_LIGHTS_UNIFORM_NAME, arrayIndex)
@@ -433,7 +432,7 @@ func (this *LightCollection) RenderShadowMaps() {
 
 type LightManager struct {
 	LightCollections       []LightCollection
-	CurrentLightCollection int32
+	CurrentLightCollection int
 }
 
 func (this *LightManager) Init() {
@@ -447,38 +446,38 @@ func (this *LightManager) Update() {
 	}
 }
 
-func (this *LightManager) SetAmbientLight(color color.Color, lightCollectionIndex uint32) {
+func (this *LightManager) SetAmbientLight(color color.Color, lightCollectionIndex int) {
 	if len(this.LightCollections) == 0 {
 		this.LightCollections = make([]LightCollection, 1)
-	} else if uint32(len(this.LightCollections)-1) < lightCollectionIndex {
-		this.LightCollections = append(this.LightCollections, make([]LightCollection, lightCollectionIndex-uint32(len(this.LightCollections)-1))...)
+	} else if len(this.LightCollections)-1 < lightCollectionIndex {
+		this.LightCollections = append(this.LightCollections, make([]LightCollection, lightCollectionIndex-len(this.LightCollections)-1)...)
 	}
 	this.LightCollections[lightCollectionIndex].AmbientLight = color
 }
 
-func (this *LightManager) AddPointLight(pl *PointLight, lightCollectionIndex uint32) {
+func (this *LightManager) AddPointLight(pl *PointLight, lightCollectionIndex int) {
 	if len(this.LightCollections) == 0 {
 		this.LightCollections = make([]LightCollection, 1)
-	} else if uint32(len(this.LightCollections)-1) < lightCollectionIndex {
-		this.LightCollections = append(this.LightCollections, make([]LightCollection, lightCollectionIndex-uint32(len(this.LightCollections)-1))...)
+	} else if len(this.LightCollections)-1 < lightCollectionIndex {
+		this.LightCollections = append(this.LightCollections, make([]LightCollection, lightCollectionIndex-len(this.LightCollections)-1)...)
 	}
 	this.LightCollections[lightCollectionIndex].AddPointLight(pl)
 }
 
-func (this *LightManager) AddDirectionalLight(pl *DirectionalLight, lightCollectionIndex uint32) {
+func (this *LightManager) AddDirectionalLight(pl *DirectionalLight, lightCollectionIndex int) {
 	if len(this.LightCollections) == 0 {
 		this.LightCollections = make([]LightCollection, 1)
-	} else if uint32(len(this.LightCollections)-1) < lightCollectionIndex {
-		this.LightCollections = append(this.LightCollections, make([]LightCollection, lightCollectionIndex-uint32(len(this.LightCollections)-1))...)
+	} else if len(this.LightCollections)-1 < lightCollectionIndex {
+		this.LightCollections = append(this.LightCollections, make([]LightCollection, lightCollectionIndex-len(this.LightCollections)-1)...)
 	}
 	this.LightCollections[lightCollectionIndex].AddDirectionalLight(pl)
 }
 
-func (this *LightManager) AddSpotLight(pl *SpotLight, lightCollectionIndex uint32) {
+func (this *LightManager) AddSpotLight(pl *SpotLight, lightCollectionIndex int) {
 	if len(this.LightCollections) == 0 {
 		this.LightCollections = make([]LightCollection, 1)
-	} else if uint32(len(this.LightCollections)-1) < lightCollectionIndex {
-		this.LightCollections = append(this.LightCollections, make([]LightCollection, lightCollectionIndex-uint32(len(this.LightCollections)-1))...)
+	} else if len(this.LightCollections)-1 < lightCollectionIndex {
+		this.LightCollections = append(this.LightCollections, make([]LightCollection, lightCollectionIndex-len(this.LightCollections)-1)...)
 	}
 	this.LightCollections[lightCollectionIndex].AddSpotLight(pl)
 }

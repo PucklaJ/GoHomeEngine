@@ -14,7 +14,7 @@ type OpenGLShape3DInterface struct {
 
 	points      []gohome.Shape3DVertex
 	drawMode    uint32
-	numVertices uint32
+	numVertices int
 	pointSize   float32
 	lineWidth   float32
 }
@@ -73,7 +73,7 @@ func (this *OpenGLShape3DInterface) Load() {
 		return
 	}
 
-	this.numVertices = uint32(len(this.points))
+	this.numVertices = len(this.points)
 	if this.numVertices == 0 {
 		gohome.ErrorMgr.Error("Shape3DInterface", this.Name, "No Vertices have been added!")
 		return

@@ -13,7 +13,7 @@ type OpenGLShape2DInterface struct {
 	loaded     bool
 
 	points         []gohome.Shape2DVertex
-	numVertices    uint32
+	numVertices    int
 	openglDrawMode uint32
 	pointSize      float32
 	lineWidth      float32
@@ -74,7 +74,7 @@ func (this *OpenGLShape2DInterface) Load() {
 		return
 	}
 
-	this.numVertices = uint32(len(this.points))
+	this.numVertices = len(this.points)
 	if this.numVertices == 0 {
 		gohome.ErrorMgr.Error("Shape2DInterface", this.Name, "No Vertices have been added!")
 		return

@@ -10,8 +10,8 @@ import (
 )
 
 const (
-	GL_MAX_TEXTURE_MAX_ANISOTROPY uint32 = 0x84FF
-	GL_TEXTURE_MAX_ANISOTROPY     uint32 = 0x84FE
+	GL_MAX_TEXTURE_MAX_ANISOTROPY = 0x84FF
+	GL_TEXTURE_MAX_ANISOTROPY     = 0x84FE
 )
 
 type OpenGLRenderer struct {
@@ -302,10 +302,10 @@ func (this *OpenGLRenderer) SetBacckFaceCulling(b bool) {
 	}
 }
 
-func (this *OpenGLRenderer) GetMaxTextures() int32 {
+func (this *OpenGLRenderer) GetMaxTextures() int {
 	var data int32
 	gl.GetIntegerv(gl.MAX_TEXTURE_IMAGE_UNITS, &data)
-	return data
+	return int(data)
 }
 
 func (this *OpenGLRenderer) NextTextureUnit() uint32 {

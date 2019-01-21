@@ -35,7 +35,7 @@ type Renderer interface {
 
 	SetBacckFaceCulling(b bool)
 	SetDepthTesting(b bool)
-	GetMaxTextures() int32
+	GetMaxTextures() int
 	NextTextureUnit() uint32
 	DecrementTextureUnit(amount uint32)
 	HasFunctionAvailable(name string) bool

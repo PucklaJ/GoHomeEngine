@@ -34,7 +34,7 @@ type Shader interface {
 	SetUniformM3(name string, value mgl32.Mat3)
 	SetUniformM4(name string, value mgl32.Mat4)
 	SetUniformMaterial(mat Material)
-	SetUniformLights(lightCollectionIndex int32)
+	SetUniformLights(lightCollectionIndex int)
 	GetName() string
 	AddAttribute(name string, location uint32)
 }
@@ -102,7 +102,7 @@ func (*NilShader) SetUniformM4(name string, value mgl32.Mat4) {
 func (*NilShader) SetUniformMaterial(mat Material) {
 
 }
-func (*NilShader) SetUniformLights(lightCollectionIndex int32) {
+func (*NilShader) SetUniformLights(lightCollectionIndex int) {
 
 }
 func (*NilShader) GetName() string {

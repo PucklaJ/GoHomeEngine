@@ -8,7 +8,7 @@ import (
 )
 
 type Viewport struct {
-	CameraIndex         int32
+	CameraIndex         int
 	X, Y, Width, Height int
 	StrapToWindow       bool
 }
@@ -235,7 +235,7 @@ func (rmgr *RenderManager) updateTransformMatrix(robj RenderObject) {
 	}
 }
 
-func (rmgr *RenderManager) updateLights(lightCollectionIndex int32, rtype RenderType) {
+func (rmgr *RenderManager) updateLights(lightCollectionIndex int, rtype RenderType) {
 	if TYPE_3D.Compatible(rtype) {
 		if rmgr.CurrentShader != nil {
 			rmgr.CurrentShader.SetUniformLights(lightCollectionIndex)
@@ -253,7 +253,7 @@ func (rmgr *RenderManager) render3D() {
 		Render.ClearScreen(nil)
 	}
 	for i := 0; i < len(rmgr.viewport3Ds); i++ {
-		rmgr.Render(TYPE_3D, rmgr.viewport3Ds[i].CameraIndex, int32(i), LightMgr.CurrentLightCollection)
+		rmgr.Render(TYPE_3D, rmgr.viewport3Ds[i].CameraIndex, i, LightMgr.CurrentLightCollection)
 	}
 	if rmgr.BackBuffer3D != nil && rmgr.EnableBackBuffer {
 		rmgr.BackBuffer3D.UnsetAsTarget()
@@ -266,7 +266,7 @@ func (rmgr *RenderManager) render2D() {
 		Render.ClearScreen(nil)
 	}
 	for i := 0; i < len(rmgr.viewport2Ds); i++ {
-		rmgr.Render(TYPE_2D, rmgr.viewport2Ds[i].CameraIndex, int32(i), LightMgr.CurrentLightCollection)
+		rmgr.Render(TYPE_2D, rmgr.viewport2Ds[i].CameraIndex, i, LightMgr.CurrentLightCollection)
 	}
 	if rmgr.BackBuffer2D != nil && rmgr.EnableBackBuffer {
 		rmgr.BackBuffer2D.UnsetAsTarget()
@@ -357,26 +357,26 @@ func (rmgr *RenderManager) Update() {
 	Framew.WindowSwap()
 }
 
-func (rmgr *RenderManager) handleCurrentCameraAndViewport(rtype RenderType, cameraIndex int32, viewportIndex int32) {
+func (rmgr *RenderManager) handleCurrentCameraAndViewport(rtype RenderType, cameraIndex, viewportIndex int) {
 	if TYPE_2D.Compatible(rtype) {
-		if cameraIndex == -1 || len(rmgr.camera2Ds) == 0 || int32(len(rmgr.camera2Ds)-1) < cameraIndex {
+		if cameraIndex == -1 || len(rmgr.camera2Ds) == 0 || len(rmgr.camera2Ds)-1 < cameraIndex {
 			rmgr.currentCamera2D = nil
 		} else {
 			rmgr.currentCamera2D = rmgr.camera2Ds[cameraIndex]
 		}
-		if viewportIndex == -1 || len(rmgr.viewport2Ds) == 0 || int32(len(rmgr.viewport2Ds)-1) < viewportIndex {
+		if viewportIndex == -1 || len(rmgr.viewport2Ds) == 0 || len(rmgr.viewport2Ds)-1 < viewportIndex {
 			rmgr.currentViewport = nil
 		} else {
 			rmgr.currentViewport = rmgr.viewport2Ds[viewportIndex]
 		}
 
 	} else if TYPE_3D.Compatible(rtype) {
-		if cameraIndex == -1 || len(rmgr.camera3Ds) == 0 || int32(len(rmgr.camera3Ds)-1) < cameraIndex {
+		if cameraIndex == -1 || len(rmgr.camera3Ds) == 0 || len(rmgr.camera3Ds)-1 < cameraIndex {
 			rmgr.currentCamera3D = nil
 		} else {
 			rmgr.currentCamera3D = rmgr.camera3Ds[cameraIndex]
 		}
-		if viewportIndex == -1 || len(rmgr.viewport3Ds) == 0 || int32(len(rmgr.viewport3Ds)-1) < viewportIndex {
+		if viewportIndex == -1 || len(rmgr.viewport3Ds) == 0 || len(rmgr.viewport3Ds)-1 < viewportIndex {
 			rmgr.currentViewport = nil
 		} else {
 			rmgr.currentViewport = rmgr.viewport3Ds[viewportIndex]
@@ -416,7 +416,7 @@ func (rmgr *RenderManager) handleCurrentCameraAndViewport(rtype RenderType, came
 	}
 }
 
-func (rmgr *RenderManager) prepareRenderRenderObject(robj RenderObject, lightCollectionIndex int32) {
+func (rmgr *RenderManager) prepareRenderRenderObject(robj RenderObject, lightCollectionIndex int) {
 	rmgr.handleShader(robj)
 	rmgr.updateCamera(robj)
 	rmgr.updateProjection(robj.GetType())
@@ -424,12 +424,12 @@ func (rmgr *RenderManager) prepareRenderRenderObject(robj RenderObject, lightCol
 	rmgr.updateLights(lightCollectionIndex, robj.GetType())
 }
 
-func (rmgr *RenderManager) renderRenderObject(robj RenderObject, lightCollectionIndex int32) {
+func (rmgr *RenderManager) renderRenderObject(robj RenderObject, lightCollectionIndex int) {
 	rmgr.prepareRenderRenderObject(robj, lightCollectionIndex)
 	robj.Render()
 }
 
-func (rmgr *RenderManager) renderInnerLoop(rtype RenderType, robj RenderObject, lightCollectionIndex int32) {
+func (rmgr *RenderManager) renderInnerLoop(rtype RenderType, robj RenderObject, lightCollectionIndex int) {
 	if !robj.IsVisible() || !rtype.Compatible(robj.GetType()) {
 		return
 	}
@@ -444,7 +444,7 @@ func (rmgr *RenderManager) renderInnerLoop(rtype RenderType, robj RenderObject, 
 	Render.AfterRender()
 }
 
-func (rmgr *RenderManager) Render(rtype RenderType, cameraIndex int32, viewportIndex int32, lightCollectionIndex int32) {
+func (rmgr *RenderManager) Render(rtype RenderType, cameraIndex, viewportIndex, lightCollectionIndex int) {
 	if len(rmgr.renderObjects) == 0 && len(rmgr.afterRenderObjects) == 0 {
 		return
 	}
@@ -479,7 +479,7 @@ func (rmgr *RenderManager) RenderRenderObject(robj RenderObject) {
 	rmgr.RenderRenderObjectAdv(robj, 0, -1)
 }
 
-func (rmgr *RenderManager) RenderRenderObjectAdv(robj RenderObject, cameraIndex, viewportIndex int32) {
+func (rmgr *RenderManager) RenderRenderObjectAdv(robj RenderObject, cameraIndex, viewportIndex int) {
 	rmgr.handleCurrentCameraAndViewport(robj.GetType(), cameraIndex, viewportIndex)
 
 	Render.SetWireFrame(rmgr.WireFrameMode)

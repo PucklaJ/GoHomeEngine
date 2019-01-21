@@ -252,14 +252,14 @@ func (this *OpenGLRenderTexture) Unbind(unit uint32) {
 	this.UnbindIndex(0, unit)
 }
 
-func (this *OpenGLRenderTexture) BindIndex(index, unit uint32) {
-	if index < uint32(len(this.textures)) {
+func (this *OpenGLRenderTexture) BindIndex(index int, unit uint32) {
+	if index < len(this.textures) {
 		this.textures[index].Bind(unit)
 	}
 }
 
-func (this *OpenGLRenderTexture) UnbindIndex(index, unit uint32) {
-	if index < uint32(len(this.textures)) {
+func (this *OpenGLRenderTexture) UnbindIndex(index int, unit uint32) {
+	if index < len(this.textures) {
 		this.textures[index].Unbind(unit)
 	}
 }
