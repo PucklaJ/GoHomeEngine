@@ -29,7 +29,7 @@ type Framework interface {
 	Terminate()
 	PollEvents()
 
-	CreateWindow(windowWidth, windowHeight uint32, title string) error
+	CreateWindow(windowWidth, windowHeight int, title string) error
 	WindowClosed() bool
 	WindowSwap()
 	WindowSetSize(size mgl32.Vec2)
@@ -53,8 +53,8 @@ type Framework interface {
 	ShowYesNoDialog(title, message string) uint8
 	Log(a ...interface{})
 
-	OnResize(callback func(newWidth, newHeight uint32))
-	OnMove(callback func(newPosX, newPosY uint32))
+	OnResize(callback func(newWidth, newHeight int))
+	OnMove(callback func(newPosX, newPosY int))
 	OnClose(callback func())
 	OnFocus(callback func(focused bool))
 
@@ -80,7 +80,7 @@ func (*NilFramework) Terminate() {
 func (*NilFramework) PollEvents() {
 
 }
-func (*NilFramework) CreateWindow(windowWidth, windowHeight uint32, title string) error {
+func (*NilFramework) CreateWindow(windowWidth, windowHeight int, title string) error {
 	return nil
 }
 func (*NilFramework) WindowClosed() bool {
@@ -143,10 +143,10 @@ func (*NilFramework) Log(a ...interface{}) {
 	log.Println(str[:len(str)-1])
 }
 
-func (*NilFramework) OnResize(callback func(newWidth, newHeight uint32)) {
+func (*NilFramework) OnResize(callback func(newWidth, newHeight int)) {
 
 }
-func (*NilFramework) OnMove(callback func(newPosX, newPosY uint32)) {
+func (*NilFramework) OnMove(callback func(newPosX, newPosY int)) {
 
 }
 func (*NilFramework) OnClose(callback func()) {

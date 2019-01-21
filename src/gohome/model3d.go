@@ -35,8 +35,8 @@ func (this *Model3D) GetMesh(name string) Mesh3D {
 	return nil
 }
 
-func (this *Model3D) GetMeshIndex(index uint32) Mesh3D {
-	if index > uint32(len(this.meshes)-1) {
+func (this *Model3D) GetMeshIndex(index int) Mesh3D {
+	if index > len(this.meshes)-1 {
 		return nil
 	} else {
 		return this.meshes[index]

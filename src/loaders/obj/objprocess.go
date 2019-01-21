@@ -8,7 +8,7 @@ import (
 	"sync"
 )
 
-func (this *OBJLoader) processTriangleFace(posIndices, normalIndices, texCoordIndices []uint32) (rv []gohome.Mesh3DVertex) {
+func (this *OBJLoader) processTriangleFace(posIndices, normalIndices, texCoordIndices []int) (rv []gohome.Mesh3DVertex) {
 	rv = make([]gohome.Mesh3DVertex, 3)
 	for i := 0; i < 3; i++ {
 		for j := 0; j < 3; j++ {
@@ -35,7 +35,7 @@ var quadIs = [6]int{
 	0, 1, 2, 2, 3, 0,
 }
 
-func (this *OBJLoader) processQuadFace(posIndices, normalIndices, texCoordIndices []uint32) (rv []gohome.Mesh3DVertex) {
+func (this *OBJLoader) processQuadFace(posIndices, normalIndices, texCoordIndices []int) (rv []gohome.Mesh3DVertex) {
 	rv = make([]gohome.Mesh3DVertex, 6)
 
 	var wg sync.WaitGroup
@@ -168,9 +168,9 @@ func (this *OBJLoader) processFace(tokens []string) error {
 }
 
 func (this *OBJLoader) processFaceData(elements [][]string) (rv []gohome.Mesh3DVertex) {
-	var posIndices []uint32
-	var normalIndices []uint32
-	var texCoordIndices []uint32
+	var posIndices []int
+	var normalIndices []int
+	var texCoordIndices []int
 	switch this.faceMethod {
 	case 1:
 		posIndices = processFaceData1(elements)

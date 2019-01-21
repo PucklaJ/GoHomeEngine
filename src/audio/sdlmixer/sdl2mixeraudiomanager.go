@@ -31,11 +31,11 @@ func (this *MixerAudioManager) Init() {
 	this.volume = 1.0
 }
 
-func (this *MixerAudioManager) CreateSound(name string, samples []byte, format uint8, sampleRate uint32) gohome.Sound {
+func (this *MixerAudioManager) CreateSound(name string, samples []byte, format uint8, sampleRate int) gohome.Sound {
 	return &MixerSound{}
 }
 
-func (this *MixerAudioManager) CreateMusic(name string, samples []byte, format uint8, sampleRate uint32) gohome.Music {
+func (this *MixerAudioManager) CreateMusic(name string, samples []byte, format uint8, sampleRate int) gohome.Music {
 	return &MixerMusic{}
 }
 

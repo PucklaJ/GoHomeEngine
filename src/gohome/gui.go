@@ -10,7 +10,7 @@ type ButtonCallback func(btn *Button)
 
 var focusedButton *Button
 var ButtonFont string = "Button"
-var ButtonFontSize uint32 = 24
+var ButtonFontSize = 24
 
 type Button struct {
 	Sprite2D

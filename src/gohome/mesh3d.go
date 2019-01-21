@@ -16,8 +16,8 @@ type Mesh3D interface {
 	SetMaterial(mat *Material)
 	GetMaterial() *Material
 	GetName() string
-	GetNumVertices() uint32
-	GetNumIndices() uint32
+	GetNumVertices() int
+	GetNumIndices() int
 	GetVertices() []Mesh3DVertex
 	GetIndices() []uint32
 	CalculateTangents()
@@ -393,10 +393,10 @@ func (*NilMesh3D) GetMaterial() *Material {
 func (*NilMesh3D) GetName() string {
 	return ""
 }
-func (*NilMesh3D) GetNumVertices() uint32 {
+func (*NilMesh3D) GetNumVertices() int {
 	return 0
 }
-func (*NilMesh3D) GetNumIndices() uint32 {
+func (*NilMesh3D) GetNumIndices() int {
 	return 0
 }
 func (*NilMesh3D) GetVertices() []Mesh3DVertex {

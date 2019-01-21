@@ -275,6 +275,6 @@ func disableContextMenu(event *js.Object) {
 }
 
 func onResize() {
-	nw, nh := uint32(framew.Canvas.Get("width").Int()), uint32(framew.Canvas.Get("height").Int())
+	nw, nh := framew.Canvas.Get("width").Int(), framew.Canvas.Get("height").Int()
 	gohome.Render.OnResize(nw, nh)
 }

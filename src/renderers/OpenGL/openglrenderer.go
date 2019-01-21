@@ -149,7 +149,7 @@ func (*OpenGLRenderer) CreateMesh3D(name string) gohome.Mesh3D {
 	return CreateOpenGLMesh3D(name)
 }
 
-func (*OpenGLRenderer) CreateRenderTexture(name string, width, height, textures uint32, depthBuffer, multiSampled, shadowMap, cubeMap bool) gohome.RenderTexture {
+func (*OpenGLRenderer) CreateRenderTexture(name string, width, height, textures int, depthBuffer, multiSampled, shadowMap, cubeMap bool) gohome.RenderTexture {
 	return CreateOpenGLRenderTexture(name, width, height, textures, depthBuffer, multiSampled, shadowMap, cubeMap)
 }
 
@@ -255,7 +255,7 @@ func (this *OpenGLRenderer) GetViewport() gohome.Viewport {
 	}
 }
 
-func (this *OpenGLRenderer) SetNativeResolution(width, height uint32) {
+func (this *OpenGLRenderer) SetNativeResolution(width, height int) {
 	previous := gohome.Viewport{
 		X:      0,
 		Y:      0,
@@ -283,7 +283,7 @@ func (this *OpenGLRenderer) SetNativeResolution(width, height uint32) {
 func (this *OpenGLRenderer) GetNativeResolution() mgl32.Vec2 {
 	return [2]float32{float32(gohome.RenderMgr.BackBufferMS.GetWidth()), float32(gohome.RenderMgr.BackBufferMS.GetHeight())}
 }
-func (this *OpenGLRenderer) OnResize(newWidth, newHeight uint32) {
+func (this *OpenGLRenderer) OnResize(newWidth, newHeight int) {
 	gl.Viewport(0, 0, int32(newWidth), int32(newHeight))
 }
 

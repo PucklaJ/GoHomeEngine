@@ -5,20 +5,20 @@ import (
 )
 
 type MainLoop struct {
-	windowWidth  uint32
-	windowHeight uint32
+	windowWidth  int
+	windowHeight int
 	windowTitle  string
 	startScene   Scene
 }
 
-func (ml *MainLoop) Run(fw Framework, r Renderer, ww, wh uint32, wt string, start_scene Scene) {
+func (ml *MainLoop) Run(fw Framework, r Renderer, ww, wh int, wt string, start_scene Scene) {
 	runtime.LockOSThread()
 	if !ml.Init(fw, r, ww, wh, wt, start_scene) {
 		ml.Quit()
 	}
 }
 
-func (this *MainLoop) Init(fw Framework, r Renderer, ww, wh uint32, wt string, start_scene Scene) bool {
+func (this *MainLoop) Init(fw Framework, r Renderer, ww, wh int, wt string, start_scene Scene) bool {
 
 	Framew = fw
 	Render = r

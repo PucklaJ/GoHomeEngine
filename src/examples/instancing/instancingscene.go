@@ -8,7 +8,7 @@ import (
 	"sync"
 )
 
-const SIZE int = 20
+const SIZE = 20
 const USE_INSTANCING = true
 
 type InstancingScene struct {
@@ -20,7 +20,7 @@ func (this *InstancingScene) Init() {
 	cubeMesh := gohome.Box("Box", [3]float32{1.0, 1.0, 1.0}, false)
 	if USE_INSTANCING {
 		cubeInstanced := gohome.InstancedMesh3DFromMesh3D(cubeMesh)
-		this.ent.InitMesh(cubeInstanced, uint32(SIZE*SIZE*SIZE))
+		this.ent.InitMesh(cubeInstanced, SIZE*SIZE*SIZE)
 		for x := 0; x < SIZE; x++ {
 			for y := 0; y < SIZE; y++ {
 				for z := 0; z < SIZE; z++ {
@@ -69,7 +69,7 @@ var addedRows int = 1
 var removedRows int = 0
 
 func (this *InstancingScene) addBoxes() {
-	this.ent.SetNumInstances(uint32((SIZE + addedRows) * (SIZE + addedRows) * (SIZE + addedRows)))
+	this.ent.SetNumInstances((SIZE + addedRows) * (SIZE + addedRows) * (SIZE + addedRows))
 	var wg sync.WaitGroup
 	wg.Add((SIZE + addedRows) * (SIZE + addedRows) * (SIZE + addedRows))
 	for x := 0; x < SIZE+addedRows; x++ {

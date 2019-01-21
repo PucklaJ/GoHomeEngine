@@ -10,11 +10,11 @@ import (
 	"unsafe"
 )
 
-func (this Window) ConfigureParametersAdv(width, height uint32, title string) {
+func (this Window) ConfigureParametersAdv(width, height int, title string) {
 	ctitle := C.CString(title)
 	defer C.free(unsafe.Pointer(ctitle))
 
-	C.configureWindowParameters(this.Handle, C.uint(width), C.uint(height), ctitle)
+	C.configureWindowParameters(this.Handle, C.int(width), C.int(height), ctitle)
 }
 
 func (this Window) ConfigureParameters() {

@@ -18,8 +18,8 @@ type SDL2Framework struct {
 	running         bool
 	textInputBuffer string
 
-	onResizeCallbacks []func(newWidth, newHeight uint32)
-	onMoveCallbacks   []func(newPosX, newPosY uint32)
+	onResizeCallbacks []func(newWidth, newHeight int)
+	onMoveCallbacks   []func(newPosX, newPosY int)
 	onCloseCallbacks  []func()
 	onFocusCallbacks  []func(focused bool)
 }
@@ -90,7 +90,7 @@ func getWindowCreationFlags() uint32 {
 	return uint32(flags)
 }
 
-func (this *SDL2Framework) createWindowLight(windowWidth, windowHeight uint32, title string) error {
+func (this *SDL2Framework) createWindowLight(windowWidth, windowHeight int, title string) error {
 	sdl.GLResetAttributes()
 	if err := setGLAttributesCompatible(); err != nil {
 		return err
@@ -102,7 +102,7 @@ func (this *SDL2Framework) createWindowLight(windowWidth, windowHeight uint32, t
 	return nil
 }
 
-func (this *SDL2Framework) CreateWindow(windowWidth, windowHeight uint32, title string) error {
+func (this *SDL2Framework) CreateWindow(windowWidth, windowHeight int, title string) error {
 
 	if err := setGLAttributesNormal(); err != nil {
 		return err
@@ -281,10 +281,10 @@ func (*SDL2Framework) Log(a ...interface{}) {
 	sdl.Log(str[:len(str)-1])
 }
 
-func (this *SDL2Framework) OnResize(callback func(newWidth, newHeight uint32)) {
+func (this *SDL2Framework) OnResize(callback func(newWidth, newHeight int)) {
 	this.onResizeCallbacks = append(this.onResizeCallbacks, callback)
 }
-func (this *SDL2Framework) OnMove(callback func(newPosX, newPosY uint32)) {
+func (this *SDL2Framework) OnMove(callback func(newPosX, newPosY int)) {
 	this.onMoveCallbacks = append(this.onMoveCallbacks, callback)
 }
 func (this *SDL2Framework) OnClose(callback func()) {

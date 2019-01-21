@@ -14,8 +14,8 @@ import (
 var (
 	PIXEL_PER_METER     float32 = 100.0
 	WORLD_SIZE          mgl32.Vec2
-	VELOCITY_ITERATIONS uint32 = 6
-	POSITION_ITERATIONS uint32 = 2
+	VELOCITY_ITERATIONS = 6
+	POSITION_ITERATIONS = 2
 )
 
 func ScalarToPixel(v float64) float32 {

@@ -10,7 +10,7 @@ func (this *OBJLoader) newPosition(tokens []string) {
 	} else {
 		this.positionIndex++
 		this.verticesWG.Add(1)
-		go func(index uint32) {
+		go func(index int) {
 			this.positionChan <- positionData{process3Floats(tokens[1:]), index}
 			this.verticesWG.Done()
 		}(this.positionIndex - 1)
@@ -23,7 +23,7 @@ func (this *OBJLoader) newNormal(tokens []string) {
 	} else {
 		this.normalIndex++
 		this.verticesWG.Add(1)
-		go func(index uint32) {
+		go func(index int) {
 			this.normalChan <- normalData{process3Floats(tokens[1:]), index}
 			this.verticesWG.Done()
 		}(this.normalIndex - 1)
@@ -38,7 +38,7 @@ func (this *OBJLoader) newTexCoord(tokens []string) {
 	} else {
 		this.texCoordIndex++
 		this.verticesWG.Add(1)
-		go func(index uint32) {
+		go func(index int) {
 			vt := process2Floats(tokens[1:])
 			vt[1] = 1.0 - vt[1]
 			this.texCoordChan <- texCoordData{vt, index}

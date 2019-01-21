@@ -58,9 +58,9 @@ func (rmgr *RenderManager) Init() {
 	windowSize := Framew.WindowGetSize()
 
 	rmgr.CurrentShader = nil
-	rmgr.BackBufferMS = Render.CreateRenderTexture("BackBufferMS", uint32(windowSize[0]), uint32(windowSize[1]), 1, true, true, false, false)
-	rmgr.BackBuffer2D = Render.CreateRenderTexture("BackBuffer2D", uint32(windowSize[0]), uint32(windowSize[1]), 1, true, true, false, false)
-	rmgr.BackBuffer3D = Render.CreateRenderTexture("BackBuffer3D", uint32(windowSize[0]), uint32(windowSize[1]), 1, true, true, false, false)
+	rmgr.BackBufferMS = Render.CreateRenderTexture("BackBufferMS", int(windowSize[0]), int(windowSize[1]), 1, true, true, false, false)
+	rmgr.BackBuffer2D = Render.CreateRenderTexture("BackBuffer2D", int(windowSize[0]), int(windowSize[1]), 1, true, true, false, false)
+	rmgr.BackBuffer3D = Render.CreateRenderTexture("BackBuffer3D", int(windowSize[0]), int(windowSize[1]), 1, true, true, false, false)
 	rmgr.BackBufferShader = ResourceMgr.GetShader("BackBufferShader")
 
 	rmgr.AddViewport2D(&Viewport{
@@ -504,22 +504,22 @@ func (rmgr *RenderManager) RenderRenderObjectAdv(robj RenderObject, cameraIndex,
 	Render.SetWireFrame(false)
 }
 
-func (rmgr *RenderManager) SetCamera2D(cam *Camera2D, index uint32) {
+func (rmgr *RenderManager) SetCamera2D(cam *Camera2D, index int) {
 	if len(rmgr.camera2Ds) == 0 {
 		rmgr.camera2Ds = make([]*Camera2D, 1)
 	}
-	if uint32(len(rmgr.camera2Ds)-1) < index {
-		rmgr.camera2Ds = append(rmgr.camera2Ds, make([]*Camera2D, index-uint32(len(rmgr.camera2Ds)-1))...)
+	if len(rmgr.camera2Ds)-1 < index {
+		rmgr.camera2Ds = append(rmgr.camera2Ds, make([]*Camera2D, index-len(rmgr.camera2Ds)-1)...)
 	}
 	rmgr.camera2Ds[index] = cam
 }
 
-func (rmgr *RenderManager) SetCamera3D(cam *Camera3D, index uint32) {
+func (rmgr *RenderManager) SetCamera3D(cam *Camera3D, index int) {
 	if len(rmgr.camera3Ds) == 0 {
 		rmgr.camera3Ds = make([]*Camera3D, 1)
 	}
-	if uint32(len(rmgr.camera3Ds)-1) < index {
-		rmgr.camera3Ds = append(rmgr.camera3Ds, make([]*Camera3D, index-uint32(len(rmgr.camera3Ds)-1))...)
+	if len(rmgr.camera3Ds)-1 < index {
+		rmgr.camera3Ds = append(rmgr.camera3Ds, make([]*Camera3D, index-len(rmgr.camera3Ds)-1)...)
 	}
 	rmgr.camera3Ds[index] = cam
 }
@@ -532,22 +532,22 @@ func (rmgr *RenderManager) AddViewport3D(viewport *Viewport) {
 	rmgr.viewport3Ds = append(rmgr.viewport3Ds, viewport)
 }
 
-func (rmgr *RenderManager) SetViewport2D(viewport *Viewport, index uint32) {
+func (rmgr *RenderManager) SetViewport2D(viewport *Viewport, index int) {
 	if len(rmgr.viewport2Ds) == 0 {
 		rmgr.viewport2Ds = make([]*Viewport, 1)
 	}
-	if uint32(len(rmgr.viewport2Ds)-1) < index {
-		rmgr.viewport2Ds = append(rmgr.viewport2Ds, make([]*Viewport, index-uint32(len(rmgr.viewport2Ds)-1))...)
+	if len(rmgr.viewport2Ds)-1 < index {
+		rmgr.viewport2Ds = append(rmgr.viewport2Ds, make([]*Viewport, index-len(rmgr.viewport2Ds)-1)...)
 	}
 	rmgr.viewport2Ds[index] = viewport
 }
 
-func (rmgr *RenderManager) SetViewport3D(viewport *Viewport, index uint32) {
+func (rmgr *RenderManager) SetViewport3D(viewport *Viewport, index int) {
 	if len(rmgr.viewport3Ds) == 0 {
 		rmgr.viewport3Ds = make([]*Viewport, 1)
 	}
-	if uint32(len(rmgr.viewport3Ds)-1) < index {
-		rmgr.viewport3Ds = append(rmgr.viewport3Ds, make([]*Viewport, index-uint32(len(rmgr.viewport3Ds)-1))...)
+	if len(rmgr.viewport3Ds)-1 < index {
+		rmgr.viewport3Ds = append(rmgr.viewport3Ds, make([]*Viewport, index-len(rmgr.viewport3Ds)-1)...)
 	}
 	rmgr.viewport3Ds[index] = viewport
 }
@@ -652,8 +652,8 @@ func (rmgr *RenderManager) UpdateProjection2D(viewportIndex int32) {
 	}
 }
 
-func (rmgr *RenderManager) NumRenderObjects() uint32 {
-	return uint32(len(rmgr.renderObjects) + len(rmgr.afterRenderObjects))
+func (rmgr *RenderManager) NumRenderObjects() int {
+	return len(rmgr.renderObjects) + len(rmgr.afterRenderObjects)
 }
 
 var RenderMgr RenderManager

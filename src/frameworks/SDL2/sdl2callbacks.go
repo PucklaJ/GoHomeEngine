@@ -63,12 +63,12 @@ func (this *SDL2Framework) onWindowEvent(event *sdl.WindowEvent) {
 	switch event.Event {
 	case sdl.WINDOWEVENT_MOVED:
 		for _, c := range this.onMoveCallbacks {
-			c(uint32(event.Data1), uint32(event.Data2))
+			c(int(event.Data1), int(event.Data2))
 		}
 	case sdl.WINDOWEVENT_SIZE_CHANGED:
-		gohome.Render.OnResize(uint32(event.Data1), uint32(event.Data2))
+		gohome.Render.OnResize(int(event.Data1), int(event.Data2))
 		for _, c := range this.onResizeCallbacks {
-			c(uint32(event.Data1), uint32(event.Data2))
+			c(int(event.Data1), int(event.Data2))
 		}
 	case sdl.WINDOWEVENT_FOCUS_GAINED:
 		for _, c := range this.onFocusCallbacks {

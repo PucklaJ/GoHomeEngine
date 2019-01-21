@@ -94,7 +94,7 @@ func (*JSFramework) PollEvents() {
 	lock_events = false
 }
 
-func (this *JSFramework) CreateWindow(windowWidth, windowHeight uint32, title string) error {
+func (this *JSFramework) CreateWindow(windowWidth, windowHeight int, title string) error {
 	document := js.Global.Get("document")
 	this.Canvas = document.Call("createElement", "canvas")
 	if this.Canvas == nil {

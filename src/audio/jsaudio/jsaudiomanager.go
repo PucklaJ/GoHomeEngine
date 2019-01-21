@@ -17,11 +17,11 @@ func (this *JSAudioManager) Init() {
 	this.volume = 1.0
 }
 
-func (this *JSAudioManager) CreateSound(name string, samples []byte, format uint8, sampleRate uint32) gohome.Sound {
+func (this *JSAudioManager) CreateSound(name string, samples []byte, format uint8, sampleRate int) gohome.Sound {
 	return &JSAudio{}
 }
 
-func (this *JSAudioManager) CreateMusic(name string, samples []byte, format uint8, sampleRate uint32) gohome.Music {
+func (this *JSAudioManager) CreateMusic(name string, samples []byte, format uint8, sampleRate int) gohome.Music {
 	return &JSAudio{}
 }
 

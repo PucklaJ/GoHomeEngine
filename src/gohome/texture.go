@@ -7,15 +7,15 @@ import (
 )
 
 const (
-	FILTERING_NEAREST                uint32 = iota
-	FILTERING_LINEAR                 uint32 = iota
-	FILTERING_NEAREST_MIPMAP_NEAREST uint32 = iota
-	FILTERING_LINEAR_MIPMAP_LINEAR   uint32 = iota
+	FILTERING_NEAREST                = iota
+	FILTERING_LINEAR                 = iota
+	FILTERING_NEAREST_MIPMAP_NEAREST = iota
+	FILTERING_LINEAR_MIPMAP_LINEAR   = iota
 
-	WRAPPING_REPEAT          uint32 = iota
-	WRAPPING_CLAMP_TO_BORDER uint32 = iota
-	WRAPPING_CLAMP_TO_EDGE   uint32 = iota
-	WRAPPING_MIRRORED_REPEAT uint32 = iota
+	WRAPPING_REPEAT          = iota
+	WRAPPING_CLAMP_TO_BORDER = iota
+	WRAPPING_CLAMP_TO_EDGE   = iota
+	WRAPPING_MIRRORED_REPEAT = iota
 )
 
 type Texture interface {
@@ -28,8 +28,8 @@ type Texture interface {
 	GetKeyColor() color.Color
 	GetModColor() color.Color
 	Terminate()
-	SetFiltering(filtering uint32)
-	SetWrapping(wrapping uint32)
+	SetFiltering(filtering int)
+	SetWrapping(wrapping int)
 	SetBorderColor(col color.Color)
 	SetBorderDepth(depth float32)
 	SetKeyColor(col color.Color)
@@ -119,10 +119,10 @@ func (*NilTexture) GetModColor() color.Color {
 func (*NilTexture) Terminate() {
 
 }
-func (*NilTexture) SetFiltering(filtering uint32) {
+func (*NilTexture) SetFiltering(filtering int) {
 
 }
-func (*NilTexture) SetWrapping(wrapping uint32) {
+func (*NilTexture) SetWrapping(wrapping int) {
 
 }
 func (*NilTexture) SetBorderColor(col color.Color) {

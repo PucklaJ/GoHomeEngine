@@ -15,7 +15,7 @@ void initialise(int args, char **argv)
 	gtk_init(&args, &argv);
 }
 
-int createWindow(unsigned int width, unsigned int height, const char *title)
+int createWindow(int width, int height, const char *title)
 {
 	Window = createWindowObject();
 	configureWindowParameters(Window, width, height, title);
@@ -32,7 +32,7 @@ GtkWindow *createWindowObject()
 	return (GtkWindow *)gtk_window_new(GTK_WINDOW_TOPLEVEL);
 }
 
-void configureWindowParameters(GtkWindow *window, unsigned int width, unsigned int height, const char *title)
+void configureWindowParameters(GtkWindow *window, int width, int height, const char *title)
 {
 	if (width != 0 && height != 0)
 	{

@@ -11,8 +11,8 @@ import (
 type OpenGLCubeMap struct {
 	name      string
 	oglName   uint32
-	width     uint32
-	height    uint32
+	width     int
+	height    int
 	shadowMap bool
 }
 
@@ -28,19 +28,18 @@ func CreateOpenGLCubeMap(name string) *OpenGLCubeMap {
 }
 
 func (this *OpenGLCubeMap) Load(data []byte, width, height int, shadowMap bool) {
-	this.width = uint32(width)
-	this.height = uint32(height)
+	this.width = width
+	this.height = height
 	this.shadowMap = shadowMap
 
 	gl.GenTextures(1, &this.oglName)
 	gl.BindTexture(gl.TEXTURE_CUBE_MAP, this.oglName)
 
-	var i uint32
-	for i = 0; i < 6; i++ {
+	for i := 0; i < 6; i++ {
 		if shadowMap {
-			gl.TexImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X+i, 0, gl.DEPTH_COMPONENT, int32(width), int32(height), 0, gl.DEPTH_COMPONENT, gl.FLOAT, nil)
+			gl.TexImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X+uint32(i), 0, gl.DEPTH_COMPONENT, int32(width), int32(height), 0, gl.DEPTH_COMPONENT, gl.FLOAT, nil)
 		} else {
-			gl.TexImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X+i, 0, gl.RGBA, int32(width), int32(height), 0, gl.RGBA, gl.UNSIGNED_BYTE, nil)
+			gl.TexImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X+uint32(i), 0, gl.RGBA, int32(width), int32(height), 0, gl.RGBA, gl.UNSIGNED_BYTE, nil)
 		}
 	}
 
@@ -72,7 +71,7 @@ func (this *OpenGLCubeMap) GetHeight() int {
 func (this *OpenGLCubeMap) Terminate() {
 	gl.DeleteTextures(1, &this.oglName)
 }
-func (this *OpenGLCubeMap) SetFiltering(filtering uint32) {
+func (this *OpenGLCubeMap) SetFiltering(filtering int) {
 	gl.BindTexture(gl.TEXTURE_CUBE_MAP, this.oglName)
 	var filter int32
 	if filtering == gohome.FILTERING_NEAREST {
@@ -87,7 +86,7 @@ func (this *OpenGLCubeMap) SetFiltering(filtering uint32) {
 
 	gl.BindTexture(gl.TEXTURE_CUBE_MAP, 0)
 }
-func (this *OpenGLCubeMap) SetWrapping(wrapping uint32) {
+func (this *OpenGLCubeMap) SetWrapping(wrapping int) {
 	gl.BindTexture(gl.TEXTURE_CUBE_MAP, this.oglName)
 	var wrap int32
 	if wrapping == gohome.WRAPPING_REPEAT {

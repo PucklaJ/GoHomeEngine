@@ -26,11 +26,11 @@ func (this *GTKBuilderScene) Init() {
 	lb_assets := builder.GetObject("lb_assets").ToWidget().ToListBox()
 	gohome.Framew.(*framework.GTKFramework).InitExternalDefault(&window, &glarea)
 	ws, hs := glarea.ToWidget().GetSize()
-	gohome.Render.SetNativeResolution(uint32(ws), uint32(hs))
+	gohome.Render.SetNativeResolution(ws, hs)
 
 	glarea.ToWidget().SignalConnect("size-allocate", func(widget gtk.Widget) {
 		w, h := widget.GetSize()
-		gohome.Render.SetNativeResolution(uint32(w), uint32(h))
+		gohome.Render.SetNativeResolution(w, h)
 	})
 	this.lb = gtk.LabelNew("Hello Programmer")
 	lb_assets.ToContainer().Add(this.lb.ToWidget())

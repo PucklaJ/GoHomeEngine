@@ -21,8 +21,8 @@ type GLFWFramework struct {
 	prevWindowX      int
 	prevWindowY      int
 
-	onResizeCallbacks []func(newWidth, newHeight uint32)
-	onMoveCallbacks   []func(newPosX, newPosY uint32)
+	onResizeCallbacks []func(newWidth, newHeight int)
+	onMoveCallbacks   []func(newPosX, newPosY int)
 	onCloseCallbacks  []func()
 	onFocusCallbacks  []func(focused bool)
 
@@ -59,7 +59,7 @@ func setProfile() {
 	glfw.WindowHint(glfw.OpenGLForwardCompatible, glfw.True)
 }
 
-func (gfw *GLFWFramework) createWindowProfile(windowWidth, windowHeight uint32, title string, setprofile bool) error {
+func (gfw *GLFWFramework) createWindowProfile(windowWidth, windowHeight int, title string, setprofile bool) error {
 	glfw.DefaultWindowHints()
 	glfw.WindowHint(glfw.Resizable, glfw.True)
 	if setprofile {
@@ -69,7 +69,7 @@ func (gfw *GLFWFramework) createWindowProfile(windowWidth, windowHeight uint32, 
 	glfw.WindowHint(glfw.Samples, 4)
 
 	var err error
-	gfw.window, err = glfw.CreateWindow(int(windowWidth), int(windowHeight), title, nil, nil)
+	gfw.window, err = glfw.CreateWindow(windowWidth, windowHeight, title, nil, nil)
 	if err != nil {
 		return err
 	}
@@ -89,7 +89,7 @@ func (gfw *GLFWFramework) createWindowProfile(windowWidth, windowHeight uint32, 
 	return nil
 }
 
-func (gfw *GLFWFramework) CreateWindow(windowWidth, windowHeight uint32, title string) error {
+func (gfw *GLFWFramework) CreateWindow(windowWidth, windowHeight int, title string) error {
 	defer func() {
 		if r := recover(); r != nil {
 			log.Println("Recover:", r)
@@ -514,10 +514,10 @@ func (gfw *GLFWFramework) ShowYesNoDialog(title, message string) uint8 {
 	return gohome.DIALOG_CANCELLED
 }
 
-func (gfw *GLFWFramework) OnResize(callback func(newWidth, newHeight uint32)) {
+func (gfw *GLFWFramework) OnResize(callback func(newWidth, newHeight int)) {
 	gfw.onResizeCallbacks = append(gfw.onResizeCallbacks, callback)
 }
-func (gfw *GLFWFramework) OnMove(callback func(newPosX, newPosY uint32)) {
+func (gfw *GLFWFramework) OnMove(callback func(newPosX, newPosY int)) {
 	gfw.onMoveCallbacks = append(gfw.onMoveCallbacks, callback)
 }
 func (gfw *GLFWFramework) OnClose(callback func()) {

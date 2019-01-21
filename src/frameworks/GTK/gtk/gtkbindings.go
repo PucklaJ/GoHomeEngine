@@ -28,10 +28,10 @@ func Main() {
 	C.loop()
 }
 
-func CreateWindow(windowWidth, windowHeight uint32, title string) error {
+func CreateWindow(windowWidth, windowHeight int, title string) error {
 	titleCS := C.CString(title)
 	defer C.free(unsafe.Pointer(titleCS))
-	if int(C.createWindow(C.uint(windowWidth), C.uint(windowHeight), titleCS)) == 0 {
+	if int(C.createWindow(C.int(windowWidth), C.int(windowHeight), titleCS)) == 0 {
 		return nil
 	}
 	return nil

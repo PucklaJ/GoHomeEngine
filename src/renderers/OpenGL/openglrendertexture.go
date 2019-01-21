@@ -24,7 +24,7 @@ type OpenGLRenderTexture struct {
 	prevRT       *OpenGLRenderTexture
 }
 
-func CreateOpenGLRenderTexture(name string, width, height, textures uint32, depthBuffer, multiSampled, shadowMap, cubeMap bool) *OpenGLRenderTexture {
+func CreateOpenGLRenderTexture(name string, width, height, textures int, depthBuffer, multiSampled, shadowMap, cubeMap bool) *OpenGLRenderTexture {
 	rt := &OpenGLRenderTexture{}
 
 	rt.Create(name, width, height, textures, depthBuffer, multiSampled, shadowMap, cubeMap)
@@ -32,10 +32,9 @@ func CreateOpenGLRenderTexture(name string, width, height, textures uint32, dept
 	return rt
 }
 
-func (this *OpenGLRenderTexture) loadTextures(width, height, textures uint32, cubeMap bool) {
-	var i uint32
+func (this *OpenGLRenderTexture) loadTextures(width, height, textures int, cubeMap bool) {
 	render, _ := gohome.Render.(*OpenGLRenderer)
-	for i = 0; i < textures; i++ {
+	for i := 0; i < textures; i++ {
 		var ogltex *OpenGLTexture
 		var oglcubemap *OpenGLCubeMap
 		var texture gohome.Texture
@@ -76,16 +75,16 @@ func (this *OpenGLRenderTexture) loadTextures(width, height, textures uint32, cu
 			if cubeMap {
 				if render.HasFunctionAvailable("FRAMEBUFFER_TEXTURE") {
 					gl.GetError()
-					gl.FramebufferTexture(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0+i, oglcubemap.oglName, 0)
+					gl.FramebufferTexture(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0+uint32(i), oglcubemap.oglName, 0)
 					handleOpenGLError("RenderTexture", this.Name, "glFramebufferTexture with CubeMap")
 				} else {
 					gl.GetError()
-					gl.FramebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0+i, gl.TEXTURE_CUBE_MAP_POSITIVE_X, oglcubemap.oglName, 0)
+					gl.FramebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0+uint32(i), gl.TEXTURE_CUBE_MAP_POSITIVE_X, oglcubemap.oglName, 0)
 					handleOpenGLError("RenderTexture", this.Name, "glFramebufferTexture2D with CubeMap")
 				}
 			} else {
 				gl.GetError()
-				gl.FramebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0+i, ogltex.bindingPoint(), ogltex.oglName, 0)
+				gl.FramebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0+uint32(i), ogltex.bindingPoint(), ogltex.oglName, 0)
 				handleOpenGLError("RenderTexture", this.Name, "glFramebufferTexture2D with TEXTURE2D")
 			}
 		}
@@ -105,7 +104,7 @@ func (this *OpenGLRenderTexture) loadTextures(width, height, textures uint32, cu
 	}
 }
 
-func (this *OpenGLRenderTexture) loadRenderBuffer(width, height uint32) {
+func (this *OpenGLRenderTexture) loadRenderBuffer(width, height int) {
 	if this.depthBuffer {
 		gl.GetError()
 		gl.GenRenderbuffers(1, &this.rbo)
@@ -127,7 +126,7 @@ func (this *OpenGLRenderTexture) loadRenderBuffer(width, height uint32) {
 	}
 }
 
-func (this *OpenGLRenderTexture) Create(name string, width, height, textures uint32, depthBuffer, multiSampled, shadowMap, cubeMap bool) {
+func (this *OpenGLRenderTexture) Create(name string, width, height, textures int, depthBuffer, multiSampled, shadowMap, cubeMap bool) {
 	if textures == 0 {
 		textures = 1
 	}
@@ -292,21 +291,21 @@ func (this *OpenGLRenderTexture) Terminate() {
 	this.textures = append(this.textures[:0], this.textures[len(this.textures):]...)
 }
 
-func (this *OpenGLRenderTexture) ChangeSize(width, height uint32) {
-	if uint32(this.GetWidth()) != width || uint32(this.GetHeight()) != height {
-		textures := uint32(len(this.textures))
+func (this *OpenGLRenderTexture) ChangeSize(width, height int) {
+	if this.GetWidth() != width || this.GetHeight() != height {
+		textures := len(this.textures)
 		this.Terminate()
 		this.Create(this.Name, width, height, textures, this.depthBuffer, this.multiSampled, this.shadowMap, this.cubeMap)
 	}
 }
 
-func (this *OpenGLRenderTexture) SetFiltering(filtering uint32) {
+func (this *OpenGLRenderTexture) SetFiltering(filtering int) {
 	for i := 0; i < len(this.textures); i++ {
 		this.textures[i].SetFiltering(filtering)
 	}
 }
 
-func (this *OpenGLRenderTexture) SetWrapping(wrapping uint32) {
+func (this *OpenGLRenderTexture) SetWrapping(wrapping int) {
 	for i := 0; i < len(this.textures); i++ {
 		this.textures[i].SetWrapping(wrapping)
 	}
@@ -359,7 +358,7 @@ func (this *OpenGLRenderTexture) GetData() ([]byte, int, int) {
 			return tex.GetData()
 		} else {
 			if gohome.Render.HasFunctionAvailable("BLIT_FRAMEBUFFER") {
-				rtex := CreateOpenGLRenderTexture("Temp", uint32(this.GetWidth()), uint32(this.GetHeight()), 1, false, false, false, false)
+				rtex := CreateOpenGLRenderTexture("Temp", this.GetWidth(), this.GetHeight(), 1, false, false, false, false)
 				this.Blit(rtex)
 				data, width, height := rtex.GetData()
 				rtex.Terminate()

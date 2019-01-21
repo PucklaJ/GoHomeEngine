@@ -6,9 +6,9 @@ type Tweenset struct {
 	LoopBackwards bool
 
 	currentTweens        []Tween
-	addedTweensNotAdd    []uint32
+	addedTweensNotAdd    []int
 	tweenBeforeNextTween Tween
-	currentStoppedTween  uint32
+	currentStoppedTween  int
 	paused               bool
 	allTweensAdded       bool
 	ElapsedTime          float32
@@ -134,7 +134,7 @@ func (this *Tweenset) Reset() {
 
 func (this *Tweenset) checkTweensToStart() {
 	afterPreviousFound := false
-	for i := this.currentStoppedTween; i < uint32(len(this.Tweens)); i++ {
+	for i := this.currentStoppedTween; i < len(this.Tweens); i++ {
 		if i == this.currentStoppedTween && this.Tweens[i].GetType() == TWEEN_TYPE_AFTER_PREVIOUS {
 			this.addTweenToCurrent(i)
 			this.tweenBeforeNextTween = nil
@@ -172,11 +172,11 @@ func (this *Tweenset) checkTweensToStart() {
 
 	if !afterPreviousFound {
 		this.allTweensAdded = true
-		this.currentStoppedTween = uint32(len(this.Tweens))
+		this.currentStoppedTween = len(this.Tweens)
 	}
 }
 
-func (this *Tweenset) searchNextAfterPreviousTween(start int, end uint32) int {
+func (this *Tweenset) searchNextAfterPreviousTween(start int, end int) int {
 	for j := start; j >= int(end); j-- {
 		if this.Tweens[j].GetType() == TWEEN_TYPE_AFTER_PREVIOUS {
 			return j
@@ -186,7 +186,7 @@ func (this *Tweenset) searchNextAfterPreviousTween(start int, end uint32) int {
 	return -1
 }
 
-func (this *Tweenset) addTweenToCurrent(i uint32) {
+func (this *Tweenset) addTweenToCurrent(i int) {
 	if !this.hasAlreadyBeenAdded(i) {
 		this.currentTweens = append(this.currentTweens, this.Tweens[i])
 		this.addedTweensNotAdd = append(this.addedTweensNotAdd, i)
@@ -194,7 +194,7 @@ func (this *Tweenset) addTweenToCurrent(i uint32) {
 	}
 }
 
-func (this *Tweenset) hasAlreadyBeenAdded(i uint32) bool {
+func (this *Tweenset) hasAlreadyBeenAdded(i int) bool {
 	for j := 0; j < len(this.addedTweensNotAdd); j++ {
 		if this.addedTweensNotAdd[j] == i {
 			return true

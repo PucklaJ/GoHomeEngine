@@ -8,13 +8,13 @@ import (
 )
 
 const (
-	DPI uint32 = 72
+	DPI = 72
 )
 
 type Font struct {
 	ttf         *truetype.Font
 	drawContext *freetype.Context
-	FontSize    uint32
+	FontSize    int
 }
 
 func (this *Font) DrawString(str string) Texture {
@@ -39,38 +39,36 @@ func (this *Font) DrawString(str string) Texture {
 func (this *Font) Init(ttf *truetype.Font) {
 	this.ttf = ttf
 	this.drawContext = freetype.NewContext()
-	this.drawContext.SetDPI(float64(DPI))
+	this.drawContext.SetDPI(DPI)
 	this.drawContext.SetFont(this.ttf)
 	this.drawContext.SetSrc(image.White)
 	this.drawContext.SetFontSize(float64(this.FontSize))
 }
 
-func (this *Font) getTextureSize(str string) (uint32, uint32) {
+func (this *Font) getTextureSize(str string) (width, height int) {
 	runeString := []rune(str)
-	var width uint32 = 0
-	var height uint32 = 0
 
 	scale := fixed.Int26_6(this.FontSize)
 	bounds := this.ttf.Bounds(scale)
-	height = uint32(bounds.Max.Y - bounds.Min.Y)
+	height = int(bounds.Max.Y - bounds.Min.Y)
 
 	for i := 0; i < len(runeString); i++ {
 		hmetric := this.ttf.HMetric(scale, this.ttf.Index(runeString[i]))
 		if i == 0 {
-			width += uint32(fixed.Int26_6(hmetric.LeftSideBearing)) + uint32(fixed.Int26_6(hmetric.AdvanceWidth))
+			width += int(fixed.Int26_6(hmetric.LeftSideBearing) + fixed.Int26_6(hmetric.AdvanceWidth))
 		}
-		width += uint32(fixed.Int26_6(hmetric.AdvanceWidth))
+		width += int(fixed.Int26_6(hmetric.AdvanceWidth))
 	}
 
 	return width, height
 }
 
-func (this *Font) GetGlyphMaxHeight() uint32 {
+func (this *Font) GetGlyphMaxHeight() int {
 	rect := this.ttf.Bounds(fixed.Int26_6(this.FontSize))
-	return uint32(rect.Max.Y - rect.Min.Y)
+	return int(rect.Max.Y - rect.Min.Y)
 }
 
-func (this *Font) GetGlyphMaxWidth() uint32 {
+func (this *Font) GetGlyphMaxWidth() int {
 	rect := this.ttf.Bounds(fixed.Int26_6(this.FontSize))
-	return uint32(rect.Max.X - rect.Min.X)
+	return int(rect.Max.X - rect.Min.X)
 }

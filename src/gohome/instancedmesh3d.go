@@ -5,34 +5,14 @@ import (
 )
 
 const (
-	VALUE_FLOAT uint32 = iota
-	VALUE_VEC2  uint32 = iota
-	VALUE_VEC3  uint32 = iota
-	VALUE_VEC4  uint32 = iota
-	VALUE_MAT2  uint32 = iota
-	VALUE_MAT3  uint32 = iota
-	VALUE_MAT4  uint32 = iota
+	VALUE_FLOAT = iota
+	VALUE_VEC2  = iota
+	VALUE_VEC3  = iota
+	VALUE_VEC4  = iota
+	VALUE_MAT2  = iota
+	VALUE_MAT3  = iota
+	VALUE_MAT4  = iota
 )
-
-/*
-type Mesh3D interface {
-	AddVertices(vertices []Mesh3DVertex, indices []uint32)
-	Load()
-	Render()
-	Terminate()
-	SetMaterial(mat *Material)
-	GetMaterial() *Material
-	GetName() string
-	GetNumVertices() uint32
-	GetNumIndices() uint32
-	GetVertices() []Mesh3DVertex
-	GetIndices() []uint32
-	CalculateTangents()
-	HasUV() bool
-	AABB() AxisAlignedBoundingBox
-	Copy() Mesh3D
-}
-*/
 
 type InstancedMesh3D interface {
 	AddVertices(vertices []Mesh3DVertex, indices []uint32)
@@ -42,8 +22,8 @@ type InstancedMesh3D interface {
 	SetMaterial(mat *Material)
 	GetMaterial() *Material
 	GetName() string
-	GetNumVertices() uint32
-	GetNumIndices() uint32
+	GetNumVertices() int
+	GetNumIndices() int
 	GetVertices() []Mesh3DVertex
 	GetIndices() []uint32
 	CalculateTangents()
@@ -51,10 +31,10 @@ type InstancedMesh3D interface {
 	AABB() AxisAlignedBoundingBox
 	Copy() Mesh3D
 	LoadedToGPU() bool
-	SetNumInstances(n uint32)
-	GetNumInstances() uint32
-	SetNumUsedInstances(n uint32)
-	GetNumUsedInstances() uint32
+	SetNumInstances(n int)
+	GetNumInstances() int
+	SetNumUsedInstances(n int)
+	GetNumUsedInstances() int
 	AddValue(valueType uint32)
 	AddValueFront(valueType uint32)
 	SetF(index uint32, value []float32)
@@ -108,10 +88,10 @@ func (*NilInstancedMesh3D) GetMaterial() *Material {
 func (*NilInstancedMesh3D) GetName() string {
 	return ""
 }
-func (*NilInstancedMesh3D) GetNumVertices() uint32 {
+func (*NilInstancedMesh3D) GetNumVertices() int {
 	return 0
 }
-func (*NilInstancedMesh3D) GetNumIndices() uint32 {
+func (*NilInstancedMesh3D) GetNumIndices() int {
 	return 0
 }
 func (*NilInstancedMesh3D) GetVertices() []Mesh3DVertex {
@@ -140,16 +120,16 @@ func (*NilInstancedMesh3D) Copy() Mesh3D {
 func (*NilInstancedMesh3D) LoadedToGPU() bool {
 	return true
 }
-func (*NilInstancedMesh3D) SetNumInstances(n uint32) {
+func (*NilInstancedMesh3D) SetNumInstances(n int) {
 
 }
-func (*NilInstancedMesh3D) GetNumInstances() uint32 {
+func (*NilInstancedMesh3D) GetNumInstances() int {
 	return 0
 }
-func (*NilInstancedMesh3D) SetNumUsedInstances(n uint32) {
+func (*NilInstancedMesh3D) SetNumUsedInstances(n int) {
 
 }
-func (*NilInstancedMesh3D) GetNumUsedInstances() uint32 {
+func (*NilInstancedMesh3D) GetNumUsedInstances() int {
 	return 0
 }
 func (*NilInstancedMesh3D) AddValue(valueType uint32) {

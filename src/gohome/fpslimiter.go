@@ -5,13 +5,13 @@ import (
 )
 
 const (
-	NUM_MEASUREMENTS uint32 = 11
-	NUM_TAKEAWAYS    uint32 = 2
+	NUM_MEASUREMENTS = 11
+	NUM_TAKEAWAYS    = 2
 )
 
 type FPSLimiter struct {
-	MaxFPS    uint32
-	FPS       uint32
+	MaxFPS    int
+	FPS       int
 	DeltaTime float32
 
 	timeMeasure    time.Time
@@ -19,8 +19,8 @@ type FPSLimiter struct {
 	additionalTime float32
 
 	realDeltaTimes             [NUM_MEASUREMENTS]float64
-	currentRealDeltaTimesIndex uint32
-	numMeasuredRealDeltaTimes  uint32
+	currentRealDeltaTimesIndex int
+	numMeasuredRealDeltaTimes  int
 	meanDeltaTime              float64
 	smoothedDeltaTimes         [NUM_MEASUREMENTS]float64
 }
@@ -54,15 +54,14 @@ func (fps *FPSLimiter) AddTime(amount float32) {
 	fps.additionalTime += amount
 }
 
-func (fps *FPSLimiter) currentFrameIndex() uint32 {
-	var curIndex uint32
+func (fps *FPSLimiter) currentFrameIndex() (curIndex int) {
 	if fps.currentRealDeltaTimesIndex == 0 {
 		curIndex = NUM_MEASUREMENTS - 1
 	} else {
 		curIndex = fps.currentRealDeltaTimesIndex - 1
 	}
 
-	return curIndex
+	return
 }
 
 func (fps *FPSLimiter) LimitFPS() {
@@ -109,17 +108,15 @@ func swap(f1 *float64, f2 *float64) {
 func (fps *FPSLimiter) takeAwayHighestAndLowest() {
 	var maxVal float64
 	var minVal float64
-	var maxIndex uint32
-	var minIndex uint32
+	var maxIndex int
+	var minIndex int
 
-	var i uint32
-	for i = 0; i < NUM_TAKEAWAYS; i++ {
+	for i := 0; i < NUM_TAKEAWAYS; i++ {
 		maxVal = fps.smoothedDeltaTimes[fps.numMeasuredRealDeltaTimes-1-i]
 		minVal = fps.smoothedDeltaTimes[i]
 		maxIndex = fps.numMeasuredRealDeltaTimes - 1 - i
 		minIndex = i
-		var j uint32
-		for j = i; j < fps.numMeasuredRealDeltaTimes-i; j++ {
+		for j := i; j < fps.numMeasuredRealDeltaTimes-i; j++ {
 			if fps.smoothedDeltaTimes[j] < minVal {
 				minVal = fps.smoothedDeltaTimes[j]
 				minIndex = j
@@ -138,15 +135,13 @@ func (fps *FPSLimiter) takeAwayHighestAndLowest() {
 func (fps *FPSLimiter) calculateMeanDeltaTime() {
 	fps.meanDeltaTime = 0.0
 	if fps.numMeasuredRealDeltaTimes > 2*NUM_TAKEAWAYS {
-		var i uint32
-		for i = NUM_TAKEAWAYS; i < fps.numMeasuredRealDeltaTimes-NUM_TAKEAWAYS; i++ {
+		for i := NUM_TAKEAWAYS; i < fps.numMeasuredRealDeltaTimes-NUM_TAKEAWAYS; i++ {
 			fps.meanDeltaTime += fps.smoothedDeltaTimes[i]
 		}
 
 		fps.meanDeltaTime /= float64(fps.numMeasuredRealDeltaTimes - 2*NUM_TAKEAWAYS)
 	} else {
-		var i uint32
-		for i = 0; i < fps.numMeasuredRealDeltaTimes; i++ {
+		for i := 0; i < fps.numMeasuredRealDeltaTimes; i++ {
 			fps.meanDeltaTime += fps.smoothedDeltaTimes[i]
 		}
 

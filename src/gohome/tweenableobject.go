@@ -1,9 +1,9 @@
 package gohome
 
 const (
-	TWEEN_TYPE_WITH_PREVIOUS  uint8 = iota
-	TWEEN_TYPE_AFTER_PREVIOUS uint8 = iota
-	TWEEN_TYPE_ALWAYS         uint8 = iota
+	TWEEN_TYPE_WITH_PREVIOUS  = iota
+	TWEEN_TYPE_AFTER_PREVIOUS = iota
+	TWEEN_TYPE_ALWAYS         = iota
 )
 
 type Tween interface {

@@ -9,14 +9,14 @@ import (
 )
 
 const (
-	NUM_GO_ROUTINES_TANGENTS_CALCULATING uint32 = 10
+	NUM_GO_ROUTINES_TANGENTS_CALCULATING = 10
 )
 
 type OpenGLMesh3D struct {
 	vertices    []gohome.Mesh3DVertex
 	indices     []uint32
-	numVertices uint32
-	numIndices  uint32
+	numVertices int
+	numIndices  int
 
 	vao    uint32
 	buffer uint32
@@ -32,7 +32,7 @@ type OpenGLMesh3D struct {
 	aabb gohome.AxisAlignedBoundingBox
 }
 
-func (oglm *OpenGLMesh3D) CalculateTangentsRoutine(startIndex, maxIndex uint32, wg *sync.WaitGroup) {
+func (oglm *OpenGLMesh3D) CalculateTangentsRoutine(startIndex, maxIndex int, wg *sync.WaitGroup) {
 	if wg != nil {
 		defer wg.Done()
 	}
@@ -47,9 +47,8 @@ func (oglm *OpenGLMesh3D) CalculateTangentsRoutine(startIndex, maxIndex uint32, 
 	var tangent mgl32.Vec3
 	var normal mgl32.Vec3
 	var bitangent mgl32.Vec3
-	var i uint32
-	for i = startIndex; i < maxIndex && i < uint32(len(indices)); i += 3 {
-		if i > uint32(len(indices)-3) {
+	for i := startIndex; i < maxIndex && i < len(indices); i += 3 {
+		if i > len(indices)-3 {
 			break
 		}
 
@@ -81,8 +80,7 @@ func (oglm *OpenGLMesh3D) CalculateTangentsRoutine(startIndex, maxIndex uint32, 
 		if normal.Cross(tangent).Dot(bitangent) < 0.0 {
 			tangent = tangent.Mul(-1.0)
 		}
-		var j uint32
-		for j = 0; j < 3; j++ {
+		for j := 0; j < 3; j++ {
 			(*vertices)[indices[i+j]][8] = tangent[0]
 			(*vertices)[indices[i+j]][9] = tangent[1]
 			(*vertices)[indices[i+j]][10] = tangent[2]
@@ -96,9 +94,9 @@ func (oglm *OpenGLMesh3D) CalculateTangents() {
 	}
 	var wg sync.WaitGroup
 
-	deltaIndex := uint32(len(oglm.indices)) / NUM_GO_ROUTINES_TANGENTS_CALCULATING
+	deltaIndex := len(oglm.indices) / NUM_GO_ROUTINES_TANGENTS_CALCULATING
 	if deltaIndex == 0 {
-		deltaIndex = uint32(len(oglm.indices)) / 3
+		deltaIndex = len(oglm.indices) / 3
 	}
 	if deltaIndex > 3 {
 		deltaIndex -= deltaIndex % 3
@@ -107,11 +105,10 @@ func (oglm *OpenGLMesh3D) CalculateTangents() {
 	}
 
 	oglm.hasUV = true
-	var i uint32
-	for i = 0; i < NUM_GO_ROUTINES_TANGENTS_CALCULATING*2; i++ {
+	for i := 0; i < NUM_GO_ROUTINES_TANGENTS_CALCULATING*2; i++ {
 		wg.Add(1)
 		go oglm.CalculateTangentsRoutine(i*deltaIndex, i*deltaIndex+deltaIndex, &wg)
-		if i*deltaIndex+deltaIndex >= uint32(len(oglm.indices)) {
+		if i*deltaIndex+deltaIndex >= len(oglm.indices) {
 			break
 		}
 	}
@@ -189,16 +186,16 @@ func (oglm *OpenGLMesh3D) Load() {
 	if oglm.loaded {
 		return
 	}
-	oglm.numVertices = uint32(len(oglm.vertices))
-	oglm.numIndices = uint32(len(oglm.indices))
+	oglm.numVertices = len(oglm.vertices)
+	oglm.numIndices = len(oglm.indices)
 
 	if oglm.numVertices == 0 || oglm.numIndices == 0 {
 		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "Mesh3D", oglm.Name, "No vertices or indices have been added!")
 		return
 	}
 
-	var verticesSize uint32 = oglm.numVertices * gohome.MESH3DVERTEXSIZE
-	var indicesSize uint32 = oglm.numIndices * gohome.INDEXSIZE
+	verticesSize := oglm.numVertices * gohome.MESH3DVERTEXSIZE
+	indicesSize := oglm.numIndices * gohome.INDEXSIZE
 
 	oglm.CalculateTangents()
 
@@ -208,13 +205,13 @@ func (oglm *OpenGLMesh3D) Load() {
 	gl.GenBuffers(1, &oglm.buffer)
 
 	gl.BindBuffer(gl.ARRAY_BUFFER, oglm.buffer)
-	gl.BufferData(gl.ARRAY_BUFFER, int(verticesSize)+int(indicesSize), nil, gl.STATIC_DRAW)
+	gl.BufferData(gl.ARRAY_BUFFER, verticesSize+indicesSize, nil, gl.STATIC_DRAW)
 
-	gl.BufferSubData(gl.ARRAY_BUFFER, 0, int(verticesSize), unsafe.Pointer(&oglm.vertices[0]))
+	gl.BufferSubData(gl.ARRAY_BUFFER, 0, verticesSize, unsafe.Pointer(&oglm.vertices[0]))
 	gl.BindBuffer(gl.ARRAY_BUFFER, 0)
 
 	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, oglm.buffer)
-	gl.BufferSubData(gl.ELEMENT_ARRAY_BUFFER, int(verticesSize), int(indicesSize), unsafe.Pointer(&oglm.indices[0]))
+	gl.BufferSubData(gl.ELEMENT_ARRAY_BUFFER, verticesSize, indicesSize, unsafe.Pointer(&oglm.indices[0]))
 	gl.BindBuffer(gl.ELEMENT_ARRAY_BUFFER, 0)
 
 	if oglm.canUseVAOs {
@@ -273,10 +270,10 @@ func (oglm *OpenGLMesh3D) GetMaterial() *gohome.Material {
 	return oglm.Material
 }
 
-func (oglm *OpenGLMesh3D) GetNumVertices() uint32 {
+func (oglm *OpenGLMesh3D) GetNumVertices() int {
 	return oglm.numVertices
 }
-func (oglm *OpenGLMesh3D) GetNumIndices() uint32 {
+func (oglm *OpenGLMesh3D) GetNumIndices() int {
 	return oglm.numIndices
 }
 

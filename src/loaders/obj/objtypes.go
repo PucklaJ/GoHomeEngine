@@ -41,19 +41,19 @@ func (this *OBJWaitGroup) WaitForDone() bool {
 
 type positionData struct {
 	position [3]float32
-	index    uint32
+	index    int
 }
 
 type normalData positionData
 
 type texCoordData struct {
 	texCoord [2]float32
-	index    uint32
+	index    int
 }
 
 type tokenData struct {
 	tokens []string
-	index  uint32
+	index  int
 }
 
 type OBJColor [3]float32

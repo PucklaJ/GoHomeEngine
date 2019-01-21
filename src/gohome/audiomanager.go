@@ -38,8 +38,8 @@ const (
 
 type AudioManager interface {
 	Init()
-	CreateSound(name string, samples []byte, format uint8, sampleRate uint32) Sound
-	CreateMusic(name string, samples []byte, format uint8, sampleRate uint32) Music
+	CreateSound(name string, samples []byte, format uint8, sampleRate int) Sound
+	CreateMusic(name string, samples []byte, format uint8, sampleRate int) Music
 	LoadSound(name, path string) Sound
 	LoadMusic(name, path string) Music
 	SetVolume(vol float32)
@@ -127,10 +127,10 @@ type NilAudioManager struct {
 func (*NilAudioManager) Init() {
 
 }
-func (*NilAudioManager) CreateSound(name string, samples []byte, format uint8, sampleRate uint32) Sound {
+func (*NilAudioManager) CreateSound(name string, samples []byte, format uint8, sampleRate int) Sound {
 	return &NilSound{}
 }
-func (*NilAudioManager) CreateMusic(name string, samples []byte, format uint8, sampleRate uint32) Music {
+func (*NilAudioManager) CreateMusic(name string, samples []byte, format uint8, sampleRate int) Music {
 	return &NilMusic{}
 }
 func (*NilAudioManager) SetVolume(vol float32) {

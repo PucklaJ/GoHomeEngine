@@ -18,10 +18,10 @@ type RenderTexture interface {
 	GetHeight() int
 	GetKeyColor() color.Color
 	GetModColor() color.Color
-	ChangeSize(width, height uint32)
+	ChangeSize(width, height int)
 	Terminate()
-	SetFiltering(filtering uint32)
-	SetWrapping(wrapping uint32)
+	SetFiltering(filtering int)
+	SetWrapping(wrapping int)
 	SetBorderColor(col color.Color)
 	SetBorderDepth(depth float32)
 	SetKeyColor(col color.Color)
@@ -66,16 +66,16 @@ func (*NilRenderTexture) GetKeyColor() color.Color {
 func (*NilRenderTexture) GetModColor() color.Color {
 	return nil
 }
-func (*NilRenderTexture) ChangeSize(width, height uint32) {
+func (*NilRenderTexture) ChangeSize(width, height int) {
 
 }
 func (*NilRenderTexture) Terminate() {
 
 }
-func (*NilRenderTexture) SetFiltering(filtering uint32) {
+func (*NilRenderTexture) SetFiltering(filtering int) {
 
 }
-func (*NilRenderTexture) SetWrapping(wrapping uint32) {
+func (*NilRenderTexture) SetWrapping(wrapping int) {
 
 }
 func (*NilRenderTexture) SetBorderColor(col color.Color) {
