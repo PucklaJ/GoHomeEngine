@@ -37,6 +37,8 @@
 + Add more Sphere to draw functions
 + Replace uint32 with int where possible
 + Add WebGL examples to example READMEs
++ Fix TextRendering issue
+    - Flickering
 
 ## 2D
 
