@@ -35,16 +35,16 @@ type InstancedMesh3D interface {
 	GetNumInstances() int
 	SetNumUsedInstances(n int)
 	GetNumUsedInstances() int
-	AddValue(valueType uint32)
-	AddValueFront(valueType uint32)
-	SetF(index uint32, value []float32)
-	SetV2(index uint32, value []mgl32.Vec2)
-	SetV3(index uint32, value []mgl32.Vec3)
-	SetV4(index uint32, value []mgl32.Vec4)
-	SetM2(index uint32, value []mgl32.Mat2)
-	SetM3(index uint32, value []mgl32.Mat3)
-	SetM4(index uint32, value []mgl32.Mat4)
-	SetName(index uint32, value_type uint32, value string)
+	AddValue(valueType int)
+	AddValueFront(valueType int)
+	SetF(index int, value []float32)
+	SetV2(index int, value []mgl32.Vec2)
+	SetV3(index int, value []mgl32.Vec3)
+	SetV4(index int, value []mgl32.Vec4)
+	SetM2(index int, value []mgl32.Mat2)
+	SetM3(index int, value []mgl32.Mat3)
+	SetM4(index int, value []mgl32.Mat4)
+	SetName(index int, value_type int, value string)
 }
 
 func InstancedMesh3DFromMesh3D(mesh Mesh3D) (imesh InstancedMesh3D) {
@@ -132,33 +132,33 @@ func (*NilInstancedMesh3D) SetNumUsedInstances(n int) {
 func (*NilInstancedMesh3D) GetNumUsedInstances() int {
 	return 0
 }
-func (*NilInstancedMesh3D) AddValue(valueType uint32) {
+func (*NilInstancedMesh3D) AddValue(valueType int) {
 
 }
-func (*NilInstancedMesh3D) AddValueFront(valueType uint32) {
+func (*NilInstancedMesh3D) AddValueFront(valueType int) {
 
 }
-func (*NilInstancedMesh3D) SetF(index uint32, value []float32) {
+func (*NilInstancedMesh3D) SetF(index int, value []float32) {
 
 }
-func (*NilInstancedMesh3D) SetV2(index uint32, value []mgl32.Vec2) {
+func (*NilInstancedMesh3D) SetV2(index int, value []mgl32.Vec2) {
 
 }
-func (*NilInstancedMesh3D) SetV3(index uint32, value []mgl32.Vec3) {
+func (*NilInstancedMesh3D) SetV3(index int, value []mgl32.Vec3) {
 
 }
-func (*NilInstancedMesh3D) SetV4(index uint32, value []mgl32.Vec4) {
+func (*NilInstancedMesh3D) SetV4(index int, value []mgl32.Vec4) {
 
 }
-func (*NilInstancedMesh3D) SetM2(index uint32, value []mgl32.Mat2) {
+func (*NilInstancedMesh3D) SetM2(index int, value []mgl32.Mat2) {
 
 }
-func (*NilInstancedMesh3D) SetM3(index uint32, value []mgl32.Mat3) {
+func (*NilInstancedMesh3D) SetM3(index int, value []mgl32.Mat3) {
 
 }
-func (*NilInstancedMesh3D) SetM4(index uint32, value []mgl32.Mat4) {
+func (*NilInstancedMesh3D) SetM4(index int, value []mgl32.Mat4) {
 
 }
-func (*NilInstancedMesh3D) SetName(index uint32, value_type uint32, value string) {
+func (*NilInstancedMesh3D) SetName(index int, value_type int, value string) {
 
 }

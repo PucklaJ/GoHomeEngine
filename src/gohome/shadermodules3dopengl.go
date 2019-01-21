@@ -694,7 +694,7 @@ const (
 	SHADER_FLAG_NO_DIFTEX   uint32 = (1 << 4)
 	SHADER_FLAG_NO_SPECTEX  uint32 = (1 << 5)
 	SHADER_FLAG_NO_NORMAP   uint32 = (1 << 6)
-	NUM_FLAGS_3D            uint32 = 7
+	NUM_FLAGS_3D                   = 7
 
 	SHADER_FLAG_NO_KEYCOLOR       uint32 = (1 << 1)
 	SHADER_FLAG_NO_MODCOLOR       uint32 = (1 << 2)
@@ -703,7 +703,7 @@ const (
 	SHADER_FLAG_NO_DEPTH          uint32 = (1 << 5)
 	SHADER_FLAG_NO_TEXTURE        uint32 = (1 << 6)
 	SHADER_FLAG_DEPTHMAP          uint32 = (1 << 7)
-	NUM_FLAGS_2D                  uint32 = 8
+	NUM_FLAGS_2D                         = 8
 )
 
 var (

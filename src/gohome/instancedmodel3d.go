@@ -67,61 +67,61 @@ func (this *InstancedModel3D) HasUV() bool {
 	return true
 }
 
-func (this *InstancedModel3D) AddValue(valueType uint32) {
+func (this *InstancedModel3D) AddValue(valueType int) {
 	for _, m := range this.meshes {
 		m.AddValue(valueType)
 	}
 }
 
-func (this *InstancedModel3D) AddValueFront(valueType uint32) {
+func (this *InstancedModel3D) AddValueFront(valueType int) {
 	for _, m := range this.meshes {
 		m.AddValueFront(valueType)
 	}
 }
 
-func (this *InstancedModel3D) SetName(index, valueType uint32, value string) {
+func (this *InstancedModel3D) SetName(index, valueType int, value string) {
 	for _, m := range this.meshes {
 		m.SetName(index, valueType, value)
 	}
 }
 
-func (this *InstancedModel3D) SetF(index uint32, value []float32) {
+func (this *InstancedModel3D) SetF(index int, value []float32) {
 	for _, m := range this.meshes {
 		m.SetF(index, value)
 	}
 }
 
-func (this *InstancedModel3D) SetV2(index uint32, value []mgl32.Vec2) {
+func (this *InstancedModel3D) SetV2(index int, value []mgl32.Vec2) {
 	for _, m := range this.meshes {
 		m.SetV2(index, value)
 	}
 }
 
-func (this *InstancedModel3D) SetV3(index uint32, value []mgl32.Vec3) {
+func (this *InstancedModel3D) SetV3(index int, value []mgl32.Vec3) {
 	for _, m := range this.meshes {
 		m.SetV3(index, value)
 	}
 }
 
-func (this *InstancedModel3D) SetV4(index uint32, value []mgl32.Vec4) {
+func (this *InstancedModel3D) SetV4(index int, value []mgl32.Vec4) {
 	for _, m := range this.meshes {
 		m.SetV4(index, value)
 	}
 }
 
-func (this *InstancedModel3D) SetM2(index uint32, value []mgl32.Mat2) {
+func (this *InstancedModel3D) SetM2(index int, value []mgl32.Mat2) {
 	for _, m := range this.meshes {
 		m.SetM2(index, value)
 	}
 }
 
-func (this *InstancedModel3D) SetM3(index uint32, value []mgl32.Mat3) {
+func (this *InstancedModel3D) SetM3(index int, value []mgl32.Mat3) {
 	for _, m := range this.meshes {
 		m.SetM3(index, value)
 	}
 }
 
-func (this *InstancedModel3D) SetM4(index uint32, value []mgl32.Mat4) {
+func (this *InstancedModel3D) SetM4(index int, value []mgl32.Mat4) {
 	for _, m := range this.meshes {
 		m.SetM4(index, value)
 	}

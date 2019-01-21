@@ -9,7 +9,7 @@ import (
 
 const (
 	MESH2DVERTEXSIZE  = 2 * 2 * 4 // 2*2*sizeof(float32)
-	INDEXSIZE         = 4         // sizeof(uint32)
+	INDEXSIZE         = 4         // sizeof(unsigned int 32)
 	SHAPE3DVERTEXSIZE = 3*4 + 4*4
 	SHAPE2DVERTEXSIZE = 2*4 + 4*4
 )
@@ -188,10 +188,9 @@ func (this *Line2D) Color() color.Color {
 type Triangle2D [3]Shape2DVertex
 
 func (this *Triangle2D) ToLines() (lines []Line2D) {
-	var j uint32 = 1
-	var i uint32 = 0
+	var j = 1
 
-	for i = 0; i < 3; i++ {
+	for i := 0; i < 3; i++ {
 		if j == 3 {
 			j = 0
 		}
@@ -221,10 +220,9 @@ func (this *Rectangle2D) ToTriangles() (tris [2]Triangle2D) {
 }
 
 func (this *Rectangle2D) ToLines() (lines []Line2D) {
-	var j uint32 = 1
-	var i uint32 = 0
+	var j = 1
 
-	for i = 0; i < 4; i++ {
+	for i := 0; i < 4; i++ {
 		if j == 4 {
 			j = 0
 		}
@@ -318,18 +316,18 @@ func (this *Polygon2D) ToLines() (lines []Line2D) {
 }
 
 func (this *Polygon2D) ToTriangles() (tris []Triangle2D) {
-	var vertices, ears, reflex []uint32
+	var vertices, ears, reflex []int
 
-	vertices = append(vertices, make([]uint32, len(this.Points))...)
+	vertices = append(vertices, make([]int, len(this.Points))...)
 	for i := 0; i < len(this.Points); i++ {
-		vertices[i] = uint32(i)
+		vertices[i] = i
 	}
 
 	for i := 0; i < len(vertices); i++ {
-		if isReflex(uint32(i), vertices, reflex, this.Points) {
-			reflex = append(reflex, uint32(i))
-		} else if isEar(uint32(i), vertices, reflex, this.Points) {
-			ears = append(ears, uint32(i))
+		if isReflex(i, vertices, reflex, this.Points) {
+			reflex = append(reflex, i)
+		} else if isEar(i, vertices, reflex, this.Points) {
+			ears = append(ears, i)
 		} else {
 		}
 	}
@@ -343,7 +341,7 @@ func (this *Polygon2D) ToTriangles() (tris []Triangle2D) {
 			nextReflex := isReflex(next, vertices, reflex, this.Points)
 			nextEar := !nextReflex && isEar(next, vertices, reflex, this.Points)
 			takingFront := ears[i] == 0
-			takingBack := !takingFront && ears[i] == uint32(len(vertices))-1
+			takingBack := !takingFront && ears[i] == len(vertices)-1
 			takingMid := !(takingFront || takingBack)
 			vertices = append(vertices[:ears[i]], vertices[ears[i]+1:]...)
 
@@ -395,13 +393,13 @@ func triangleContains(pos0, pos1, pos2, pos mgl32.Vec2) bool {
 	return s > 0.0 && t > 0.0 && (1.0-s-t) > 0.0
 }
 
-func getIndices(index uint32, vertices []uint32) (prev, next uint32) {
+func getIndices(index int, vertices []int) (prev, next int) {
 	next = index + 1
-	if next == uint32(len(vertices)) {
+	if next == len(vertices) {
 		next = 0
 	}
 	if int32(index)-1 < 0 {
-		prev = uint32(len(vertices)) - 1
+		prev = len(vertices) - 1
 	} else {
 		prev = index - 1
 	}
@@ -409,7 +407,7 @@ func getIndices(index uint32, vertices []uint32) (prev, next uint32) {
 	return
 }
 
-func getPoints(index uint32, vertices []uint32, points []Shape2DVertex) (vim1, vi, vip1 mgl32.Vec2) {
+func getPoints(index int, vertices []int, points []Shape2DVertex) (vim1, vi, vip1 mgl32.Vec2) {
 	vi = points[vertices[index]].Vec2()
 	prev, next := getIndices(index, vertices)
 	vim1 = points[vertices[prev]].Vec2()
@@ -417,7 +415,7 @@ func getPoints(index uint32, vertices []uint32, points []Shape2DVertex) (vim1, v
 	return
 }
 
-func isConvex(index uint32, vertices []uint32, reflex []uint32, points []Shape2DVertex) bool {
+func isConvex(index int, vertices []int, reflex []int, points []Shape2DVertex) bool {
 	for i := 0; i < len(reflex); i++ {
 		if index == reflex[i] {
 			return false
@@ -438,11 +436,11 @@ func isConvex(index uint32, vertices []uint32, reflex []uint32, points []Shape2D
 	return angle < 180.0
 }
 
-func isReflex(index uint32, vertices []uint32, reflex []uint32, points []Shape2DVertex) bool {
+func isReflex(index int, vertices []int, reflex []int, points []Shape2DVertex) bool {
 	return !isConvex(index, vertices, reflex, points)
 }
 
-func isEar(index uint32, vertices []uint32, reflex []uint32, points []Shape2DVertex) bool {
+func isEar(index int, vertices []int, reflex []int, points []Shape2DVertex) bool {
 	if !isConvex(index, vertices, reflex, points) {
 		return false
 	}
@@ -451,7 +449,7 @@ func isEar(index uint32, vertices []uint32, reflex []uint32, points []Shape2DVer
 	vim1, vi, vip1 := getPoints(index, vertices, points)
 
 	for i := 0; i < len(vertices); i++ {
-		if uint32(i) == index || uint32(i) == prev || uint32(i) == next || !isReflex(uint32(i), vertices, reflex, points) {
+		if i == index || i == prev || i == next || !isReflex(i, vertices, reflex, points) {
 			continue
 		}
 		v := points[vertices[i]].Vec2()
@@ -463,7 +461,7 @@ func isEar(index uint32, vertices []uint32, reflex []uint32, points []Shape2DVer
 	return true
 }
 
-func makeTriangle(index uint32, vertices []uint32, points []Shape2DVertex) (tri Triangle2D) {
+func makeTriangle(index int, vertices []int, points []Shape2DVertex) (tri Triangle2D) {
 	prev, next := getIndices(index, vertices)
 
 	tri[0] = points[vertices[prev]]
@@ -473,7 +471,7 @@ func makeTriangle(index uint32, vertices []uint32, points []Shape2DVertex) (tri 
 	return
 }
 
-func remove(index uint32, reflex *[]uint32) {
+func remove(index int, reflex *[]int) {
 	for i := 0; i < len(*reflex); i++ {
 		if index == (*reflex)[i] {
 			*reflex = append((*reflex)[:i], (*reflex)[i+1:]...)
