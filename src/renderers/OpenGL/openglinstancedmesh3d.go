@@ -10,14 +10,14 @@ import (
 )
 
 type valueTypeIndexOffset struct {
-	valueType uint32
+	valueType int
 	index     int
 	offset    int
 }
 
 type indexValueType struct {
 	index     int
-	valueType uint32
+	valueType int
 }
 
 type OpenGLInstancedMesh3D struct {
@@ -40,7 +40,7 @@ type OpenGLInstancedMesh3D struct {
 	Material *gohome.Material
 
 	tangentsCalculated    bool
-	customValues          []uint32
+	customValues          []int
 	valueTypeIndexOffsets []valueTypeIndexOffset
 	instancedSize         int
 	sizePerInstance       int
@@ -76,7 +76,7 @@ func (this *OpenGLInstancedMesh3D) AddVertices(vertices []gohome.Mesh3DVertex, i
 	this.checkAABB()
 }
 
-func (this *OpenGLInstancedMesh3D) CalculateTangentsRoutine(startIndex, maxIndex uint32, wg *sync.WaitGroup) {
+func (this *OpenGLInstancedMesh3D) CalculateTangentsRoutine(startIndex, maxIndex int, wg *sync.WaitGroup) {
 	if wg != nil {
 		defer wg.Done()
 	}
@@ -91,9 +91,8 @@ func (this *OpenGLInstancedMesh3D) CalculateTangentsRoutine(startIndex, maxIndex
 	var tangent mgl32.Vec3
 	var normal mgl32.Vec3
 	var bitangent mgl32.Vec3
-	var i uint32
-	for i = startIndex; i < maxIndex && i < uint32(len(indices)); i += 3 {
-		if i > uint32(len(indices)-3) {
+	for i := startIndex; i < maxIndex && i < len(indices); i += 3 {
+		if i > len(indices)-3 {
 			break
 		}
 
@@ -125,8 +124,7 @@ func (this *OpenGLInstancedMesh3D) CalculateTangentsRoutine(startIndex, maxIndex
 		if normal.Cross(tangent).Dot(bitangent) < 0.0 {
 			tangent = tangent.Mul(-1.0)
 		}
-		var j uint32
-		for j = 0; j < 3; j++ {
+		for j := 0; j < 3; j++ {
 			(*vertices)[indices[i+j]][8] = tangent[0]
 			(*vertices)[indices[i+j]][9] = tangent[1]
 			(*vertices)[indices[i+j]][10] = tangent[2]
@@ -140,9 +138,9 @@ func (this *OpenGLInstancedMesh3D) CalculateTangents() {
 	}
 	var wg sync.WaitGroup
 
-	deltaIndex := uint32(len(this.indices)) / NUM_GO_ROUTINES_TANGENTS_CALCULATING
+	deltaIndex := len(this.indices) / NUM_GO_ROUTINES_TANGENTS_CALCULATING
 	if deltaIndex == 0 {
-		deltaIndex = uint32(len(this.indices)) / 3
+		deltaIndex = len(this.indices) / 3
 	}
 	if deltaIndex > 3 {
 		deltaIndex -= deltaIndex % 3
@@ -150,11 +148,10 @@ func (this *OpenGLInstancedMesh3D) CalculateTangents() {
 		deltaIndex = 3
 	}
 
-	var i uint32
-	for i = 0; i < NUM_GO_ROUTINES_TANGENTS_CALCULATING*2; i++ {
+	for i := 0; i < NUM_GO_ROUTINES_TANGENTS_CALCULATING*2; i++ {
 		wg.Add(1)
 		go this.CalculateTangentsRoutine(i*deltaIndex, i*deltaIndex+deltaIndex, &wg)
-		if i*deltaIndex+deltaIndex >= uint32(len(this.indices)) {
+		if i*deltaIndex+deltaIndex >= len(this.indices) {
 			break
 		}
 	}
@@ -164,7 +161,7 @@ func (this *OpenGLInstancedMesh3D) CalculateTangents() {
 	this.tangentsCalculated = true
 }
 
-func getSize(valueType uint32) int {
+func getSize(valueType int) int {
 	switch valueType {
 	case gohome.VALUE_FLOAT:
 		return 4
@@ -194,7 +191,7 @@ func (this *OpenGLInstancedMesh3D) getInstancedSize() int {
 	return sumSize
 }
 
-func vertexAttribPointerForValueType(valueType uint32, offset, index *int, sizeOfOneInstance int) {
+func vertexAttribPointerForValueType(valueType int, offset, index *int, sizeOfOneInstance int) {
 	switch valueType {
 	case gohome.VALUE_FLOAT:
 		gl.VertexAttribPointer(uint32(*index), 1, gl.FLOAT, false, int32(sizeOfOneInstance), gl.PtrOffset(int(*offset)))
@@ -254,37 +251,37 @@ func (this *OpenGLInstancedMesh3D) instancedVertexAttribPointer(verticesSize, in
 	}
 }
 
-func enableValueType(valueType uint32, index *uint32) {
+func enableValueType(valueType int, index *int) {
 	switch valueType {
 	case gohome.VALUE_FLOAT:
-		gl.EnableVertexAttribArray(*index)
+		gl.EnableVertexAttribArray(uint32(*index))
 		(*index)++
 		break
 	case gohome.VALUE_VEC2:
-		gl.EnableVertexAttribArray(*index)
+		gl.EnableVertexAttribArray(uint32(*index))
 		(*index)++
 		break
 	case gohome.VALUE_VEC3:
-		gl.EnableVertexAttribArray(*index)
+		gl.EnableVertexAttribArray(uint32(*index))
 		(*index)++
 		break
 	case gohome.VALUE_VEC4:
-		gl.EnableVertexAttribArray(*index)
+		gl.EnableVertexAttribArray(uint32(*index))
 		(*index)++
 		break
 	case gohome.VALUE_MAT2:
-		gl.EnableVertexAttribArray(*index)
+		gl.EnableVertexAttribArray(uint32(*index))
 		(*index)++
 		break
 	case gohome.VALUE_MAT3:
 		for i := 0; i < 3; i++ {
-			gl.EnableVertexAttribArray(*index)
+			gl.EnableVertexAttribArray(uint32(*index))
 			(*index)++
 		}
 		break
 	case gohome.VALUE_MAT4:
 		for i := 0; i < 4; i++ {
-			gl.EnableVertexAttribArray(*index)
+			gl.EnableVertexAttribArray(uint32(*index))
 			(*index)++
 		}
 		break
@@ -292,7 +289,7 @@ func enableValueType(valueType uint32, index *uint32) {
 }
 
 func (this *OpenGLInstancedMesh3D) instancedEnableVertexAttribArray() {
-	var index uint32 = 4
+	var index = 4
 	for i := 0; i < len(this.customValues); i++ {
 		enableValueType(this.customValues[i], &index)
 	}
@@ -659,7 +656,7 @@ func (this *OpenGLInstancedMesh3D) GetNumInstances() int {
 	return this.numInstances
 }
 
-func (this *OpenGLInstancedMesh3D) addValueTypeIndexOffset(valueType uint32) {
+func (this *OpenGLInstancedMesh3D) addValueTypeIndexOffset(valueType int) {
 	var maxIndex = 0
 	for i := 0; i < len(this.valueTypeIndexOffsets); i++ {
 		if this.valueTypeIndexOffsets[i].valueType == valueType {
@@ -675,7 +672,7 @@ func (this *OpenGLInstancedMesh3D) addValueTypeIndexOffset(valueType uint32) {
 	})
 }
 
-func (this *OpenGLInstancedMesh3D) addValueTypeIndexOffsetFront(valueType uint32) {
+func (this *OpenGLInstancedMesh3D) addValueTypeIndexOffsetFront(valueType int) {
 	var maxIndex = 0
 	for i := 0; i < len(this.valueTypeIndexOffsets); i++ {
 		if this.valueTypeIndexOffsets[i].valueType == valueType {
@@ -693,7 +690,7 @@ func (this *OpenGLInstancedMesh3D) addValueTypeIndexOffsetFront(valueType uint32
 	}, this.valueTypeIndexOffsets...)
 }
 
-func (this *OpenGLInstancedMesh3D) AddValueFront(valueType uint32) {
+func (this *OpenGLInstancedMesh3D) AddValueFront(valueType int) {
 	if this.canUseInstanced {
 		this.customValues = append(this.customValues, valueType)
 		this.addValueTypeIndexOffsetFront(valueType)
@@ -702,7 +699,7 @@ func (this *OpenGLInstancedMesh3D) AddValueFront(valueType uint32) {
 	}
 }
 
-func (this *OpenGLInstancedMesh3D) AddValue(valueType uint32) {
+func (this *OpenGLInstancedMesh3D) AddValue(valueType int) {
 	if this.canUseInstanced {
 		this.customValues = append(this.customValues, valueType)
 		this.addValueTypeIndexOffset(valueType)
@@ -726,7 +723,7 @@ func (this *OpenGLInstancedMesh3D) AddValue(valueType uint32) {
 	}
 }
 
-func (this *OpenGLInstancedMesh3D) getOffset(valueType uint32, index int) int {
+func (this *OpenGLInstancedMesh3D) getOffset(valueType, index int) int {
 	for i := 0; i < len(this.valueTypeIndexOffsets); i++ {
 		if this.valueTypeIndexOffsets[i].valueType == valueType && this.valueTypeIndexOffsets[i].index == index {
 			return this.valueTypeIndexOffsets[i].offset
@@ -736,7 +733,7 @@ func (this *OpenGLInstancedMesh3D) getOffset(valueType uint32, index int) int {
 	return 0
 }
 
-func (this *OpenGLInstancedMesh3D) SetF(index uint32, value []float32) {
+func (this *OpenGLInstancedMesh3D) SetF(index int, value []float32) {
 	if this.canUseInstanced {
 		offset := this.getOffset(gohome.VALUE_FLOAT, int(index))
 		if offset == 0 {
@@ -760,7 +757,7 @@ func (this *OpenGLInstancedMesh3D) SetF(index uint32, value []float32) {
 	}
 
 }
-func (this *OpenGLInstancedMesh3D) SetV2(index uint32, value []mgl32.Vec2) {
+func (this *OpenGLInstancedMesh3D) SetV2(index int, value []mgl32.Vec2) {
 	if this.canUseInstanced {
 		offset := this.getOffset(gohome.VALUE_VEC2, int(index))
 		if offset == 0 {
@@ -784,7 +781,7 @@ func (this *OpenGLInstancedMesh3D) SetV2(index uint32, value []mgl32.Vec2) {
 	}
 }
 
-func (this *OpenGLInstancedMesh3D) SetV3(index uint32, value []mgl32.Vec3) {
+func (this *OpenGLInstancedMesh3D) SetV3(index int, value []mgl32.Vec3) {
 	if this.canUseInstanced {
 		offset := this.getOffset(gohome.VALUE_VEC3, int(index))
 		if offset == 0 {
@@ -807,7 +804,7 @@ func (this *OpenGLInstancedMesh3D) SetV3(index uint32, value []mgl32.Vec3) {
 		this.vec3s[index] = value
 	}
 }
-func (this *OpenGLInstancedMesh3D) SetV4(index uint32, value []mgl32.Vec4) {
+func (this *OpenGLInstancedMesh3D) SetV4(index int, value []mgl32.Vec4) {
 	if this.canUseInstanced {
 		offset := this.getOffset(gohome.VALUE_VEC4, int(index))
 		if offset == 0 {
@@ -830,7 +827,7 @@ func (this *OpenGLInstancedMesh3D) SetV4(index uint32, value []mgl32.Vec4) {
 		this.vec4s[index] = value
 	}
 }
-func (this *OpenGLInstancedMesh3D) SetM2(index uint32, value []mgl32.Mat2) {
+func (this *OpenGLInstancedMesh3D) SetM2(index int, value []mgl32.Mat2) {
 	if this.canUseInstanced {
 		offset := this.getOffset(gohome.VALUE_MAT2, int(index))
 		if offset == 0 {
@@ -853,7 +850,7 @@ func (this *OpenGLInstancedMesh3D) SetM2(index uint32, value []mgl32.Mat2) {
 		this.mat2s[index] = value
 	}
 }
-func (this *OpenGLInstancedMesh3D) SetM3(index uint32, value []mgl32.Mat3) {
+func (this *OpenGLInstancedMesh3D) SetM3(index int, value []mgl32.Mat3) {
 	if this.canUseInstanced {
 		offset := this.getOffset(gohome.VALUE_MAT3, int(index))
 		if offset == 0 {
@@ -877,7 +874,7 @@ func (this *OpenGLInstancedMesh3D) SetM3(index uint32, value []mgl32.Mat3) {
 	}
 
 }
-func (this *OpenGLInstancedMesh3D) SetM4(index uint32, value []mgl32.Mat4) {
+func (this *OpenGLInstancedMesh3D) SetM4(index int, value []mgl32.Mat4) {
 	if this.canUseInstanced {
 		offset := this.getOffset(gohome.VALUE_MAT4, int(index))
 		if offset == 0 {
@@ -907,7 +904,7 @@ func (this *OpenGLInstancedMesh3D) GetIndices() []uint32 {
 	return this.indices
 }
 
-func (this *OpenGLInstancedMesh3D) SetName(index uint32, value_type uint32, value string) {
+func (this *OpenGLInstancedMesh3D) SetName(index, value_type int, value string) {
 	if this.canUseInstanced {
 		return
 	}
