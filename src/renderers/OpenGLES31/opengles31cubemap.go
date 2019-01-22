@@ -10,8 +10,8 @@ import (
 type OpenGLES31CubeMap struct {
 	name      string
 	oglName   uint32
-	width     uint32
-	height    uint32
+	width     int
+	height    int
 	shadowMap bool
 }
 
@@ -27,8 +27,8 @@ func CreateOpenGLES31CubeMap(name string) *OpenGLES31CubeMap {
 }
 
 func (this *OpenGLES31CubeMap) Load(data []byte, width, height int, shadowMap bool) {
-	this.width = uint32(width)
-	this.height = uint32(height)
+	this.width = width
+	this.height = height
 	this.shadowMap = shadowMap
 
 	var tex [1]uint32
@@ -75,7 +75,7 @@ func (this *OpenGLES31CubeMap) Terminate() {
 	tex[0] = this.oglName
 	gl.DeleteTextures(1, tex[:])
 }
-func (this *OpenGLES31CubeMap) SetFiltering(filtering uint32) {
+func (this *OpenGLES31CubeMap) SetFiltering(filtering int) {
 	gl.BindTexture(gl.TEXTURE_CUBE_MAP, this.oglName)
 	var filter int32
 	if filtering == gohome.FILTERING_NEAREST {
@@ -90,7 +90,7 @@ func (this *OpenGLES31CubeMap) SetFiltering(filtering uint32) {
 
 	gl.BindTexture(gl.TEXTURE_CUBE_MAP, 0)
 }
-func (this *OpenGLES31CubeMap) SetWrapping(wrapping uint32) {
+func (this *OpenGLES31CubeMap) SetWrapping(wrapping int) {
 	gl.BindTexture(gl.TEXTURE_CUBE_MAP, this.oglName)
 	var wrap int32
 	if wrapping == gohome.WRAPPING_REPEAT {
@@ -110,10 +110,10 @@ func (this *OpenGLES31CubeMap) SetWrapping(wrapping uint32) {
 
 }
 func (this *OpenGLES31CubeMap) SetBorderColor(col color.Color) {
-	gohome.ErrorMgr.Warning("CubeMap", this.name, "SetBorderColor does not work in OpenGLES 3.1")
+	gohome.ErrorMgr.Warning("CubeMap", this.name, "SetBorderColor does not work in OpenGLES 3.0")
 }
 func (this *OpenGLES31CubeMap) SetBorderDepth(depth float32) {
-	gohome.ErrorMgr.Warning("CubeMap", this.name, "SetBorderDepth does not work in OpenGLES 3.1")
+	gohome.ErrorMgr.Warning("CubeMap", this.name, "SetBorderDepth does not work in OpenGLES 3.0")
 }
 
 func (this *OpenGLES31CubeMap) GetKeyColor() color.Color {
@@ -135,6 +135,6 @@ func (this *OpenGLES31CubeMap) SetModColor(col color.Color) {
 func (this *OpenGLES31CubeMap) GetData() (data []byte, width int, height int) {
 	width = this.GetWidth()
 	height = this.GetHeight()
-	gohome.ErrorMgr.Warning("CubeMap", this.name, "GetData does not work in OpenGLES 3.1")
+	gohome.ErrorMgr.Warning("CubeMap", this.name, "GetData does not work in OpenGLES 3.0")
 	return
 }

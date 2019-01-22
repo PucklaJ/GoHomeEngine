@@ -23,7 +23,7 @@ type OpenGLES31RenderTexture struct {
 	prevRT       *OpenGLES31RenderTexture
 }
 
-func CreateOpenGLES31RenderTexture(name string, width, height, textures uint32, depthBuffer, shadowMap, cubeMap bool) *OpenGLES31RenderTexture {
+func CreateOpenGLES31RenderTexture(name string, width, height, textures int, depthBuffer, shadowMap, cubeMap bool) *OpenGLES31RenderTexture {
 	rt := &OpenGLES31RenderTexture{}
 
 	rt.Create(name, width, height, textures, depthBuffer, false, shadowMap, cubeMap)
@@ -31,9 +31,8 @@ func CreateOpenGLES31RenderTexture(name string, width, height, textures uint32, 
 	return rt
 }
 
-func (this *OpenGLES31RenderTexture) loadTextures(width, height, textures uint32, cubeMap bool) {
-	var i uint32
-	for i = 0; i < textures; i++ {
+func (this *OpenGLES31RenderTexture) loadTextures(width, height, textures int, cubeMap bool) {
+	for i := 0; i < textures; i++ {
 		var ogltex *OpenGLES31Texture
 		var oglcubemap *OpenGLES31CubeMap
 		var texture gohome.Texture
@@ -67,11 +66,11 @@ func (this *OpenGLES31RenderTexture) loadTextures(width, height, textures uint32
 		} else {
 			if cubeMap {
 				gl.GetError()
-				gl.FramebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0+i, gl.TEXTURE_CUBE_MAP_POSITIVE_X, oglcubemap.oglName, 0)
+				gl.FramebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0+uint32(i), gl.TEXTURE_CUBE_MAP_POSITIVE_X, oglcubemap.oglName, 0)
 				handleOpenGLES31Error("RenderTexture", this.Name, "glFramebufferTexture2D with CubeMap")
 			} else {
 				gl.GetError()
-				gl.FramebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0+i, ogltex.bindingPoint(), ogltex.oglName, 0)
+				gl.FramebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0+uint32(i), ogltex.bindingPoint(), ogltex.oglName, 0)
 				handleOpenGLES31Error("RenderTexture", this.Name, "glFramebufferTexture2D with TEXTURE2D")
 			}
 		}
@@ -91,7 +90,7 @@ func (this *OpenGLES31RenderTexture) loadTextures(width, height, textures uint32
 	}
 }
 
-func (this *OpenGLES31RenderTexture) loadRenderBuffer(width, height uint32) {
+func (this *OpenGLES31RenderTexture) loadRenderBuffer(width, height int) {
 	if this.depthBuffer {
 		gl.GetError()
 		var buf [1]uint32
@@ -109,7 +108,7 @@ func (this *OpenGLES31RenderTexture) loadRenderBuffer(width, height uint32) {
 	}
 }
 
-func (this *OpenGLES31RenderTexture) Create(name string, width, height, textures uint32, depthBuffer, multiSampled, shadowMap, cubeMap bool) {
+func (this *OpenGLES31RenderTexture) Create(name string, width, height, textures int, depthBuffer, multiSampled, shadowMap, cubeMap bool) {
 	if textures == 0 {
 		textures = 1
 	}
@@ -131,9 +130,9 @@ func (this *OpenGLES31RenderTexture) Create(name string, width, height, textures
 	this.loadRenderBuffer(width, height)
 	this.loadTextures(width, height, textures, cubeMap)
 	if shadowMap {
-		var buf [1]uint32
-		buf[0] = gl.NONE
-		gl.DrawBuffers(1, buf[:])
+		var none [1]uint32
+		none[0] = gl.NONE
+		gl.DrawBuffers(1, none[:])
 		handleOpenGLES31Error("RenderTexture", this.Name, "glDrawBuffer")
 		gl.ReadBuffer(gl.NONE)
 		handleOpenGLES31Error("RenderTexture", this.Name, "glReadBuffer")
@@ -172,9 +171,9 @@ func (this *OpenGLES31RenderTexture) GetName() string {
 
 func (this *OpenGLES31RenderTexture) SetAsTarget() {
 	if currentlyBoundRT == nil {
-		var buf [1]int32
-		gl.GetIntegerv(gl.DRAW_FRAMEBUFFER_BINDING, buf[:])
-		screenFramebuffer = buf[0]
+		var data [1]int32
+		gl.GetIntegerv(gl.DRAW_FRAMEBUFFER_BINDING, data[:])
+		screenFramebuffer = data[0]
 	}
 	this.prevRT = currentlyBoundRT
 	currentlyBoundRT = this
@@ -221,6 +220,7 @@ func (this *OpenGLES31RenderTexture) Blit(rtex gohome.RenderTexture) {
 	}
 	gl.BindFramebuffer(gl.READ_FRAMEBUFFER, this.fbo)
 	handleOpenGLES31Error("RenderTexture", this.Name, "glBindFramebuffer with GL_READ_FRAMEBUFFER in Blit")
+
 	gl.BlitFramebuffer(0, 0, int32(this.GetWidth()), int32(this.GetHeight()), x, y, width, height, gl.COLOR_BUFFER_BIT, gl.NEAREST)
 	handleOpenGLES31Error("RenderTexture", this.Name, "glBlitFramebuffer")
 
@@ -238,14 +238,14 @@ func (this *OpenGLES31RenderTexture) Unbind(unit uint32) {
 	this.UnbindIndex(0, unit)
 }
 
-func (this *OpenGLES31RenderTexture) BindIndex(index, unit uint32) {
-	if index < uint32(len(this.textures)) {
+func (this *OpenGLES31RenderTexture) BindIndex(index int, unit uint32) {
+	if index < len(this.textures) {
 		this.textures[index].Bind(unit)
 	}
 }
 
-func (this *OpenGLES31RenderTexture) UnbindIndex(index, unit uint32) {
-	if index < uint32(len(this.textures)) {
+func (this *OpenGLES31RenderTexture) UnbindIndex(index int, unit uint32) {
+	if index < len(this.textures) {
 		this.textures[index].Unbind(unit)
 	}
 }
@@ -269,33 +269,32 @@ func (this *OpenGLES31RenderTexture) GetHeight() int {
 func (this *OpenGLES31RenderTexture) Terminate() {
 	var buf [1]uint32
 	buf[0] = this.fbo
-	defer gl.DeleteFramebuffers(1, buf[:])
+	gl.DeleteFramebuffers(1, buf[:])
 	if this.depthBuffer {
-		var vbuf [1]uint32
-		vbuf[0] = this.rbo
-		defer gl.DeleteRenderbuffers(1, vbuf[:])
+		buf[0] = this.rbo
+		gl.DeleteRenderbuffers(1, buf[:])
 	}
 	for i := 0; i < len(this.textures); i++ {
-		defer this.textures[i].Terminate()
+		this.textures[i].Terminate()
 	}
-	this.textures = append(this.textures[:0], this.textures[len(this.textures):]...)
+	this.textures = this.textures[:0]
 }
 
-func (this *OpenGLES31RenderTexture) ChangeSize(width, height uint32) {
-	if uint32(this.GetWidth()) != width || uint32(this.GetHeight()) != height {
-		textures := uint32(len(this.textures))
+func (this *OpenGLES31RenderTexture) ChangeSize(width, height int) {
+	if this.GetWidth() != width || this.GetHeight() != height {
+		textures := len(this.textures)
 		this.Terminate()
 		this.Create(this.Name, width, height, textures, this.depthBuffer, false, this.shadowMap, this.cubeMap)
 	}
 }
 
-func (this *OpenGLES31RenderTexture) SetFiltering(filtering uint32) {
+func (this *OpenGLES31RenderTexture) SetFiltering(filtering int) {
 	for i := 0; i < len(this.textures); i++ {
 		this.textures[i].SetFiltering(filtering)
 	}
 }
 
-func (this *OpenGLES31RenderTexture) SetWrapping(wrapping uint32) {
+func (this *OpenGLES31RenderTexture) SetWrapping(wrapping int) {
 	for i := 0; i < len(this.textures); i++ {
 		this.textures[i].SetWrapping(wrapping)
 	}

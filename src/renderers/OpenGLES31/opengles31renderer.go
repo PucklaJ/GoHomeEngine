@@ -9,11 +9,6 @@ import (
 	"github.com/PucklaMotzer09/mathgl/mgl32"
 )
 
-const (
-	GL_MAX_TEXTURE_MAX_ANISOTROPY uint32 = 0x84FF
-	GL_TEXTURE_MAX_ANISOTROPY     uint32 = 0x84FE
-)
-
 type OpenGLES31Renderer struct {
 	BackBufferVao      uint32
 	CurrentTextureUnit uint32
@@ -21,7 +16,7 @@ type OpenGLES31Renderer struct {
 	availableFunctions map[string]bool
 	backBufferMesh     *OpenGLES31Mesh2D
 	backgroundColor    color.Color
-	version            uint8
+	version            int
 }
 
 func (this *OpenGLES31Renderer) createBackBufferMesh() {
@@ -58,6 +53,9 @@ func (this *OpenGLES31Renderer) Init() error {
 		version = strconv.FormatUint(uint64(versioni), 10)
 	}
 	gohome.ErrorMgr.Log("Renderer", "OpenGLES31\t", "Version: "+version)
+	if versioni < 21 {
+		gohome.ErrorMgr.Warning("Renderer", "OpenGLES31", "You don't have a graphics card or your graphics card is not supported! Minimum: OpenGLES 2.0")
+	}
 
 	this.CurrentTextureUnit = 0
 
@@ -101,7 +99,7 @@ func (this *OpenGLES31Renderer) HasExtension(name string) bool {
 }
 
 func (this *OpenGLES31Renderer) SetWireFrame(b bool) {
-	gohome.ErrorMgr.Warning("Renderer", "OpenGLES31", "SetWireFrame does not work in OpenGLES 3.1")
+	gohome.ErrorMgr.Warning("Renderer", "OpenGLES31", "SetWireFrame does not work in OpenGLES 3.0")
 }
 
 func (this *OpenGLES31Renderer) Terminate() {
@@ -141,7 +139,7 @@ func (*OpenGLES31Renderer) CreateMesh3D(name string) gohome.Mesh3D {
 	return CreateOpenGLES31Mesh3D(name)
 }
 
-func (*OpenGLES31Renderer) CreateRenderTexture(name string, width, height, textures uint32, depthBuffer, multiSampled, shadowMap, cubeMap bool) gohome.RenderTexture {
+func (*OpenGLES31Renderer) CreateRenderTexture(name string, width, height, textures int, depthBuffer, multiSampled, shadowMap, cubeMap bool) gohome.RenderTexture {
 	return CreateOpenGLES31RenderTexture(name, width, height, textures, depthBuffer, shadowMap, cubeMap)
 }
 
@@ -247,7 +245,7 @@ func (this *OpenGLES31Renderer) GetViewport() gohome.Viewport {
 	}
 }
 
-func (this *OpenGLES31Renderer) SetNativeResolution(width, height uint32) {
+func (this *OpenGLES31Renderer) SetNativeResolution(width, height int) {
 	previous := gohome.Viewport{
 		X:      0,
 		Y:      0,
@@ -275,7 +273,7 @@ func (this *OpenGLES31Renderer) SetNativeResolution(width, height uint32) {
 func (this *OpenGLES31Renderer) GetNativeResolution() mgl32.Vec2 {
 	return [2]float32{float32(gohome.RenderMgr.BackBufferMS.GetWidth()), float32(gohome.RenderMgr.BackBufferMS.GetHeight())}
 }
-func (this *OpenGLES31Renderer) OnResize(newWidth, newHeight uint32) {
+func (this *OpenGLES31Renderer) OnResize(newWidth, newHeight int) {
 	gl.Viewport(0, 0, int32(newWidth), int32(newHeight))
 }
 
@@ -294,10 +292,10 @@ func (this *OpenGLES31Renderer) SetBacckFaceCulling(b bool) {
 	}
 }
 
-func (this *OpenGLES31Renderer) GetMaxTextures() int32 {
+func (this *OpenGLES31Renderer) GetMaxTextures() int {
 	var data [1]int32
 	gl.GetIntegerv(gl.MAX_TEXTURE_IMAGE_UNITS, data[:])
-	return data[0]
+	return int(data[0])
 }
 
 func (this *OpenGLES31Renderer) NextTextureUnit() uint32 {
@@ -310,14 +308,14 @@ func (this *OpenGLES31Renderer) DecrementTextureUnit(amount uint32) {
 	this.CurrentTextureUnit -= amount
 }
 
-func (this *OpenGLES31Renderer) GetVersioni() uint8 {
+func (this *OpenGLES31Renderer) GetVersioni() int {
 	var major, minor, combined [1]int32
 	gl.GetIntegerv(gl.MAJOR_VERSION, major[:])
 	gl.GetIntegerv(gl.MINOR_VERSION, minor[:])
 
 	combined[0] = major[0]*10 + minor[0]
 
-	return uint8(combined[0])
+	return int(combined[0])
 }
 
 func (this *OpenGLES31Renderer) gatherAvailableFunctions() {

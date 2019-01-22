@@ -14,9 +14,8 @@ type OpenGLES31Shape2DInterface struct {
 	loaded     bool
 
 	points         []gohome.Shape2DVertex
-	numVertices    uint32
+	numVertices    int
 	openglDrawMode uint32
-	pointSize      float32
 	lineWidth      float32
 }
 
@@ -75,7 +74,7 @@ func (this *OpenGLES31Shape2DInterface) Load() {
 		return
 	}
 
-	this.numVertices = uint32(len(this.points))
+	this.numVertices = len(this.points)
 	if this.numVertices == 0 {
 		gohome.ErrorMgr.Error("Shape2DInterface", this.Name, "No Vertices have been added!")
 		return
@@ -140,11 +139,10 @@ func (this *OpenGLES31Shape2DInterface) Render() {
 func (this *OpenGLES31Shape2DInterface) Terminate() {
 	var buf [1]uint32
 	buf[0] = this.vbo
-	defer gl.DeleteBuffers(1, buf[:])
+	gl.DeleteBuffers(1, buf[:])
 	if this.canUseVaos {
-		var vbuf [1]uint32
-		vbuf[0] = this.vao
-		defer gl.DeleteVertexArrays(1, vbuf[:])
+		buf[0] = this.vao
+		gl.DeleteVertexArrays(1, buf[:])
 	}
 	this.numVertices = 0
 	this.loaded = false
@@ -166,7 +164,6 @@ func (this *OpenGLES31Shape2DInterface) SetDrawMode(mode uint8) {
 }
 
 func (this *OpenGLES31Shape2DInterface) SetPointSize(size float32) {
-	this.pointSize = size
 }
 func (this *OpenGLES31Shape2DInterface) SetLineWidth(width float32) {
 	this.lineWidth = width

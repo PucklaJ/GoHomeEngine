@@ -62,8 +62,6 @@ func toGohomeShaderType(shader_type uint32) uint8 {
 		return gohome.VERTEX
 	case gl.FRAGMENT_SHADER:
 		return gohome.FRAGMENT
-	case gl.COMPUTE_SHADER:
-		return gohome.COMPUTE
 	}
 
 	return 255
@@ -89,21 +87,21 @@ func (s *OpenGLES31Shader) getAttributeNames(program uint32, src string) []strin
 	var lineString string
 	var attributeNames []string
 	var curChar byte = ' '
-	var curIndex uint32 = 0
-	var curWordIndex uint32 = 0
-	var curWord uint32 = 0
+	var curIndex = 0
+	var curWordIndex = 0
+	var curWord = 0
 	var wordBuffer bytes.Buffer
 	var wordsString []string
 	var readWord bool = false
-	var version uint32 = 0
+	var version = 0
 
 	s.attribute_sizes = make(map[string]uint32)
 
-	for curIndex < uint32(len(src)) {
+	for curIndex < len(src) {
 		for curChar = ' '; curChar != '\n' && curChar != 13; curChar = src[curIndex] {
 			line.WriteByte(curChar)
 			curIndex++
-			if curIndex == uint32(len(src)) {
+			if curIndex == len(src) {
 				break
 			}
 		}
@@ -111,7 +109,7 @@ func (s *OpenGLES31Shader) getAttributeNames(program uint32, src string) []strin
 		lineString = line.String()
 		readWord = false
 		curWord = 0
-		for curWordIndex = 0; curWordIndex < uint32(len(lineString)); curWordIndex++ {
+		for curWordIndex = 0; curWordIndex < len(lineString); curWordIndex++ {
 			curChar = lineString[curWordIndex]
 			if curChar == ' ' || curChar == '\t' {
 				if readWord {
@@ -135,7 +133,7 @@ func (s *OpenGLES31Shader) getAttributeNames(program uint32, src string) []strin
 		line.Reset()
 		if len(wordsString) >= 2 && wordsString[0] == "#version" {
 			versionInt, _ := strconv.Atoi(wordsString[1])
-			version = uint32(versionInt)
+			version = versionInt
 		}
 		if len(wordsString) >= 2 && wordsString[0] == "void" && wordsString[1] == "main()" {
 			break
@@ -202,10 +200,7 @@ func (s *OpenGLES31Shader) compileOpenGLES31Shader(shader_name string, shader_ty
 
 func (s *OpenGLES31Shader) AddShader(shader_type uint8, src string) error {
 	if shader_type == gohome.GEOMETRY {
-		render, _ := gohome.Render.(*OpenGLES31Renderer)
-		if !render.HasFunctionAvailable("GEOMETRY_SHADER") {
-			return &OpenGLES31Error{errorString: "Geometry shaders are not supported by this implementation"}
-		}
+		return &OpenGLES31Error{errorString: "Geometry shaders are not supported by this implementation"}
 	}
 
 	var err error
@@ -215,8 +210,6 @@ func (s *OpenGLES31Shader) AddShader(shader_type uint8, src string) error {
 		shaderName, err = s.compileOpenGLES31Shader(s.name, gl.VERTEX_SHADER, src, s.program)
 	case gohome.FRAGMENT:
 		shaderName, err = s.compileOpenGLES31Shader(s.name, gl.FRAGMENT_SHADER, src, s.program)
-	case gohome.COMPUTE:
-		shaderName, err = s.compileOpenGLES31Shader(s.name, gl.COMPUTE_SHADER, src, s.program)
 	}
 
 	if err != nil {
@@ -261,9 +254,11 @@ func (s *OpenGLES31Shader) Link() error {
 		}
 
 		buf := make([]byte, logLength)
+
 		gl.GetError()
 		gl.GetProgramInfoLog(s.program, logLength, nil, buf[:])
 		logtext := string(buf)
+
 		if err := gl.GetError(); err != gl.NO_ERROR {
 			return &OpenGLES31Error{errorString: "Couldn't link: Couldn't get info log: ErrorCode: " + strconv.Itoa(int(err))}
 		}
@@ -415,7 +410,7 @@ func (s *OpenGLES31Shader) SetUniformMaterial(mat gohome.Material) {
 	var normBind int32 = 0
 	var boundTextures uint32
 
-	maxtextures := gohome.Render.GetMaxTextures()
+	maxtextures := int32(gohome.Render.GetMaxTextures())
 
 	if mat.DiffuseTexture != nil {
 		diffBind = int32(gohome.Render.NextTextureUnit())
@@ -478,8 +473,8 @@ func (s *OpenGLES31Shader) SetUniformMaterial(mat gohome.Material) {
 	s.SetUniformF(gohome.MATERIAL_UNIFORM_NAME+"."+gohome.MATERIAL_TRANSPARENCY_UNIFORM_NAME, mat.Transparency)
 }
 
-func (s *OpenGLES31Shader) SetUniformLights(lightCollectionIndex int32) {
-	if lightCollectionIndex == -1 || lightCollectionIndex > int32(len(gohome.LightMgr.LightCollections)-1) {
+func (s *OpenGLES31Shader) SetUniformLights(lightCollectionIndex int) {
+	if lightCollectionIndex == -1 || lightCollectionIndex > len(gohome.LightMgr.LightCollections)-1 {
 		s.SetUniformI(gohome.NUM_POINT_LIGHTS_UNIFORM_NAME, 0)
 		s.SetUniformI(gohome.NUM_DIRECTIONAL_LIGHTS_UNIFORM_NAME, 0)
 		s.SetUniformI(gohome.NUM_SPOT_LIGHTS_UNIFORM_NAME, 0)
@@ -496,14 +491,13 @@ func (s *OpenGLES31Shader) SetUniformLights(lightCollectionIndex int32) {
 
 	s.SetUniformV3(gohome.AMBIENT_LIGHT_UNIFORM_NAME, gohome.ColorToVec3(lightColl.AmbientLight))
 
-	var i uint32
-	for i = 0; i < uint32(len(lightColl.PointLights)); i++ {
+	for i := 0; i < len(lightColl.PointLights); i++ {
 		lightColl.PointLights[i].SetUniforms(s, i)
 	}
-	for i = 0; i < uint32(len(lightColl.DirectionalLights)); i++ {
+	for i := 0; i < len(lightColl.DirectionalLights); i++ {
 		lightColl.DirectionalLights[i].SetUniforms(s, i)
 	}
-	for i = 0; i < uint32(len(lightColl.SpotLights)); i++ {
+	for i := 0; i < len(lightColl.SpotLights); i++ {
 		lightColl.SpotLights[i].SetUniforms(s, i)
 	}
 }
