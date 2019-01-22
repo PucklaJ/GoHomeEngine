@@ -22,7 +22,7 @@ type WebGLRenderTexture struct {
 	prevRT       *WebGLRenderTexture
 }
 
-func CreateWebGLRenderTexture(name string, width, height, textures uint32, depthBuffer, shadowMap, cubeMap bool) *WebGLRenderTexture {
+func CreateWebGLRenderTexture(name string, width, height, textures int, depthBuffer, shadowMap, cubeMap bool) *WebGLRenderTexture {
 	rt := &WebGLRenderTexture{}
 
 	rt.Create(name, width, height, textures, depthBuffer, false, shadowMap, cubeMap)
@@ -107,7 +107,7 @@ func (this *WebGLRenderTexture) loadRenderBuffer(width, height int) {
 	}
 }
 
-func (this *WebGLRenderTexture) Create(name string, width, height, textures uint32, depthBuffer, multiSampled, shadowMap, cubeMap bool) {
+func (this *WebGLRenderTexture) Create(name string, width, height, textures int, depthBuffer, multiSampled, shadowMap, cubeMap bool) {
 	if textures == 0 {
 		textures = 1
 	}
@@ -234,14 +234,14 @@ func (this *WebGLRenderTexture) Unbind(unit uint32) {
 	this.UnbindIndex(0, unit)
 }
 
-func (this *WebGLRenderTexture) BindIndex(index, unit uint32) {
-	if index < uint32(len(this.textures)) {
+func (this *WebGLRenderTexture) BindIndex(index int, unit uint32) {
+	if index < len(this.textures) {
 		this.textures[index].Bind(unit)
 	}
 }
 
-func (this *WebGLRenderTexture) UnbindIndex(index, unit uint32) {
-	if index < uint32(len(this.textures)) {
+func (this *WebGLRenderTexture) UnbindIndex(index int, unit uint32) {
+	if index < len(this.textures) {
 		this.textures[index].Unbind(unit)
 	}
 }
@@ -273,21 +273,21 @@ func (this *WebGLRenderTexture) Terminate() {
 	this.textures = append(this.textures[:0], this.textures[len(this.textures):]...)
 }
 
-func (this *WebGLRenderTexture) ChangeSize(width, height uint32) {
-	if uint32(this.GetWidth()) != width || uint32(this.GetHeight()) != height {
-		textures := uint32(len(this.textures))
+func (this *WebGLRenderTexture) ChangeSize(width, height int) {
+	if this.GetWidth() != width || this.GetHeight() != height {
+		textures := len(this.textures)
 		this.Terminate()
 		this.Create(this.Name, width, height, textures, this.depthBuffer, false, this.shadowMap, this.cubeMap)
 	}
 }
 
-func (this *WebGLRenderTexture) SetFiltering(filtering uint32) {
+func (this *WebGLRenderTexture) SetFiltering(filtering int) {
 	for i := 0; i < len(this.textures); i++ {
 		this.textures[i].SetFiltering(filtering)
 	}
 }
 
-func (this *WebGLRenderTexture) SetWrapping(wrapping uint32) {
+func (this *WebGLRenderTexture) SetWrapping(wrapping int) {
 	for i := 0; i < len(this.textures); i++ {
 		this.textures[i].SetWrapping(wrapping)
 	}

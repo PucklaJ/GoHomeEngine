@@ -10,8 +10,8 @@ import (
 type WebGLCubeMap struct {
 	name      string
 	oglName   *js.Object
-	width     uint32
-	height    uint32
+	width     int
+	height    int
 	shadowMap bool
 }
 
@@ -27,8 +27,8 @@ func CreateWebGLCubeMap(name string) *WebGLCubeMap {
 }
 
 func (this *WebGLCubeMap) Load(data []byte, width, height int, shadowMap bool) {
-	this.width = uint32(width)
-	this.height = uint32(height)
+	this.width = width
+	this.height = height
 	this.shadowMap = shadowMap
 
 	this.oglName = gl.CreateTexture()
@@ -69,7 +69,7 @@ func (this *WebGLCubeMap) GetHeight() int {
 func (this *WebGLCubeMap) Terminate() {
 	gl.DeleteTexture(this.oglName)
 }
-func (this *WebGLCubeMap) SetFiltering(filtering uint32) {
+func (this *WebGLCubeMap) SetFiltering(filtering int) {
 	gl.BindTexture(gl.TEXTURE_CUBE_MAP, this.oglName)
 	var filter int
 	if filtering == gohome.FILTERING_NEAREST {
@@ -84,7 +84,7 @@ func (this *WebGLCubeMap) SetFiltering(filtering uint32) {
 
 	gl.BindTexture(gl.TEXTURE_CUBE_MAP, nil)
 }
-func (this *WebGLCubeMap) SetWrapping(wrapping uint32) {
+func (this *WebGLCubeMap) SetWrapping(wrapping int) {
 	gl.BindTexture(gl.TEXTURE_CUBE_MAP, this.oglName)
 	var wrap int
 	if wrapping == gohome.WRAPPING_REPEAT {

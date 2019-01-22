@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	NUM_GO_ROUTINES_TANGENTS_CALCULATING uint32 = 10
+	NUM_GO_ROUTINES_TANGENTS_CALCULATING = 10
 )
 
 type WebGLMesh3D struct {
@@ -30,7 +30,7 @@ type WebGLMesh3D struct {
 	aabb gohome.AxisAlignedBoundingBox
 }
 
-func (oglm *WebGLMesh3D) CalculateTangentsRoutine(startIndex, maxIndex uint32, wg *sync.WaitGroup) {
+func (oglm *WebGLMesh3D) CalculateTangentsRoutine(startIndex, maxIndex int, wg *sync.WaitGroup) {
 	if wg != nil {
 		defer wg.Done()
 	}
@@ -45,9 +45,8 @@ func (oglm *WebGLMesh3D) CalculateTangentsRoutine(startIndex, maxIndex uint32, w
 	var tangent mgl32.Vec3
 	var normal mgl32.Vec3
 	var bitangent mgl32.Vec3
-	var i uint32
-	for i = startIndex; i < maxIndex && i < uint32(len(indices)); i += 3 {
-		if i > uint32(len(indices)-3) {
+	for i := startIndex; i < maxIndex && i < len(indices); i += 3 {
+		if i > len(indices)-3 {
 			break
 		}
 
@@ -79,8 +78,7 @@ func (oglm *WebGLMesh3D) CalculateTangentsRoutine(startIndex, maxIndex uint32, w
 		if normal.Cross(tangent).Dot(bitangent) < 0.0 {
 			tangent = tangent.Mul(-1.0)
 		}
-		var j uint32
-		for j = 0; j < 3; j++ {
+		for j := 0; j < 3; j++ {
 			(*vertices)[indices[i+j]][8] = tangent[0]
 			(*vertices)[indices[i+j]][9] = tangent[1]
 			(*vertices)[indices[i+j]][10] = tangent[2]
@@ -94,9 +92,9 @@ func (oglm *WebGLMesh3D) CalculateTangents() {
 	}
 	var wg sync.WaitGroup
 
-	deltaIndex := uint32(len(oglm.indices)) / NUM_GO_ROUTINES_TANGENTS_CALCULATING
+	deltaIndex := len(oglm.indices) / NUM_GO_ROUTINES_TANGENTS_CALCULATING
 	if deltaIndex == 0 {
-		deltaIndex = uint32(len(oglm.indices)) / 3
+		deltaIndex = len(oglm.indices) / 3
 	}
 	if deltaIndex > 3 {
 		deltaIndex -= deltaIndex % 3
@@ -105,11 +103,10 @@ func (oglm *WebGLMesh3D) CalculateTangents() {
 	}
 
 	oglm.hasUV = true
-	var i uint32
-	for i = 0; i < NUM_GO_ROUTINES_TANGENTS_CALCULATING*2; i++ {
+	for i := 0; i < NUM_GO_ROUTINES_TANGENTS_CALCULATING*2; i++ {
 		wg.Add(1)
 		go oglm.CalculateTangentsRoutine(i*deltaIndex, i*deltaIndex+deltaIndex, &wg)
-		if i*deltaIndex+deltaIndex >= uint32(len(oglm.indices)) {
+		if i*deltaIndex+deltaIndex >= len(oglm.indices) {
 			break
 		}
 	}
@@ -251,11 +248,11 @@ func (oglm *WebGLMesh3D) GetMaterial() *gohome.Material {
 	return oglm.Material
 }
 
-func (oglm *WebGLMesh3D) GetNumVertices() uint32 {
-	return uint32(oglm.numVertices)
+func (oglm *WebGLMesh3D) GetNumVertices() int {
+	return oglm.numVertices
 }
-func (oglm *WebGLMesh3D) GetNumIndices() uint32 {
-	return uint32(oglm.numIndices)
+func (oglm *WebGLMesh3D) GetNumIndices() int {
+	return oglm.numIndices
 }
 
 func (oglm *WebGLMesh3D) GetVertices() []gohome.Mesh3DVertex {

@@ -18,14 +18,14 @@ type WebGLRenderer struct {
 	availableFunctions map[string]bool
 	backBufferMesh     *WebGLMesh2D
 	backgroundColor    color.Color
-	version            uint8
+	version            int
 }
 
 func (this *WebGLRenderer) createBackBufferMesh() {
 	this.backBufferMesh = CreateWebGLMesh2D("BackBufferMesh")
 
-	var vertices []gohome.Mesh2DVertex = make([]gohome.Mesh2DVertex, 4)
-	var indices []uint32 = make([]uint32, 6)
+	var vertices [4]gohome.Mesh2DVertex
+	var indices [6]uint32
 
 	vertices[0].Vertex(-1.0, -1.0)
 	vertices[1].Vertex(1.0, -1.0)
@@ -44,7 +44,7 @@ func (this *WebGLRenderer) createBackBufferMesh() {
 	indices[4] = 3
 	indices[5] = 0
 
-	this.backBufferMesh.AddVertices(vertices, indices)
+	this.backBufferMesh.AddVertices(vertices[:], indices[:])
 	this.backBufferMesh.Load()
 }
 
@@ -64,7 +64,7 @@ func (this *WebGLRenderer) Init() error {
 	version := gl.GetString(gl.VERSION)
 	versioni := gl.GetVersioni()
 	if version == "" {
-		version = strconv.FormatUint(uint64(versioni), 10)
+		version = strconv.Itoa(versioni)
 	}
 	gohome.ErrorMgr.Log("Renderer", "WebGL\t", "Version: "+version)
 
@@ -132,7 +132,7 @@ func (*WebGLRenderer) CreateMesh3D(name string) gohome.Mesh3D {
 	return CreateWebGLMesh3D(name)
 }
 
-func (*WebGLRenderer) CreateRenderTexture(name string, width, height, textures uint32, depthBuffer, multiSampled, shadowMap, cubeMap bool) gohome.RenderTexture {
+func (*WebGLRenderer) CreateRenderTexture(name string, width, height, textures int, depthBuffer, multiSampled, shadowMap, cubeMap bool) gohome.RenderTexture {
 	return CreateWebGLRenderTexture(name, width, height, textures, depthBuffer, shadowMap, cubeMap)
 }
 
@@ -227,7 +227,7 @@ func (this *WebGLRenderer) GetViewport() gohome.Viewport {
 	}
 }
 
-func (this *WebGLRenderer) SetNativeResolution(width, height uint32) {
+func (this *WebGLRenderer) SetNativeResolution(width, height int) {
 	previous := gohome.Viewport{
 		X:      0,
 		Y:      0,
@@ -255,7 +255,7 @@ func (this *WebGLRenderer) SetNativeResolution(width, height uint32) {
 func (this *WebGLRenderer) GetNativeResolution() mgl32.Vec2 {
 	return [2]float32{float32(gohome.RenderMgr.BackBufferMS.GetWidth()), float32(gohome.RenderMgr.BackBufferMS.GetHeight())}
 }
-func (this *WebGLRenderer) OnResize(newWidth, newHeight uint32) {
+func (this *WebGLRenderer) OnResize(newWidth, newHeight int) {
 	gl.Viewport(0, 0, int(newWidth), int(newHeight))
 }
 
@@ -274,9 +274,9 @@ func (this *WebGLRenderer) SetBacckFaceCulling(b bool) {
 	}
 }
 
-func (this *WebGLRenderer) GetMaxTextures() int32 {
+func (this *WebGLRenderer) GetMaxTextures() int {
 	data := gl.GetIntegerv(gl.MAX_TEXTURE_IMAGE_UNITS)
-	return int32(data[0])
+	return data[0]
 }
 
 func (this *WebGLRenderer) NextTextureUnit() uint32 {
@@ -289,8 +289,8 @@ func (this *WebGLRenderer) DecrementTextureUnit(amount uint32) {
 	this.CurrentTextureUnit -= amount
 }
 
-func (this *WebGLRenderer) GetVersioni() uint8 {
-	return uint8(gl.GetVersioni())
+func (this *WebGLRenderer) GetVersioni() int {
+	return gl.GetVersioni()
 }
 
 func (this *WebGLRenderer) gatherAvailableFunctions() {
@@ -361,6 +361,6 @@ func (this *WebGLRenderer) GetName() string {
 	return "WebGL"
 }
 
-func maxMultisampleSamples() int32 {
+func maxMultisampleSamples() int {
 	return 0
 }

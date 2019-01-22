@@ -87,9 +87,9 @@ func (s *WebGLShader) getAttributeNames(program *js.Object, src string) []string
 	var lineString string
 	var attributeNames []string
 	var curChar byte = ' '
-	var curIndex uint32 = 0
-	var curWordIndex uint32 = 0
-	var curWord uint32 = 0
+	var curIndex = 0
+	var curWordIndex = 0
+	var curWord = 0
 	var wordBuffer bytes.Buffer
 	var wordsString []string
 	var readWord bool = false
@@ -97,11 +97,11 @@ func (s *WebGLShader) getAttributeNames(program *js.Object, src string) []string
 
 	s.attribute_sizes = make(map[string]int)
 
-	for curIndex < uint32(len(src)) {
+	for curIndex < len(src) {
 		for curChar = ' '; curChar != '\n' && curChar != 13; curChar = src[curIndex] {
 			line.WriteByte(curChar)
 			curIndex++
-			if curIndex == uint32(len(src)) {
+			if curIndex == len(src) {
 				break
 			}
 		}
@@ -109,7 +109,7 @@ func (s *WebGLShader) getAttributeNames(program *js.Object, src string) []string
 		lineString = line.String()
 		readWord = false
 		curWord = 0
-		for curWordIndex = 0; curWordIndex < uint32(len(lineString)); curWordIndex++ {
+		for curWordIndex = 0; curWordIndex < len(lineString); curWordIndex++ {
 			curChar = lineString[curWordIndex]
 			if curChar == ' ' || curChar == '\t' {
 				if readWord {
@@ -385,15 +385,15 @@ func (s *WebGLShader) SetUniformM4(name string, value mgl32.Mat4) {
 }
 
 func (s *WebGLShader) SetUniformMaterial(mat gohome.Material) {
-	var diffBind int32 = 0
-	var specBind int32 = 0
-	var normBind int32 = 0
+	var diffBind = 0
+	var specBind = 0
+	var normBind = 0
 	var boundTextures uint32
 
 	maxtextures := gohome.Render.GetMaxTextures()
 
 	if mat.DiffuseTexture != nil {
-		diffBind = int32(gohome.Render.NextTextureUnit())
+		diffBind = int(gohome.Render.NextTextureUnit())
 		if diffBind >= maxtextures-1 {
 			diffBind = 0
 			mat.DiffuseTextureLoaded = 0
@@ -408,7 +408,7 @@ func (s *WebGLShader) SetUniformMaterial(mat gohome.Material) {
 	}
 
 	if mat.SpecularTexture != nil {
-		specBind = int32(gohome.Render.NextTextureUnit())
+		specBind = int(gohome.Render.NextTextureUnit())
 		if specBind >= maxtextures-1 {
 			specBind = 0
 			mat.SpecularTextureLoaded = 0
@@ -423,7 +423,7 @@ func (s *WebGLShader) SetUniformMaterial(mat gohome.Material) {
 	}
 
 	if mat.NormalMap != nil {
-		normBind = int32(gohome.Render.NextTextureUnit())
+		normBind = int(gohome.Render.NextTextureUnit())
 		if normBind >= maxtextures-1 {
 			normBind = 0
 			mat.NormalMapLoaded = 0
@@ -446,15 +446,15 @@ func (s *WebGLShader) SetUniformMaterial(mat gohome.Material) {
 	s.SetUniformB(gohome.MATERIAL_UNIFORM_NAME+"."+gohome.MATERIAL_DIFFUSE_TEXTURE_LOADED_UNIFORM_NAME, mat.DiffuseTextureLoaded)
 	s.SetUniformB(gohome.MATERIAL_UNIFORM_NAME+"."+gohome.MATERIAL_SPECULAR_TEXTURE_LOADED_UNIFORM_NAME, mat.SpecularTextureLoaded)
 	s.SetUniformB(gohome.MATERIAL_UNIFORM_NAME+"."+gohome.MATERIAL_NORMALMAP_LOADED_UNIFORM_NAME, mat.NormalMapLoaded)
-	s.SetUniformI(gohome.MATERIAL_UNIFORM_NAME+gohome.MATERIAL_DIFFUSE_TEXTURE_UNIFORM_NAME, diffBind)
-	s.SetUniformI(gohome.MATERIAL_UNIFORM_NAME+gohome.MATERIAL_SPECULAR_TEXTURE_UNIFORM_NAME, specBind)
-	s.SetUniformI(gohome.MATERIAL_UNIFORM_NAME+gohome.MATERIAL_NORMALMAP_UNIFORM_NAME, normBind)
+	s.SetUniformI(gohome.MATERIAL_UNIFORM_NAME+gohome.MATERIAL_DIFFUSE_TEXTURE_UNIFORM_NAME, int32(diffBind))
+	s.SetUniformI(gohome.MATERIAL_UNIFORM_NAME+gohome.MATERIAL_SPECULAR_TEXTURE_UNIFORM_NAME, int32(specBind))
+	s.SetUniformI(gohome.MATERIAL_UNIFORM_NAME+gohome.MATERIAL_NORMALMAP_UNIFORM_NAME, int32(normBind))
 
 	s.SetUniformF(gohome.MATERIAL_UNIFORM_NAME+"."+gohome.MATERIAL_TRANSPARENCY_UNIFORM_NAME, mat.Transparency)
 }
 
-func (s *WebGLShader) SetUniformLights(lightCollectionIndex int32) {
-	if lightCollectionIndex == -1 || lightCollectionIndex > int32(len(gohome.LightMgr.LightCollections)-1) {
+func (s *WebGLShader) SetUniformLights(lightCollectionIndex int) {
+	if lightCollectionIndex == -1 || lightCollectionIndex > len(gohome.LightMgr.LightCollections)-1 {
 		s.SetUniformI(gohome.NUM_POINT_LIGHTS_UNIFORM_NAME, 0)
 		s.SetUniformI(gohome.NUM_DIRECTIONAL_LIGHTS_UNIFORM_NAME, 0)
 		s.SetUniformI(gohome.NUM_SPOT_LIGHTS_UNIFORM_NAME, 0)
@@ -471,14 +471,13 @@ func (s *WebGLShader) SetUniformLights(lightCollectionIndex int32) {
 
 	s.SetUniformV3(gohome.AMBIENT_LIGHT_UNIFORM_NAME, gohome.ColorToVec3(lightColl.AmbientLight))
 
-	var i uint32
-	for i = 0; i < uint32(len(lightColl.PointLights)); i++ {
+	for i := 0; i < len(lightColl.PointLights); i++ {
 		lightColl.PointLights[i].SetUniforms(s, i)
 	}
-	for i = 0; i < uint32(len(lightColl.DirectionalLights)); i++ {
+	for i := 0; i < len(lightColl.DirectionalLights); i++ {
 		lightColl.DirectionalLights[i].SetUniforms(s, i)
 	}
-	for i = 0; i < uint32(len(lightColl.SpotLights)); i++ {
+	for i := 0; i < len(lightColl.SpotLights); i++ {
 		lightColl.SpotLights[i].SetUniforms(s, i)
 	}
 }

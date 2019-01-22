@@ -50,18 +50,10 @@ func (oglm *WebGLMesh2D) attributePointer() {
 func (oglm *WebGLMesh2D) Load() {
 	oglm.numVertices = len(oglm.vertices)
 	oglm.numIndices = len(oglm.indices)
-	var verticesSize = oglm.numVertices * gohome.MESH2DVERTEXSIZE
-	var indicesSize = oglm.numIndices * 1
+	verticesSize := oglm.numVertices * gohome.MESH2DVERTEXSIZE
+	indicesSize := oglm.numIndices * 1
 
-	floatBuffer := make([]float32, verticesSize/4)
-	var index int = 0
-	for _, vert := range oglm.vertices {
-		floatBuffer[index+0] = vert[0]
-		floatBuffer[index+1] = vert[1]
-		floatBuffer[index+2] = vert[2]
-		floatBuffer[index+3] = vert[3]
-		index += 4
-	}
+	floatBuffer := gohome.Mesh2DVerticesToFloatArray(oglm.vertices)
 
 	oglm.vbo = gl.CreateBuffer()
 	oglm.ibo = gl.CreateBuffer()

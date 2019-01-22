@@ -9,14 +9,14 @@ import (
 )
 
 type valueTypeIndexOffset struct {
-	valueType uint32
+	valueType int
 	index     int
 	offset    int
 }
 
 type indexValueType struct {
 	index     int
-	valueType uint32
+	valueType int
 }
 
 type WebGLInstancedMesh3D struct {
@@ -40,7 +40,7 @@ type WebGLInstancedMesh3D struct {
 	Material *gohome.Material
 
 	tangentsCalculated    bool
-	customValues          []uint32
+	customValues          []int
 	valueTypeIndexOffsets []valueTypeIndexOffset
 	instancedSize         int
 	sizePerInstance       int
@@ -80,7 +80,7 @@ func (this *WebGLInstancedMesh3D) AddVertices(vertices []gohome.Mesh3DVertex, in
 	this.checkAABB()
 }
 
-func (this *WebGLInstancedMesh3D) CalculateTangentsRoutine(startIndex, maxIndex uint32, wg *sync.WaitGroup) {
+func (this *WebGLInstancedMesh3D) CalculateTangentsRoutine(startIndex, maxIndex int, wg *sync.WaitGroup) {
 	if wg != nil {
 		defer wg.Done()
 	}
@@ -95,9 +95,8 @@ func (this *WebGLInstancedMesh3D) CalculateTangentsRoutine(startIndex, maxIndex 
 	var tangent mgl32.Vec3
 	var normal mgl32.Vec3
 	var bitangent mgl32.Vec3
-	var i uint32
-	for i = startIndex; i < maxIndex && i < uint32(len(indices)); i += 3 {
-		if i > uint32(len(indices)-3) {
+	for i := startIndex; i < maxIndex && i < len(indices); i += 3 {
+		if i > len(indices)-3 {
 			break
 		}
 
@@ -129,8 +128,7 @@ func (this *WebGLInstancedMesh3D) CalculateTangentsRoutine(startIndex, maxIndex 
 		if normal.Cross(tangent).Dot(bitangent) < 0.0 {
 			tangent = tangent.Mul(-1.0)
 		}
-		var j uint32
-		for j = 0; j < 3; j++ {
+		for j := 0; j < 3; j++ {
 			(*vertices)[indices[i+j]][8] = tangent[0]
 			(*vertices)[indices[i+j]][9] = tangent[1]
 			(*vertices)[indices[i+j]][10] = tangent[2]
@@ -144,9 +142,9 @@ func (this *WebGLInstancedMesh3D) CalculateTangents() {
 	}
 	var wg sync.WaitGroup
 
-	deltaIndex := uint32(len(this.indices)) / NUM_GO_ROUTINES_TANGENTS_CALCULATING
+	deltaIndex := len(this.indices) / NUM_GO_ROUTINES_TANGENTS_CALCULATING
 	if deltaIndex == 0 {
-		deltaIndex = uint32(len(this.indices)) / 3
+		deltaIndex = len(this.indices) / 3
 	}
 	if deltaIndex > 3 {
 		deltaIndex -= deltaIndex % 3
@@ -154,11 +152,10 @@ func (this *WebGLInstancedMesh3D) CalculateTangents() {
 		deltaIndex = 3
 	}
 
-	var i uint32
-	for i = 0; i < NUM_GO_ROUTINES_TANGENTS_CALCULATING*2; i++ {
+	for i := 0; i < NUM_GO_ROUTINES_TANGENTS_CALCULATING*2; i++ {
 		wg.Add(1)
 		go this.CalculateTangentsRoutine(i*deltaIndex, i*deltaIndex+deltaIndex, &wg)
-		if i*deltaIndex+deltaIndex >= uint32(len(this.indices)) {
+		if i*deltaIndex+deltaIndex >= len(this.indices) {
 			break
 		}
 	}
@@ -168,7 +165,7 @@ func (this *WebGLInstancedMesh3D) CalculateTangents() {
 	this.tangentsCalculated = true
 }
 
-func getSize(valueType uint32) int {
+func getSize(valueType int) int {
 	switch valueType {
 	case gohome.VALUE_FLOAT:
 		return 4
@@ -198,7 +195,7 @@ func (this *WebGLInstancedMesh3D) getInstancedSize() int {
 	return sumSize
 }
 
-func vertexAttribPointerForValueType(valueType uint32, offset *int, index *int, sizeOfOneInstance int) {
+func vertexAttribPointerForValueType(valueType int, offset, index *int, sizeOfOneInstance int) {
 	switch valueType {
 	case gohome.VALUE_FLOAT:
 		gl.VertexAttribPointer(*index, 1, gl.FLOAT, false, sizeOfOneInstance, *offset)
@@ -249,7 +246,7 @@ func vertexAttribPointerForValueType(valueType uint32, offset *int, index *int, 
 	}
 }
 
-func (this *WebGLInstancedMesh3D) instancedVertexAttribPointer(verticesSize int, sizeOfOneInstance int) {
+func (this *WebGLInstancedMesh3D) instancedVertexAttribPointer(verticesSize, sizeOfOneInstance int) {
 	offset := verticesSize
 	var index = 4
 
@@ -258,7 +255,7 @@ func (this *WebGLInstancedMesh3D) instancedVertexAttribPointer(verticesSize int,
 	}
 }
 
-func enableValueType(valueType uint32, index *int) {
+func enableValueType(valueType int, index *int) {
 	switch valueType {
 	case gohome.VALUE_FLOAT:
 		gl.EnableVertexAttribArray(*index)
@@ -296,9 +293,8 @@ func enableValueType(valueType uint32, index *int) {
 }
 
 func (this *WebGLInstancedMesh3D) instancedEnableVertexAttribArray() {
-	var i uint32
 	var index = 4
-	for i = 0; i < uint32(len(this.customValues)); i++ {
+	for i := 0; i < len(this.customValues); i++ {
 		enableValueType(this.customValues[i], &index)
 	}
 }
@@ -309,9 +305,8 @@ func (this *WebGLInstancedMesh3D) deleteElements() {
 }
 
 func (this *WebGLInstancedMesh3D) calculateOffsets() {
-	var i uint32
-	var offset = this.numVertices * gohome.MESH3DVERTEXSIZE
-	for i = 0; i < uint32(len(this.valueTypeIndexOffsets)); i++ {
+	offset := this.numVertices * gohome.MESH3DVERTEXSIZE
+	for i := 0; i < len(this.valueTypeIndexOffsets); i++ {
 		this.valueTypeIndexOffsets[i].offset = offset
 		offset += getSize(this.valueTypeIndexOffsets[i].valueType)
 	}
@@ -353,8 +348,8 @@ func (this *WebGLInstancedMesh3D) Load() {
 		this.numInstances = 1
 	}
 
-	var verticesSize = this.numVertices * gohome.MESH3DVERTEXSIZE
-	var indicesSize = this.numIndices * 2
+	verticesSize := this.numVertices * gohome.MESH3DVERTEXSIZE
+	indicesSize := this.numIndices * 2
 	if this.canUseInstanced {
 		this.instancedSize = this.getInstancedSize() * this.numInstances
 	}
@@ -562,12 +557,12 @@ func (this *WebGLInstancedMesh3D) GetName() string {
 	return this.Name
 }
 
-func (this *WebGLInstancedMesh3D) GetNumVertices() uint32 {
-	return uint32(this.numVertices)
+func (this *WebGLInstancedMesh3D) GetNumVertices() int {
+	return this.numVertices
 }
 
-func (this *WebGLInstancedMesh3D) GetNumIndices() uint32 {
-	return uint32(this.numIndices)
+func (this *WebGLInstancedMesh3D) GetNumIndices() int {
+	return this.numIndices
 }
 
 func (this *WebGLInstancedMesh3D) recreateBuffer(numInstances int) {
@@ -650,26 +645,25 @@ func (this *WebGLInstancedMesh3D) changeNumInstancesUniforms(n int) {
 	}
 }
 
-func (this *WebGLInstancedMesh3D) SetNumInstances(n uint32) {
-	n1 := int(n)
-	if this.numInstances != n1 {
+func (this *WebGLInstancedMesh3D) SetNumInstances(n int) {
+	if this.numInstances != n {
 		if this.loaded {
 			if this.canUseInstanced {
-				this.recreateBuffer(n1)
+				this.recreateBuffer(n)
 			} else {
-				this.changeNumInstancesUniforms(n1)
+				this.changeNumInstancesUniforms(n)
 			}
 		}
-		this.numInstances = n1
-		this.numUsedInstances = n1
+		this.numInstances = n
+		this.numUsedInstances = n
 	}
 }
-func (this *WebGLInstancedMesh3D) GetNumInstances() uint32 {
-	return uint32(this.numInstances)
+func (this *WebGLInstancedMesh3D) GetNumInstances() int {
+	return this.numInstances
 }
 
-func (this *WebGLInstancedMesh3D) addValueTypeIndexOffset(valueType uint32) {
-	var maxIndex int = 0
+func (this *WebGLInstancedMesh3D) addValueTypeIndexOffset(valueType int) {
+	var maxIndex = 0
 	for i := 0; i < len(this.valueTypeIndexOffsets); i++ {
 		if this.valueTypeIndexOffsets[i].valueType == valueType {
 			if this.valueTypeIndexOffsets[i].index >= maxIndex {
@@ -684,8 +678,8 @@ func (this *WebGLInstancedMesh3D) addValueTypeIndexOffset(valueType uint32) {
 	})
 }
 
-func (this *WebGLInstancedMesh3D) addValueTypeIndexOffsetFront(valueType uint32) {
-	var maxIndex int = 0
+func (this *WebGLInstancedMesh3D) addValueTypeIndexOffsetFront(valueType int) {
+	var maxIndex = 0
 	for i := 0; i < len(this.valueTypeIndexOffsets); i++ {
 		if this.valueTypeIndexOffsets[i].valueType == valueType {
 			if this.valueTypeIndexOffsets[i].index >= maxIndex {
@@ -702,7 +696,7 @@ func (this *WebGLInstancedMesh3D) addValueTypeIndexOffsetFront(valueType uint32)
 	}, this.valueTypeIndexOffsets...)
 }
 
-func (this *WebGLInstancedMesh3D) AddValueFront(valueType uint32) {
+func (this *WebGLInstancedMesh3D) AddValueFront(valueType int) {
 	if this.canUseInstanced {
 		this.customValues = append(this.customValues, valueType)
 		this.addValueTypeIndexOffsetFront(valueType)
@@ -711,7 +705,7 @@ func (this *WebGLInstancedMesh3D) AddValueFront(valueType uint32) {
 	}
 }
 
-func (this *WebGLInstancedMesh3D) AddValue(valueType uint32) {
+func (this *WebGLInstancedMesh3D) AddValue(valueType int) {
 	if this.canUseInstanced {
 		this.customValues = append(this.customValues, valueType)
 		this.addValueTypeIndexOffset(valueType)
@@ -735,7 +729,7 @@ func (this *WebGLInstancedMesh3D) AddValue(valueType uint32) {
 	}
 }
 
-func (this *WebGLInstancedMesh3D) getOffset(valueType uint32, index int) int {
+func (this *WebGLInstancedMesh3D) getOffset(valueType, index int) int {
 	for i := 0; i < len(this.valueTypeIndexOffsets); i++ {
 		if this.valueTypeIndexOffsets[i].valueType == valueType && this.valueTypeIndexOffsets[i].index == index {
 			return this.valueTypeIndexOffsets[i].offset
@@ -745,7 +739,7 @@ func (this *WebGLInstancedMesh3D) getOffset(valueType uint32, index int) int {
 	return 0
 }
 
-func (this *WebGLInstancedMesh3D) SetF(index uint32, value []float32) {
+func (this *WebGLInstancedMesh3D) SetF(index int, value []float32) {
 	if this.canUseInstanced {
 		offset := this.getOffset(gohome.VALUE_FLOAT, int(index))
 		if offset == 0 {
@@ -769,7 +763,7 @@ func (this *WebGLInstancedMesh3D) SetF(index uint32, value []float32) {
 	}
 
 }
-func (this *WebGLInstancedMesh3D) SetV2(index uint32, value []mgl32.Vec2) {
+func (this *WebGLInstancedMesh3D) SetV2(index int, value []mgl32.Vec2) {
 	if this.canUseInstanced {
 		offset := this.getOffset(gohome.VALUE_VEC2, int(index))
 		if offset == 0 {
@@ -793,7 +787,7 @@ func (this *WebGLInstancedMesh3D) SetV2(index uint32, value []mgl32.Vec2) {
 	}
 }
 
-func (this *WebGLInstancedMesh3D) SetV3(index uint32, value []mgl32.Vec3) {
+func (this *WebGLInstancedMesh3D) SetV3(index int, value []mgl32.Vec3) {
 	if this.canUseInstanced {
 		offset := this.getOffset(gohome.VALUE_VEC3, int(index))
 		if offset == 0 {
@@ -816,7 +810,7 @@ func (this *WebGLInstancedMesh3D) SetV3(index uint32, value []mgl32.Vec3) {
 		this.vec3s[index] = value
 	}
 }
-func (this *WebGLInstancedMesh3D) SetV4(index uint32, value []mgl32.Vec4) {
+func (this *WebGLInstancedMesh3D) SetV4(index int, value []mgl32.Vec4) {
 	if this.canUseInstanced {
 		offset := this.getOffset(gohome.VALUE_VEC4, int(index))
 		if offset == 0 {
@@ -839,7 +833,7 @@ func (this *WebGLInstancedMesh3D) SetV4(index uint32, value []mgl32.Vec4) {
 		this.vec4s[index] = value
 	}
 }
-func (this *WebGLInstancedMesh3D) SetM2(index uint32, value []mgl32.Mat2) {
+func (this *WebGLInstancedMesh3D) SetM2(index int, value []mgl32.Mat2) {
 	if this.canUseInstanced {
 		offset := this.getOffset(gohome.VALUE_MAT2, int(index))
 		if offset == 0 {
@@ -862,7 +856,7 @@ func (this *WebGLInstancedMesh3D) SetM2(index uint32, value []mgl32.Mat2) {
 		this.mat2s[index] = value
 	}
 }
-func (this *WebGLInstancedMesh3D) SetM3(index uint32, value []mgl32.Mat3) {
+func (this *WebGLInstancedMesh3D) SetM3(index int, value []mgl32.Mat3) {
 	if this.canUseInstanced {
 		offset := this.getOffset(gohome.VALUE_MAT3, int(index))
 		if offset == 0 {
@@ -886,7 +880,7 @@ func (this *WebGLInstancedMesh3D) SetM3(index uint32, value []mgl32.Mat3) {
 	}
 
 }
-func (this *WebGLInstancedMesh3D) SetM4(index uint32, value []mgl32.Mat4) {
+func (this *WebGLInstancedMesh3D) SetM4(index int, value []mgl32.Mat4) {
 	if this.canUseInstanced {
 		offset := this.getOffset(gohome.VALUE_MAT4, int(index))
 		if offset == 0 {
@@ -920,7 +914,7 @@ func (this *WebGLInstancedMesh3D) GetIndices() []uint32 {
 	return inds
 }
 
-func (this *WebGLInstancedMesh3D) SetName(index uint32, value_type uint32, value string) {
+func (this *WebGLInstancedMesh3D) SetName(index, value_type int, value string) {
 	if this.canUseInstanced {
 		return
 	}
@@ -966,12 +960,12 @@ func (this *WebGLInstancedMesh3D) checkAABB() {
 	}
 }
 
-func (this *WebGLInstancedMesh3D) SetNumUsedInstances(n uint32) {
-	this.numUsedInstances = int(n)
+func (this *WebGLInstancedMesh3D) SetNumUsedInstances(n int) {
+	this.numUsedInstances = n
 }
 
-func (this *WebGLInstancedMesh3D) GetNumUsedInstances() uint32 {
-	return uint32(this.numUsedInstances)
+func (this *WebGLInstancedMesh3D) GetNumUsedInstances() int {
+	return this.numUsedInstances
 }
 
 func (this *WebGLInstancedMesh3D) LoadedToGPU() bool {
@@ -986,7 +980,7 @@ func (this *WebGLRenderer) InstancedMesh3DFromLoadedMesh3D(mesh gohome.Mesh3D) g
 
 	ioglmesh.numInstances = 0
 
-	var verticesSize = ioglmesh.numVertices * gohome.MESH3DVERTEXSIZE
+	verticesSize := ioglmesh.numVertices * gohome.MESH3DVERTEXSIZE
 	if ioglmesh.canUseInstanced {
 		ioglmesh.instancedSize = 0
 	}
