@@ -9,14 +9,14 @@ import (
 )
 
 const (
-	NUM_GO_ROUTINES_TANGENTS_CALCULATING uint32 = 10
+	NUM_GO_ROUTINES_TANGENTS_CALCULATING = 10
 )
 
 type OpenGLES3Mesh3D struct {
 	vertices    []gohome.Mesh3DVertex
 	indices     []uint32
-	numVertices uint32
-	numIndices  uint32
+	numVertices int
+	numIndices  int
 
 	vao    uint32
 	buffer uint32
@@ -31,7 +31,7 @@ type OpenGLES3Mesh3D struct {
 	aabb gohome.AxisAlignedBoundingBox
 }
 
-func (oglm *OpenGLES3Mesh3D) CalculateTangentsRoutine(startIndex, maxIndex uint32, wg *sync.WaitGroup) {
+func (oglm *OpenGLES3Mesh3D) CalculateTangentsRoutine(startIndex, maxIndex int, wg *sync.WaitGroup) {
 	if wg != nil {
 		defer wg.Done()
 	}
@@ -46,9 +46,8 @@ func (oglm *OpenGLES3Mesh3D) CalculateTangentsRoutine(startIndex, maxIndex uint3
 	var tangent mgl32.Vec3
 	var normal mgl32.Vec3
 	var bitangent mgl32.Vec3
-	var i uint32
-	for i = startIndex; i < maxIndex && i < uint32(len(indices)); i += 3 {
-		if i > uint32(len(indices)-3) {
+	for i := startIndex; i < maxIndex && i < len(indices); i += 3 {
+		if i > len(indices)-3 {
 			break
 		}
 
@@ -80,8 +79,7 @@ func (oglm *OpenGLES3Mesh3D) CalculateTangentsRoutine(startIndex, maxIndex uint3
 		if normal.Cross(tangent).Dot(bitangent) < 0.0 {
 			tangent = tangent.Mul(-1.0)
 		}
-		var j uint32
-		for j = 0; j < 3; j++ {
+		for j := 0; j < 3; j++ {
 			(*vertices)[indices[i+j]][8] = tangent[0]
 			(*vertices)[indices[i+j]][9] = tangent[1]
 			(*vertices)[indices[i+j]][10] = tangent[2]
@@ -95,9 +93,9 @@ func (oglm *OpenGLES3Mesh3D) CalculateTangents() {
 	}
 	var wg sync.WaitGroup
 
-	deltaIndex := uint32(len(oglm.indices)) / NUM_GO_ROUTINES_TANGENTS_CALCULATING
+	deltaIndex := len(oglm.indices) / NUM_GO_ROUTINES_TANGENTS_CALCULATING
 	if deltaIndex == 0 {
-		deltaIndex = uint32(len(oglm.indices)) / 3
+		deltaIndex = len(oglm.indices) / 3
 	}
 	if deltaIndex > 3 {
 		deltaIndex -= deltaIndex % 3
@@ -106,11 +104,10 @@ func (oglm *OpenGLES3Mesh3D) CalculateTangents() {
 	}
 
 	oglm.hasUV = true
-	var i uint32
-	for i = 0; i < NUM_GO_ROUTINES_TANGENTS_CALCULATING*2; i++ {
+	for i := 0; i < NUM_GO_ROUTINES_TANGENTS_CALCULATING*2; i++ {
 		wg.Add(1)
 		go oglm.CalculateTangentsRoutine(i*deltaIndex, i*deltaIndex+deltaIndex, &wg)
-		if i*deltaIndex+deltaIndex >= uint32(len(oglm.indices)) {
+		if i*deltaIndex+deltaIndex >= len(oglm.indices) {
 			break
 		}
 	}
@@ -166,10 +163,10 @@ func (oglm *OpenGLES3Mesh3D) deleteElements() {
 
 func (oglm *OpenGLES3Mesh3D) attributePointer() {
 	gl.BindBuffer(gl.ARRAY_BUFFER, oglm.buffer)
-	gl.VertexAttribPointer(0, 3, gl.FLOAT, gl.FALSE, int32(gohome.MESH3DVERTEXSIZE), gl.PtrOffset(0))
-	gl.VertexAttribPointer(1, 3, gl.FLOAT, gl.FALSE, int32(gohome.MESH3DVERTEXSIZE), gl.PtrOffset(3*4))
-	gl.VertexAttribPointer(2, 2, gl.FLOAT, gl.FALSE, int32(gohome.MESH3DVERTEXSIZE), gl.PtrOffset(3*4+3*4))
-	gl.VertexAttribPointer(3, 3, gl.FLOAT, gl.FALSE, int32(gohome.MESH3DVERTEXSIZE), gl.PtrOffset(3*4+3*4+2*4))
+	gl.VertexAttribPointer(0, 3, gl.FLOAT, gl.FALSE, gohome.MESH3DVERTEXSIZE, gl.PtrOffset(0))
+	gl.VertexAttribPointer(1, 3, gl.FLOAT, gl.FALSE, gohome.MESH3DVERTEXSIZE, gl.PtrOffset(3*4))
+	gl.VertexAttribPointer(2, 2, gl.FLOAT, gl.FALSE, gohome.MESH3DVERTEXSIZE, gl.PtrOffset(3*4+3*4))
+	gl.VertexAttribPointer(3, 3, gl.FLOAT, gl.FALSE, gohome.MESH3DVERTEXSIZE, gl.PtrOffset(3*4+3*4+2*4))
 
 	gl.EnableVertexAttribArray(0)
 	gl.EnableVertexAttribArray(1)
@@ -183,16 +180,16 @@ func (oglm *OpenGLES3Mesh3D) Load() {
 	if oglm.loaded {
 		return
 	}
-	oglm.numVertices = uint32(len(oglm.vertices))
-	oglm.numIndices = uint32(len(oglm.indices))
+	oglm.numVertices = len(oglm.vertices)
+	oglm.numIndices = len(oglm.indices)
 
 	if oglm.numVertices == 0 || oglm.numIndices == 0 {
 		gohome.ErrorMgr.Message(gohome.ERROR_LEVEL_ERROR, "Mesh3D", oglm.Name, "No vertices or indices have been added!")
 		return
 	}
 
-	var verticesSize uint32 = oglm.numVertices * gohome.MESH3DVERTEXSIZE
-	var indicesSize uint32 = oglm.numIndices * gohome.INDEXSIZE
+	verticesSize := oglm.numVertices * gohome.MESH3DVERTEXSIZE
+	indicesSize := oglm.numIndices * gohome.INDEXSIZE
 
 	oglm.CalculateTangents()
 
@@ -240,12 +237,11 @@ func (oglm *OpenGLES3Mesh3D) Render() {
 }
 
 func (oglm *OpenGLES3Mesh3D) Terminate() {
-	var vbuf [1]uint32
-	vbuf[0] = oglm.vao
-	defer gl.DeleteVertexArrays(1, vbuf[:])
 	var buf [1]uint32
+	buf[0] = oglm.vao
+	gl.DeleteVertexArrays(1, buf[:])
 	buf[0] = oglm.buffer
-	defer gl.DeleteBuffers(1, buf[:])
+	gl.DeleteBuffers(1, buf[:])
 }
 
 func (oglm *OpenGLES3Mesh3D) SetMaterial(mat *gohome.Material) {
@@ -259,10 +255,10 @@ func (oglm *OpenGLES3Mesh3D) GetMaterial() *gohome.Material {
 	return oglm.Material
 }
 
-func (oglm *OpenGLES3Mesh3D) GetNumVertices() uint32 {
+func (oglm *OpenGLES3Mesh3D) GetNumVertices() int {
 	return oglm.numVertices
 }
-func (oglm *OpenGLES3Mesh3D) GetNumIndices() uint32 {
+func (oglm *OpenGLES3Mesh3D) GetNumIndices() int {
 	return oglm.numIndices
 }
 

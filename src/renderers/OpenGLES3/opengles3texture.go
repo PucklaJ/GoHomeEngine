@@ -84,11 +84,6 @@ func (ogltex *OpenGLES3Texture) Load(data []byte, width, height int, shadowMap b
 	gl.TexParameterf(ogltex.bindingPoint(), gl.TEXTURE_MAG_FILTER, gl.LINEAR)
 	gl.TexParameteri(ogltex.bindingPoint(), gl.TEXTURE_BASE_LEVEL, 0)
 	gl.TexParameteri(ogltex.bindingPoint(), gl.TEXTURE_MAX_LEVEL, 10)
-	if oglRenderer, ok := gohome.Render.(*OpenGLES3Renderer); ok {
-		if oglRenderer.HasExtension("GL_EXT_texture_filter_anisotropic") {
-			gl.TexParameterf(ogltex.bindingPoint(), GL_TEXTURE_MAX_ANISOTROPY, 4.0)
-		}
-	}
 
 	var ptr unsafe.Pointer
 	if data == nil {
@@ -109,16 +104,14 @@ func (ogltex *OpenGLES3Texture) Load(data []byte, width, height int, shadowMap b
 	gl.BindTexture(ogltex.bindingPoint(), 0)
 }
 
-func loadImageData(img_data *[]byte, img image.Image, start_width, end_width, max_width, max_height uint32, wg *sync.WaitGroup) {
+func loadImageData(img_data *[]byte, img image.Image, start_width, end_width, max_width, max_height int, wg *sync.WaitGroup) {
 	if wg != nil {
 		defer wg.Done()
 	}
-	var y uint32
-	var x uint32
 	var r, g, b, a uint32
 	var color color.Color
-	for x = start_width; x < max_width && x < end_width; x++ {
-		for y = 0; y < max_height; y++ {
+	for x := start_width; x < max_width && x < end_width; x++ {
+		for y := 0; y < max_height; y++ {
 			color = img.At(int(x), int(y))
 			r, g, b, a = color.RGBA()
 			(*img_data)[(x+y*max_width)*4+0] = byte(float64(r) / float64(0xffff) * float64(255.0))
@@ -141,7 +134,7 @@ func (ogltex *OpenGLES3Texture) LoadFromImage(img image.Image) {
 	deltaWidth := float32(width) / float32(gohome.NUM_GO_ROUTINES_TEXTURE_LOADING)
 	wg1.Add(int(gohome.NUM_GO_ROUTINES_TEXTURE_LOADING + 1))
 	for i = 0; i <= float32(gohome.NUM_GO_ROUTINES_TEXTURE_LOADING); i++ {
-		go loadImageData(&img_data, img, uint32(i*deltaWidth), uint32((i+1)*deltaWidth), uint32(width), uint32(height), &wg1)
+		go loadImageData(&img_data, img, int(i*deltaWidth), int((i+1)*deltaWidth), width, height, &wg1)
 	}
 	wg1.Wait()
 
@@ -181,7 +174,7 @@ func (ogltex *OpenGLES3Texture) Terminate() {
 	gl.DeleteTextures(1, tex[:])
 }
 
-func (ogltex *OpenGLES3Texture) SetFiltering(filtering uint32) {
+func (ogltex *OpenGLES3Texture) SetFiltering(filtering int) {
 	gl.BindTexture(ogltex.bindingPoint(), ogltex.oglName)
 	var filter int32
 	if filtering == gohome.FILTERING_NEAREST {
@@ -197,7 +190,7 @@ func (ogltex *OpenGLES3Texture) SetFiltering(filtering uint32) {
 	gl.BindTexture(ogltex.bindingPoint(), 0)
 }
 
-func (ogltex *OpenGLES3Texture) SetWrapping(wrapping uint32) {
+func (ogltex *OpenGLES3Texture) SetWrapping(wrapping int) {
 	gl.BindTexture(ogltex.bindingPoint(), ogltex.oglName)
 	var wrap int32
 	if wrapping == gohome.WRAPPING_REPEAT {

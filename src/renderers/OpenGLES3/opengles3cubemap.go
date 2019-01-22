@@ -10,8 +10,8 @@ import (
 type OpenGLES3CubeMap struct {
 	name      string
 	oglName   uint32
-	width     uint32
-	height    uint32
+	width     int
+	height    int
 	shadowMap bool
 }
 
@@ -27,8 +27,8 @@ func CreateOpenGLES3CubeMap(name string) *OpenGLES3CubeMap {
 }
 
 func (this *OpenGLES3CubeMap) Load(data []byte, width, height int, shadowMap bool) {
-	this.width = uint32(width)
-	this.height = uint32(height)
+	this.width = width
+	this.height = height
 	this.shadowMap = shadowMap
 
 	var tex [1]uint32
@@ -75,7 +75,7 @@ func (this *OpenGLES3CubeMap) Terminate() {
 	tex[0] = this.oglName
 	gl.DeleteTextures(1, tex[:])
 }
-func (this *OpenGLES3CubeMap) SetFiltering(filtering uint32) {
+func (this *OpenGLES3CubeMap) SetFiltering(filtering int) {
 	gl.BindTexture(gl.TEXTURE_CUBE_MAP, this.oglName)
 	var filter int32
 	if filtering == gohome.FILTERING_NEAREST {
@@ -90,7 +90,7 @@ func (this *OpenGLES3CubeMap) SetFiltering(filtering uint32) {
 
 	gl.BindTexture(gl.TEXTURE_CUBE_MAP, 0)
 }
-func (this *OpenGLES3CubeMap) SetWrapping(wrapping uint32) {
+func (this *OpenGLES3CubeMap) SetWrapping(wrapping int) {
 	gl.BindTexture(gl.TEXTURE_CUBE_MAP, this.oglName)
 	var wrap int32
 	if wrapping == gohome.WRAPPING_REPEAT {

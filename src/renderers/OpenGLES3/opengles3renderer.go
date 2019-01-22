@@ -9,11 +9,6 @@ import (
 	"github.com/PucklaMotzer09/mathgl/mgl32"
 )
 
-const (
-	GL_MAX_TEXTURE_MAX_ANISOTROPY uint32 = 0x84FF
-	GL_TEXTURE_MAX_ANISOTROPY     uint32 = 0x84FE
-)
-
 type OpenGLES3Renderer struct {
 	BackBufferVao      uint32
 	CurrentTextureUnit uint32
@@ -21,7 +16,7 @@ type OpenGLES3Renderer struct {
 	availableFunctions map[string]bool
 	backBufferMesh     *OpenGLES3Mesh2D
 	backgroundColor    color.Color
-	version            uint8
+	version            int
 }
 
 func (this *OpenGLES3Renderer) createBackBufferMesh() {
@@ -144,7 +139,7 @@ func (*OpenGLES3Renderer) CreateMesh3D(name string) gohome.Mesh3D {
 	return CreateOpenGLES3Mesh3D(name)
 }
 
-func (*OpenGLES3Renderer) CreateRenderTexture(name string, width, height, textures uint32, depthBuffer, multiSampled, shadowMap, cubeMap bool) gohome.RenderTexture {
+func (*OpenGLES3Renderer) CreateRenderTexture(name string, width, height, textures int, depthBuffer, multiSampled, shadowMap, cubeMap bool) gohome.RenderTexture {
 	return CreateOpenGLES3RenderTexture(name, width, height, textures, depthBuffer, shadowMap, cubeMap)
 }
 
@@ -250,7 +245,7 @@ func (this *OpenGLES3Renderer) GetViewport() gohome.Viewport {
 	}
 }
 
-func (this *OpenGLES3Renderer) SetNativeResolution(width, height uint32) {
+func (this *OpenGLES3Renderer) SetNativeResolution(width, height int) {
 	previous := gohome.Viewport{
 		X:      0,
 		Y:      0,
@@ -278,7 +273,7 @@ func (this *OpenGLES3Renderer) SetNativeResolution(width, height uint32) {
 func (this *OpenGLES3Renderer) GetNativeResolution() mgl32.Vec2 {
 	return [2]float32{float32(gohome.RenderMgr.BackBufferMS.GetWidth()), float32(gohome.RenderMgr.BackBufferMS.GetHeight())}
 }
-func (this *OpenGLES3Renderer) OnResize(newWidth, newHeight uint32) {
+func (this *OpenGLES3Renderer) OnResize(newWidth, newHeight int) {
 	gl.Viewport(0, 0, int32(newWidth), int32(newHeight))
 }
 
@@ -297,10 +292,10 @@ func (this *OpenGLES3Renderer) SetBacckFaceCulling(b bool) {
 	}
 }
 
-func (this *OpenGLES3Renderer) GetMaxTextures() int32 {
+func (this *OpenGLES3Renderer) GetMaxTextures() int {
 	var data [1]int32
 	gl.GetIntegerv(gl.MAX_TEXTURE_IMAGE_UNITS, data[:])
-	return data[0]
+	return int(data[0])
 }
 
 func (this *OpenGLES3Renderer) NextTextureUnit() uint32 {
@@ -313,14 +308,14 @@ func (this *OpenGLES3Renderer) DecrementTextureUnit(amount uint32) {
 	this.CurrentTextureUnit -= amount
 }
 
-func (this *OpenGLES3Renderer) GetVersioni() uint8 {
+func (this *OpenGLES3Renderer) GetVersioni() int {
 	var major, minor, combined [1]int32
 	gl.GetIntegerv(gl.MAJOR_VERSION, major[:])
 	gl.GetIntegerv(gl.MINOR_VERSION, minor[:])
 
 	combined[0] = major[0]*10 + minor[0]
 
-	return uint8(combined[0])
+	return int(combined[0])
 }
 
 func (this *OpenGLES3Renderer) gatherAvailableFunctions() {
