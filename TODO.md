@@ -38,6 +38,9 @@
 + Add WebGL examples to example READMEs
 + Fix TextRendering issue
     - Flickering
++ Add Layers
+    - BackBuffer2D and 3D are Layers
++ Add Concurrency to PhysicsDebugRenderer
 
 ## 2D
 
