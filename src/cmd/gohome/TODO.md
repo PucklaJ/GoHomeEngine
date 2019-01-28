@@ -4,3 +4,4 @@
 + Add AudioManager to main if Framework and AudioManager is seperate
 + Add export --all
 + Add --default flag
++ Check if VARS are set in gradle.properties
