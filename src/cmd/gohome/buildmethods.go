@@ -323,45 +323,11 @@ func doCopy(path string) {
 	}
 }
 
-func setGradleProperties() {
-	slash := GetSlash()
-	home := os.Getenv("HOME") + slash
-	var str string
-	file, err := os.Open(home + ".gradle" + slash + "gradle.properties")
-	if err == nil {
-		contents, _ := ioutil.ReadAll(file)
-		cstr := string(contents)
-		values := strings.Split(cstr, "\n")
-		for _, v := range values {
-			if !strings.Contains(v, "=") {
-				continue
-			}
-			keyvalues := strings.Split(v, "=")
-			switch keyvalues[0] {
-			case "ANDROID_KEYSTORE", "ANDROID_STOREPWD", "ANDROID_KEYALIAS", "ANDROID_KEYPWD":
-			default:
-				str += keyvalues[0] + "=" + keyvalues[1] + "\n"
-			}
-		}
-	}
-
-	str += "ANDROID_KEYSTORE=" + VAR_ANDROID_KEYSTORE + "\n"
-	str += "ANDROID_STOREPWD=" + VAR_ANDROID_STOREPWD + "\n"
-	str += "ANDROID_KEYALIAS=" + VAR_ANDROID_KEYALIAS + "\n"
-	str += "ANDROID_KEYPWD=" + VAR_ANDROID_KEYPWD + "\n"
-
-	file, err = os.Create(home + ".gradle" + slash + "gradle.properties")
-	if err != nil {
-		fmt.Println("Failed to create gradle.properties:", err)
-		os.Exit(1)
-	}
-	file.WriteString(str)
-	file.Close()
-}
-
 func copyAssets() {
 	slash := GetSlash()
-	ExecCommand("cp", "-r", "assets", "android"+slash+"src"+slash+"main"+slash+"assets"+slash+"assets")
+	path := "android" + slash + "src" + slash + "main" + slash + "assets"
+	ExecCommand("mkdir", "-p", path)
+	ExecCommand("cp", "-r", "assets", path+slash+"assets")
 }
 
 func (*AndroidBuild) Generate() {
@@ -398,8 +364,13 @@ func (*AndroidBuild) Generate() {
 		doCopy(androidpath + "gradlew.bat")
 		doCopy(androidpath + "settings.gradle")
 
-		appname := GetCustomValue("APPNAME")
+		appname, ok := CustomValueExists("TITLE")
+		if !ok {
+			appname = GetCustomValue("APPNAME")
+		}
 		AssertValue(&VAR_ANDROID_API, "", "APILEVEL")
+
+		setExistingGradleProperties()
 		AssertValue(&VAR_ANDROID_KEYSTORE, "", "KEYSTORE")
 		AssertValue(&VAR_ANDROID_KEYALIAS, "", "KEYALIAS")
 		AssertValue(&VAR_ANDROID_KEYPWD, "", "KEYPWD")

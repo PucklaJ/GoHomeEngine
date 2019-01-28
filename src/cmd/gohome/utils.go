@@ -130,6 +130,11 @@ func GetCustomValueb(name string, defaultValue bool) bool {
 	return i1
 }
 
+func CustomValueExists(name string) (string, bool) {
+	v, ok := CustomValues[name]
+	return v, ok
+}
+
 func AssertValue(val *string, assertstr, text string) {
 	if *val == assertstr {
 		fmt.Print(text + ": ")
