@@ -92,18 +92,21 @@ func ReplaceStringinFile(fn, old, new string) error {
 	return nil
 }
 
-func GetCustomValue(name string) string {
+func GetCustomValue(name string, default_val bool, default_str string) string {
 	str, ok := CustomValues[name]
-	if !ok {
+	if !ok && !default_val {
 		fmt.Print(name + ": ")
 		str = ConsoleRead()
+		CustomValues[name] = str
+	} else {
+		str = default_str
 		CustomValues[name] = str
 	}
 	return str
 }
 
-func GetCustomValuei(name string, defaultValue int) int {
-	str := GetCustomValue(name)
+func GetCustomValuei(name string, default_val bool, defaultValue int) int {
+	str := GetCustomValue(name, default_val, strconv.Itoa(defaultValue))
 	var i1 int
 	i, err := strconv.ParseInt(str, 10, 32)
 	if err != nil {
@@ -116,8 +119,8 @@ func GetCustomValuei(name string, defaultValue int) int {
 	return i1
 }
 
-func GetCustomValueb(name string, defaultValue bool) bool {
-	str := GetCustomValue(name)
+func GetCustomValueb(name string, default_val bool, defaultValue bool) bool {
+	str := GetCustomValue(name, default_val, strconv.FormatBool(defaultValue))
 	var i1 bool
 	i, err := strconv.ParseBool(str)
 	if err != nil {
@@ -189,4 +192,14 @@ func OpenBrowser(url string) {
 	case "darwin":
 		exec.Command("open", url).Start()
 	}
+}
+
+func FlagSet(flag string) bool {
+	for _, f := range flags {
+		if f == flag {
+			return true
+		}
+	}
+
+	return false
 }

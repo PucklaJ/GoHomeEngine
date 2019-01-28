@@ -138,13 +138,17 @@ func (this *DesktopBuild) Generate() {
 		}
 	}
 
-	GetCustomValue("TITLE")
-	GetCustomValuei("WIDTH", 1280)
-	GetCustomValuei("HEIGHT", 720)
+	title, ok := CustomValueExists("APPNAME")
+	if ok {
+		CustomValues["TITLE"] = title
+	}
+	GetCustomValue("TITLE", !FlagSet("no-default"), "GoHomeGame")
+	GetCustomValuei("WIDTH", !FlagSet("no-default"), 1280)
+	GetCustomValuei("HEIGHT", !FlagSet("no-default"), 720)
 
 	if VAR_FRAME == "GTK" {
-		this.gtkwholewindow = GetCustomValueb("USEWHOLEWINDOWASGLAREA", true)
-		this.gtkmenubar = GetCustomValueb("MENUBARFIX", true)
+		this.gtkwholewindow = GetCustomValueb("USEWHOLEWINDOWASGLAREA", !FlagSet("no-default"), true)
+		this.gtkmenubar = GetCustomValueb("MENUBARFIX", !FlagSet("no-default"), true)
 	}
 
 	AssertValue(&VAR_START, "", "StartScene")
@@ -244,14 +248,8 @@ func printEnv(forandroid bool) {
 	for k, v := range CustomValues {
 		fmt.Println(k + "=" + v)
 	}
-	var all = false
-	for _, arg := range os.Args {
-		if arg == "-a" || arg == "--all" {
-			all = true
-		}
-	}
 
-	if all {
+	if FlagSet("all") {
 		ExecCommand("go", "env")
 	}
 }
@@ -366,7 +364,7 @@ func (*AndroidBuild) Generate() {
 
 		appname, ok := CustomValueExists("TITLE")
 		if !ok {
-			appname = GetCustomValue("APPNAME")
+			appname = GetCustomValue("APPNAME", !FlagSet("no-default"), "GoHomeApp")
 		}
 		AssertValue(&VAR_ANDROID_API, "", "APILEVEL")
 
@@ -389,7 +387,7 @@ func (*AndroidBuild) Generate() {
 
 	copyAssets()
 
-	CustomValues["TITLE"] = GetCustomValue("APPNAME")
+	CustomValues["TITLE"] = GetCustomValue("APPNAME", !FlagSet("no-default"), "GoHomeApp")
 	if _, ok := CustomValues["WIDTH"]; !ok {
 		CustomValues["WIDTH"] = "1280"
 	}
@@ -483,9 +481,9 @@ func (this *JSBuild) Generate() {
 	}
 
 	AssertValue(&VAR_START, "", "StartScene")
-	GetCustomValue("TITLE")
-	GetCustomValuei("WIDTH", 640)
-	GetCustomValuei("HEIGHT", 480)
+	GetCustomValue("TITLE", !FlagSet("no-default"), "GoHomeGame")
+	GetCustomValuei("WIDTH", !FlagSet("no-default"), 640)
+	GetCustomValuei("HEIGHT", !FlagSet("no-default"), 480)
 
 	str := generateMain(false)
 	file, err := os.Create("main.go")

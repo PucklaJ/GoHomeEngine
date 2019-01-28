@@ -23,6 +23,19 @@ func isConfigArg(arg string) bool {
 	return arg == "DEBUG" || arg == "RELEASE"
 }
 
+func isFlag(arg string) bool {
+	return arg == "--all" || arg == "-a" || arg == "--no-default" || arg == "-n"
+}
+
+func processFlagArg(arg string) {
+	switch arg {
+	case "-a", "--all":
+		flags = append(flags, "all")
+	case "-n", "--no-default":
+		flags = append(flags, "no-default")
+	}
+}
+
 func processValueArg(arg string) (b bool) {
 	b = true
 	varvalue := strings.Split(arg, "=")
@@ -289,4 +302,16 @@ const HELP_MSG = `---- gohome build tool ----
 
 func printHelpMessage() {
 	fmt.Println(HELP_MSG)
+}
+
+func exportBuild(build Build) (success bool) {
+	if !build.IsGenerated() || valuesChanged() {
+		build.Generate()
+	}
+	success = build.Build()
+	if success {
+		build.Export()
+	}
+
+	return
 }

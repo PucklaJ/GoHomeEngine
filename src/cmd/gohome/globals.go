@@ -21,6 +21,7 @@ var (
 	Env []string
 
 	CustomValues map[string]string
+	flags        []string
 
 	old_OS               string = ""
 	old_ARCH             string = ""

@@ -42,7 +42,8 @@ func HandleArguments() {
 			VAR_CONFIG = arg
 			continue
 		}
-		if arg == "-a" || arg == "--all" {
+		if isFlag(arg) {
+			processFlagArg(arg)
 			continue
 		}
 
@@ -90,7 +91,17 @@ func ExecuteCommands() {
 	case "generate":
 		build.Generate()
 	case "clean":
-		build.Clean()
+		if !FlagSet("all") {
+			build.Clean()
+		} else {
+			var db DesktopBuild
+			var ab AndroidBuild
+			var jb JSBuild
+
+			db.Clean()
+			ab.Clean()
+			jb.Clean()
+		}
 	case "env":
 		build.Env()
 	case "reset":
@@ -98,12 +109,25 @@ func ExecuteCommands() {
 		ExecCommand("rm", ".gohome.config")
 		writeConfig = false
 	case "export":
-		if !build.IsGenerated() || valuesChanged() {
-			build.Generate()
-		}
-		success = build.Build()
-		if success {
-			build.Export()
+		if !FlagSet("all") {
+			exportBuild(build)
+		} else {
+			var db DesktopBuild
+			var ab AndroidBuild
+			var jb JSBuild
+
+			if success = exportBuild(&db); !success {
+				fmt.Println("DesktopBuild export failed")
+				os.Exit(1)
+			}
+			if success = !exportBuild(&ab); !success {
+				fmt.Println("AndroidBuild export failed")
+				os.Exit(1)
+			}
+			if success = exportBuild(&jb); !success {
+				fmt.Println("JSBuild failed")
+				os.Exit(1)
+			}
 		}
 	case "help":
 		printHelpMessage()
