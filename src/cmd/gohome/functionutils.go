@@ -287,16 +287,19 @@ const HELP_MSG = `---- gohome build tool ----
         * In there the framework, renderer and start scene gets set
  - gohome clean
     - executes go clean -r --cache and deletes all build files
+    - -a|--all: Cleans all files of all operating systems
  - gohome env
     - prints all set values for OS,ARCH etc.
     - if --all or -a is provided go env is executed additionally
  - gohome set OS=... FRAME= ... etc.
     - sets all the paramters
+    - -n|--no-default: Doesn't use the default parameters
  - gohome reset
     - resets all the parameters and deletes the .gohome.config file
  - gohome export
     - builds the game and packages all files into an export folder so that it can
     - be published
+    - -a|--all: Exports for all platforms
 
 ---------------------------`
 
