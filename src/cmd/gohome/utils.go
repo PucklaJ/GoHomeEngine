@@ -94,14 +94,17 @@ func ReplaceStringinFile(fn, old, new string) error {
 
 func GetCustomValue(name string, default_val bool, default_str string) string {
 	str, ok := CustomValues[name]
-	if !ok && !default_val {
-		fmt.Print(name + ": ")
-		str = ConsoleRead()
-		CustomValues[name] = str
-	} else {
-		str = default_str
-		CustomValues[name] = str
+	if !ok {
+		if !default_val {
+			fmt.Print(name + ": ")
+			str = ConsoleRead()
+			CustomValues[name] = str
+		} else {
+			str = default_str
+			CustomValues[name] = str
+		}
 	}
+
 	return str
 }
 
