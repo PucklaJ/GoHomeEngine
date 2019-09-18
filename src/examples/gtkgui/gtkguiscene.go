@@ -46,7 +46,7 @@ func (this *GTKGUIScene) InitGUI() {
 	})
 	gtk.GetGLArea().ToWidget().SignalConnect("size-allocate", func(widget gtk.Widget) {
 		w, h := widget.GetSize()
-		gohome.Render.SetNativeResolution(w, h)
+		gohome.Render.SetNativeResolution(int(w), int(h))
 	})
 	gtk.GetWindow().ToContainer().Add(box.ToWidget())
 
