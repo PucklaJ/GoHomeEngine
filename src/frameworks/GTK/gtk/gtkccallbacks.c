@@ -56,8 +56,6 @@ gboolean gtkgo_gl_area_key_release_c(GtkWidget* widget, GdkEvent* event,gpointer
 
 gboolean gtkgo_gl_area_button_press_c(GtkWidget *widget, GdkEvent *event, gpointer user_data)
 {
-	if(!mouseInGLarea)
-		return TRUE;
 	gtkgo_gl_area_button_press(widget,(GdkEventButton*)event);
 	return TRUE;
 }
@@ -70,33 +68,12 @@ gboolean gtkgo_gl_area_button_release_c(GtkWidget *widget, GdkEvent *event, gpoi
 
 gboolean gtkgo_gl_area_motion_notify_c(GtkWidget *widget, GdkEvent *event, gpointer user_data)
 {
-	GdkEventMotion* motion = (GdkEventMotion*)event;
-	gint posx, posy, wx, wy, mposx, mposy;
-	GtkAllocation allocation;
-	gtk_window_get_position(Window,&posx,&posy);
-	gtk_widget_translate_coordinates(GTK_WIDGET(GLarea), GTK_WIDGET(Window), 0, 0, &wx, &wy);
-	gtk_widget_get_allocated_size(GTK_WIDGET(GLarea),&allocation,NULL);
-	mposx = (gint)motion->x_root-posx-wx;
-	mposy = (gint)motion->y_root-posy-wy;
-	motion->x = (gdouble)mposx;
-	motion->y = (gdouble)mposy;
-	if(mposx > 0 && mposx < allocation.width+wx &&
-	   mposy > 0 && mposy < allocation.height+wy)
-	{
-		mouseInGLarea = TRUE;
-		// printf("Coordinates: %d %d; Pos: %d %d; Size: %d %d; Motion: %d %d\n",wx,wy,mposx,mposy,allocation.width,allocation.height,(gint)motion->x,(gint)motion->y);
-	}
-	else
-		mouseInGLarea = FALSE;
-
 	gtkgo_gl_area_motion_notify(widget,(GdkEventMotion*)event);
 	return TRUE;
 }
 
 gboolean gtkgo_gl_area_scroll_c(GtkWidget *widget, GdkEvent *event, gpointer user_data)
 {
-	if(!mouseInGLarea)
-		return TRUE;
 	gtkgo_gl_area_scroll(widget,(GdkEventScroll*)event,event);
 	return TRUE;
 }

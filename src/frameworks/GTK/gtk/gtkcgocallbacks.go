@@ -226,6 +226,7 @@ func gtkgo_gl_area_button_press(widget *C.GtkWidget, event *C.GdkEventButton) {
 
 	if gohomeKey == gohome.MouseButtonLeft {
 		gohome.InputMgr.Touch(0)
+		GetGLArea().ToWidget().GrabFocus()
 	}
 }
 

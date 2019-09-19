@@ -2,9 +2,10 @@ package framework
 
 import (
 	"errors"
-	"github.com/PucklaMotzer09/GoHomeEngine/src/loaders/defaultlevel"
 	"os"
 	"time"
+
+	"github.com/PucklaMotzer09/GoHomeEngine/src/loaders/defaultlevel"
 
 	"github.com/PucklaMotzer09/GoHomeEngine/src/frameworks/GTK/gtk"
 	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
@@ -33,6 +34,7 @@ func (this *GTKFramework) InitStuff(ml *gohome.MainLoop) {
 func (this *GTKFramework) DefaultWindowCreation(ml *gohome.MainLoop) {
 	ml.InitWindow()
 	gtk.GetWindow().ToContainer().Add(gtk.GetGLArea().ToWidget())
+	gtk.GetGLArea().ToWidget().GrabFocus()
 }
 
 func (this *GTKFramework) AfterWindowCreation(ml *gohome.MainLoop) {
