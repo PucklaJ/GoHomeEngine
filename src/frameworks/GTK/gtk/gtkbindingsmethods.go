@@ -221,3 +221,11 @@ func (this FileFilter) AddPattern(pattern string) {
 	C.gtk_file_filter_add_pattern(this.Handle, cp)
 	C.free(unsafe.Pointer(cp))
 }
+
+func (this MenuShell) Append(item MenuItem) {
+	C.gtk_menu_shell_append(this.Handle, item.ToWidget().Handle)
+}
+
+func (this MenuItem) SetSubmenu(menu Menu) {
+	C.gtk_menu_item_set_submenu(this.Handle, menu.ToWidget().Handle)
+}

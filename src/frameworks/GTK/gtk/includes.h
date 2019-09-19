@@ -84,6 +84,14 @@ extern const gpointer gcharToGPointer(const gchar *data);
 extern GtkWidget *imageToWidget(GtkImage *img);
 extern GtkImage *widgetToImage(GtkWidget *widget);
 extern GBytes *voidpToGbytes(void *data);
+extern GtkMenuItem *widgetToMenuItem(GtkWidget *widget);
+extern GtkContainer *menuBarToContainer(GtkMenuBar *menuBar);
+extern GtkMenu *widgetToMenu(GtkWidget *widget);
+extern GtkMenuShell *menuToMenuShell(GtkMenu *menu);
+extern GtkMenuShell *menuBarToMenuShell(GtkMenuBar *menuBar);
+extern GtkWidget *menuBarToWidget(GtkMenuBar *menuBar);
+extern GtkMenuBar *widgetToMenuBar(GtkWidget *widget);
+extern GtkWidget *menuToWidget(GtkMenu *menu);
 
 extern void signalConnectButton(GtkButton *button, const char *signal, int id);
 extern void sizeAllocateSignalConnectWidget(GtkWidget *widget, const char *signal, const char *name);

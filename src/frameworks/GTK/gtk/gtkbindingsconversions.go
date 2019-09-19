@@ -141,3 +141,23 @@ func (this FileChooserDialog) ToFileChooser() FileChooser {
 func (this Image) ToWidget() Widget {
 	return Widget{C.imageToWidget(this.Handle)}
 }
+
+func (this MenuBar) ToContainer() Container {
+	return Container{C.menuBarToContainer(this.Handle)}
+}
+
+func (this MenuBar) ToWidget() Widget {
+	return Widget{C.menuBarToWidget(this.Handle)}
+}
+
+func (this MenuBar) ToMenuShell() MenuShell {
+	return MenuShell{C.menuBarToMenuShell(this.Handle)}
+}
+
+func (this Menu) ToMenuShell() MenuShell {
+	return MenuShell{C.menuToMenuShell(this.Handle)}
+}
+
+func (this Menu) ToWidget() Widget {
+	return Widget{C.menuToWidget(this.Handle)}
+}

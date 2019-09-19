@@ -126,3 +126,15 @@ type Pixbuf struct {
 type Image struct {
 	Handle *C.GtkImage
 }
+
+type MenuBar struct {
+	Handle *C.GtkMenuBar
+}
+
+type Menu struct {
+	Handle *C.GtkMenu
+}
+
+type MenuShell struct {
+	Handle *C.GtkMenuShell
+}

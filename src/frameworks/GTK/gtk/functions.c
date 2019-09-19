@@ -371,6 +371,46 @@ GBytes *voidpToGbytes(void *data)
 	return (GBytes *)data;
 }
 
+GtkMenuItem *widgetToMenuItem(GtkWidget *widget)
+{
+	return GTK_MENU_ITEM(widget);
+}
+
+GtkContainer *menuBarToContainer(GtkMenuBar *menuBar)
+{
+	return GTK_CONTAINER(menuBar);
+}
+
+GtkMenu *widgetToMenu(GtkWidget *widget)
+{
+	return GTK_MENU(widget);
+}
+
+GtkMenuShell *menuToMenuShell(GtkMenu *menu)
+{
+	return GTK_MENU_SHELL(menu);
+}
+
+GtkMenuShell *menuBarToMenuShell(GtkMenuBar *menuBar)
+{
+	return GTK_MENU_SHELL(menuBar);
+}
+
+GtkWidget *menuBarToWidget(GtkMenuBar *menuBar)
+{
+	return GTK_WIDGET(menuBar);
+}
+
+GtkMenuBar *widgetToMenuBar(GtkWidget *widget)
+{
+	return GTK_MENU_BAR(widget);
+}
+
+GtkWidget *menuToWidget(GtkMenu *menu)
+{
+	return GTK_WIDGET(menu);
+}
+
 void widgetGetSize(GtkWidget *widget, gint *width, gint *height)
 {
 	GtkAllocation *alloc = g_new(GtkAllocation, 1);

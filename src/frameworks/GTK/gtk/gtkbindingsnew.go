@@ -121,3 +121,17 @@ func PixbufNewFromBytes(data []byte, colorspace Colorspace, has_alpha bool, bits
 func ImageNewFromPixbuf(pixbuf Pixbuf) Image {
 	return Image{C.widgetToImage(C.gtk_image_new_from_pixbuf(pixbuf.Handle))}
 }
+
+func MenuItemNewWithLabel(label string) MenuItem {
+	labelc := C.CString(label)
+	defer C.free(unsafe.Pointer(labelc))
+	return MenuItem{C.widgetToMenuItem(C.gtk_menu_item_new_with_label(labelc))}
+}
+
+func MenuNew() Menu {
+	return Menu{C.widgetToMenu(C.gtk_menu_new())}
+}
+
+func MenuBarNew() MenuBar {
+	return MenuBar{C.widgetToMenuBar(C.gtk_menu_bar_new())}
+}
