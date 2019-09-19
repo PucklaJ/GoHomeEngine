@@ -97,6 +97,14 @@ func (this Widget) HasFocus() bool {
 	return C.gtk_widget_has_focus(this.Handle) == C.TRUE
 }
 
+func (this Widget) SetCanFocus(value bool) {
+	C.gtk_widget_set_can_focus(this.Handle, boolTogboolean(value))
+}
+
+func (this Widget) GrabFocus() {
+	C.gtk_widget_grab_focus(this.Handle)
+}
+
 func (this Builder) GetObject(name string) GObject {
 	cstr := C.CString(name)
 	defer C.free(unsafe.Pointer(cstr))
@@ -228,4 +236,25 @@ func (this MenuShell) Append(item MenuItem) {
 
 func (this MenuItem) SetSubmenu(menu Menu) {
 	C.gtk_menu_item_set_submenu(this.Handle, menu.ToWidget().Handle)
+}
+
+func (this Entry) GetText() string {
+	return C.GoString(C.gtk_entry_get_text(this.Handle))
+}
+
+func (this Entry) SetText(text string) {
+	textc := C.CString(text)
+	defer C.free(unsafe.Pointer(textc))
+	C.gtk_entry_set_text(this.Handle, textc)
+}
+
+func (this Editable) SetEditable(editable bool) {
+	C.gtk_editable_set_editable(this.Handle, boolTogboolean(editable))
+}
+
+func boolTogboolean(value bool) C.gboolean {
+	if value {
+		return C.TRUE
+	}
+	return C.FALSE
 }

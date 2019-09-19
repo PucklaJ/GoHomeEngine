@@ -161,3 +161,11 @@ func (this Menu) ToMenuShell() MenuShell {
 func (this Menu) ToWidget() Widget {
 	return Widget{C.menuToWidget(this.Handle)}
 }
+
+func (this Entry) ToWidget() Widget {
+	return Widget{C.entryToWidget(this.Handle)}
+}
+
+func (this Entry) ToEditable() Editable {
+	return Editable{C.entryToEditable(this.Handle)}
+}

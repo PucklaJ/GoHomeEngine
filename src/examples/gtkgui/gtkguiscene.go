@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"github.com/PucklaMotzer09/GoHomeEngine/src/frameworks/GTK"
+	framework "github.com/PucklaMotzer09/GoHomeEngine/src/frameworks/GTK"
 	"github.com/PucklaMotzer09/GoHomeEngine/src/frameworks/GTK/gtk"
 	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
 	"github.com/PucklaMotzer09/mathgl/mgl32"
@@ -58,6 +58,7 @@ func (this *GTKGUIScene) InitGUI() {
 	this.lb.ToContainer().Add(gtk.LabelNew("You are a programmer").ToWidget())
 	this.lb.ToContainer().Add(gtk.LabelNew("This is GTK").ToWidget())
 	gtk.GetGLArea().ToWidget().SetSizeRequest(640/2, 480/2)
+	gtk.GetGLArea().ToWidget().SetCanFocus(true)
 	gtk.GetWindow().ToWidget().ShowAll()
 
 	gohome.Framew.(*framework.GTKFramework).AfterWindowCreation(&gohome.MainLop)
@@ -79,6 +80,9 @@ func (this *GTKGUIScene) Init() {
 
 func (this *GTKGUIScene) Update(delta_time float32) {
 	this.cube.Transform.Rotation = this.cube.Transform.Rotation.Mul(mgl32.QuatRotate(mgl32.DegToRad(30.0)*delta_time, mgl32.Vec3{0.0, 1.0, 0.0})).Mul(mgl32.QuatRotate(mgl32.DegToRad(30.0)*delta_time, mgl32.Vec3{1.0, 0.0, 0.0}))
+	if gohome.InputMgr.IsPressed(gohome.KeySpace) {
+		log.Println("Space is pressed")
+	}
 }
 
 func (this *GTKGUIScene) Terminate() {

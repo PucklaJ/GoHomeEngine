@@ -7,7 +7,6 @@
 GtkWindow *Window = NULL;
 GtkGLArea *GLarea = NULL;
 char *ErrorString = NULL;
-gboolean mouseInGLarea = FALSE;
 
 void initialise(int args, char **argv)
 {
@@ -20,7 +19,6 @@ int createWindow(int width, int height, const char *title)
 	Window = createWindowObject();
 	configureWindowParameters(Window, width, height, title);
 	connectWindowSignals(Window);
-
 	createGLArea();
 
 	gtk_widget_show_all(GTK_WIDGET(Window));
@@ -46,13 +44,12 @@ void configureWindowParameters(GtkWindow *window, int width, int height, const c
 void connectWindowSignals(GtkWindow *window)
 {
 	g_signal_connect(GTK_WIDGET(window), "delete-event", G_CALLBACK(gtkgo_quit_c), NULL);
-
-	g_signal_connect(GTK_WIDGET(window), "key-press-event", G_CALLBACK(gtkgo_gl_area_key_press_c), NULL);
-	g_signal_connect(GTK_WIDGET(window), "key-release-event", G_CALLBACK(gtkgo_gl_area_key_release_c), NULL);
-	g_signal_connect(GTK_WIDGET(window), "button-press-event", G_CALLBACK(gtkgo_gl_area_button_press_c), NULL);
-	g_signal_connect(GTK_WIDGET(window), "button-release-event", G_CALLBACK(gtkgo_gl_area_button_release_c), NULL);
-	g_signal_connect(GTK_WIDGET(window), "motion-notify-event", G_CALLBACK(gtkgo_gl_area_motion_notify_c), NULL);
-	g_signal_connect(GTK_WIDGET(window), "scroll-event", G_CALLBACK(gtkgo_gl_area_scroll_c), NULL);
+	// g_signal_connect(GTK_WIDGET(GLarea), "key-press-event", G_CALLBACK(gtkgo_gl_area_key_press_c), NULL);
+	// g_signal_connect(GTK_WIDGET(GLarea), "key-release-event", G_CALLBACK(gtkgo_gl_area_key_release_c), NULL);
+	// g_signal_connect(GTK_WIDGET(GLarea), "button-press-event", G_CALLBACK(gtkgo_gl_area_button_press_c), NULL);
+	// g_signal_connect(GTK_WIDGET(GLarea), "button-release-event", G_CALLBACK(gtkgo_gl_area_button_release_c), NULL);
+	// g_signal_connect(GTK_WIDGET(window), "motion-notify-event", G_CALLBACK(gtkgo_gl_area_motion_notify_c), NULL);
+	// g_signal_connect(GTK_WIDGET(window), "scroll-event", G_CALLBACK(gtkgo_gl_area_scroll_c), NULL);
 
 	gtk_widget_set_events(GTK_WIDGET(window), GDK_POINTER_MOTION_MASK | GDK_SCROLL_MASK | GDK_ENTER_NOTIFY_MASK);
 }
@@ -67,9 +64,16 @@ void configureGLArea(GtkGLArea *area)
 {
 	g_signal_connect(GTK_WIDGET(area), "render", G_CALLBACK(gtkgo_gl_area_render_c), NULL);
 	g_signal_connect(GTK_WIDGET(area), "realize", G_CALLBACK(gtkgo_gl_area_realize_c), NULL);
+	g_signal_connect(GTK_WIDGET(area), "key-press-event", G_CALLBACK(gtkgo_gl_area_key_press_c), NULL);
+	g_signal_connect(GTK_WIDGET(area), "key-release-event", G_CALLBACK(gtkgo_gl_area_key_release_c), NULL);
+	g_signal_connect(GTK_WIDGET(area), "button-press-event", G_CALLBACK(gtkgo_gl_area_button_press_c), NULL);
+	g_signal_connect(GTK_WIDGET(area), "button-release-event", G_CALLBACK(gtkgo_gl_area_button_release_c), NULL);
+	g_signal_connect(GTK_WIDGET(area), "motion-notify-event", G_CALLBACK(gtkgo_gl_area_motion_notify_c), NULL);
+	g_signal_connect(GTK_WIDGET(area), "scroll-event", G_CALLBACK(gtkgo_gl_area_scroll_c), NULL);
 
 	gtk_gl_area_set_has_depth_buffer(area, TRUE);
-	gtk_widget_set_events(GTK_WIDGET(area), GDK_POINTER_MOTION_MASK | GDK_SCROLL_MASK | GDK_ENTER_NOTIFY_MASK);
+	gtk_widget_set_events(GTK_WIDGET(area), GDK_EXPOSURE_MASK | GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_POINTER_MOTION_MASK | GDK_SCROLL_MASK);
+	gtk_widget_set_can_focus(GTK_WIDGET(area),TRUE);
 
 	gdk_threads_add_idle(queue_render_idle, area);
 
@@ -409,6 +413,21 @@ GtkMenuBar *widgetToMenuBar(GtkWidget *widget)
 GtkWidget *menuToWidget(GtkMenu *menu)
 {
 	return GTK_WIDGET(menu);
+}
+
+GtkWidget *entryToWidget(GtkEntry *entry)
+{
+	return GTK_WIDGET(entry);
+}
+
+GtkEntry *widgetToEntry(GtkWidget *widget)
+{
+	return GTK_ENTRY(widget);
+}
+
+GtkEditable *entryToEditable(GtkEntry *entry)
+{
+	return GTK_EDITABLE(entry);
 }
 
 void widgetGetSize(GtkWidget *widget, gint *width, gint *height)

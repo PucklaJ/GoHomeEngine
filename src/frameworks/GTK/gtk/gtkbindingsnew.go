@@ -135,3 +135,7 @@ func MenuNew() Menu {
 func MenuBarNew() MenuBar {
 	return MenuBar{C.widgetToMenuBar(C.gtk_menu_bar_new())}
 }
+
+func EntryNew() Entry {
+	return Entry{C.widgetToEntry(C.gtk_entry_new())}
+}

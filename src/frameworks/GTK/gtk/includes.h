@@ -18,7 +18,6 @@ typedef struct
 
 extern GtkWindow *Window;
 extern GtkGLArea *GLarea;
-extern gboolean mouseInGLarea;
 extern char *ErrorString;
 
 extern void initialise(int args, char **argv);
@@ -92,6 +91,9 @@ extern GtkMenuShell *menuBarToMenuShell(GtkMenuBar *menuBar);
 extern GtkWidget *menuBarToWidget(GtkMenuBar *menuBar);
 extern GtkMenuBar *widgetToMenuBar(GtkWidget *widget);
 extern GtkWidget *menuToWidget(GtkMenu *menu);
+extern GtkWidget *entryToWidget(GtkEntry *entry);
+extern GtkEntry *widgetToEntry(GtkWidget *widget);
+extern GtkEditable *entryToEditable(GtkEntry *entry);
 
 extern void signalConnectButton(GtkButton *button, const char *signal, int id);
 extern void sizeAllocateSignalConnectWidget(GtkWidget *widget, const char *signal, const char *name);

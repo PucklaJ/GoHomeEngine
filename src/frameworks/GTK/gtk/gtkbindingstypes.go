@@ -138,3 +138,11 @@ type Menu struct {
 type MenuShell struct {
 	Handle *C.GtkMenuShell
 }
+
+type Entry struct {
+	Handle *C.GtkEntry
+}
+
+type Editable struct {
+	Handle *C.GtkEditable
+}
