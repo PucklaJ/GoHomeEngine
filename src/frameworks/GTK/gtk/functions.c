@@ -459,6 +459,17 @@ void sizeAllocateSignalConnectWidget(GtkWidget *widget, const char *signal, cons
 	g_signal_connect(widget, signal, G_CALLBACK(gtkgo_widget_size_allocate_signal_c), wsud);
 }
 
+void signalConnectWidget(GtkWidget *widget, const char *signal, const char *name)
+{
+	WidgetSignalUserData *wsud = (WidgetSignalUserData *)malloc(sizeof(WidgetSignalUserData));
+	const gchar *namec = gtk_widget_get_name(widget);
+	wsud->name = (char *)malloc(strlen(namec));
+	strcpy(wsud->name, namec);
+	wsud->signal = (char *)malloc(strlen(signal));
+	strcpy(wsud->signal, signal);
+	g_signal_connect(widget, signal, G_CALLBACK(gtkgo_widget_signal_c), wsud);
+}
+
 void signalConnectMenuItem(GtkMenuItem *menuItem, const char *signal, const char *name)
 {
 	WidgetSignalUserData *wsud = (WidgetSignalUserData *)malloc(sizeof(WidgetSignalUserData));

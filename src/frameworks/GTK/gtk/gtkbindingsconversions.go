@@ -169,3 +169,7 @@ func (this Entry) ToWidget() Widget {
 func (this Entry) ToEditable() Editable {
 	return Editable{C.entryToEditable(this.Handle)}
 }
+
+func (this Widget) ToEntry() Entry {
+	return Entry{C.widgetToEntry(this.Handle)}
+}

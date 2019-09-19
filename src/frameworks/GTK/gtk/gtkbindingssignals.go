@@ -68,6 +68,8 @@ func (this Widget) signalConnect(signal string, callback func(widget Widget)) {
 
 		if signal == "size-allocate" {
 			C.sizeAllocateSignalConnectWidget(this.Handle, signalcs, namecs)
+		} else {
+			C.signalConnectWidget(this.Handle, signalcs, namecs)
 		}
 
 		C.free(unsafe.Pointer(signalcs))

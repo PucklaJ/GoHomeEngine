@@ -101,6 +101,7 @@ extern void signalConnectMenuItem(GtkMenuItem *menuItem, const char *signal, con
 extern void eventSignalConnectWidget(GtkWidget *widget, const char *signal, const char *name);
 extern void rowSelectedSignalConnectListBox(GtkListBox *listBox, const char *signal, const char *name);
 extern void signalConnectToolButton(GtkToolButton *toolButton, const char *name);
+extern void signalConnectWidget(GtkWidget *widget, const char *signal, const char *name);
 
 extern GtkWidget *gohome_file_chooser_dialog_new(const gchar *title, GtkWindow *parent, GtkFileChooserAction action);
 
