@@ -118,6 +118,9 @@ func readVariables(r io.Reader) {
 
 	for _, v := range vars {
 		varvalue := strings.Split(v, "=")
+		if len(varvalue) == 2 && varvalue[1][len(varvalue[1])-1] == '\r' {
+			varvalue[1] = varvalue[1][:len(varvalue[1])-1]
+		}
 		switch varvalue[0] {
 		case "OS":
 			VAR_OS = varvalue[1]
