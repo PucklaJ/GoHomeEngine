@@ -173,3 +173,7 @@ func (this Entry) ToEditable() Editable {
 func (this Widget) ToEntry() Entry {
 	return Entry{C.widgetToEntry(this.Handle)}
 }
+
+func (this Event) ToEventKey() EventKey {
+	return EventKey{C.eventToEventKey(this.Handle)}
+}

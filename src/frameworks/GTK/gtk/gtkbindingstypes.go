@@ -146,3 +146,7 @@ type Entry struct {
 type Editable struct {
 	Handle *C.GtkEditable
 }
+
+type EventKey struct {
+	Handle *C.GdkEventKey
+}

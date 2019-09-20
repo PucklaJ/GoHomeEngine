@@ -8,6 +8,8 @@ import "C"
 import (
 	"errors"
 	"unsafe"
+
+	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
 )
 
 func (this Window) ConfigureParametersAdv(width, height int, title string) {
@@ -23,6 +25,10 @@ func (this Window) ConfigureParameters() {
 
 func (this Window) ConnectSignals() {
 	C.connectWindowSignals(this.Handle)
+}
+
+func (this Window) SetAttachedTo(widget Widget) {
+	C.gtk_window_set_attached_to(this.Handle,widget.Handle)
 }
 
 func (this Container) Add(widget Widget) {
@@ -103,6 +109,12 @@ func (this Widget) SetCanFocus(value bool) {
 
 func (this Widget) GrabFocus() {
 	C.gtk_widget_grab_focus(this.Handle)
+}
+
+func (this Widget) SetName(name string) {
+	namec := C.CString(name)
+	defer C.free(unsafe.Pointer(namec))
+	C.gtk_widget_set_name(this.Handle,namec)
 }
 
 func (this Builder) GetObject(name string) GObject {
@@ -257,4 +269,9 @@ func boolTogboolean(value bool) C.gboolean {
 		return C.TRUE
 	}
 	return C.FALSE
+}
+
+func (this EventKey) Keyval() gohome.Key {
+	keyval := this.Handle.keyval
+	return gdkkeysymTogohomekey(keyval)
 }

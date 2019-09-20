@@ -430,6 +430,11 @@ GtkEditable *entryToEditable(GtkEntry *entry)
 	return GTK_EDITABLE(entry);
 }
 
+GdkEventKey *eventToEventKey(GdkEvent *event)
+{
+	return (GdkEventKey*)(event);
+}
+
 void widgetGetSize(GtkWidget *widget, gint *width, gint *height)
 {
 	GtkAllocation *alloc = g_new(GtkAllocation, 1);

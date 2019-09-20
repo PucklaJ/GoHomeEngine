@@ -211,6 +211,14 @@ func gdkkeysymTogohomekey(key C.guint) gohome.Key {
 		return gohome.KeyF25
 	case C.GDK_KEY_Escape:
 		return gohome.KeyEscape
+	case C.GDK_KEY_Left:
+		return gohome.KeyLeft
+	case C.GDK_KEY_Right:
+		return gohome.KeyRight
+	case C.GDK_KEY_Up:
+		return gohome.KeyUp
+	case C.GDK_KEY_Down:
+		return gohome.KeyDown
 	default:
 		return gohome.KeyUnknown
 		break
