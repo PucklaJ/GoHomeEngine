@@ -28,7 +28,7 @@ func (this Window) ConnectSignals() {
 }
 
 func (this Window) SetAttachedTo(widget Widget) {
-	C.gtk_window_set_attached_to(this.Handle,widget.Handle)
+	C.gtk_window_set_attached_to(this.Handle, widget.Handle)
 }
 
 func (this Container) Add(widget Widget) {
@@ -114,7 +114,7 @@ func (this Widget) GrabFocus() {
 func (this Widget) SetName(name string) {
 	namec := C.CString(name)
 	defer C.free(unsafe.Pointer(namec))
-	C.gtk_widget_set_name(this.Handle,namec)
+	C.gtk_widget_set_name(this.Handle, namec)
 }
 
 func (this Builder) GetObject(name string) GObject {
@@ -274,4 +274,28 @@ func boolTogboolean(value bool) C.gboolean {
 func (this EventKey) Keyval() gohome.Key {
 	keyval := this.Handle.keyval
 	return gdkkeysymTogohomekey(keyval)
+}
+
+func (this Switch) SetActive(active bool) {
+	C.gtk_switch_set_active(this.Handle, boolTogboolean(active))
+}
+
+func (this Switch) GetActive() bool {
+	return C.gtk_switch_get_active(this.Handle) == C.TRUE
+}
+
+func (this Switch) SetState(state bool) {
+	C.gtk_switch_set_state(this.Handle, boolTogboolean(state))
+}
+
+func (this Switch) GetState() bool {
+	return C.gtk_switch_get_state(this.Handle) == C.TRUE
+}
+
+func (this SpinButton) SetValue(val float64) {
+	C.gtk_spin_button_set_value(this.Handle, C.gdouble(val))
+}
+
+func (this SpinButton) GetValue() float64 {
+	return float64(C.gtk_spin_button_get_value(this.Handle))
 }

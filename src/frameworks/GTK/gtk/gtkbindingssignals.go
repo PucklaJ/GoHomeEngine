@@ -31,17 +31,10 @@ func (this Button) SignalConnect(signal string, callback ButtonSignalCallback) {
 	if buttonSignalCallbacks[this.ID] == nil {
 		buttonSignalCallbacks[this.ID] = make(map[string]ButtonSignalCallback)
 	}
-	var alreadyConnected = false
-	if _, ok := buttonSignalCallbacks[this.ID]; ok {
-		if _, ok1 := buttonSignalCallbacks[this.ID][signal]; ok1 {
-			alreadyConnected = true
-		}
-	}
-	if !alreadyConnected {
-		signalcs := C.CString(signal)
-		C.signalConnectButton(this.Handle, signalcs, C.int(this.ID))
-		C.free(unsafe.Pointer(signalcs))
-	}
+
+	signalcs := C.CString(signal)
+	C.signalConnectButton(this.Handle, signalcs, C.int(this.ID))
+	C.free(unsafe.Pointer(signalcs))
 
 	buttonSignalCallbacks[this.ID][signal] = callback
 }
@@ -56,25 +49,18 @@ func (this Widget) signalConnect(signal string, callback func(widget Widget)) {
 		widgetSignalCallbacks[name] = make(map[string]func(widget Widget))
 	}
 
-	var alreadyConnected = false
-	if _, ok := widgetSignalCallbacks[name]; ok {
-		if _, ok1 := widgetSignalCallbacks[name][signal]; ok1 {
-			alreadyConnected = true
-		}
-	}
-	if !alreadyConnected {
-		signalcs := C.CString(signal)
-		namecs := C.CString(name)
+	signalcs := C.CString(signal)
+	namecs := C.CString(name)
 
-		if signal == "size-allocate" {
-			C.sizeAllocateSignalConnectWidget(this.Handle, signalcs, namecs)
-		} else {
-			C.signalConnectWidget(this.Handle, signalcs, namecs)
-		}
-
-		C.free(unsafe.Pointer(signalcs))
-		C.free(unsafe.Pointer(namecs))
+	if signal == "size-allocate" {
+		C.sizeAllocateSignalConnectWidget(this.Handle, signalcs, namecs)
+	} else {
+		C.signalConnectWidget(this.Handle, signalcs, namecs)
 	}
+
+	C.free(unsafe.Pointer(signalcs))
+	C.free(unsafe.Pointer(namecs))
+
 	widgetSignalCallbacks[name][signal] = callback
 }
 
@@ -86,24 +72,17 @@ func (this Widget) eventSignalConnect(signal string, callback func(widget Widget
 	if widgetEventSignalCallbacks[name] == nil {
 		widgetEventSignalCallbacks[name] = make(map[string]func(widget Widget, event Event))
 	}
-	var alreadyConnected1 = false
-	if _, ok := widgetEventSignalCallbacks[name]; ok {
-		if _, ok1 := widgetEventSignalCallbacks[name][signal]; ok1 {
-			alreadyConnected1 = true
-		}
-	}
-	if !alreadyConnected1 {
-		signalcs := C.CString(signal)
-		namecs := C.CString(name)
 
-		if signal == "" {
-		} else {
-			C.eventSignalConnectWidget(this.Handle, signalcs, namecs)
-		}
+	signalcs := C.CString(signal)
+	namecs := C.CString(name)
 
-		C.free(unsafe.Pointer(signalcs))
-		C.free(unsafe.Pointer(namecs))
+	if signal == "" {
+	} else {
+		C.eventSignalConnectWidget(this.Handle, signalcs, namecs)
 	}
+
+	C.free(unsafe.Pointer(signalcs))
+	C.free(unsafe.Pointer(namecs))
 
 	widgetEventSignalCallbacks[name][signal] = callback
 }
@@ -125,25 +104,18 @@ func (this MenuItem) SignalConnect(signal string, callback MenuItemSignalCallbac
 	if menuItemSignalCallbacks[name] == nil {
 		menuItemSignalCallbacks[name] = make(map[string]MenuItemSignalCallback)
 	}
-	var alreadyConnected = false
-	if _, ok := menuItemSignalCallbacks[name]; ok {
-		if _, ok1 := menuItemSignalCallbacks[name][signal]; ok1 {
-			alreadyConnected = true
-		}
+
+	signalcs := C.CString(signal)
+	namecs := C.CString(name)
+
+	if signal == "" {
+
+	} else {
+		C.signalConnectMenuItem(this.Handle, signalcs, namecs)
 	}
-	if !alreadyConnected {
-		signalcs := C.CString(signal)
-		namecs := C.CString(name)
 
-		if signal == "" {
-
-		} else {
-			C.signalConnectMenuItem(this.Handle, signalcs, namecs)
-		}
-
-		C.free(unsafe.Pointer(signalcs))
-		C.free(unsafe.Pointer(namecs))
-	}
+	C.free(unsafe.Pointer(signalcs))
+	C.free(unsafe.Pointer(namecs))
 
 	menuItemSignalCallbacks[name][signal] = callback
 }
@@ -156,25 +128,18 @@ func (this ListBox) rowSelectedSignalConnect(signal string, callback func(listBo
 	if listBoxRowSelectedSignalCallbacks[name] == nil {
 		listBoxRowSelectedSignalCallbacks[name] = make(map[string]func(listBox ListBox, listBoxRow ListBoxRow))
 	}
-	var alreadyConnected = false
-	if _, ok := listBoxRowSelectedSignalCallbacks[name]; ok {
-		if _, ok1 := listBoxRowSelectedSignalCallbacks[name][signal]; ok1 {
-			alreadyConnected = true
-		}
+
+	signalcs := C.CString(signal)
+	namecs := C.CString(name)
+
+	if signal == "" {
+
+	} else {
+		C.rowSelectedSignalConnectListBox(this.Handle, signalcs, namecs)
 	}
-	if !alreadyConnected {
-		signalcs := C.CString(signal)
-		namecs := C.CString(name)
 
-		if signal == "" {
-
-		} else {
-			C.rowSelectedSignalConnectListBox(this.Handle, signalcs, namecs)
-		}
-
-		C.free(unsafe.Pointer(signalcs))
-		C.free(unsafe.Pointer(namecs))
-	}
+	C.free(unsafe.Pointer(signalcs))
+	C.free(unsafe.Pointer(namecs))
 
 	listBoxRowSelectedSignalCallbacks[name][signal] = callback
 }
@@ -191,17 +156,12 @@ func (this ToolButton) SignalConnect(callback func(toolButton ToolButton)) {
 		toolButtonSignalCallbacks = make(map[string]func(toolButton ToolButton))
 	}
 	name := this.ToWidget().GetName()
-	var alreadyConnected = false
-	if _, ok := toolButtonSignalCallbacks[name]; ok {
-		alreadyConnected = true
-	}
-	if !alreadyConnected {
-		namecs := C.CString(name)
 
-		C.signalConnectToolButton(this.Handle, namecs)
+	namecs := C.CString(name)
 
-		C.free(unsafe.Pointer(namecs))
-	}
+	C.signalConnectToolButton(this.Handle, namecs)
+
+	C.free(unsafe.Pointer(namecs))
 
 	toolButtonSignalCallbacks[name] = callback
 }

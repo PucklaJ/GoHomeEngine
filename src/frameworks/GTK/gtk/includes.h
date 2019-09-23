@@ -95,6 +95,10 @@ extern GtkWidget *entryToWidget(GtkEntry *entry);
 extern GtkEntry *widgetToEntry(GtkWidget *widget);
 extern GtkEditable *entryToEditable(GtkEntry *entry);
 extern GdkEventKey *eventToEventKey(GdkEvent *event);
+extern GtkSwitch *widgetToSwitch(GtkWidget* widget);
+extern GtkWidget *switchToWidget(GtkSwitch* gswitch);
+extern GtkSpinButton *widgetToSpinButton(GtkWidget *widget);
+extern GtkWidget *spinButtonToWidget(GtkSpinButton *spinButton);
 
 extern void signalConnectButton(GtkButton *button, const char *signal, int id);
 extern void sizeAllocateSignalConnectWidget(GtkWidget *widget, const char *signal, const char *name);

@@ -139,3 +139,22 @@ func MenuBarNew() MenuBar {
 func EntryNew() Entry {
 	return Entry{C.widgetToEntry(C.gtk_entry_new())}
 }
+
+func SwitchNew() Switch {
+	return Switch{C.widgetToSwitch(C.gtk_switch_new())}
+}
+
+func SpinButtonNew(adjustment *Adjustment, climbRate float64, digits uint) SpinButton {
+	var cadjustment *C.GtkAdjustment
+	if adjustment == nil {
+		cadjustment = nil
+	} else {
+		cadjustment = adjustment.Handle
+	}
+
+	return SpinButton{C.widgetToSpinButton(C.gtk_spin_button_new(cadjustment, C.gdouble(climbRate), C.guint(digits)))}
+}
+
+func SpinButtonNewWithRange(min, max, step float64) SpinButton {
+	return SpinButton{C.widgetToSpinButton(C.gtk_spin_button_new_with_range(C.gdouble(min), C.gdouble(max), C.gdouble(step)))}
+}

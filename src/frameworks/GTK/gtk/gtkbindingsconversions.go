@@ -177,3 +177,11 @@ func (this Widget) ToEntry() Entry {
 func (this Event) ToEventKey() EventKey {
 	return EventKey{C.eventToEventKey(this.Handle)}
 }
+
+func (this Switch) ToWidget() Widget {
+	return Widget{C.switchToWidget(this.Handle)}
+}
+
+func (this SpinButton) ToWidget() Widget {
+	return Widget{C.spinButtonToWidget(this.Handle)}
+}

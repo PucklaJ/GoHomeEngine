@@ -44,14 +44,6 @@ void configureWindowParameters(GtkWindow *window, int width, int height, const c
 void connectWindowSignals(GtkWindow *window)
 {
 	g_signal_connect(GTK_WIDGET(window), "delete-event", G_CALLBACK(gtkgo_quit_c), NULL);
-	// g_signal_connect(GTK_WIDGET(GLarea), "key-press-event", G_CALLBACK(gtkgo_gl_area_key_press_c), NULL);
-	// g_signal_connect(GTK_WIDGET(GLarea), "key-release-event", G_CALLBACK(gtkgo_gl_area_key_release_c), NULL);
-	// g_signal_connect(GTK_WIDGET(GLarea), "button-press-event", G_CALLBACK(gtkgo_gl_area_button_press_c), NULL);
-	// g_signal_connect(GTK_WIDGET(GLarea), "button-release-event", G_CALLBACK(gtkgo_gl_area_button_release_c), NULL);
-	// g_signal_connect(GTK_WIDGET(window), "motion-notify-event", G_CALLBACK(gtkgo_gl_area_motion_notify_c), NULL);
-	// g_signal_connect(GTK_WIDGET(window), "scroll-event", G_CALLBACK(gtkgo_gl_area_scroll_c), NULL);
-
-	gtk_widget_set_events(GTK_WIDGET(window), GDK_POINTER_MOTION_MASK | GDK_SCROLL_MASK | GDK_ENTER_NOTIFY_MASK);
 }
 
 void createGLArea()
@@ -433,6 +425,26 @@ GtkEditable *entryToEditable(GtkEntry *entry)
 GdkEventKey *eventToEventKey(GdkEvent *event)
 {
 	return (GdkEventKey*)(event);
+}
+
+GtkSwitch *widgetToSwitch(GtkWidget* widget)
+{
+	return GTK_SWITCH(widget);
+}
+
+GtkWidget *switchToWidget(GtkSwitch* gswitch)
+{
+	return GTK_WIDGET(gswitch);
+}
+
+GtkSpinButton *widgetToSpinButton(GtkWidget *widget)
+{
+	return GTK_SPIN_BUTTON(widget);
+}
+
+GtkWidget *spinButtonToWidget(GtkSpinButton *spinButton)
+{
+	return GTK_WIDGET(spinButton);
 }
 
 void widgetGetSize(GtkWidget *widget, gint *width, gint *height)

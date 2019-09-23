@@ -150,3 +150,15 @@ type Editable struct {
 type EventKey struct {
 	Handle *C.GdkEventKey
 }
+
+type Switch struct {
+	Handle *C.GtkSwitch
+}
+
+type SpinButton struct {
+	Handle *C.GtkSpinButton
+}
+
+type Adjustment struct {
+	Handle *C.GtkAdjustment
+}
