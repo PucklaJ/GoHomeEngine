@@ -5,12 +5,18 @@ import (
 	"image/color"
 )
 
+// The color in which the shapes will be drawn
 var DrawColor color.Color = Color{255, 255, 255, 255}
+// The point size which will be used
 var PointSize float32 = 1.0
+// The line width which will be used
 var LineWidth float32 = 1.0
+// Wether the shapes should be filled
 var Filled bool = true
+// The detail of the curcle. The higher the more detailed
 var CircleDetail int = 30
 
+// Draws a point to point
 func DrawPoint2D(point mgl32.Vec2) {
 	point2D := toPoint2D(point)
 	var robj Shape2D
@@ -23,6 +29,7 @@ func DrawPoint2D(point mgl32.Vec2) {
 	robj.Terminate()
 }
 
+// Draws a 2D line from pos1 to pos2
 func DrawLine2D(pos1, pos2 mgl32.Vec2) {
 	line := toLine2D(pos1, pos2)
 	var robj Shape2D
@@ -34,6 +41,7 @@ func DrawLine2D(pos1, pos2 mgl32.Vec2) {
 	robj.Terminate()
 }
 
+// Draws a 2D triangle between pos1, pos2 and pos3
 func DrawTriangle2D(pos1, pos2, pos3 mgl32.Vec2) {
 	tri := toTriangle2D(pos1, pos2, pos3)
 	var robj Shape2D
@@ -50,6 +58,7 @@ func DrawTriangle2D(pos1, pos2, pos3 mgl32.Vec2) {
 	robj.Terminate()
 }
 
+// Draws a 2D rectangle between pos1,pos2,pos3 and pos4
 func DrawRectangle2D(pos1, pos2, pos3, pos4 mgl32.Vec2) {
 	rect := toRectangle2D(pos1, pos2, pos3, pos4)
 	var robj Shape2D
@@ -67,6 +76,7 @@ func DrawRectangle2D(pos1, pos2, pos3, pos4 mgl32.Vec2) {
 	robj.Terminate()
 }
 
+// Draws a 2D circle with pos as the middle with radius
 func DrawCircle2D(pos mgl32.Vec2, radius float32) {
 	circle := Circle2D{
 		pos,
@@ -89,6 +99,7 @@ func DrawCircle2D(pos mgl32.Vec2, radius float32) {
 	robj.Terminate()
 }
 
+// Draws a polygon with positions
 func DrawPolygon2D(positions ...mgl32.Vec2) {
 	if len(positions) < 3 {
 		ErrorMgr.Error("Polygon2D", "Draw", "Cannot draw polygon with less than 3 vertices")
@@ -110,6 +121,7 @@ func DrawPolygon2D(positions ...mgl32.Vec2) {
 	robj.Terminate()
 }
 
+// Draws a texture to [x,y]
 func DrawTexture(tex Texture, x, y int) {
 	DrawTextureAdv(tex, x, y, tex.GetWidth(), tex.GetHeight(), TextureRegion{
 		Min: [2]float32{0.0, 0.0},
@@ -118,6 +130,7 @@ func DrawTexture(tex Texture, x, y int) {
 		FLIP_NONE)
 }
 
+// Draws a specific region of the texture with a flip
 func DrawTextureAdv(tex Texture, x, y, width, height int, texReg TextureRegion, flip uint8) {
 	var spr Sprite2D
 	spr.InitTexture(tex)
@@ -131,6 +144,7 @@ func DrawTextureAdv(tex Texture, x, y, width, height int, texReg TextureRegion, 
 	RenderMgr.RenderRenderObject(&spr)
 }
 
+// Draws a 3D point
 func DrawPoint3D(pos mgl32.Vec3) {
 	point := toVertex3D(pos)
 	var robj Shape3D
@@ -142,6 +156,7 @@ func DrawPoint3D(pos mgl32.Vec3) {
 	robj.Terminate()
 }
 
+// Draws a 3D line from pos1 to pos2
 func DrawLine3D(pos1, pos2 mgl32.Vec3) {
 	line := toLine3D(pos1, pos2)
 	var robj Shape3D
@@ -153,6 +168,7 @@ func DrawLine3D(pos1, pos2 mgl32.Vec3) {
 	robj.Terminate()
 }
 
+// Draws a triangle between pos1,pos2 and pos3
 func DrawTriangle3D(pos1, pos2, pos3 mgl32.Vec3) {
 	tri := toTriangle3D(pos1, pos2, pos3)
 	var robj Shape3D
@@ -164,6 +180,8 @@ func DrawTriangle3D(pos1, pos2, pos3 mgl32.Vec3) {
 	robj.Terminate()
 }
 
+// Draws a cube with pos as the middle and with,height and depth
+// pitch, yaw and roll defines the rotation in degrees
 func DrawCube(pos mgl32.Vec3, width, height, depth, pitch, yaw, roll float32) {
 	tris := cubeToTriangle3Ds(width, height, depth)
 	var robj Shape3D
