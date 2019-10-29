@@ -4,10 +4,15 @@ import (
 	"github.com/PucklaMotzer09/mathgl/mgl32"
 )
 
+// A 2D camera used for showing different parts of the world
 type Camera2D struct {
+	// It's position in world space
 	Position mgl32.Vec2
+	// It's zoom (>1.0 -> Zoom In and <1.0 -> Zoom Out)
 	Zoom     float32
+	// It's rotation in degrees
 	Rotation float32
+	// The Origin for rotating and zooming
 	Origin   mgl32.Vec2
 
 	oldPosition mgl32.Vec2
@@ -22,6 +27,7 @@ func (cam *Camera2D) valuesChanged() bool {
 	return cam.Position != cam.oldPosition || cam.Zoom != cam.oldZoom || cam.Rotation != cam.oldRotation
 }
 
+// Calculates the view matrix of the camera that will be needed for the shader
 func (cam *Camera2D) CalculateViewMatrix() {
 	if cam.valuesChanged() {
 		// -OT S R OT T
@@ -39,14 +45,17 @@ func (cam *Camera2D) CalculateViewMatrix() {
 	cam.oldRotation = cam.Rotation
 }
 
+// Returns the view matrix of the camera
 func (cam *Camera2D) GetViewMatrix() mgl32.Mat3 {
 	return cam.viewMatrix
 }
 
+// Returns the inverse of the view matrix of the camera
 func (cam *Camera2D) GetInverseViewMatrix() mgl32.Mat3 {
 	return cam.inverseViewMatrix
 }
 
+// Adds pos to the position in respect to the current rotation
 func (cam *Camera2D) AddPositionRotated(pos mgl32.Vec2) {
 	mat := mgl32.Rotate2D(mgl32.DegToRad(-cam.Rotation))
 	x := mat.At(0, 0)*pos[0] + mat.At(0, 1)*pos[1]
