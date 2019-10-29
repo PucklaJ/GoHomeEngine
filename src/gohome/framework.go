@@ -7,6 +7,7 @@ import (
 	"log"
 )
 
+// The differnet results of a dialogue
 const (
 	DIALOG_YES       = iota
 	DIALOG_NO        = iota
@@ -14,57 +15,95 @@ const (
 	DIALOG_ERROR     = iota
 )
 
+// An interface consisting of a io.Reader and a io.Closer
 type File interface {
 	io.Reader
 	io.Closer
 }
 
+// An interface consisting of a io.ReadSeeker
 type FileSeeker interface {
 	io.ReadSeeker
 }
 
+// The interface that handles everything OS related that's not rendering
 type Framework interface {
+	// Initialises the framework using MainLoop
 	Init(ml *MainLoop) error
+	// Update everything
 	Update()
+	// Terminate everything
 	Terminate()
+	// Get the events on the window
 	PollEvents()
 
+	// Creates a window with the given parameters
 	CreateWindow(windowWidth, windowHeight int, title string) error
+	// Returns wether the window is closed
 	WindowClosed() bool
+	// Swaps the back buffer (not that of RenderManager) with the front buffer
+	// used for double buffering
 	WindowSwap()
+	// Sets the size of the window
 	WindowSetSize(size mgl32.Vec2)
+	// Returns the size of the window
 	WindowGetSize() mgl32.Vec2
+	// Sets the window to be fullscreen or not
 	WindowSetFullscreen(b bool)
+	// Returns wether the window is in fullscreen
 	WindowIsFullscreen() bool
 
+	// Returns the resolution of the monitor
 	MonitorGetSize() mgl32.Vec2
 
+	// Shows the mouse cursor
 	CurserShow()
+	// Hides the mouse cursor (no locking)
 	CursorHide()
+	// Hides the mouse cursor (with locking)
 	CursorDisable()
+	// Returns wether the mouse cursor is shown
 	CursorShown() bool
+	// Returns wether the mouse cursor is hidden
 	CursorHidden() bool
+	// Returns wether the mouse cursor is disabled
 	CursorDisabled() bool
 
+	// Opens file for reading (uses the framework related functionality
+	// on desktop the usual methods can be used without problem)
 	OpenFile(file string) (File, error)
+	// Loads the level file (.obj)
 	LoadLevel(name, path string, loadToGPU bool) *Level
+	// Loads the level using contents as the file contents
 	LoadLevelString(name, contents, fileName string, loadToGPU bool) *Level
 
+	// Pop ups a dialog with yes and no
+	// Returns one enum value
 	ShowYesNoDialog(title, message string) uint8
+	// Uses framework related logging (logcat on android)
 	Log(a ...interface{})
 
+	// Add a function that should be called when the window resizes
 	OnResize(callback func(newWidth, newHeight int))
+	// Add a function that should be called when the window moves
 	OnMove(callback func(newPosX, newPosY int))
+	// Add a function that should be called when the window closes
 	OnClose(callback func())
+	// Add a function that shoul be called when the window gets focused
 	OnFocus(callback func(focused bool))
 
+	// Starts the input of text
 	StartTextInput()
+	// Gets the inputted text
 	GetTextInput() string
+	// Ends the input of text
 	EndTextInput()
 }
 
+// The Framework that should be used for everything
 var Framew Framework
 
+// An implementation of Framework that does nothing
 type NilFramework struct {
 }
 
