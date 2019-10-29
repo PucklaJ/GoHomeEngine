@@ -9,9 +9,14 @@ const (
 	NUM_TAKEAWAYS    = 2
 )
 
+// This struct is used to control the time step of the game
+// It smooths the time step and locks the frame rate
 type FPSLimiter struct {
+	// The frames per second to which it should lock
 	MaxFPS    int
+	// The current FPS
 	FPS       int
+	// The DeltaTime from the last frame to this
 	DeltaTime float32
 
 	timeMeasure    time.Time
@@ -31,6 +36,7 @@ type FPSLimiter struct {
 3. Calculate mean
 */
 
+// Initialises the FPSLimiter with default values
 func (fps *FPSLimiter) Init() {
 	fps.MaxFPS = 60
 	fps.FPS = 0
@@ -40,16 +46,20 @@ func (fps *FPSLimiter) Init() {
 	fps.additionalTime = 0.0
 }
 
+// Starts the measurement of the frame time
 func (fps *FPSLimiter) StartMeasurement() {
 	fps.timeMeasure = time.Now()
 }
 
+// Ends the measurement of the frame time
 func (fps *FPSLimiter) EndMeasurement() {
 	fps.deltaDuration = time.Now().Sub(fps.timeMeasure)
 	fps.timeMeasure = time.Now()
 	fps.saveCurrentDeltaTime()
 }
 
+// Adds time to the frame time if some time couldn't be measured by
+// The struct itself 
 func (fps *FPSLimiter) AddTime(amount float32) {
 	fps.additionalTime += amount
 }
@@ -64,6 +74,7 @@ func (fps *FPSLimiter) currentFrameIndex() (curIndex int) {
 	return
 }
 
+// Sleeps if the frame time is too low
 func (fps *FPSLimiter) LimitFPS() {
 	currentDeltaTime := fps.realDeltaTimes[fps.currentFrameIndex()]
 	if currentDeltaTime != 0.0 {
@@ -149,4 +160,5 @@ func (fps *FPSLimiter) calculateMeanDeltaTime() {
 	}
 }
 
+// The FPSLimiter that should be used for everything
 var FPSLimit FPSLimiter
