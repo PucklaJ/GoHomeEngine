@@ -6,16 +6,22 @@ import (
 	"os"
 )
 
+// A struct holding all data of the mouse
 type Mouse struct {
+	// The current position of the mouse in screen coordinates
 	Pos   [2]int16
+	// The relative mouse movement to the last frame
 	DPos  [2]int16
+	// The wheel movement values [Horizontal,Vertical]
 	Wheel [2]int8
 }
 
+// Converts the mouse screen coordinates to 2D world coordinates
 func (this *Mouse) ToWorldPosition2D() mgl32.Vec2 {
 	return this.ToWorldPosition2DAdv(0, 0)
 }
 
+// Same as ToWorldPosition2D with additional arguments for the camera and the viewport
 func (this *Mouse) ToWorldPosition2DAdv(cameraIndex int, viewportIndex int) mgl32.Vec2 {
 	screenPos := mgl32.Vec2{float32(this.Pos[0]), float32(this.Pos[1])}
 	if RenderMgr.EnableBackBuffer {
@@ -51,6 +57,7 @@ func (this *Mouse) ToWorldPosition2DAdv(cameraIndex int, viewportIndex int) mgl3
 	return projectedPos.Vec2()
 }
 
+// Converts the raw mouse coordinates to coordinates adapting to the native resolution
 func (this *Mouse) ToScreenPosition() (vec mgl32.Vec2) {
 	vec[0], vec[1] = float32(this.Pos[0]), float32(this.Pos[1])
 
@@ -62,14 +69,17 @@ func (this *Mouse) ToScreenPosition() (vec mgl32.Vec2) {
 	return
 }
 
+// Converts the mouse coordinates to a 3D Ray pointing out of the camera
 func (this *Mouse) ToRay() mgl32.Vec3 {
 	return this.ToRayAdv(0, 0)
 }
 
+// Same as ToRay with additional arguments for the camera and the viewport
 func (this *Mouse) ToRayAdv(viewportIndex, cameraIndex int32) mgl32.Vec3 {
 	return ScreenPositionToRayAdv(this.ToScreenPosition(), viewportIndex, cameraIndex)
 }
 
+// A struct holding all the information of a touch on a touchscreen
 type Touch struct {
 	ID   uint8
 	Pos  [2]int16
@@ -77,6 +87,7 @@ type Touch struct {
 	PPos [2]int16
 }
 
+// The struct that handles every Input
 type InputManager struct {
 	prevKeys       map[Key]bool
 	currentKeys    map[Key]bool
@@ -84,10 +95,13 @@ type InputManager struct {
 	prevTouches    map[uint8]bool
 	currentTouches map[uint8]bool
 
+	// The data of the mouse
 	Mouse   Mouse
+	// All registered touches
 	Touches map[uint8]Touch
 }
 
+// Initialises all members of InputManager
 func (inmgr *InputManager) Init() {
 	inmgr.prevKeys = make(map[Key]bool)
 	inmgr.currentKeys = make(map[Key]bool)
@@ -97,6 +111,7 @@ func (inmgr *InputManager) Init() {
 	inmgr.Touches = make(map[uint8]Touch)
 }
 
+// Says that key has been pressed
 func (inmgr *InputManager) PressKey(key Key) {
 	inmgr.currentKeys[key] = true
 	if _, ok := inmgr.holdTimes[key]; !ok {
@@ -104,19 +119,23 @@ func (inmgr *InputManager) PressKey(key Key) {
 	}
 }
 
+// Says that key has been released
 func (inmgr *InputManager) ReleaseKey(key Key) {
 	inmgr.currentKeys[key] = false
 	inmgr.holdTimes[key] = 0.0
 }
 
+// Says that the touch with id has been touched
 func (inmgr *InputManager) Touch(id uint8) {
 	inmgr.currentTouches[id] = true
 }
 
+// Says that the touch with id has been released
 func (inmgr *InputManager) ReleaseTouch(id uint8) {
 	inmgr.currentTouches[id] = false
 }
 
+// Returns wether key is currently pressed
 func (inmgr *InputManager) IsPressed(key Key) bool {
 	if v, ok := inmgr.currentKeys[key]; ok && v {
 		return true
@@ -125,6 +144,7 @@ func (inmgr *InputManager) IsPressed(key Key) bool {
 	}
 }
 
+// Returns wether key was pressed in the last frame
 func (inmgr *InputManager) WasPressed(key Key) bool {
 	if v, ok := inmgr.prevKeys[key]; ok && v {
 		return true
@@ -133,20 +153,24 @@ func (inmgr *InputManager) WasPressed(key Key) bool {
 	}
 }
 
+// Returns wether key has been just pressed in this frame
 func (inmgr *InputManager) JustPressed(key Key) bool {
 	return inmgr.IsPressed(key) && !inmgr.WasPressed(key)
 }
 
+// Returns wether the touch with id is currently touched
 func (inmgr *InputManager) IsTouched(id uint8) bool {
 	touched, ok := inmgr.currentTouches[id]
 	return ok && touched
 }
 
+// Returns wether the touched with id was touched in the last frame
 func (inmgr *InputManager) WasTouched(id uint8) bool {
 	touched, ok := inmgr.prevTouches[id]
 	return ok && touched
 }
 
+// Returns wether the touch with id has been touched in this frame
 func (inmgr *InputManager) JustTouched(id uint8) bool {
 	return inmgr.IsTouched(id) && !inmgr.WasTouched(id)
 }
@@ -159,6 +183,7 @@ func (inmgr *InputManager) TimeHeld(key Key) float32 {
 	}
 }
 
+// Updates everything and tells the InputManager that the frame is over
 func (inmgr *InputManager) Update(delta_time float32) {
 	if inmgr.JustPressed(KeyF12) {
 		img := TextureToImage(RenderMgr.GetBackBuffer(), false, true)
@@ -188,4 +213,5 @@ func (inmgr *InputManager) Update(delta_time float32) {
 	}
 }
 
+// The InputManager that should be used for everything
 var InputMgr InputManager
