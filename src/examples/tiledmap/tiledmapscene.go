@@ -41,4 +41,5 @@ func (this *TiledMapScene) Update(delta_time float32) {
 }
 
 func (this *TiledMapScene) Terminate() {
+	this.tiledMap.Terminate()
 }
