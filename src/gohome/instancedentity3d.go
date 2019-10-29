@@ -13,19 +13,31 @@ const (
 	ENTITY_3D_INSTANCED_SIMPLE_SHADER_NAME          string = "3D Instanced Simple"
 )
 
+// An Entity3D consisting of multiple instances
 type InstancedEntity3D struct {
 	NilRenderObject
+	// The name of this object
 	Name                        string
+	// The 3D Model
 	Model3D                     *InstancedModel3D
+	// Wether it is visible
 	Visible                     bool
+	// The index of the camera to which it is not relative
+	// or -1 if it relative to every camera
 	NotRelativeToCamera         int
+	// Wether it should render after everyting else
 	RenderLast                  bool
+	// Wether the depth test is enabled
 	DepthTesting                bool
+	// Wether the instanced values should be update in every frame or not
 	StopUpdatingInstancedValues bool
 
+	// The shader of the object
 	Shader     Shader
+	// The render type of the object
 	RenderType RenderType
 
+	// All transforms of the different instances
 	Transforms        []*TransformableObjectInstanced3D
 	transformMatrices []mgl32.Mat4
 	transformsChanged bool
@@ -119,6 +131,7 @@ func (this *InstancedEntity3D) configureShader() {
 	}
 }
 
+// Initialises the object with a mesh and a number of instances
 func (this *InstancedEntity3D) InitMesh(mesh InstancedMesh3D, numInstances int) {
 	this.Model3D = &InstancedModel3D{
 		Name: mesh.GetName(),
@@ -128,6 +141,7 @@ func (this *InstancedEntity3D) InitMesh(mesh InstancedMesh3D, numInstances int) 
 	this.commonInit(numInstances)
 }
 
+// Initialises the object with a model and a number of instances
 func (this *InstancedEntity3D) InitModel(model *InstancedModel3D, numInstances int) {
 	this.Model3D = model
 	if model != nil {
@@ -136,26 +150,34 @@ func (this *InstancedEntity3D) InitModel(model *InstancedModel3D, numInstances i
 	this.commonInit(numInstances)
 }
 
+// Returns this as a transformable object
 func (this *InstancedEntity3D) GetTransformableObject() TransformableObject {
 	return this
 }
 
+// Returns the shader
 func (this *InstancedEntity3D) GetShader() Shader {
 	return this.Shader
 }
 
+// Sets the shader
 func (this *InstancedEntity3D) SetShader(s Shader) {
 	this.Shader = s
 }
 
+// Sets the render type
 func (this *InstancedEntity3D) SetType(rtype RenderType) {
 	this.RenderType = rtype
 }
 
+// Returns the render type
 func (this *InstancedEntity3D) GetType() RenderType {
 	return this.RenderType
 }
 
+// Renders the entity (a lot of values need to be set up before
+// calling this method, use RenderMgr.RenderRenderObject if you want
+// to render a specific RenderObject)
 func (this *InstancedEntity3D) Render() {
 	if !this.StopUpdatingInstancedValues {
 		this.UpdateInstancedValues()
@@ -169,40 +191,50 @@ func (this *InstancedEntity3D) Render() {
 	}
 }
 
+// Cleans everything up
 func (this *InstancedEntity3D) Terminate() {
 	if this.Model3D != nil {
 		this.Model3D.Terminate()
 	}
 }
 
+// Wether it is visible
 func (this *InstancedEntity3D) IsVisible() bool {
 	return this.Visible
 }
 
+// Sets it to be visible
 func (this *InstancedEntity3D) SetVisible() {
 	this.Visible = true
 }
 
+// Sets it to be invisible
 func (this *InstancedEntity3D) SetInvisible() {
 	this.Visible = false
 }
 
+// Returns the camera to which this is not realtive or -1 if
+// it is relative to all cameras
 func (this *InstancedEntity3D) NotRelativeCamera() int {
 	return this.NotRelativeToCamera
 }
 
+// Wether this should render after everything
 func (this *InstancedEntity3D) RendersLast() bool {
 	return this.RenderLast
 }
 
+// Wether depth testing should be enabled for this object
 func (this *InstancedEntity3D) HasDepthTesting() bool {
 	return this.DepthTesting
 }
 
+// Updates the values used for instancing
 func (this *InstancedEntity3D) UpdateInstancedValues() {
 	this.CalculateTransformMatrix(&RenderMgr, this.NotRelativeToCamera)
 }
 
+// Sets the number of buffered instances
 func (this *InstancedEntity3D) SetNumInstances(n int) {
 	prev := this.Model3D.GetNumInstances()
 	this.Model3D.SetNumInstances(n)
@@ -228,10 +260,12 @@ func (this *InstancedEntity3D) SetNumInstances(n int) {
 	}
 }
 
+// Sets the number of rendered instances
 func (this *InstancedEntity3D) SetNumUsedInstances(n int) {
 	this.Model3D.SetNumUsedInstances(n)
 }
 
+// Calculates the transformation matrices
 func (this *InstancedEntity3D) CalculateTransformMatrix(rmgr *RenderManager, notRelativeToCamera int) {
 	var wg sync.WaitGroup
 	wg.Add(int(this.Model3D.GetNumInstances()))
