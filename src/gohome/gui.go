@@ -6,26 +6,39 @@ import (
 	"runtime"
 )
 
+// The callback function for all the callbacks of the Button
 type ButtonCallback func(btn *Button)
 
 var focusedButton *Button
+// The name of the font that is used for Button
 var ButtonFont string = "Button"
+// The font size that is used for Button
 var ButtonFontSize = 24
 
+// A Button that will be rendered to the screen
 type Button struct {
 	Sprite2D
 
+	// Will be called when the button is pressed
 	PressCallback ButtonCallback
+	// Will be called when the mouse hovers over the button
 	EnterCallback ButtonCallback
+	// Will be called when the mouse leaves the button
 	LeaveCallback ButtonCallback
+	// Wether the mouse has currently entered the button
 	Entered       bool
+	// The text of the button
 	Text          string
 
+	// The modulating color that will be applied when the mouse enters the button
 	EnterModColor color.Color
+	// The modulation color that will be applied when the button is clicked
 	PressModColor color.Color
+	// The Text2D object that is used for displaying the text
 	Text2D        Text2D
 }
 
+// Initialises all values of the Button
 func (this *Button) Init(pos [2]float32, texture string) {
 	this.Sprite2D.Init(texture)
 	if this.Texture == nil {
@@ -108,6 +121,7 @@ func (this *Button) Update(delta_time float32) {
 	this.Text2D.NotRelativeToCamera = this.NotRelativeToCamera
 }
 
+// Cleans everything up
 func (this *Button) Terminate() {
 	if focusedButton == this {
 		focusedButton = nil
@@ -123,24 +137,36 @@ var focusedSlider *Slider
 
 type SliderCallback func(sld *Slider)
 
+// A Slider that will be rendered to the screen
 type Slider struct {
+	// The horizontal line of the slider
 	Long   Sprite2D
+	// The small circle on the horizontal line
 	Circle Sprite2D
 
+	// Wether the mouse has entered the slider
 	Entered       bool
+	// The current value of the slider
 	Value         float32
+	// The step size of the slider
 	StepSize      float32
+	// The modulate color that will be applied when the mouse enters the slider
 	EnterModColor color.Color
+	// The modulate color that will be applied when the slider is pressed
 	PressModColor color.Color
 
+	// Will be called when the mouse enters the slider
 	EnterCallback        SliderCallback
+	// Will be called when the mouse leaves the slider
 	LeaveCallback        SliderCallback
+	// Will be called when the value of the slider has changed
 	ValueChangedCallback SliderCallback
 
 	clickedPos   [2]float32
 	clickedValue float32
 }
 
+// Initialises the slider with default values
 func (this *Slider) Init(pos [2]float32, longTex, circleTex string) {
 	this.Long.Init(longTex)
 	this.Circle.Init(circleTex)
@@ -252,6 +278,7 @@ func (this *Slider) Update(delta_time float32) {
 	}
 }
 
+// Cleans everything up
 func (this *Slider) Terminate() {
 	if focusedSlider == this {
 		focusedSlider = nil
