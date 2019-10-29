@@ -11,12 +11,15 @@ const (
 	DPI = 72
 )
 
+// A struct representing a truetype font
 type Font struct {
 	ttf         *truetype.Font
 	drawContext *freetype.Context
+	// The size in which the font should be drawn
 	FontSize    int
 }
 
+// Draw a string and returns it as a Texture
 func (this *Font) DrawString(str string) Texture {
 	var rv Texture
 
@@ -36,6 +39,7 @@ func (this *Font) DrawString(str string) Texture {
 	return rv
 }
 
+// Initialises the font with a truetype font object
 func (this *Font) Init(ttf *truetype.Font) {
 	this.ttf = ttf
 	this.drawContext = freetype.NewContext()
@@ -63,11 +67,13 @@ func (this *Font) getTextureSize(str string) (width, height int) {
 	return width, height
 }
 
+// Returns the maximum height of a character
 func (this *Font) GetGlyphMaxHeight() int {
 	rect := this.ttf.Bounds(fixed.Int26_6(this.FontSize))
 	return int(rect.Max.Y - rect.Min.Y)
 }
 
+// Returns the maximum width of a character
 func (this *Font) GetGlyphMaxWidth() int {
 	rect := this.ttf.Bounds(fixed.Int26_6(this.FontSize))
 	return int(rect.Max.X - rect.Min.X)
