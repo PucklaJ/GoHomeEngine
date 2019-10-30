@@ -39,27 +39,38 @@ const (
 	DEFAULT_SPOT_LIGHTS_SHADOWMAP_SIZE        = 1024
 )
 
+// A strcut holding the values for attenuation of lights
 type Attentuation struct {
+	// The constant factor
 	Constant  float32
+	// The linear factor
 	Linear    float32
+	// The quadratic factor
 	Quadratic float32
 }
 
+// Sets the uniform values of s
 func (a Attentuation) SetUniforms(s Shader, variableName string, arrayIndex int) {
 	s.SetUniformF(variableName+"["+strconv.Itoa(arrayIndex)+"]."+ATTENTUATION_UNIFORM_NAME+"."+ATTENTUATION_CONSTANT_UNIFORM_NAME, a.Constant)
 	s.SetUniformF(variableName+"["+strconv.Itoa(arrayIndex)+"]."+ATTENTUATION_UNIFORM_NAME+"."+ATTENTUATION_LINEAR_UNIFORM_NAME, a.Linear)
 	s.SetUniformF(variableName+"["+strconv.Itoa(arrayIndex)+"]."+ATTENTUATION_UNIFORM_NAME+"."+ATTENTUATION_QUADRATIC_UNIFORM_NAME, a.Quadratic)
 }
 
+// A Light with a position emitting in all directions
 type PointLight struct {
+	// The position of the light in world coordinates
 	Position mgl32.Vec3
 
+	// The diffuse color of the light
 	DiffuseColor  color.Color
+	// The specular color of the light
 	SpecularColor color.Color
 
+	// The attenuation values of the light
 	Attentuation
 }
 
+// Sets the uniform values of s
 func (pl PointLight) SetUniforms(s Shader, arrayIndex int) {
 	s.SetUniformV3(POINT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+POSITION_UNIFORM_NAME, pl.Position)
 	s.SetUniformV3(POINT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(int(arrayIndex))+"]."+DIFFUSE_COLOR_UNIFORM_NAME, ColorToVec3(pl.DiffuseColor))
@@ -67,14 +78,21 @@ func (pl PointLight) SetUniforms(s Shader, arrayIndex int) {
 	pl.Attentuation.SetUniforms(s, POINT_LIGHTS_UNIFORM_NAME, arrayIndex)
 }
 
+// A light with only a direction and no position
 type DirectionalLight struct {
+	// The direction in which the light is shining
 	Direction mgl32.Vec3
 
+	// The diffuse color of the light
 	DiffuseColor  color.Color
+	// The specular color of the light
 	SpecularColor color.Color
 
+	// The shadow map texture of the light
 	ShadowMap        RenderTexture
+	// Wether the light casts shadows
 	CastsShadows     uint8
+	// A view matrix using the direction as the look direction
 	LightSpaceMatrix mgl32.Mat4
 
 	ShadowDistance float32
@@ -82,6 +100,7 @@ type DirectionalLight struct {
 	lightCam Camera3D
 }
 
+// Sets the uniforms of s
 func (pl *DirectionalLight) SetUniforms(s Shader, arrayIndex int) {
 	s.SetUniformV3(DIRECTIONAL_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(arrayIndex)+"]."+DIRECTION_UNIFORM_NAME, pl.Direction)
 	s.SetUniformV3(DIRECTIONAL_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(arrayIndex)+"]."+DIFFUSE_COLOR_UNIFORM_NAME, ColorToVec3(pl.DiffuseColor))
@@ -109,6 +128,7 @@ func (pl *DirectionalLight) SetUniforms(s Shader, arrayIndex int) {
 	}
 }
 
+// Initialises the shadow map of this light
 func (this *DirectionalLight) InitShadowmap(width, height int) {
 	if this.CastsShadows == 0 {
 		return
@@ -213,6 +233,7 @@ func calculateDirectionalLightShadowMapProjection(cam *Camera3D, lightCam *Camer
 	return projection
 }
 
+// Renders all objects that cast shadows on the shadow map
 func (this *DirectionalLight) RenderShadowMap() {
 	if this.CastsShadows == 0 {
 		return
@@ -268,25 +289,39 @@ func (this *DirectionalLight) RenderShadowMap() {
 	this.LightSpaceMatrix = projection.GetProjectionMatrix().Mul4(this.lightCam.GetViewMatrix())
 }
 
+// A light with a position and a direction
 type SpotLight struct {
+	// The position of the light
 	Position  mgl32.Vec3
+	// The direction of the light
 	Direction mgl32.Vec3
 
+	// The diffuse color of the light
 	DiffuseColor  color.Color
+	// The specular color of the light
 	SpecularColor color.Color
 
+	// The angle at which the light starts to fade away in degrees
 	InnerCutOff float32
+	// The angle at which the light is completely faded away in degrees
 	OuterCutOff float32
 
+	// The attenuation values of this light
 	Attentuation
 
+	// The shadow map of this light
 	ShadowMap        RenderTexture
+	// Wether this light should cast shadows
 	CastsShadows     uint8
+	// A view matrix that uses the position and direction of the light
 	LightSpaceMatrix mgl32.Mat4
+	// The near plane used for the rendering of the shadow map
 	NearPlane        float32
+	// The far plane used for the rendering of the shadow map
 	FarPlane         float32
 }
 
+// Sets the uniforms of s
 func (pl *SpotLight) SetUniforms(s Shader, arrayIndex int) {
 	s.SetUniformV3(SPOT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(arrayIndex)+"]."+POSITION_UNIFORM_NAME, pl.Position)
 	s.SetUniformV3(SPOT_LIGHTS_UNIFORM_NAME+"["+strconv.Itoa(arrayIndex)+"]."+DIRECTION_UNIFORM_NAME, pl.Direction)
@@ -326,6 +361,7 @@ func loadShadowMapShader() {
 	}
 }
 
+// Initialises the shadow map of this light
 func (this *SpotLight) InitShadowmap(width, height int) {
 	if this.CastsShadows == 0 {
 		return
@@ -340,6 +376,7 @@ func (this *SpotLight) InitShadowmap(width, height int) {
 	}
 }
 
+// Renders all objects that cast shadows onto this shadow map
 func (this *SpotLight) RenderShadowMap() {
 	if this.CastsShadows == 0 {
 		return
@@ -401,26 +438,35 @@ func (this *SpotLight) RenderShadowMap() {
 	this.LightSpaceMatrix = projection.GetProjectionMatrix().Mul4(camera.GetViewMatrix())
 }
 
+// A collection of point lights, directional lights and spot lights
 type LightCollection struct {
+	// The color of the ambient light
 	AmbientLight color.Color
 
+	// All point lights of this collection
 	PointLights       []*PointLight
+	// All directional lights of this collection
 	DirectionalLights []*DirectionalLight
+	// All spot lights of this collection
 	SpotLights        []*SpotLight
 }
 
+// Adds a point light to this collection
 func (this *LightCollection) AddPointLight(pl *PointLight) {
 	this.PointLights = append(this.PointLights, pl)
 }
 
+// Adds a directional light to this collection
 func (this *LightCollection) AddDirectionalLight(pl *DirectionalLight) {
 	this.DirectionalLights = append(this.DirectionalLights, pl)
 }
 
+// Adds a spot light to this collection
 func (this *LightCollection) AddSpotLight(pl *SpotLight) {
 	this.SpotLights = append(this.SpotLights, pl)
 }
 
+// Renders all shadow maps
 func (this *LightCollection) RenderShadowMaps() {
 	for i := 0; i < len(this.DirectionalLights); i++ {
 		this.DirectionalLights[i].RenderShadowMap()
@@ -430,22 +476,28 @@ func (this *LightCollection) RenderShadowMaps() {
 	}
 }
 
+// A manager holding multiple light collections
 type LightManager struct {
+	// All light collections
 	LightCollections       []LightCollection
+	// The index of the currently used light collection
 	CurrentLightCollection int
 }
 
+// Initialises the values of the light manager
 func (this *LightManager) Init() {
 	this.LightCollections = make([]LightCollection, 1)
 	this.CurrentLightCollection = 0
 }
 
+// Updates all light collections / rendering all shadow maps
 func (this *LightManager) Update() {
 	for i := 0; i < len(this.LightCollections); i++ {
 		this.LightCollections[i].RenderShadowMaps()
 	}
 }
 
+// Sets the ambient light of the given collection
 func (this *LightManager) SetAmbientLight(color color.Color, lightCollectionIndex int) {
 	if len(this.LightCollections) == 0 {
 		this.LightCollections = make([]LightCollection, 1)
@@ -455,6 +507,7 @@ func (this *LightManager) SetAmbientLight(color color.Color, lightCollectionInde
 	this.LightCollections[lightCollectionIndex].AmbientLight = color
 }
 
+// Adds a point light to a given collection
 func (this *LightManager) AddPointLight(pl *PointLight, lightCollectionIndex int) {
 	if len(this.LightCollections) == 0 {
 		this.LightCollections = make([]LightCollection, 1)
@@ -464,6 +517,7 @@ func (this *LightManager) AddPointLight(pl *PointLight, lightCollectionIndex int
 	this.LightCollections[lightCollectionIndex].AddPointLight(pl)
 }
 
+// Adds a directional light to a given collection
 func (this *LightManager) AddDirectionalLight(pl *DirectionalLight, lightCollectionIndex int) {
 	if len(this.LightCollections) == 0 {
 		this.LightCollections = make([]LightCollection, 1)
@@ -473,6 +527,7 @@ func (this *LightManager) AddDirectionalLight(pl *DirectionalLight, lightCollect
 	this.LightCollections[lightCollectionIndex].AddDirectionalLight(pl)
 }
 
+// Adds a spot light to a given collection
 func (this *LightManager) AddSpotLight(pl *SpotLight, lightCollectionIndex int) {
 	if len(this.LightCollections) == 0 {
 		this.LightCollections = make([]LightCollection, 1)
@@ -482,12 +537,15 @@ func (this *LightManager) AddSpotLight(pl *SpotLight, lightCollectionIndex int) 
 	this.LightCollections[lightCollectionIndex].AddSpotLight(pl)
 }
 
+// Sets the current light collection index to -1, not using any lights (uses white as ambient light)
 func (this *LightManager) DisableLighting() {
 	this.CurrentLightCollection = -1
 }
 
+// Sets the current light collection index to 0
 func (this *LightManager) EnableLighting() {
 	this.CurrentLightCollection = 0
 }
 
+// The LightManager that should be used for everything
 var LightMgr LightManager
