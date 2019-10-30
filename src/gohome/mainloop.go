@@ -4,6 +4,7 @@ import (
 	"runtime"
 )
 
+// The main struct of the engine handling the start and end
 type MainLoop struct {
 	windowWidth  int
 	windowHeight int
@@ -11,6 +12,7 @@ type MainLoop struct {
 	startScene   Scene
 }
 
+// The method that starts everything, should be called in the main function
 func (ml *MainLoop) Run(fw Framework, r Renderer, ww, wh int, wt string, start_scene Scene) {
 	runtime.LockOSThread()
 	if !ml.Init(fw, r, ww, wh, wt, start_scene) {
@@ -18,6 +20,7 @@ func (ml *MainLoop) Run(fw Framework, r Renderer, ww, wh int, wt string, start_s
 	}
 }
 
+// Initialises the values and calls init on the framework
 func (this *MainLoop) Init(fw Framework, r Renderer, ww, wh int, wt string, start_scene Scene) bool {
 
 	Framew = fw
@@ -35,6 +38,7 @@ func (this *MainLoop) Init(fw Framework, r Renderer, ww, wh int, wt string, star
 
 }
 
+// Initialises the managers and starts the loop. Will be called from the framework
 func (this *MainLoop) DoStuff() {
 	this.InitWindowAndRenderer()
 	this.InitManagers()
@@ -44,6 +48,7 @@ func (this *MainLoop) DoStuff() {
 	this.Quit()
 }
 
+// Sets up the start scene
 func (this *MainLoop) SetupStartScene() {
 	if this.startScene != nil {
 		SceneMgr.SwitchScene(this.startScene)
@@ -52,6 +57,7 @@ func (this *MainLoop) SetupStartScene() {
 	}
 }
 
+// Initialises the window
 func (this *MainLoop) InitWindow() bool {
 	var err error
 	if Framew != nil {
@@ -66,6 +72,7 @@ func (this *MainLoop) InitWindow() bool {
 	return true
 }
 
+// Initialises the renderer
 func (this *MainLoop) InitRenderer() {
 	var err error
 	if Render != nil {
@@ -76,12 +83,14 @@ func (this *MainLoop) InitRenderer() {
 	}
 }
 
+// Initialises the window and the renderer
 func (this *MainLoop) InitWindowAndRenderer() {
 	if this.InitWindow() {
 		this.InitRenderer()
 	}
 }
 
+// Initialises all managers
 func (MainLoop) InitManagers() {
 	ErrorMgr.Init()
 	ResourceMgr.Init()
@@ -93,6 +102,7 @@ func (MainLoop) InitManagers() {
 	FPSLimit.Init()
 }
 
+// One iteration of the loop
 func (this *MainLoop) LoopOnce() {
 	FPSLimit.StartMeasurement()
 	this.InnerLoop()
@@ -100,12 +110,14 @@ func (this *MainLoop) LoopOnce() {
 	FPSLimit.LimitFPS()
 }
 
+// Calls LoopOnce as long as the window is open
 func (this *MainLoop) Loop() {
 	for !Framew.WindowClosed() {
 		this.LoopOnce()
 	}
 }
 
+// Will be called in LoopOnce
 func (MainLoop) InnerLoop() {
 	Framew.PollEvents()
 	UpdateMgr.Update(FPSLimit.DeltaTime)
@@ -120,6 +132,7 @@ func (MainLoop) terminateSprite2DMesh() {
 	sprite2DMesh = nil
 }
 
+// Terminates all resources of the engine
 func (this *MainLoop) Quit() {
 	defer Framew.Terminate()
 	defer Render.Terminate()
@@ -136,6 +149,7 @@ func (this *MainLoop) Quit() {
 	}
 }
 
+// Initialises the 3D shaders
 func Init3DShaders() {
 	if shader := LoadGeneratedShader3D(SHADER_TYPE_3D, 0); shader == nil {
 		if shader = LoadGeneratedShader3D(SHADER_TYPE_3D, SHADER_FLAG_NO_SHADOWS); shader == nil {
@@ -148,15 +162,18 @@ func Init3DShaders() {
 	}
 }
 
+// Initialises the 2D shaders
 func Init2DShaders() {
 	LoadGeneratedShader2D(SHADER_TYPE_SPRITE2D, 0)
 	LoadGeneratedShader2D(SHADER_TYPE_SHAPE2D, 0)
 	LoadGeneratedShader2D(SHADER_TYPE_TEXT2D, 0)
 }
 
+// Initialises all shaders
 func InitDefaultValues() {
 	Init3DShaders()
 	Init2DShaders()
 }
 
+// The MainLoop that should be used for everything
 var MainLop MainLoop
