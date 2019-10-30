@@ -16,6 +16,7 @@ const (
 )
 
 var (
+	// The relative paths in which will be searched for textures
 	TEXTURE_PATHS = []string{
 		"",
 		"textures/",
@@ -43,6 +44,7 @@ func loadImageData(img_data *[]byte, img image.Image, start_width, end_width, ma
 	}
 }
 
+// Loads a texture from path and stores it in name
 func (rsmgr *ResourceManager) LoadTexture(name, path string) Texture {
 	start := time.Now()
 
@@ -84,11 +86,13 @@ func (rsmgr *ResourceManager) LoadTexture(name, path string) Texture {
 	return tex
 }
 
+// Returns the texture with name
 func (rsmgr *ResourceManager) GetTexture(name string) Texture {
 	t := rsmgr.textures[name]
 	return t
 }
 
+// Sets the texture of name1 to name
 func (rsmgr *ResourceManager) SetTexture(name string, name1 string) {
 	s := rsmgr.textures[name1]
 	if s == nil {
@@ -99,6 +103,7 @@ func (rsmgr *ResourceManager) SetTexture(name string, name1 string) {
 	ErrorMgr.Message(ERROR_LEVEL_LOG, "Texture", name, "Set to "+name1)
 }
 
+// Deletes the texture with name from the manager
 func (rsmgr *ResourceManager) DeleteTexture(name string) {
 	if _, ok := rsmgr.textures[name]; ok {
 		rsmgr.textures[name].Terminate()
