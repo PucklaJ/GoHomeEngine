@@ -7,12 +7,18 @@ import (
 	"sync"
 )
 
+// A viewport that is on a certain part of the screen.
+// Showing a certain part of the world
 type Viewport struct {
+	// The index of the camera belonging to this viewport
 	CameraIndex         int
+	// The position and dimensions of the viewport
 	X, Y, Width, Height int
+	// Wether the viewport should adjust base don the window size
 	StrapToWindow       bool
 }
 
+// The manager that handles the rendering of all objects
 type RenderManager struct {
 	renderObjects      []RenderObject
 	afterRenderObjects []RenderObject
@@ -21,31 +27,47 @@ type RenderManager struct {
 	camera3Ds          []*Camera3D
 	viewport2Ds        []*Viewport
 	viewport3Ds        []*Viewport
+	// The projetion used for 2D objects
 	Projection2D       Projection
+	// The projection used for 3D objects
 	Projection3D       Projection
+	// If set this shader is forced onto every 3D object
 	ForceShader3D      Shader
+	// If set this shader is forced onto every 2D object
 	ForceShader2D      Shader
 
+	// The back buffer that will be rendered to the screen
+	// and onto which BackBuffer2D and 3D will be rendered
 	BackBufferMS RenderTexture
+	// The BackBuffer to which all 2D objects will be rendered
 	BackBuffer2D RenderTexture
+	// The BackBuffer to which all 3D objects will be rendered
 	BackBuffer3D RenderTexture
 
+	// The shader used for rendering the back buffers
 	BackBufferShader Shader
 
 	currentCamera2D *Camera2D
 	currentCamera3D *Camera3D
 	currentViewport *Viewport
 
+	// Wether the objects should be rendered to the back buffers or directly to the screen
 	EnableBackBuffer             bool
+	// Wether the objects should be rendered in wire frame mode
 	WireFrameMode                bool
+	// Wether the projection should be updated every frame based on the viewport
 	UpdateProjectionWithViewport bool
+	// Wether the back buffers of the last frame should be rendered before the objects
 	RenderToScreenFirst          bool
+	// If false ReRender must be set to true everytime you want to re-render the scene
 	AutoRender                   bool
+	// If true the scene will be re-rendered
 	ReRender                     bool
 
 	calculatingTransformMatricesParallel bool
 }
 
+// Initialises all values of the manager
 func (rmgr *RenderManager) Init() {
 	if Render.HasFunctionAvailable("MULTISAMPLE") {
 		bn, bv, bf := GenerateShaderBackBuffer(0)
@@ -98,6 +120,7 @@ func (rmgr *RenderManager) Init() {
 	rmgr.ReRender = true
 }
 
+// Adds a RenderObject to the scene so that it will be rendered
 func (rmgr *RenderManager) AddObject(robj RenderObject) {
 	if robj.RendersLast() {
 		rmgr.afterRenderObjects = append(rmgr.afterRenderObjects, robj)
@@ -106,6 +129,7 @@ func (rmgr *RenderManager) AddObject(robj RenderObject) {
 	}
 }
 
+// Removes a RenderObject from the scene so that it won't be rendered
 func (rmgr *RenderManager) RemoveObject(robj RenderObject) {
 	if robj.RendersLast() {
 		for i := 0; i < len(rmgr.afterRenderObjects); i++ {
@@ -243,6 +267,7 @@ func (rmgr *RenderManager) updateLights(lightCollectionIndex int, rtype RenderTy
 	}
 }
 
+// Returns the back buffer as a RenderTexture
 func (rmgr *RenderManager) GetBackBuffer() RenderTexture {
 	return rmgr.BackBufferMS
 }
@@ -337,6 +362,7 @@ func (rmgr *RenderManager) renderToScreen() {
 	}
 }
 
+// Updates the manger / renders everything
 func (rmgr *RenderManager) Update() {
 	defer func() {
 		rmgr.ReRender = rmgr.AutoRender
@@ -444,6 +470,7 @@ func (rmgr *RenderManager) renderInnerLoop(rtype RenderType, robj RenderObject, 
 	Render.AfterRender()
 }
 
+// Renders a certain render type to a certain viewport using a certain light collection
 func (rmgr *RenderManager) Render(rtype RenderType, cameraIndex, viewportIndex, lightCollectionIndex int) {
 	if len(rmgr.renderObjects) == 0 && len(rmgr.afterRenderObjects) == 0 {
 		return
@@ -475,10 +502,12 @@ func (rmgr *RenderManager) Render(rtype RenderType, cameraIndex, viewportIndex, 
 	Render.SetWireFrame(false)
 }
 
+// Renders a RenderObject (used for custom rendering)
 func (rmgr *RenderManager) RenderRenderObject(robj RenderObject) {
 	rmgr.RenderRenderObjectAdv(robj, 0, -1)
 }
 
+// Same as RenderRenderObject but with additional arguments for camera and viewport
 func (rmgr *RenderManager) RenderRenderObjectAdv(robj RenderObject, cameraIndex, viewportIndex int) {
 	rmgr.handleCurrentCameraAndViewport(robj.GetType(), cameraIndex, viewportIndex)
 
@@ -504,6 +533,7 @@ func (rmgr *RenderManager) RenderRenderObjectAdv(robj RenderObject, cameraIndex,
 	Render.SetWireFrame(false)
 }
 
+// Attaches a 2D camera to an index
 func (rmgr *RenderManager) SetCamera2D(cam *Camera2D, index int) {
 	if len(rmgr.camera2Ds) == 0 {
 		rmgr.camera2Ds = make([]*Camera2D, 1)
@@ -514,6 +544,7 @@ func (rmgr *RenderManager) SetCamera2D(cam *Camera2D, index int) {
 	rmgr.camera2Ds[index] = cam
 }
 
+// Attaches a 3D camera to an index
 func (rmgr *RenderManager) SetCamera3D(cam *Camera3D, index int) {
 	if len(rmgr.camera3Ds) == 0 {
 		rmgr.camera3Ds = make([]*Camera3D, 1)
@@ -524,14 +555,17 @@ func (rmgr *RenderManager) SetCamera3D(cam *Camera3D, index int) {
 	rmgr.camera3Ds[index] = cam
 }
 
+// Adds a 2D viewport to the scene
 func (rmgr *RenderManager) AddViewport2D(viewport *Viewport) {
 	rmgr.viewport2Ds = append(rmgr.viewport2Ds, viewport)
 }
 
+// Adds a 3D viewport to the scene
 func (rmgr *RenderManager) AddViewport3D(viewport *Viewport) {
 	rmgr.viewport3Ds = append(rmgr.viewport3Ds, viewport)
 }
 
+// Sets the 2D viewport of a certain index
 func (rmgr *RenderManager) SetViewport2D(viewport *Viewport, index int) {
 	if len(rmgr.viewport2Ds) == 0 {
 		rmgr.viewport2Ds = make([]*Viewport, 1)
@@ -542,6 +576,7 @@ func (rmgr *RenderManager) SetViewport2D(viewport *Viewport, index int) {
 	rmgr.viewport2Ds[index] = viewport
 }
 
+// Sets the 3D viewport of a certain index
 func (rmgr *RenderManager) SetViewport3D(viewport *Viewport, index int) {
 	if len(rmgr.viewport3Ds) == 0 {
 		rmgr.viewport3Ds = make([]*Viewport, 1)
@@ -564,14 +599,17 @@ func (rmgr *RenderManager) setTransformMatrix3D(mat mgl32.Mat4) {
 	}
 }
 
+// Sets the projection used for 2D rendering
 func (rmgr *RenderManager) SetProjection2D(proj Projection) {
 	rmgr.Projection2D = proj
 }
 
+// Sets the projection used for 3D rendering
 func (rmgr *RenderManager) SetProjection3D(proj Projection) {
 	rmgr.Projection3D = proj
 }
 
+// Cleans everything up
 func (rmgr *RenderManager) Terminate() {
 	if rmgr.BackBufferMS != nil {
 		rmgr.BackBufferMS.Terminate()
@@ -590,6 +628,7 @@ func (rmgr *RenderManager) Terminate() {
 	rmgr.viewport3Ds = append(rmgr.viewport3Ds[:0], rmgr.viewport3Ds[len(rmgr.viewport3Ds):]...)
 }
 
+// Updates the viewport based on a viewport of the GPU
 func (rmgr *RenderManager) UpdateViewports(current Viewport, previous Viewport) {
 	var xRel, yRel, widthRel, heightRel float32
 
@@ -637,6 +676,7 @@ func (rmgr *RenderManager) clearToBackgroundColor() {
 	Render.ClearScreen(newCol)
 }
 
+// Takes the dimensions of a texture and uses it for a projection
 func (rmgr *RenderManager) SetProjection2DToTexture(texture Texture) {
 	rmgr.Projection2D = &Ortho2DProjection{
 		Left:   0.0,
@@ -646,14 +686,17 @@ func (rmgr *RenderManager) SetProjection2DToTexture(texture Texture) {
 	}
 }
 
+// Updates the 2D projection using the viewport of viewportIndex
 func (rmgr *RenderManager) UpdateProjection2D(viewportIndex int32) {
 	if viewportIndex >= 0 && viewportIndex < int32(len(rmgr.viewport2Ds)) {
 		rmgr.Projection2D.Update(*rmgr.viewport2Ds[viewportIndex])
 	}
 }
 
+// Returns the number of currently added RenderObjects
 func (rmgr *RenderManager) NumRenderObjects() int {
 	return len(rmgr.renderObjects) + len(rmgr.afterRenderObjects)
 }
 
+// The RenderManager that should be used for everything
 var RenderMgr RenderManager
