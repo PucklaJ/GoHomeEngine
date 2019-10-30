@@ -16,17 +16,27 @@ const (
 	FAR_LEFT_UP     = 7
 )
 
+// A projection that is used to correctly display the objects on the screen
 type Projection interface {
+	// Calculates the projection matrix used in the shader
 	CalculateProjectionMatrix()
+	// Returns the projection matrix
 	GetProjectionMatrix() mgl32.Mat4
+	// Updates the projection with the new viewport
 	Update(newViewport Viewport)
+	// Returns the view frustum
 	GetFrustum() [8]mgl32.Vec3
 }
 
+// A 2-dimensional orthogonal projection
 type Ortho2DProjection struct {
+	// The left most value
 	Left   float32
+	// The right most value
 	Right  float32
+	// The bottom mose value
 	Bottom float32
+	// The top most value
 	Top    float32
 
 	oldLeft   float32
@@ -70,11 +80,17 @@ func (o2Dp *Ortho2DProjection) GetFrustum() [8]mgl32.Vec3 {
 	return [8]mgl32.Vec3{}
 }
 
+// A 3-dimensional perspective projection
 type PerspectiveProjection struct {
+	// The width of the viewport
 	Width     float32
+	// The height of the viewport
 	Height    float32
+	// The field of view
 	FOV       float32
+	// The near plane at which objects start to clip away
 	NearPlane float32
+	// The far plane at which the objects start to clip away
 	FarPlane  float32
 
 	oldWidth     float32
@@ -146,6 +162,7 @@ func (pp *PerspectiveProjection) GetFrustum() [8]mgl32.Vec3 {
 	return points
 }
 
+// A projection doing nothing
 type IdentityProjection struct {
 }
 
@@ -165,12 +182,19 @@ func (IdentityProjection) GetFrustum() [8]mgl32.Vec3 {
 	return [8]mgl32.Vec3{}
 }
 
+// A 3-dimensional orthogonal projection
 type Ortho3DProjection struct {
+	// The left most point
 	Left   float32
+	// The right most point
 	Right  float32
+	// The bottom most point
 	Bottom float32
+	// The top most point
 	Top    float32
+	// The near plane
 	Near   float32
+	// The far plane
 	Far    float32
 
 	oldLeft   float32
