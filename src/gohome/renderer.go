@@ -5,46 +5,81 @@ import (
 	"image/color"
 )
 
+// This interface handles every low level rendering operation
 type Renderer interface {
+	// Initialises the renderer
 	Init() error
+	// Gets called after the initialisation of the engine
 	AfterInit()
+	// Cleans everything up
 	Terminate()
+	// Clears the screen with the given color
 	ClearScreen(c color.Color)
+	// Loads a shader given the contents of shaders
 	LoadShader(name, vertex_contents, fragment_contents, geometry_contents, tesselletion_control_contents, eveluation_contents, compute_contents string) (Shader, error)
+	// Creates a texture without data
 	CreateTexture(name string, multiSampled bool) Texture
+	// Creates a Mesh2D
 	CreateMesh2D(name string) Mesh2D
+	// Creates a Mesh3D
 	CreateMesh3D(name string) Mesh3D
+	// Creates a RenderTexture from the given parameters
 	CreateRenderTexture(name string, width, height, textures int, depthBuffer, multiSampled, shadowMap, cubeMap bool) RenderTexture
+	// Creates a cube map
 	CreateCubeMap(name string) CubeMap
+	// Creates an instanced mesh 3d
 	CreateInstancedMesh3D(name string) InstancedMesh3D
+	// Creates a shape 3d interface
 	CreateShape3DInterface(name string) Shape3DInterface
+	// Creates a shape 2d interface
 	CreateShape2DInterface(name string) Shape2DInterface
+	// Enables or disables wire frame render mode
 	SetWireFrame(b bool)
+	// Sets the current viewport for the GPU
 	SetViewport(viewport Viewport)
+	// Returns the current viewport of the GPU
 	GetViewport() Viewport
+	// Sets the resolution of the back buffer
 	SetNativeResolution(width, height int)
+	// Returns the resolution of the back buffer
 	GetNativeResolution() mgl32.Vec2
+	// Gets called when the window resizes
 	OnResize(newWidth, newHeight int)
+	// Gets called before rendering a RenderObject
 	PreRender()
+	// Gets called after rendering a RenderObject
 	AfterRender()
+	// Sets the clear color
 	SetBackgroundColor(bgColor color.Color)
+	// Returns the clear color
 	GetBackgroundColor() color.Color
+	// Returns the name of the renderer
 	GetName() string
 
+	// Calls the draw methods of the back buffer
 	RenderBackBuffer()
 
+	// Enable or disable back face culling
 	SetBacckFaceCulling(b bool)
+	// Enable or disable depth testing
 	SetDepthTesting(b bool)
+	// Returns the number maximum textures supported by the GPU
 	GetMaxTextures() int
+	// Increments the texture unit used for textures
 	NextTextureUnit() uint32
+	// Decrements the texture unit used for textures
 	DecrementTextureUnit(amount uint32)
+	// Returns wether the given function is supported by the hardware
 	HasFunctionAvailable(name string) bool
 
+	// Returns a InstancedMesh3D created from an already loaded Mesh3D
 	InstancedMesh3DFromLoadedMesh3D(mesh Mesh3D) InstancedMesh3D
 }
 
+// The Renderer that should be used for everything
 var Render Renderer
 
+// An implementation of Renderer that does nothing
 type NilRenderer struct {
 }
 
