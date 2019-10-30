@@ -8,25 +8,43 @@ const (
 	MESH3DVERTEXSIZE = 3*4 + 3*4 + 2*4 + 3*4
 )
 
+// A 3D mesh consisting of geometry used for 3D rendering
 type Mesh3D interface {
+	// Add vertices and indices to the mesh
 	AddVertices(vertices []Mesh3DVertex, indices []uint32)
+	// Load vertices and indices to the GPU
 	Load()
+	// Bind the material and call the draw method on the data
 	Render()
+	// Cleans everything up
 	Terminate()
+	// Sets the material of the mesh
 	SetMaterial(mat *Material)
+	// Returns the material of the mesh
 	GetMaterial() *Material
+	// Returns the name of the mesh
 	GetName() string
+	// Returns the number of vertices of the mesh
 	GetNumVertices() int
+	// Returns the number of indices of the mesh
 	GetNumIndices() int
+	// Returns all the vertices of the mesh
 	GetVertices() []Mesh3DVertex
+	// Returns all the indices of the mesh
 	GetIndices() []uint32
+	// Calculates all tangents used for the normal map
 	CalculateTangents()
+	// Returns wether this mesh has UV coordinates
 	HasUV() bool
+	// Returns the bounding box around the mesh
 	AABB() AxisAlignedBoundingBox
+	// Creates a copy of this mesh
 	Copy() Mesh3D
+	// Returns wether Load has been called
 	LoadedToGPU() bool
 }
 
+// Creates a box with the given dimensions
 func Box(name string, size mgl32.Vec3, loadToGPU bool) Mesh3D {
 
 	boxMesh := Render.CreateMesh3D(name)
@@ -283,6 +301,8 @@ func Box(name string, size mgl32.Vec3, loadToGPU bool) Mesh3D {
 	return boxMesh
 }
 
+// Creates a plane from the given dimensions. 
+// textures defines the scale of the uv coordinates
 func Plane(name string, size mgl32.Vec2, textures float32, loadToGPU bool) Mesh3D {
 	// xAxis := up.Cross([3]float32{0.0, 0.0, 1.0})
 	// yAxis := up
@@ -367,6 +387,7 @@ func Plane(name string, size mgl32.Vec2, textures float32, loadToGPU bool) Mesh3
 	return mesh
 }
 
+// An implementation of Mesh3D that does nothing
 type NilMesh3D struct {
 }
 
