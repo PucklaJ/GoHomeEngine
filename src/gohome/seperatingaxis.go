@@ -4,6 +4,7 @@ import (
 	"github.com/PucklaMotzer09/mathgl/mgl32"
 )
 
+// Returns wether two Polygons are intersecting
 func AreIntersecting(p1, p2 *PolygonMath2D) bool {
 	vertices1 := *p1
 	vertices2 := *p2
@@ -48,6 +49,7 @@ func AreIntersecting(p1, p2 *PolygonMath2D) bool {
 	return true
 }
 
+// Returns wether a polygon is intersecting with a point
 func AreIntersectingPoint(p1 *PolygonMath2D, point mgl32.Vec2) bool {
 	vertices1 := *p1
 	vertices2 := []mgl32.Vec2{point}
