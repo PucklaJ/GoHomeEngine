@@ -1,7 +1,9 @@
 package gohome
 
+// The type that represents a keyboard key and the mouse buttons
 type Key uint8
 
+// Every key and mouse button as an enum value
 const (
 	KeyUnknown      Key = iota
 	KeySpace        Key = iota
