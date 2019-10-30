@@ -1,6 +1,7 @@
 package gohome
 
 var (
+	// The relative paths in which is search for audio
 	MUSIC_SOUND_PATHS = [8]string{
 		"",
 		"sounds/",
@@ -13,10 +14,12 @@ var (
 	}
 )
 
+// Returns the sound with name
 func (rsmgr *ResourceManager) GetSound(name string) Sound {
 	return rsmgr.sounds[name]
 }
 
+// Returns the music with name
 func (rsmgr *ResourceManager) GetMusic(name string) Music {
 	return rsmgr.musics[name]
 }
@@ -35,6 +38,7 @@ func (rsmgr *ResourceManager) checkMusic(name, path string) bool {
 	return true
 }
 
+// Loads a music from path and stores it with name
 func (rsmgr *ResourceManager) LoadMusic(name, path string) Music {
 	if !rsmgr.checkMusic(name, path) {
 		return nil
@@ -66,6 +70,8 @@ func (rsmgr *ResourceManager) checkSound(name, path string) bool {
 	return true
 }
 
+
+// Loads a sound from path and stores it in name
 func (rsmgr *ResourceManager) LoadSound(name, path string) Sound {
 	if !rsmgr.checkSound(name, path) {
 		return nil
@@ -83,6 +89,7 @@ func (rsmgr *ResourceManager) LoadSound(name, path string) Sound {
 	return nil
 }
 
+// Deletes the sound with name from the manager
 func (rsmgr *ResourceManager) DeleteSound(name string) {
 	sound, ok := rsmgr.sounds[name]
 	if ok {
@@ -95,6 +102,7 @@ func (rsmgr *ResourceManager) DeleteSound(name string) {
 	}
 }
 
+// Deletes the music with name from the manager
 func (rsmgr *ResourceManager) DeleteMusic(name string) {
 	music, ok := rsmgr.musics[name]
 	if ok {
