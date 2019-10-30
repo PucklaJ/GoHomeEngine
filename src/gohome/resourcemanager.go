@@ -5,6 +5,7 @@ import (
 	"github.com/blezek/tga"
 )
 
+// The manager that handles all resources
 type ResourceManager struct {
 	textures          map[string]Texture
 	shaders           map[string]Shader
@@ -16,9 +17,11 @@ type ResourceManager struct {
 	tmxmaps           map[string]*tmx.Map
 	resourceFileNames map[string]string
 
+	// Wether models can have the same name
 	LoadModelsWithSameName bool
 }
 
+// Initialises all values of the manager
 func (rsmgr *ResourceManager) Init() {
 	rsmgr.textures = make(map[string]Texture)
 	rsmgr.shaders = make(map[string]Shader)
@@ -34,6 +37,7 @@ func (rsmgr *ResourceManager) Init() {
 	rsmgr.LoadModelsWithSameName = false
 }
 
+// Cleans everything up
 func (rsmgr *ResourceManager) Terminate() {
 	for k, v := range rsmgr.shaders {
 		v.Terminate()
@@ -78,4 +82,5 @@ func (rsmgr *ResourceManager) deleteResourceFileName(name string) {
 	}
 }
 
+// The ResourceManager that should be used for everything
 var ResourceMgr ResourceManager
