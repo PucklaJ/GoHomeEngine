@@ -6,6 +6,7 @@ import (
 )
 
 var (
+	// The relative paths in which will be searched for levels
 	LEVEL_PATHS = [6]string{
 		"",
 		"models/",
@@ -14,6 +15,7 @@ var (
 		"assets/models/",
 		"assets/levels/",
 	}
+	// The relative paths in which will be searched for materials
 	MATERIAL_PATHS = [8]string{
 		"",
 		"models/",
@@ -26,11 +28,13 @@ var (
 	}
 )
 
+// Returns the level with name
 func (rsmgr *ResourceManager) GetLevel(name string) *Level {
 	l := rsmgr.Levels[name]
 	return l
 }
 
+// Sets the level with name1 to name
 func (rsmgr *ResourceManager) SetLevel(name string, name1 string) {
 	s := rsmgr.Levels[name1]
 	if s == nil {
@@ -53,6 +57,7 @@ func getNameForAlreadyLoadedLevel(rsmgr *ResourceManager, name string) string {
 	return newName
 }
 
+// Deletes the level with name from the manager
 func (rsmgr *ResourceManager) DeleteLevel(name string) {
 	if _, ok := rsmgr.Levels[name]; ok {
 		delete(rsmgr.Levels, name)
@@ -63,6 +68,7 @@ func (rsmgr *ResourceManager) DeleteLevel(name string) {
 	}
 }
 
+// Loads the level from the file contents
 func (rsmgr *ResourceManager) LoadLevelString(name, contents, fileName string, loadToGPU bool) *Level {
 	start := time.Now()
 	level := Framew.LoadLevelString(name, contents, fileName, loadToGPU)
@@ -74,6 +80,7 @@ func (rsmgr *ResourceManager) LoadLevelString(name, contents, fileName string, l
 	return level
 }
 
+// Loads the level from path and stores it in name
 func (rsmgr *ResourceManager) LoadLevel(name, path string, loadToGPU bool) *Level {
 	start := time.Now()
 	if resName, ok := rsmgr.resourceFileNames[path]; ok {
@@ -93,11 +100,13 @@ func (rsmgr *ResourceManager) LoadLevel(name, path string, loadToGPU bool) *Leve
 	return level
 }
 
+// Returns the model with name
 func (rsmgr *ResourceManager) GetModel(name string) *Model3D {
 	m := rsmgr.Models[name]
 	return m
 }
 
+// Deletes the model with name from the manager
 func (rsmgr *ResourceManager) DeleteModel(name string) {
 	if _, ok := rsmgr.Models[name]; ok {
 		rsmgr.Models[name].Terminate()
