@@ -6,6 +6,7 @@ import (
 )
 
 var (
+	// The relative paths in which will be searched for shaders
 	SHADER_PATHS = [4]string{
 		"",
 		"shaders/",
@@ -47,6 +48,7 @@ func loadShader(path, name_shader, name string) chan string {
 	return rv
 }
 
+// Loads a shader from the given paths and stores it in name
 func (rsmgr *ResourceManager) LoadShader(name, vertex_path, fragment_path, geometry_path, tesselletion_control_path, eveluation_path, compute_path string) Shader {
 	_, already := rsmgr.shaders[name]
 	if already {
@@ -105,6 +107,7 @@ func (rsmgr *ResourceManager) LoadShader(name, vertex_path, fragment_path, geome
 	return shader
 }
 
+// Loads a shader from file contents
 func (rsmgr *ResourceManager) LoadShaderSource(name, vertex, fragment, geometry, tesselletion_control, eveluation, compute string) Shader {
 	if _, ok := rsmgr.shaders[name]; ok {
 		ErrorMgr.Error("Shader", name, "Has already been loaded")
@@ -120,11 +123,13 @@ func (rsmgr *ResourceManager) LoadShaderSource(name, vertex, fragment, geometry,
 	return shader
 }
 
+// Returns the shader with name
 func (rsmgr *ResourceManager) GetShader(name string) Shader {
 	s := rsmgr.shaders[name]
 	return s
 }
 
+// Sets the shader with name1 to name
 func (rsmgr *ResourceManager) SetShader(name string, name1 string) {
 	s := rsmgr.shaders[name1]
 	if s == nil {
@@ -135,6 +140,7 @@ func (rsmgr *ResourceManager) SetShader(name string, name1 string) {
 	ErrorMgr.Message(ERROR_LEVEL_LOG, "Shader", name, "Set to "+name1)
 }
 
+// Deletes the shader with name from the manager
 func (rsmgr *ResourceManager) DeleteShader(name string) {
 	if _, ok := rsmgr.shaders[name]; ok {
 		rsmgr.shaders[name].Terminate()
