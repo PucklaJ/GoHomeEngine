@@ -5,6 +5,7 @@ import (
 )
 
 var (
+	// The relative paths in which is search for fonts
 	FONT_PATHS = [4]string{
 		"",
 		"fonts/",
@@ -13,6 +14,7 @@ var (
 	}
 )
 
+// Returns the font width name
 func (rsmgr *ResourceManager) GetFont(name string) *Font {
 	font := rsmgr.fonts[name]
 	return font
@@ -32,6 +34,7 @@ func (rsmgr *ResourceManager) checkFont(name, path string) bool {
 	return true
 }
 
+// Loads the font from path and stores it in name
 func (rsmgr *ResourceManager) LoadFont(name, path string) *Font {
 	if !rsmgr.checkFont(name, path) {
 		return nil
@@ -66,6 +69,7 @@ func (rsmgr *ResourceManager) LoadFont(name, path string) *Font {
 	return nil
 }
 
+// Deletes the font with name from the manager
 func (rsmgr *ResourceManager) DeleteFont(name string) {
 	if _, ok := rsmgr.fonts[name]; ok {
 		delete(rsmgr.fonts, name)
