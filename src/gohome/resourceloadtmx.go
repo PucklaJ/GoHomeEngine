@@ -6,6 +6,7 @@ import (
 )
 
 var (
+	// The relative paths in which will be searched for tmx files
 	TMX_MAP_PATHS = [4]string{
 		"",
 		"maps/",
@@ -14,6 +15,7 @@ var (
 	}
 )
 
+// Deletes the tmx map with name from the manager
 func (rsmgr *ResourceManager) DeleteTMXMap(name string) {
 	_, ok := rsmgr.tmxmaps[name]
 	if ok {
@@ -38,6 +40,7 @@ func (rsmgr *ResourceManager) checkTMXMap(name, path string) bool {
 	return true
 }
 
+// Loads the tmx map from path and stores it in name
 func (rsmgr *ResourceManager) LoadTMXMap(name, path string) *tmx.Map {
 	if !rsmgr.checkTMXMap(name, path) {
 		return nil
@@ -65,6 +68,7 @@ func (rsmgr *ResourceManager) LoadTMXMap(name, path string) *tmx.Map {
 	return tmxmap
 }
 
+// Returns the tmx map with name
 func (rsmgr *ResourceManager) GetTMXMap(name string) *tmx.Map {
 	return rsmgr.tmxmaps[name]
 }
