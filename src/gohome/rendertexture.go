@@ -5,30 +5,53 @@ import (
 	"image/color"
 )
 
+// A Texture to which you can render
 type RenderTexture interface {
-	Load(data []byte, width, height int, shadowMap bool) // Is not used. It there just make RenderTexture able to be a Texture
+	// Is not used. It there just make RenderTexture able to be a Texture
+	Load(data []byte, width, height int, shadowMap bool)
+	// Is not used. It there just make RenderTexture able to be a Texture
 	LoadFromImage(img image.Image)
+	// Returns the name of the texture
 	GetName() string
+	// Renders everything after that to this render texture
 	SetAsTarget()
+	// Renders everything to the previously set render target or to the screen
 	UnsetAsTarget()
+	// Copies the contents of this render texture to rtex
 	Blit(rtex RenderTexture)
+	// Binds this texture to unit
 	Bind(unit uint32)
+	// Unbinds this texture
 	Unbind(unit uint32)
+	// Returns the width of the texture in pixels
 	GetWidth() int
+	// Returns the height of the texture in pixels
 	GetHeight() int
+	// Returns the key color
 	GetKeyColor() color.Color
+	// Returns the modulate color
 	GetModColor() color.Color
+	// Recreates the texture with a new size
 	ChangeSize(width, height int)
+	// Cleans everything up
 	Terminate()
+	// Sets the filter method used for this texture
 	SetFiltering(filtering int)
+	// Sets the wrapping method used for this texture
 	SetWrapping(wrapping int)
+	// Sets the border color for this texture
 	SetBorderColor(col color.Color)
+	// Sets the border depth for this texture
 	SetBorderDepth(depth float32)
+	// Sets the key color which tells the texture which color should be ignored
 	SetKeyColor(col color.Color)
+	// Sets the modulate color
 	SetModColor(col color.Color)
+	// Returns the pixels of the texture as a byte array
 	GetData() ([]byte, int, int)
 }
 
+// An implementation of RenderTexture that does nothing
 type NilRenderTexture struct {
 }
 
