@@ -6,6 +6,7 @@ import (
 	"sync"
 )
 
+// The different filtering and wrapping methods based on OpenGL
 const (
 	FILTERING_NEAREST                = iota
 	FILTERING_LINEAR                 = iota
@@ -18,26 +19,45 @@ const (
 	WRAPPING_MIRRORED_REPEAT = iota
 )
 
+// A texture or an image in memory
 type Texture interface {
+	// Creates the texture from pixels and its dimensions
 	Load(data []byte, width, height int, shadowMap bool)
+	// Creates the texture from an image
 	LoadFromImage(img image.Image)
+	// Binds the texture to a binding point
 	Bind(unit uint32)
+	// Unbinds the texture (unit needs to be the same as in Bind)
 	Unbind(unit uint32)
+	// Returns the width of the texture in pixels
 	GetWidth() int
+	// Returns the height of the texture in pixels
 	GetHeight() int
+	// Returns the key color that will be ignored when rendering
 	GetKeyColor() color.Color
+	// Returns the modulate color that will be multiplied with the texture's color
 	GetModColor() color.Color
+	// Cleans everything up
 	Terminate()
+	// Sets the filtering method
 	SetFiltering(filtering int)
+	// Sets the wrapping method
 	SetWrapping(wrapping int)
+	// Sets the border color used with WRAPPING_CLAMP_TO_BORDER
 	SetBorderColor(col color.Color)
+	// Sets the border depth used for shadow maps
 	SetBorderDepth(depth float32)
+	// Sets the key color
 	SetKeyColor(col color.Color)
+	// Sets the modulate color
 	SetModColor(col color.Color)
+	// Returns the name of this texture
 	GetName() string
+	// Returns the pixels and its dimensions
 	GetData() ([]byte, int, int)
 }
 
+// Converts a texture to an image
 func TextureToImage(tex Texture, flipX, flipY bool) image.Image {
 	var wg sync.WaitGroup
 	data, width, height := tex.GetData()
@@ -82,6 +102,7 @@ func TextureToImage(tex Texture, flipX, flipY bool) image.Image {
 	return img
 }
 
+// Converts pixel data to a color
 func GetColorFromData(x, y int, data []byte, width int) color.Color {
 	return &Color{
 		R: data[(x+y*width)*4+0],
@@ -91,6 +112,7 @@ func GetColorFromData(x, y int, data []byte, width int) color.Color {
 	}
 }
 
+// An implementation of Texture that does nothing
 type NilTexture struct {
 }
 
