@@ -12,6 +12,7 @@ type sprite2DConfiguration struct {
 	Region      TextureRegion
 }
 
+// A tmx map as a RenderObject
 type TiledMap struct {
 	Sprite2D
 	*tmx.Map
@@ -19,6 +20,7 @@ type TiledMap struct {
 	layers []Texture
 }
 
+// Converts a hex character to its decimal value
 func HEXToUint4(str byte) uint8 {
 	switch str {
 	case '0':
@@ -58,6 +60,7 @@ func HEXToUint4(str byte) uint8 {
 	return 0
 }
 
+// Converts to hex characters to its integer value
 func HEXToUint8(str string) uint8 {
 	var first, second uint8
 	first = HEXToUint4(str[0])
@@ -65,6 +68,7 @@ func HEXToUint8(str string) uint8 {
 	return (first << 4) | second
 }
 
+// Converts a hex color value into a real color
 func HEXToColor(str string) color.Color {
 	col := &Color{}
 	col.R = HEXToUint8(str[1:3])
@@ -74,6 +78,7 @@ func HEXToColor(str string) color.Color {
 	return col
 }
 
+// Initialises the TiledMap with a tmx map file stored in the resource manager
 func (this *TiledMap) Init(tmxmapname string) {
 	tmxmap := ResourceMgr.GetTMXMap(tmxmapname)
 
