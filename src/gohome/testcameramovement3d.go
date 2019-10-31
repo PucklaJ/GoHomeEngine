@@ -6,12 +6,17 @@ const (
 	TEST_CAMERA_MOVEMENT_MOVE_SPEED_MAGNIFIER float32 = 5.0
 )
 
+// A struct used to add some camera movement to the game. 
+// Useful for testing
 type TestCameraMovement3D struct {
 	cam       *Camera3D
+	// The speed in which the camera moves
 	MoveSpeed float32
+	// The speed in which the camera rotates
 	LookSpeed float32
 }
 
+// Initialises the object with a camera
 func (this *TestCameraMovement3D) Init(cam *Camera3D) {
 	this.cam = cam
 	this.cam.Init()
