@@ -6,14 +6,19 @@ import (
 	"github.com/PucklaMotzer09/mathgl/mgl32"
 )
 
+// Connects a transformable object with a body and updates the position and rotation
 type PhysicsConnector2D struct {
+	// The transform to which this object is connected to
 	Transform *gohome.TransformableObject2D
+	// The body to which this object is connected to
 	Body      *box2d.B2Body
+	// The offset from the body
 	Offset    mgl32.Vec2
 
 	pmgr *PhysicsManager2D
 }
 
+// Initialises the values
 func (this *PhysicsConnector2D) Init(tobj *gohome.TransformableObject2D, body *box2d.B2Body, pmgr *PhysicsManager2D) {
 	this.Transform = tobj
 	this.Body = body
@@ -21,6 +26,7 @@ func (this *PhysicsConnector2D) Init(tobj *gohome.TransformableObject2D, body *b
 	this.pmgr = pmgr
 }
 
+// Gets called by the physics manager
 func (this *PhysicsConnector2D) Update() {
 	pixelPos := ToPixelCoordinates(this.Body.GetPosition())
 	offset := this.Transform.Origin.Sub(mgl32.Vec2{0.5, 0.5})
@@ -30,6 +36,7 @@ func (this *PhysicsConnector2D) Update() {
 	this.Transform.Rotation = ToPixelAngle(this.Body.GetAngle())
 }
 
+// Removes this connector from the manager
 func (this *PhysicsConnector2D) Terminate() {
 	for i := 0; i < len(this.pmgr.connectors); i++ {
 		if this.pmgr.connectors[i] == this {
