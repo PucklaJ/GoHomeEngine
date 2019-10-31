@@ -4,10 +4,13 @@ import (
 	"strconv"
 )
 
+// An object that gets updated in every frame
 type UpdateObject interface {
+	// Gets called every frame with the time elapsed from the last frame to the current in seconds
 	Update(delta_time float32)
 }
 
+// This manager handles the updating of all objects
 type UpdateManager struct {
 	updateObjects []UpdateObject
 	breakLoop     bool
@@ -16,10 +19,12 @@ type UpdateManager struct {
 func (upmgr *UpdateManager) Init() {
 }
 
+// Adds an object to the loop
 func (upmgr *UpdateManager) AddObject(upobj UpdateObject) {
 	upmgr.updateObjects = append(upmgr.updateObjects, upobj)
 }
 
+// Removes an object from the loop
 func (upmgr *UpdateManager) RemoveObject(upobj UpdateObject) {
 	for i := 0; i < len(upmgr.updateObjects); i++ {
 		if upmgr.updateObjects[i] == upobj {
@@ -29,10 +34,12 @@ func (upmgr *UpdateManager) RemoveObject(upobj UpdateObject) {
 	}
 }
 
+// Tells the manager to break out of the update loop
 func (upmgr *UpdateManager) BreakUpdateLoop() {
 	upmgr.breakLoop = true
 }
 
+// Gets called every frame from the framework
 func (upmgr *UpdateManager) Update(delta_time float32) {
 	upmgr.breakLoop = false
 	var obj UpdateObject
@@ -55,6 +62,7 @@ func (upmgr *UpdateManager) Update(delta_time float32) {
 	}
 }
 
+// Removes all update objects
 func (upmgr *UpdateManager) Terminate() {
 	if len(upmgr.updateObjects) == 0 {
 		return
@@ -63,8 +71,10 @@ func (upmgr *UpdateManager) Terminate() {
 	upmgr.updateObjects = append(upmgr.updateObjects[:0], upmgr.updateObjects[len(upmgr.updateObjects):]...)
 }
 
+// Returns the number of currently attached update objects
 func (upmgr *UpdateManager) NumUpdateObjects() int {
 	return len(upmgr.updateObjects)
 }
 
+// The UpdateManager that should be used for everything
 var UpdateMgr UpdateManager
