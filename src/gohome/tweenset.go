@@ -1,8 +1,12 @@
 package gohome
 
+// A struct that holds multiple tweens and so creates an animation
 type Tweenset struct {
+	// All the tweens
 	Tweens        []Tween
+	// Wether this should loop
 	Loop          bool
+	// Wether this should loop backwards
 	LoopBackwards bool
 
 	currentTweens        []Tween
@@ -17,32 +21,39 @@ type Tweenset struct {
 	done                 bool
 }
 
+// Sets which object to apply this animation to
 func (this *Tweenset) SetParent(twobj interface{}) {
 	this.parent = twobj
 }
 
+// Pauses the animation
 func (this *Tweenset) Pause() {
 	this.paused = true
 }
 
+// Resumes the animation if it has been paused
 func (this *Tweenset) Resume() {
 	this.paused = false
 }
 
+// Stops the animation and resets all tweens
 func (this *Tweenset) Stop() {
 	this.Reset()
 }
 
+// Starts the animation and restarts it if it has been started
 func (this *Tweenset) Start() {
 	this.Reset()
 	this.paused = false
 	this.done = false
 }
 
+// Returns wether this animation has finished (if this animation loops it will never return true)
 func (this *Tweenset) Done() bool {
 	return this.done
 }
 
+// Updates all the tweens
 func (this *Tweenset) Update(delta_time float32) {
 	if this.paused {
 		return
@@ -110,6 +121,7 @@ func (this *Tweenset) shouldAddNewTweens() bool {
 	return allAlways || tweenBeforeNextEnded
 }
 
+// Resets all tweens to the start values
 func (this *Tweenset) Reset() {
 	if len(this.currentTweens) != 0 {
 		this.currentTweens = this.currentTweens[:0]
@@ -203,6 +215,7 @@ func (this *Tweenset) hasAlreadyBeenAdded(i int) bool {
 	return false
 }
 
+// Combines one tweenset with another
 func (this Tweenset) Merge(other Tweenset) Tweenset {
 	var otherTweens []Tween
 	otherTweens = make([]Tween, len(other.Tweens))
@@ -213,10 +226,16 @@ func (this Tweenset) Merge(other Tweenset) Tweenset {
 	return this
 }
 
+// Creates a sprite animation.
+// texture is the Texture used by the animation.
+// framesx tells how much frames are on the x axis.
+// framesy tells how much frames are on the y axis.
+// frametime tells how long one frame should last.
 func SpriteAnimation2D(texture Texture, framesx, framesy int, frametime float32) Tweenset {
 	return SpriteAnimation2DOffset(texture, framesx, framesy, 0, 0, 0, 0, frametime)
 }
 
+// Creates a sprite animation using multiple textures
 func SpriteAnimation2DTextures(textures []Texture, frametime float32) Tweenset {
 	var anim Tweenset
 
@@ -231,6 +250,7 @@ func SpriteAnimation2DTextures(textures []Texture, frametime float32) Tweenset {
 	return anim
 }
 
+// Creates a sprite animation using multiple texture regions
 func SpriteAnimation2DRegions(regions []TextureRegion, frametime float32) Tweenset {
 	var anim Tweenset
 
@@ -245,6 +265,8 @@ func SpriteAnimation2DRegions(regions []TextureRegion, frametime float32) Tweens
 	return anim
 }
 
+// Creates a sprite animation (same as SpriteAnimation2D)
+// with additional offsets that define where the frames start and end on the texture
 func SpriteAnimation2DOffset(texture Texture, framesx, framesy, offsetx1, offsety1, offsetx2, offsety2 int, frametime float32) Tweenset {
 	var regions []TextureRegion
 	var keywidth, keyheight float32
