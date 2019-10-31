@@ -4,9 +4,13 @@ import (
 	"github.com/PucklaMotzer09/mathgl/mgl32"
 )
 
+// A tween that moves its parent to a certain position
 type TweenPosition2D struct {
+	// The position to which the parent should move
 	Destination mgl32.Vec2
+	// The time in which it should do this in seconds
 	Time        float32
+	// The type of this tween
 	TweenType   uint8
 
 	transform   *TransformableObject2D
@@ -61,9 +65,13 @@ func (this *TweenPosition2D) Copy() Tween {
 	return &TweenPosition2D{Destination: this.Destination, Time: this.Time, TweenType: this.TweenType}
 }
 
+// A tween that rotates its parent to a certain rotation
 type TweenRotation2D struct {
+	// The rotation to which it should rotate
 	Destination float32
+	// The time in which it should do this
 	Time        float32
+	// The type of this tween
 	TweenType   uint8
 
 	transform   *TransformableObject2D
@@ -118,8 +126,11 @@ func (this *TweenRotation2D) Copy() Tween {
 	return &TweenRotation2D{Destination: this.Destination, Time: this.Time, TweenType: this.TweenType}
 }
 
+// A tween that does nothing for a given amount of time
 type TweenWait struct {
+	// The amount of time it should do nothing in seconds
 	Time      float32
+	// The type of this tween
 	TweenType uint8
 
 	elapsedTime float32
@@ -152,15 +163,23 @@ func (this *TweenWait) Copy() Tween {
 	return &TweenWait{Time: this.Time, TweenType: this.TweenType}
 }
 
+// An object which has a visibility
 type BlinkableObject interface {
+	// Sets the object to be visible
 	SetVisible()
+	// Sets the object to be invisible
 	SetInvisible()
+	// Returns wether the object is visible
 	IsVisible() bool
 }
 
+// A tween that lets its parent blink for given amount of times
 type TweenBlink struct {
+	// The count of blinks
 	Amount    int
+	// The time on blink needs in seconds
 	Time      float32
+	// The type of this tween
 	TweenType uint8
 
 	timeForOneBlink     float32
@@ -232,9 +251,13 @@ func (this *TweenBlink) Copy() Tween {
 	return &TweenBlink{Amount: this.Amount, Time: this.Time, TweenType: this.TweenType}
 }
 
+// A tween that scales its parent to a given value
 type TweenScale2D struct {
+	// The scale the parent should reach
 	Destination mgl32.Vec2
+	// The time needed for the tween in seconds
 	Time        float32
+	// The type of this tween
 	TweenType   uint8
 
 	elapsedTime float32
@@ -300,9 +323,13 @@ func (this *TweenScale2D) Copy() Tween {
 	return &TweenScale2D{Destination: this.Destination, Time: this.Time, TweenType: this.TweenType}
 }
 
+// A tween that changes the texture region of a Sprite2D like a sprite animation
 type TweenRegion2D struct {
+	// The texture region the parent should have
 	Destination TextureRegion
+	// The time it should have this region
 	Time        float32
+	// The type of this tween
 	TweenType   uint8
 
 	startRegion TextureRegion
@@ -367,9 +394,13 @@ func (this *TweenRegion2D) Copy() Tween {
 	return &TweenRegion2D{Destination: this.Destination, Time: this.Time, TweenType: this.TweenType}
 }
 
+// A tween that changes the texture of a Sprite2D
 type TweenTexture2D struct {
+	// The texture the parent should have
 	Destination Texture
+	// The the parent should have the Texture
 	Time        float32
+	// The type of the tween
 	TweenType   uint8
 
 	elapsedTime  float32
@@ -434,9 +465,13 @@ func (this *TweenTexture2D) Copy() Tween {
 	return &TweenTexture2D{Destination: this.Destination, Time: this.Time, TweenType: this.TweenType}
 }
 
+// A tween that moves a 3D object to a certain position
 type TweenPosition3D struct {
+	// The position the parent should reach
 	Destination mgl32.Vec3
+	// The time it should need for the movement
 	Time        float32
+	// The type of the tween
 	TweenType   uint8
 
 	transform   *TransformableObject3D
@@ -493,9 +528,13 @@ func (this *TweenPosition3D) Copy() Tween {
 	return &TweenPosition3D{Destination: this.Destination, Time: this.Time, TweenType: this.TweenType}
 }
 
+// A tween that rotates a 3D object
 type TweenRotation3D struct {
+	// The rotation that should be reached
 	Destination mgl32.Quat
+	// The time needed for the rotation
 	Time        float32
+	// The type of this tween
 	TweenType   uint8
 
 	transform   *TransformableObject3D
@@ -550,9 +589,13 @@ func (this *TweenRotation3D) Copy() Tween {
 	return &TweenRotation3D{Destination: this.Destination, Time: this.Time, TweenType: this.TweenType}
 }
 
+// A tween that scales a 3D object to a certain value
 type TweenScale3D struct {
+	// The scale that should be reached
 	Destination mgl32.Vec3
+	// The time needed for the transformation
 	Time        float32
+	// The type of the tween
 	TweenType   uint8
 
 	elapsedTime float32
