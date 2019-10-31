@@ -15,19 +15,30 @@ const (
 
 var sprite2DMesh Mesh2D = nil
 
+// An object used to render textures or regions of textures to the screen
 type Sprite2D struct {
 	NilRenderObject
+	// The Texture that will be drawn
 	Texture             Texture
+	// Wether this object is visible
 	Visible             bool
+	// The index of the camera to which this object is not relative to
 	NotRelativeToCamera int
+	// The flip of the Texture (HORIZONTAL,VERTICAL,DIAGONALLY)
 	Flip                uint8
+	// The name of this object
 	Name                string
 
+	// The shader used for rendering
 	Shader        Shader
+	// The render type of this object
 	RenderType    RenderType
 	transform     TransformableObject
+	// The transform used to get the transform matrix
 	Transform     *TransformableObject2D
+	// The region of the texture that will be displayed
 	TextureRegion TextureRegion
+	// The depth of this object (0-255)
 	Depth         uint8
 }
 
@@ -89,21 +100,25 @@ func (spr *Sprite2D) commonInit() {
 	}
 }
 
+// Initialises the sprite with a texture of name texName
 func (spr *Sprite2D) Init(texName string) {
 	spr.Texture = ResourceMgr.GetTexture(texName)
 	spr.Name = texName
 	spr.commonInit()
 }
 
+// Initialises the sprite with a texture
 func (spr *Sprite2D) InitTexture(texture Texture) {
 	spr.Texture = texture
 	spr.commonInit()
 }
 
+// Sets the shader of this sprite
 func (spr *Sprite2D) SetShader(s Shader) {
 	spr.Shader = s
 }
 
+// Returns the shader of this sprite
 func (spr *Sprite2D) GetShader() Shader {
 	if spr.Shader == nil {
 		spr.Shader = ResourceMgr.GetShader(SPRITE2D_SHADER_NAME)
@@ -111,10 +126,12 @@ func (spr *Sprite2D) GetShader() Shader {
 	return spr.Shader
 }
 
+// Sets the render type of this object
 func (spr *Sprite2D) SetType(rtype RenderType) {
 	spr.RenderType = rtype
 }
 
+// Returns the render type of this object
 func (spr *Sprite2D) GetType() RenderType {
 	return spr.RenderType
 }
@@ -146,6 +163,7 @@ func (spr *Sprite2D) setUniforms() {
 	}
 }
 
+// Calls the draw method on the sprite 2d mesh
 func (spr *Sprite2D) Render() {
 	if spr.Texture != nil {
 		spr.setUniforms()
@@ -157,28 +175,34 @@ func (spr *Sprite2D) Render() {
 	}
 }
 
+// Cleans everything up (calls Terminate on the texture)
 func (spr *Sprite2D) Terminate() {
 	if spr.Texture != nil {
 		spr.Texture.Terminate()
 	}
 }
 
+// Returns wether this object is visible
 func (spr *Sprite2D) IsVisible() bool {
 	return spr.Visible
 }
 
+// Sets this object to be visible
 func (spr *Sprite2D) SetVisible() {
 	spr.Visible = true
 }
 
+// Sets this object to be invisible
 func (spr *Sprite2D) SetInvisible() {
 	spr.Visible = false
 }
 
+// Returns the index of the camera to which this object is not relative to
 func (spr *Sprite2D) NotRelativeCamera() int {
 	return spr.NotRelativeToCamera
 }
 
+// Sets the transformable object of this sprite
 func (spr *Sprite2D) SetTransformableObject(tobj TransformableObject) {
 	spr.transform = tobj
 	if tobj != nil {
@@ -188,10 +212,12 @@ func (spr *Sprite2D) SetTransformableObject(tobj TransformableObject) {
 	}
 }
 
+// Returns the transformable object of this sprite
 func (spr *Sprite2D) GetTransformableObject() TransformableObject {
 	return spr.transform
 }
 
+// Returns the transformable object 2d of this sprite
 func (spr *Sprite2D) GetTransform2D() *TransformableObject2D {
 	return spr.Transform
 }
