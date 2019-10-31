@@ -6,6 +6,7 @@ import (
 	"strings"
 )
 
+// The values used for the flip
 const (
 	LINE_PADDING    = 0
 	FLIP_NONE       = 0
@@ -20,6 +21,7 @@ const (
 	COLOR_UNIFORM_NAME = "color"
 )
 
+// A text/string rendered to the screen
 type Text2D struct {
 	NilRenderObject
 	shader               Shader
@@ -31,17 +33,26 @@ type Text2D struct {
 	renderTexture        RenderTexture
 	oldText              string
 	transform            TransformableObject
+	// The transform of the object
 	Transform            *TransformableObject2D
 
+	// Wether this object is visible
 	Visible             bool
+	// The index of the camera to which this object is not relative to
 	NotRelativeToCamera int
+	// The size of the font
 	FontSize            int
+	// The text that will be displayed
 	Text                string
+	// The depth of the object (0-255)
 	Depth               uint8
+	// The color of the text
 	Color               color.Color
+	// The flip used for rendering
 	Flip                uint8
 }
 
+// Initialises the object with a font a font size and a text
 func (this *Text2D) Init(font string, fontSize int, str string) {
 	this.font = ResourceMgr.GetFont(font)
 	this.Transform = &TransformableObject2D{}
@@ -120,24 +131,38 @@ func (this *Text2D) Render() {
 		temp.Unbind(0)
 	}
 }
+
+// Sets the shader of this object
 func (this *Text2D) SetShader(s Shader) {
 	this.shader = s
 }
+
+// Returns the shader of this object
 func (this *Text2D) GetShader() Shader {
 	return this.shader
 }
+
+// Sets the render type of this object
 func (this *Text2D) SetType(rtype RenderType) {
 	this.renderType = rtype
 }
+
+// Returns the render type of this object
 func (this *Text2D) GetType() RenderType {
 	return this.renderType
 }
+
+// Returns wether this object is visible
 func (this *Text2D) IsVisible() bool {
 	return this.Visible
 }
+
+// Returns the index of the camera to which this object is not relative to
 func (this *Text2D) NotRelativeCamera() int {
 	return this.NotRelativeToCamera
 }
+
+// Sets the font based on the name
 func (this *Text2D) SetFont(name string) {
 	this.font = ResourceMgr.GetFont(name)
 }
@@ -271,6 +296,7 @@ func (this *Text2D) updateUniforms() {
 	RenderMgr.prepareRenderRenderObject(this, -1)
 }
 
+// Sets the transformable object of this object
 func (this *Text2D) SetTransformableObject(tobj TransformableObject) {
 	this.transform = tobj
 	if tobj != nil {
@@ -280,10 +306,12 @@ func (this *Text2D) SetTransformableObject(tobj TransformableObject) {
 	}
 }
 
+// Returns the transformable object of this object
 func (this *Text2D) GetTransformableObject() TransformableObject {
 	return this.transform
 }
 
+// Cleans everything up (does not delete the font)
 func (this *Text2D) Terminate() {
 	this.texturesUsedDatabase = make(map[string]bool)
 	this.deleteUnusedTexturesFromDatabase()
