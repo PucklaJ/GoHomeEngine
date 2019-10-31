@@ -7,14 +7,21 @@ import (
 	"golang.org/x/image/colornames"
 )
 
+// This struct renders all physics objects to the screen
 type PhysicsDebugDraw2D struct {
 	gohome.NilRenderObject
 
+	// Wether bodies should be drawn
 	DrawBodies      bool
+	// Wether joints shoul be drawn
 	DrawJoints      bool
+	// Wether bounding boxes should be drawn
 	DrawAABBs       bool
+	// Wether only static bodies should be drawn
 	OnlyDrawStatic  bool
+	// Wether only dynamic bodies should be drawn
 	OnlyDrawDynamic bool
+	// Wether anything should be drawn
 	Visible         bool
 
 	mgr *PhysicsManager2D
@@ -23,18 +30,22 @@ type PhysicsDebugDraw2D struct {
 	triangles []gohome.Triangle2D
 }
 
+// Returns TYPE_2D_NORMAL
 func (this *PhysicsDebugDraw2D) GetType() gohome.RenderType {
 	return gohome.TYPE_2D_NORMAL
 }
 
+// Returns true
 func (this *PhysicsDebugDraw2D) RendersLast() bool {
 	return true
 }
 
+// Returns wether anything should be drawn
 func (this *PhysicsDebugDraw2D) IsVisible() bool {
 	return this.Visible
 }
 
+// Creates all shapes and renders them
 func (this *PhysicsDebugDraw2D) Render() {
 	w := this.mgr.World
 	if this.DrawBodies {
@@ -104,6 +115,7 @@ func (this *PhysicsDebugDraw2D) Render() {
 	}
 }
 
+// Loads the data used to render a joint
 func (this *PhysicsDebugDraw2D) DrawJoint(j box2d.B2JointInterface) {
 	red := colornames.Red
 	if j.IsActive() {
@@ -133,6 +145,7 @@ func (this *PhysicsDebugDraw2D) DrawJoint(j box2d.B2JointInterface) {
 
 }
 
+// Loads the data used to render a Fixture
 func (this *PhysicsDebugDraw2D) DrawFixture(f *box2d.B2Fixture, xf *box2d.B2Transform, awake bool) {
 	col := colornames.Purple
 	if f.IsSensor() {
@@ -156,6 +169,7 @@ func (this *PhysicsDebugDraw2D) DrawFixture(f *box2d.B2Fixture, xf *box2d.B2Tran
 	}
 }
 
+// Loads the data used to render a circle
 func (this *PhysicsDebugDraw2D) DrawCircle(f *box2d.B2Fixture, xf *box2d.B2Transform) {
 	radius := ScalarToPixel(f.GetShape().GetRadius())
 	b2offset := f.GetShape().(*box2d.B2CircleShape).M_p
@@ -178,6 +192,7 @@ func (this *PhysicsDebugDraw2D) DrawCircle(f *box2d.B2Fixture, xf *box2d.B2Trans
 	this.lines = append(this.lines, line)
 }
 
+// Loads the data used to render a polygon
 func (this *PhysicsDebugDraw2D) DrawPolygon(f *box2d.B2Fixture, xf *box2d.B2Transform) {
 	pos := ToPixelCoordinates(xf.P)
 	mat := mgl32.Translate2D(pos[0], pos[1]).Mul3(mgl32.Rotate2D(-float32(xf.Q.GetAngle())).Mat3())
@@ -219,6 +234,7 @@ func (this *PhysicsDebugDraw2D) DrawPolygon(f *box2d.B2Fixture, xf *box2d.B2Tran
 	this.lines = append(this.lines, line)
 }
 
+// Loads the data used to render an edge
 func (this *PhysicsDebugDraw2D) DrawEdge(f *box2d.B2Fixture, xf *box2d.B2Transform) {
 	edge := f.GetShape().(*box2d.B2EdgeShape)
 	pos := ToPixelCoordinates(xf.P)
@@ -263,6 +279,7 @@ func (this *PhysicsDebugDraw2D) DrawEdge(f *box2d.B2Fixture, xf *box2d.B2Transfo
 	}
 }
 
+// Loads the data used to render a chain
 func (this *PhysicsDebugDraw2D) DrawChain(f *box2d.B2Fixture, xf *box2d.B2Transform) {
 	chain := f.GetShape().(*box2d.B2ChainShape)
 	pos := ToPixelCoordinates(xf.P)
