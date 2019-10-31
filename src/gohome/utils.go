@@ -10,6 +10,7 @@ const (
 	READ_ALL_BUFFER_SIZE = 512 * 512
 )
 
+// Reads the entire content of a reader. Uses a bigger buffer than the normal one
 func ReadAll(r io.Reader) (str string, err error) {
 	str = ""
 	var n int = 1
@@ -24,6 +25,7 @@ func ReadAll(r io.Reader) (str string, err error) {
 	return
 }
 
+// Returns the maximum value of a and b
 func Maxi(a, b int32) int32 {
 	if a > b {
 		return a
@@ -32,6 +34,7 @@ func Maxi(a, b int32) int32 {
 	}
 }
 
+// Returns the minimum value of a and b
 func Mini(a, b int32) int32 {
 	if a < b {
 		return a
@@ -40,6 +43,7 @@ func Mini(a, b int32) int32 {
 	}
 }
 
+// Converts a mesh 3d vertex array to a float array used by OpenGL
 func Mesh3DVerticesToFloatArray(vertices []Mesh3DVertex) (array []float32) {
 	const NUM_FLOATS = MESH3DVERTEXSIZE / 4
 	array = make([]float32, len(vertices)*NUM_FLOATS)
@@ -59,6 +63,7 @@ func Mesh3DVerticesToFloatArray(vertices []Mesh3DVertex) (array []float32) {
 	return
 }
 
+// Converts a mesh 2d vertex array to a float array used by OpenGL
 func Mesh2DVerticesToFloatArray(vertices []Mesh2DVertex) (array []float32) {
 	const NUM_FLOATS = MESH2DVERTEXSIZE / 4
 	array = make([]float32, len(vertices)*NUM_FLOATS)
@@ -78,6 +83,7 @@ func Mesh2DVerticesToFloatArray(vertices []Mesh2DVertex) (array []float32) {
 	return
 }
 
+// Converts a shape 3d vertex array to a float array used by OpenGL
 func Shape3DVerticesToFloatArray(points []Shape3DVertex) (array []float32) {
 	const NUM_FLOATS = SHAPE3DVERTEXSIZE / 4
 	array = make([]float32, len(points)*NUM_FLOATS)
@@ -97,6 +103,7 @@ func Shape3DVerticesToFloatArray(points []Shape3DVertex) (array []float32) {
 	return
 }
 
+// Converts a shape 2d vertex array to a float array used by OpenGL
 func Shape2DVerticesToFloatArray(vertices []Shape2DVertex) (array []float32) {
 	const NUM_FLOATS = SHAPE2DVERTEXSIZE / 4
 	array = make([]float32, len(vertices)*NUM_FLOATS)
@@ -116,6 +123,7 @@ func Shape2DVerticesToFloatArray(vertices []Shape2DVertex) (array []float32) {
 	return
 }
 
+// Returns wether one string equals the other ignoring the case
 func EqualIgnoreCase(str1, str string) bool {
 	if len(str1) != len(str) {
 		return false
@@ -147,6 +155,7 @@ func EqualIgnoreCase(str1, str string) bool {
 	return true
 }
 
+// The returns the file extension of a file name
 func GetFileExtension(file string) string {
 	index := strings.LastIndex(file, ".")
 	if index == -1 {
@@ -155,6 +164,7 @@ func GetFileExtension(file string) string {
 	return file[index+1:]
 }
 
+// Returns the file name of a file path
 func GetFileFromPath(path string) string {
 	if index := strings.LastIndex(path, "/"); index != -1 {
 		return path[index+1:]
@@ -163,6 +173,7 @@ func GetFileFromPath(path string) string {
 	}
 }
 
+// Returns the directory of a file
 func GetPathFromFile(path string) string {
 	if index := strings.LastIndex(path, "/"); index != -1 {
 		return path[:index+1]
@@ -171,6 +182,7 @@ func GetPathFromFile(path string) string {
 	}
 }
 
+// Opens a file in multiple paths returning the first one that works
 func OpenFileWithPaths(path string, paths []string) (File, string, error) {
 	var reader File
 	var err error
