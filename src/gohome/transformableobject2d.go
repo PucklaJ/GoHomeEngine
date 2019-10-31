@@ -5,12 +5,21 @@ import (
 	"github.com/PucklaMotzer09/mathgl/mgl32"
 )
 
+// A transform storing everything needed for the transformation matrix
 type TransformableObject2D struct {
+	// The position in the world
 	Position      mgl32.Vec2
+	// The size of the object in pixels
 	Size          mgl32.Vec2
+	// The scale that will be multiplied with the size
 	Scale         mgl32.Vec2
+	// The rotation
 	Rotation      float32
+	// Defines where the [0,0] position is.
+	// Takes [0.0-1.0] normalised for size*scale
 	Origin        mgl32.Vec2
+	// The anchor that will be used for the rotation
+	// Takes [0.0-1.0] normalised for size*scale
 	RotationPoint mgl32.Vec2
 
 	oldPosition mgl32.Vec2
@@ -60,10 +69,12 @@ func (tobj *TransformableObject2D) CalculateTransformMatrix(rmgr *RenderManager,
 	}
 }
 
+// Returns the Mat3 representing the transformation of this object
 func (tobj *TransformableObject2D) GetTransformMatrix() mgl32.Mat3 {
 	return tobj.camNotRelativeMatrix
 }
 
+// Sets the current transformation matrix in the render manager
 func (tobj *TransformableObject2D) SetTransformMatrix(rmgr *RenderManager) {
 	rmgr.setTransformMatrix2D(tobj.GetTransformMatrix())
 }
