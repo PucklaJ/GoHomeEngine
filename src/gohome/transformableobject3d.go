@@ -4,9 +4,13 @@ import (
 	"github.com/PucklaMotzer09/mathgl/mgl32"
 )
 
+// A transform storing everything needed for the transform matrix
 type TransformableObject3D struct {
+	// The position in the world
 	Position mgl32.Vec3
+	// The scale the multiplies all vertices
 	Scale    mgl32.Vec3
+	// The rotation represented as a Quaternion
 	Rotation mgl32.Quat
 
 	oldPosition mgl32.Vec3
@@ -30,6 +34,7 @@ func (tobj *TransformableObject3D) valuesChanged() bool {
 	return tobj.Position != tobj.oldPosition || tobj.Scale != tobj.oldScale || tobj.Rotation != tobj.oldRotation || tobj.IgnoreParentRotation != tobj.oldIgnoreParentRotation || tobj.IgnoreParentScale != tobj.oldIgnoreParentScale || tobj.getParentTransform() != tobj.oldParentTransform
 }
 
+// Calculates the transform matrix
 func (tobj *TransformableObject3D) CalculateTransformMatrix(rmgr *RenderManager, notRelativeToCamera int) {
 	if tobj.parent != nil && RenderMgr.calculatingTransformMatricesParallel {
 		<-tobj.parentChannel
@@ -77,10 +82,12 @@ func (tobj *TransformableObject3D) CalculateTransformMatrix(rmgr *RenderManager,
 	}
 }
 
+// Returns the transform matrix that represents the transformation of this object
 func (tobj *TransformableObject3D) GetTransformMatrix() mgl32.Mat4 {
 	return tobj.camNotRelativeMatrix
 }
 
+// Sets the current transform matrix in the render manager
 func (tobj *TransformableObject3D) SetTransformMatrix(rmgr *RenderManager) {
 	rmgr.setTransformMatrix3D(tobj.GetTransformMatrix())
 }
@@ -122,19 +129,23 @@ func (tobj *TransformableObject3D) getParentTransform() mgl32.Mat4 {
 	return mgl32.Ident4()
 }
 
+// The position based on the parent transform
 func (tobj *TransformableObject3D) GetPosition() mgl32.Vec3 {
 	ptransform := tobj.getParentTransform()
 	return ptransform.Mul4x1(tobj.Position.Vec4(1.0)).Vec3()
 }
 
+// Returns itself
 func (tobj *TransformableObject3D) GetTransform3D() *TransformableObject3D {
 	return tobj
 }
 
+// Returns the parent of this transform
 func (tobj *TransformableObject3D) GetParent() ParentObject3D {
 	return tobj.parent
 }
 
+// Sets the parent of this transform to which this is relative to
 func (tobj *TransformableObject3D) SetParent(parent ParentObject3D) {
 	if parent == nil {
 		if tobj.parent != nil {
@@ -153,6 +164,7 @@ func (tobj *TransformableObject3D) SetParent(parent ParentObject3D) {
 	tobj.parent.SetChildChannel(tobj.parentChannel, tobj)
 }
 
+// Used for calculating the transform matrix
 func (tobj *TransformableObject3D) SetChildChannel(channel chan bool, tobj1 *TransformableObject3D) {
 	if tobj.childChannels == nil {
 		tobj.childChannels = make(map[*TransformableObject3D]chan bool)
@@ -160,6 +172,7 @@ func (tobj *TransformableObject3D) SetChildChannel(channel chan bool, tobj1 *Tra
 	tobj.childChannels[tobj1] = channel
 }
 
+// Returns a transformable object with an identity matrix
 func DefaultTransformableObject3D() *TransformableObject3D {
 	transform := TransformableObject3D{
 		Scale: [3]float32{1.0, 1.0, 1.0},
