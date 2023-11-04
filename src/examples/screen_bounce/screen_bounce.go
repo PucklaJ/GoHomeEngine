@@ -4,6 +4,7 @@ import (
 	"math"
 	"math/rand"
 
+	"github.com/PucklaJ/GoHomeEngine/src/audio"
 	framework "github.com/PucklaJ/GoHomeEngine/src/frameworks/SAMURE"
 	"github.com/PucklaJ/GoHomeEngine/src/gohome"
 	renderer "github.com/PucklaJ/GoHomeEngine/src/renderers/OpenGL"
@@ -20,16 +21,21 @@ const (
 )
 
 type ScreenBounceScene struct {
-	fuzzy gohome.Sprite2D
+	fuzzy  gohome.Sprite2D
+	bounce gohome.Sound
 
 	DirX, DirY float32
 	radius     float32
 }
 
 func (s *ScreenBounceScene) Init() {
+	audio.InitAudio()
+
 	gohome.ResourceMgr.LoadTexture("fuzzy", "Ten 13.png")
+	gohome.ResourceMgr.LoadSound("bounce", "BounceYoFrankie.wav")
 
 	s.fuzzy.Init("fuzzy")
+	s.bounce = gohome.ResourceMgr.GetSound("bounce")
 
 	gohome.RenderMgr.AddObject(&s.fuzzy)
 
@@ -58,17 +64,21 @@ func (s *ScreenBounceScene) Update(delta_time float32) {
 	if (s.fuzzy.Transform.Position[0] + s.radius) > MaxX {
 		s.fuzzy.Transform.Position[0] = MaxX - s.radius
 		s.DirX *= -1.0
+		s.bounce.Play(false)
 	} else if s.fuzzy.Transform.Position[0]-s.radius < 0.0 {
 		s.fuzzy.Transform.Position[0] = s.radius
 		s.DirX *= -1.0
+		s.bounce.Play(false)
 	}
 
 	if (s.fuzzy.Transform.Position[1] + s.radius) > MaxY {
 		s.fuzzy.Transform.Position[1] = MaxY - s.radius
 		s.DirY *= -1.0
+		s.bounce.Play(false)
 	} else if s.fuzzy.Transform.Position[1]-s.radius < 0.0 {
 		s.fuzzy.Transform.Position[1] = s.radius
 		s.DirY *= -1.0
+		s.bounce.Play(false)
 	}
 }
 

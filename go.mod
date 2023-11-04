@@ -6,7 +6,7 @@ require (
 	github.com/ByteArena/box2d v1.0.2
 	github.com/PucklaJ/GLSLGenerator v0.0.0-20181228211815-6b3cc890f8c5
 	github.com/PucklaJ/android-go v0.0.0-20181215222148-e11ed0d66424
-	github.com/PucklaJ/go-openal v0.0.0-20190115173307-f9c87a111f05
+	github.com/PucklaJ/go-openal v0.0.0-20231104214414-87133851c6c5
 	github.com/PucklaJ/go-sdl2 v0.3.0
 	github.com/PucklaJ/go-wav v0.0.0-20180908123420-e44693fb8dfa
 	github.com/PucklaJ/mathgl v0.0.0-20231104180609-f2cde84a4a62

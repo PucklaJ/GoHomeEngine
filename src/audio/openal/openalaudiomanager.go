@@ -337,7 +337,6 @@ func (this *OpenALAudioManager) createMusicMP3(name string, decoder *mp3.Decoder
 			music.buffers = append(music.buffers, buffer)
 			numBuffers++
 		}
-		decoder.Close()
 		if err != nil && err != io.EOF {
 			gohome.ErrorMgr.Error("Music", name, err.Error())
 		} else if err != nil && err == io.EOF {

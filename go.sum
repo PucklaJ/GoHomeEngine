@@ -6,6 +6,8 @@ github.com/PucklaJ/android-go v0.0.0-20181215222148-e11ed0d66424 h1:PF6jhs0rX7sB
 github.com/PucklaJ/android-go v0.0.0-20181215222148-e11ed0d66424/go.mod h1:qEdUO7TEI5PMSroYKAn4Bb+LKLT/ezI2/SZ8qYITYMg=
 github.com/PucklaJ/go-openal v0.0.0-20190115173307-f9c87a111f05 h1:uIjjiK6cNeINAKzeqtWx8+a05XlpcRP4XL5E3L3LKic=
 github.com/PucklaJ/go-openal v0.0.0-20190115173307-f9c87a111f05/go.mod h1:vH/EGuvcziD3F0fsrh97FhqhGyc9ytnRBKzrNmd2Y/M=
+github.com/PucklaJ/go-openal v0.0.0-20231104214414-87133851c6c5 h1:ry/iJbUq2kRtroWYWL/OF5y3ucUGzska5Z1EO4rhCME=
+github.com/PucklaJ/go-openal v0.0.0-20231104214414-87133851c6c5/go.mod h1:ZskNAdt/2VlhUM+VOssSNnmP/ZOSIZMC0CQ5/UohAvk=
 github.com/PucklaJ/go-sdl2 v0.3.0 h1:Az3vWzhepN517y4TNM2QEeoQTkS8fylqz/WvK0Wm9cc=
 github.com/PucklaJ/go-sdl2 v0.3.0/go.mod h1:WNvULnJP2nEbWxOVe9dYp2y4gcKPoJDXjIt7JNnlaLk=
 github.com/PucklaJ/go-wav v0.0.0-20180908123420-e44693fb8dfa h1:gotOkQ47QGnu326xFexYmLHRRRFxzlaeijBp38wWbQc=
