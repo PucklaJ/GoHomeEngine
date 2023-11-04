@@ -10,6 +10,7 @@ require (
 	github.com/PucklaJ/go-sdl2 v0.3.0
 	github.com/PucklaJ/go-wav v0.0.0-20180908123420-e44693fb8dfa
 	github.com/PucklaJ/mathgl v0.0.0-20231104180609-f2cde84a4a62
+	github.com/PucklaJ/samurai-render-go v0.1.5
 	github.com/PucklaJ/tmx v0.0.0-20181220221538-a02e23da98df
 	github.com/PucklaJ/webgl v0.0.0-20181229151432-ae8bbd794915
 	github.com/blezek/tga v0.0.0-20150626111426-80720cbc1017
@@ -24,8 +25,6 @@ require (
 require (
 	github.com/ftrvxmtrx/tga v0.0.0-20150524081124-bd8e8d5be13a // indirect
 	github.com/pkg/errors v0.9.1 // indirect
-	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/stretchr/testify v1.8.4 // indirect
 	github.com/timshannon/go-openal v0.0.0-20170220204755-e0ed4c67cffe // indirect
 	github.com/veandco/go-sdl2 v0.4.35 // indirect
 )

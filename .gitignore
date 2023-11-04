@@ -21,6 +21,7 @@ src/examples/*/3dmodel
 src/examples/*/audio
 src/examples/*/cube
 src/examples/*/basic
+src/examples/*/screen_bounce
 src/examples/*/gtkbuilder
 src/examples/*/gtkgui
 src/examples/*/gui

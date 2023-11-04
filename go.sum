@@ -10,12 +10,10 @@ github.com/PucklaJ/go-sdl2 v0.3.0 h1:Az3vWzhepN517y4TNM2QEeoQTkS8fylqz/WvK0Wm9cc
 github.com/PucklaJ/go-sdl2 v0.3.0/go.mod h1:WNvULnJP2nEbWxOVe9dYp2y4gcKPoJDXjIt7JNnlaLk=
 github.com/PucklaJ/go-wav v0.0.0-20180908123420-e44693fb8dfa h1:gotOkQ47QGnu326xFexYmLHRRRFxzlaeijBp38wWbQc=
 github.com/PucklaJ/go-wav v0.0.0-20180908123420-e44693fb8dfa/go.mod h1:NfGF3MKuCK6rYsH21Kkc5iXBgioImHsDfchjoIRugAc=
-github.com/PucklaJ/mathgl v0.0.0-20231104173207-9cbc1b2a5701 h1:TYIB4VObXqNkFd0Mz+eqUHuW6DUweopORCAcIIt0LOE=
-github.com/PucklaJ/mathgl v0.0.0-20231104173207-9cbc1b2a5701/go.mod h1:WjtsPB0kCevcidr8iZmRXes7dsGQkhZZjjYx4idl8k4=
-github.com/PucklaJ/mathgl v0.0.0-20231104180334-d089752c1269 h1:HGxnQQ3Ed+iL+2+6t70EVx4+0HBxHuD5crTIsNvZo58=
-github.com/PucklaJ/mathgl v0.0.0-20231104180334-d089752c1269/go.mod h1:WjtsPB0kCevcidr8iZmRXes7dsGQkhZZjjYx4idl8k4=
 github.com/PucklaJ/mathgl v0.0.0-20231104180609-f2cde84a4a62 h1:Mj7rzCUA0h5l3/92z6IgrGSpq868ndZyiBk+lwLfo88=
 github.com/PucklaJ/mathgl v0.0.0-20231104180609-f2cde84a4a62/go.mod h1:WjtsPB0kCevcidr8iZmRXes7dsGQkhZZjjYx4idl8k4=
+github.com/PucklaJ/samurai-render-go v0.1.5 h1:ZhmLAC9tgzPGs+Jjyze4svVesgCWx6A3J+KXpxPVFRw=
+github.com/PucklaJ/samurai-render-go v0.1.5/go.mod h1:XlttjBEamOvRxTHU3RryhkmaZV+aUpTp5nBuveKlNo0=
 github.com/PucklaJ/tmx v0.0.0-20181220221538-a02e23da98df h1:kr5qFATih8SJkEY7pWKxQihBSiAQbO3FhJpa+Zhx3ME=
 github.com/PucklaJ/tmx v0.0.0-20181220221538-a02e23da98df/go.mod h1:qq7aYty0d3Mr5pEflY5ChcAc/BWj2m+7Wtw4xsmn+rM=
 github.com/PucklaJ/webgl v0.0.0-20181229151432-ae8bbd794915 h1:YPv/6C+DDQOp9buP7UI0K66drqZesoWz1IQcfaOe9ao=
