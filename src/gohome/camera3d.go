@@ -2,7 +2,7 @@ package gohome
 
 import (
 	// "fmt"
-	"github.com/PucklaMotzer09/mathgl/mgl32"
+	"github.com/PucklaJ/mathgl/mgl32"
 )
 
 const (
@@ -12,12 +12,12 @@ const (
 // A 3D camera used to show different parts of the world
 type Camera3D struct {
 	// It's position in world space
-	Position      mgl32.Vec3
+	Position mgl32.Vec3
 	// The direction in which the camera looks
 	LookDirection mgl32.Vec3
 	// The up vector of the camera
-	Up            mgl32.Vec3
-	rotation      mgl32.Vec2
+	Up       mgl32.Vec3
+	rotation mgl32.Vec2
 
 	oldPosition      mgl32.Vec3
 	oldLookDirection mgl32.Vec3

@@ -1,10 +1,11 @@
 package gohome
 
 import (
-	"github.com/PucklaMotzer09/mathgl/mgl32"
 	"image/color"
 	"math"
 	"strconv"
+
+	"github.com/PucklaJ/mathgl/mgl32"
 )
 
 const (
@@ -278,9 +279,9 @@ type Circle2D struct {
 	// The mid point of the circle
 	Position mgl32.Vec2
 	// The radius of the circle
-	Radius   float32
+	Radius float32
 	// The color of the circle
-	Col      color.Color
+	Col color.Color
 }
 
 // Creates a Vec2 from polar coordinates
@@ -625,5 +626,5 @@ type PlaneMath3D struct {
 	// The normal pointing from the plane
 	Normal mgl32.Vec3
 	// A random point on the plane
-	Point  mgl32.Vec3
+	Point mgl32.Vec3
 }

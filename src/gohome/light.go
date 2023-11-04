@@ -1,10 +1,11 @@
 package gohome
 
 import (
-	"github.com/PucklaMotzer09/mathgl/mgl32"
 	"image/color"
 	"math"
 	"strconv"
+
+	"github.com/PucklaJ/mathgl/mgl32"
 )
 
 const (
@@ -42,9 +43,9 @@ const (
 // A strcut holding the values for attenuation of lights
 type Attentuation struct {
 	// The constant factor
-	Constant  float32
+	Constant float32
 	// The linear factor
-	Linear    float32
+	Linear float32
 	// The quadratic factor
 	Quadratic float32
 }
@@ -62,7 +63,7 @@ type PointLight struct {
 	Position mgl32.Vec3
 
 	// The diffuse color of the light
-	DiffuseColor  color.Color
+	DiffuseColor color.Color
 	// The specular color of the light
 	SpecularColor color.Color
 
@@ -84,14 +85,14 @@ type DirectionalLight struct {
 	Direction mgl32.Vec3
 
 	// The diffuse color of the light
-	DiffuseColor  color.Color
+	DiffuseColor color.Color
 	// The specular color of the light
 	SpecularColor color.Color
 
 	// The shadow map texture of the light
-	ShadowMap        RenderTexture
+	ShadowMap RenderTexture
 	// Wether the light casts shadows
-	CastsShadows     uint8
+	CastsShadows uint8
 	// A view matrix using the direction as the look direction
 	LightSpaceMatrix mgl32.Mat4
 
@@ -292,12 +293,12 @@ func (this *DirectionalLight) RenderShadowMap() {
 // A light with a position and a direction
 type SpotLight struct {
 	// The position of the light
-	Position  mgl32.Vec3
+	Position mgl32.Vec3
 	// The direction of the light
 	Direction mgl32.Vec3
 
 	// The diffuse color of the light
-	DiffuseColor  color.Color
+	DiffuseColor color.Color
 	// The specular color of the light
 	SpecularColor color.Color
 
@@ -310,15 +311,15 @@ type SpotLight struct {
 	Attentuation
 
 	// The shadow map of this light
-	ShadowMap        RenderTexture
+	ShadowMap RenderTexture
 	// Wether this light should cast shadows
-	CastsShadows     uint8
+	CastsShadows uint8
 	// A view matrix that uses the position and direction of the light
 	LightSpaceMatrix mgl32.Mat4
 	// The near plane used for the rendering of the shadow map
-	NearPlane        float32
+	NearPlane float32
 	// The far plane used for the rendering of the shadow map
-	FarPlane         float32
+	FarPlane float32
 }
 
 // Sets the uniforms of s
@@ -444,11 +445,11 @@ type LightCollection struct {
 	AmbientLight color.Color
 
 	// All point lights of this collection
-	PointLights       []*PointLight
+	PointLights []*PointLight
 	// All directional lights of this collection
 	DirectionalLights []*DirectionalLight
 	// All spot lights of this collection
-	SpotLights        []*SpotLight
+	SpotLights []*SpotLight
 }
 
 // Adds a point light to this collection
@@ -479,7 +480,7 @@ func (this *LightCollection) RenderShadowMaps() {
 // A manager holding multiple light collections
 type LightManager struct {
 	// All light collections
-	LightCollections       []LightCollection
+	LightCollections []LightCollection
 	// The index of the currently used light collection
 	CurrentLightCollection int
 }

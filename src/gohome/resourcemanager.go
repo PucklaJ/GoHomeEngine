@@ -1,7 +1,7 @@
 package gohome
 
 import (
-	"github.com/PucklaMotzer09/tmx"
+	"github.com/PucklaJ/tmx"
 	"github.com/blezek/tga"
 )
 

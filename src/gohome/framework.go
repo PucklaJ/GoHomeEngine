@@ -2,9 +2,10 @@ package gohome
 
 import (
 	"fmt"
-	"github.com/PucklaMotzer09/mathgl/mgl32"
 	"io"
 	"log"
+
+	"github.com/PucklaJ/mathgl/mgl32"
 )
 
 // The differnet results of a dialogue

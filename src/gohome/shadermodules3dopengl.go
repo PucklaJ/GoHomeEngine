@@ -1,7 +1,6 @@
 package gohome
 
 import (
-	"github.com/PucklaMotzer09/GLSLGenerator"
 	"strings"
 )
 
@@ -55,7 +54,7 @@ var (
 			   vec3 norm = normalize(fragNormal);
 			   vec3 tang = normalize((viewMatrix3D*transformMatrix3D*vec4(tangent,0.0)).xyz);
 			   vec3 bitang = normalize(cross(norm,tang));
-	
+
 			   fragToTangentSpace = mat3(
 				   tang.x,bitang.x,norm.x,
 				   tang.y,bitang.y,norm.y,
@@ -262,7 +261,7 @@ var (
 			float innerCutOff = cos(degToRad(pl.innerCutOff));
 			float epsilon   = innerCutOff - outerCutOff;
 			spotAmount = clamp((theta - outerCutOff) / epsilon, 0.0, 1.0);
-		
+
 			return spotAmount;`,
 			},
 		},
@@ -278,7 +277,7 @@ var (
 			float innerCutOff = cos(degToRad(pl.innerCutOff));
 			float epsilon   = innerCutOff - outerCutOff;
 			spotAmount = clamp((theta - outerCutOff) / epsilon, 0.0, 1.0);
-		
+
 			return spotAmount;`,
 			},
 		},
@@ -306,9 +305,9 @@ var (
 				{
 					for(int y = -1; y <= 1; ++y)
 					{
-						float pcfDepth = texture2D(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r; 
-						shadowresult += currentDepth > pcfDepth ? 0.0 : 1.0;        
-					}    
+						float pcfDepth = texture2D(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
+						shadowresult += currentDepth > pcfDepth ? 0.0 : 1.0;
+					}
 				}
 				shadowresult /= 9.0;
 				if(distanceTransition)
@@ -343,9 +342,9 @@ var (
 				{
 					for(int y = -1; y <= 1; ++y)
 					{
-						float pcfDepth = texture2D(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r; 
-						shadowresult += currentDepth > pcfDepth ? 0.0 : 1.0;        
-					}    
+						float pcfDepth = texture2D(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
+						shadowresult += currentDepth > pcfDepth ? 0.0 : 1.0;
+					}
 				}
 				shadowresult /= 9.0;
 				if(distanceTransition)
@@ -362,20 +361,20 @@ var (
 		"void calculatePointLight(PointLight pl,int index)",
 		`vec3 lightPosition = (fragViewMatrix3D*vec4(pl.position,1.0)).xyz;
 				vec3 lightDir = normalize(fragToTangentSpace*(lightPosition - fragPos));
-			
-			
+
+
 				// Diffuse
 				vec3 diffuse = diffuseLighting(lightDir,pl.diffuseColor);
-			
+
 				// Specular
 				vec3 specular = specularLighting(lightDir,pl.specularColor);
-			
+
 				// Attentuation
 				float attent = calcAttentuation(lightPosition,pl.attentuation);
-			
+
 				diffuse *= attent;
 				specular *= attent;
-			
+
 				finalDiffuseColor += vec4(diffuse,0.0);
 				finalSpecularColor += vec4(specular,0.0);`,
 	}
@@ -387,19 +386,19 @@ var (
 				"void calculateDirectionalLight(DirectionalLight dl,int index)",
 				`vec3 lightDirection = (fragViewMatrix3D*vec4(dl.direction*-1.0,0.0)).xyz;
 				vec3 lightDir = normalize(fragToTangentSpace*lightDirection);
-				
+
 				// Diffuse
 				vec3 diffuse = diffuseLighting(lightDir,dl.diffuseColor);
-				
+
 				// Specular
 				vec3 specular = specularLighting(lightDir,dl.specularColor);
-				
+
 				// Shadow
 				float shadow = dl.castsShadows ? calcShadow(directionalLightsshadowmap[index],dl.lightSpaceMatrix,dl.shadowDistance,true,dl.shadowMapSize) : 1.0;
-				
+
 				diffuse *= shadow;
 				specular *= shadow;
-			
+
 				finalDiffuseColor += vec4(diffuse,0.0);
 				finalSpecularColor += vec4(specular,0.0);`,
 			},
@@ -408,26 +407,26 @@ var (
 				`vec3 lightPosition = (fragViewMatrix3D*vec4(pl.position,1.0)).xyz;
 				vec3 lightDirection = (fragViewMatrix3D*vec4(pl.direction*-1.0,0.0)).xyz;
 				vec3 lightDir = normalize(fragToTangentSpace*(lightPosition-fragPos));
-			
+
 				// Spotamount
 				float spotAmount = calcSpotAmount(lightDir,lightDirection,pl);
-			
+
 				// Diffuse
 				vec3 diffuse = diffuseLighting(lightDir,pl.diffuseColor);
-			
+
 				// Specular
 				vec3 specular = specularLighting(lightDir,pl.specularColor);
-			
+
 				// Attentuation
 				float attent = calcAttentuation(lightPosition,pl.attentuation);
-			
+
 				// Shadow
 				float shadow = pl.castsShadows ? calcShadow(spotLightsshadowmap[index],pl.lightSpaceMatrix,50.0,false,pl.shadowMapSize) : 1.0;
 				// float shadow = 1.0;
-			
+
 				diffuse *= attent * spotAmount * shadow;
 				specular *= attent * spotAmount * shadow;
-			
+
 				finalDiffuseColor += vec4(diffuse,0.0);
 				finalSpecularColor += vec4(specular,0.0);`,
 			},
@@ -441,13 +440,13 @@ var (
 				"void calculateDirectionalLight(DirectionalLight dl,int index)",
 				`vec3 lightDirection = (fragViewMatrix3D*vec4(dl.direction*-1.0,0.0)).xyz;
 				vec3 lightDir = normalize(fragToTangentSpace*lightDirection);
-				
+
 				// Diffuse
 				vec3 diffuse = diffuseLighting(lightDir,dl.diffuseColor);
-				
+
 				// Specular
 				vec3 specular = specularLighting(lightDir,dl.specularColor);
-				
+
 				finalDiffuseColor += vec4(diffuse,0.0);
 				finalSpecularColor += vec4(specular,0.0);`,
 			},
@@ -456,22 +455,22 @@ var (
 				`vec3 lightPosition = (fragViewMatrix3D*vec4(pl.position,1.0)).xyz;
 				vec3 lightDirection = (fragViewMatrix3D*vec4(pl.direction*-1.0,0.0)).xyz;
 				vec3 lightDir = normalize(fragToTangentSpace*(lightPosition-fragPos));
-			
+
 				// Spotamount
 				float spotAmount = calcSpotAmount(lightDir,lightDirection,pl);
-			
+
 				// Diffuse
 				vec3 diffuse = diffuseLighting(lightDir,pl.diffuseColor);
-			
+
 				// Specular
 				vec3 specular = specularLighting(lightDir,pl.specularColor);
-			
+
 				// Attentuation
 				float attent = calcAttentuation(lightPosition,pl.attentuation);
-			
+
 				diffuse *= attent * spotAmount;
 				specular *= attent * spotAmount;
-			
+
 				finalDiffuseColor += vec4(diffuse,0.0);
 				finalSpecularColor += vec4(specular,0.0);`,
 			},
@@ -482,20 +481,20 @@ var (
 		"void calculatePointLight(PointLight pl,int index)",
 		`vec3 lightPosition = pl.position;
 		vec3 lightDir = normalize(lightPosition - fragPos);
-	
-	
+
+
 		// Diffuse
 		vec3 diffuse = diffuseLighting(lightDir,pl.diffuseColor);
-	
+
 		// Specular
 		vec3 specular = specularLighting(lightDir,pl.specularColor);
-	
+
 		// Attentuation
 		float attent = calcAttentuation(lightPosition,pl.attentuation);
-	
+
 		diffuse *= attent;
 		specular *= attent;
-	
+
 		finalDiffuseColor += vec4(diffuse,0.0);
 		finalSpecularColor += vec4(specular,0.0);`,
 	}
@@ -507,19 +506,19 @@ var (
 				"void calculateDirectionalLight(DirectionalLight dl,int index)",
 				`vec3 lightDirection = -dl.direction;
 				vec3 lightDir = normalize(lightDirection);
-				
+
 				// Diffuse
 				vec3 diffuse = diffuseLighting(lightDir,dl.diffuseColor);
-				
+
 				// Specular
 				vec3 specular = specularLighting(lightDir,dl.specularColor);
-				
+
 				// Shadow
 				float shadow = dl.castsShadows ? calcShadow(directionalLightsshadowmap[index],dl.lightSpaceMatrix,dl.shadowDistance,true,dl.shadowMapSize) : 1.0;
-				
+
 				diffuse *= shadow;
 				specular *= shadow;
-			
+
 				finalDiffuseColor += vec4(diffuse,0.0);
 				finalSpecularColor += vec4(specular,0.0);`,
 			},
@@ -528,26 +527,26 @@ var (
 				`vec3 lightPosition = pl.position;
 				vec3 lightDirection = -pl.direction;
 				vec3 lightDir = normalize(lightPosition-fragPos);
-			
+
 				// Spotamount
 				float spotAmount = calcSpotAmount(lightDir,lightDirection,pl);
-			
+
 				// Diffuse
 				vec3 diffuse = diffuseLighting(lightDir,pl.diffuseColor);
-			
+
 				// Specular
 				vec3 specular = specularLighting(lightDir,pl.specularColor);
-			
+
 				// Attentuation
 				float attent = calcAttentuation(lightPosition,pl.attentuation);
-			
+
 				// Shadow
 				float shadow = pl.castsShadows ? calcShadow(spotLightsshadowmap[index],pl.lightSpaceMatrix,50.0,false,pl.shadowMapSize) : 1.0;
 				// float shadow = 1.0;
-			
+
 				diffuse *= attent * spotAmount * shadow;
 				specular *= attent * spotAmount * shadow;
-			
+
 				finalDiffuseColor += vec4(diffuse,0.0);
 				finalSpecularColor += vec4(specular,0.0);`,
 			},
@@ -561,13 +560,13 @@ var (
 				"void calculateDirectionalLight(DirectionalLight dl,int index)",
 				`vec3 lightDirection = -dl.direction;
 				vec3 lightDir = normalize(lightDirection);
-				
+
 				// Diffuse
 				vec3 diffuse = diffuseLighting(lightDir,dl.diffuseColor);
-				
+
 				// Specular
 				vec3 specular = specularLighting(lightDir,dl.specularColor);
-				
+
 				finalDiffuseColor += vec4(diffuse,0.0);
 				finalSpecularColor += vec4(specular,0.0);`,
 			},
@@ -576,22 +575,22 @@ var (
 				`vec3 lightPosition = pl.position;
 				vec3 lightDirection = -pl.direction;
 				vec3 lightDir = normalize(lightPosition-fragPos);
-			
+
 				// Spotamount
 				float spotAmount = calcSpotAmount(lightDir,lightDirection,pl);
-			
+
 				// Diffuse
 				vec3 diffuse = diffuseLighting(lightDir,pl.diffuseColor);
-			
+
 				// Specular
 				vec3 specular = specularLighting(lightDir,pl.specularColor);
-			
+
 				// Attentuation
 				float attent = calcAttentuation(lightPosition,pl.attentuation);
-			
+
 				diffuse *= attent * spotAmount;
 				specular *= attent * spotAmount;
-			
+
 				finalDiffuseColor += vec4(diffuse,0.0);
 				finalSpecularColor += vec4(specular,0.0);`,
 			},

@@ -1,7 +1,6 @@
 package gohome
 
 import (
-	"github.com/PucklaMotzer09/GLSLGenerator"
 	"strings"
 )
 

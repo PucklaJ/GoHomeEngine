@@ -1,7 +1,7 @@
 package gohome
 
 import (
-	"github.com/PucklaMotzer09/mathgl/mgl32"
+	"github.com/PucklaJ/mathgl/mgl32"
 )
 
 // A Model3D that renders instanced
@@ -10,7 +10,7 @@ type InstancedModel3D struct {
 	Name   string
 	meshes []InstancedMesh3D
 	// The bounding box of this Model
-	AABB   AxisAlignedBoundingBox
+	AABB AxisAlignedBoundingBox
 }
 
 // Adds a mesh to the drawn meshes

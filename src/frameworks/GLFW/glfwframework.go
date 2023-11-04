@@ -1,14 +1,15 @@
 package framework
 
 import (
-	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
-	"github.com/PucklaMotzer09/GoHomeEngine/src/loaders/defaultlevel"
-	"github.com/PucklaMotzer09/mathgl/mgl32"
-	"github.com/go-gl/glfw/v3.2/glfw"
 	"log"
 	"math"
 	"os"
 	"strings"
+
+	"github.com/PucklaJ/GoHomeEngine/src/gohome"
+	"github.com/PucklaJ/GoHomeEngine/src/loaders/defaultlevel"
+	"github.com/PucklaJ/mathgl/mgl32"
+	"github.com/go-gl/glfw/v3.2/glfw"
 )
 
 type GLFWFramework struct {

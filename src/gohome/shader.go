@@ -1,7 +1,7 @@
 package gohome
 
 import (
-	"github.com/PucklaMotzer09/mathgl/mgl32"
+	"github.com/PucklaJ/mathgl/mgl32"
 )
 
 // The different parts of a shader
@@ -54,7 +54,7 @@ type Shader interface {
 	SetUniformM3(name string, value mgl32.Mat3)
 	// Sets the value of a uniform Mat4
 	SetUniformM4(name string, value mgl32.Mat4)
-	// Sets the value of a uniform material	
+	// Sets the value of a uniform material
 	SetUniformMaterial(mat Material)
 	// Sets the value of all uniforms of lights
 	SetUniformLights(lightCollectionIndex int)

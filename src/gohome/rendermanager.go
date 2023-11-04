@@ -1,21 +1,22 @@
 package gohome
 
 import (
-	"github.com/PucklaMotzer09/mathgl/mgl32"
 	"math"
 	"runtime"
 	"sync"
+
+	"github.com/PucklaJ/mathgl/mgl32"
 )
 
 // A viewport that is on a certain part of the screen.
 // Showing a certain part of the world
 type Viewport struct {
 	// The index of the camera belonging to this viewport
-	CameraIndex         int
+	CameraIndex int
 	// The position and dimensions of the viewport
 	X, Y, Width, Height int
 	// Wether the viewport should adjust base don the window size
-	StrapToWindow       bool
+	StrapToWindow bool
 }
 
 // The manager that handles the rendering of all objects
@@ -28,13 +29,13 @@ type RenderManager struct {
 	viewport2Ds        []*Viewport
 	viewport3Ds        []*Viewport
 	// The projetion used for 2D objects
-	Projection2D       Projection
+	Projection2D Projection
 	// The projection used for 3D objects
-	Projection3D       Projection
+	Projection3D Projection
 	// If set this shader is forced onto every 3D object
-	ForceShader3D      Shader
+	ForceShader3D Shader
 	// If set this shader is forced onto every 2D object
-	ForceShader2D      Shader
+	ForceShader2D Shader
 
 	// The back buffer that will be rendered to the screen
 	// and onto which BackBuffer2D and 3D will be rendered
@@ -52,17 +53,17 @@ type RenderManager struct {
 	currentViewport *Viewport
 
 	// Wether the objects should be rendered to the back buffers or directly to the screen
-	EnableBackBuffer             bool
+	EnableBackBuffer bool
 	// Wether the objects should be rendered in wire frame mode
-	WireFrameMode                bool
+	WireFrameMode bool
 	// Wether the projection should be updated every frame based on the viewport
 	UpdateProjectionWithViewport bool
 	// Wether the back buffers of the last frame should be rendered before the objects
-	RenderToScreenFirst          bool
+	RenderToScreenFirst bool
 	// If false ReRender must be set to true everytime you want to re-render the scene
-	AutoRender                   bool
+	AutoRender bool
 	// If true the scene will be re-rendered
-	ReRender                     bool
+	ReRender bool
 
 	calculatingTransformMatricesParallel bool
 }

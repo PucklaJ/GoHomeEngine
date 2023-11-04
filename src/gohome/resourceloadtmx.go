@@ -1,8 +1,9 @@
 package gohome
 
 import (
-	"github.com/PucklaMotzer09/tmx"
 	"io"
+
+	"github.com/PucklaJ/tmx"
 )
 
 var (

@@ -1,11 +1,12 @@
 package renderer
 
 import (
-	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
-	gl "github.com/PucklaMotzer09/android-go/gles3"
-	"github.com/PucklaMotzer09/mathgl/mgl32"
 	"sync"
 	"unsafe"
+
+	"github.com/PucklaJ/GoHomeEngine/src/gohome"
+	gl "github.com/PucklaJ/android-go/gles3"
+	"github.com/PucklaJ/mathgl/mgl32"
 )
 
 const (

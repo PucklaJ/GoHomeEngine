@@ -1,8 +1,9 @@
 package main
 
 import (
-	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
 	"math"
+
+	"github.com/PucklaJ/GoHomeEngine/src/gohome"
 )
 
 type Shape2DScene struct {

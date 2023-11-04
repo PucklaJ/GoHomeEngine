@@ -1,8 +1,9 @@
 package gohome
 
 import (
-	"github.com/PucklaMotzer09/mathgl/mgl32"
 	"math"
+
+	"github.com/PucklaJ/mathgl/mgl32"
 )
 
 const (
@@ -31,13 +32,13 @@ type Projection interface {
 // A 2-dimensional orthogonal projection
 type Ortho2DProjection struct {
 	// The left most value
-	Left   float32
+	Left float32
 	// The right most value
-	Right  float32
+	Right float32
 	// The bottom mose value
 	Bottom float32
 	// The top most value
-	Top    float32
+	Top float32
 
 	oldLeft   float32
 	oldRight  float32
@@ -83,15 +84,15 @@ func (o2Dp *Ortho2DProjection) GetFrustum() [8]mgl32.Vec3 {
 // A 3-dimensional perspective projection
 type PerspectiveProjection struct {
 	// The width of the viewport
-	Width     float32
+	Width float32
 	// The height of the viewport
-	Height    float32
+	Height float32
 	// The field of view
-	FOV       float32
+	FOV float32
 	// The near plane at which objects start to clip away
 	NearPlane float32
 	// The far plane at which the objects start to clip away
-	FarPlane  float32
+	FarPlane float32
 
 	oldWidth     float32
 	oldHeight    float32
@@ -185,17 +186,17 @@ func (IdentityProjection) GetFrustum() [8]mgl32.Vec3 {
 // A 3-dimensional orthogonal projection
 type Ortho3DProjection struct {
 	// The left most point
-	Left   float32
+	Left float32
 	// The right most point
-	Right  float32
+	Right float32
 	// The bottom most point
 	Bottom float32
 	// The top most point
-	Top    float32
+	Top float32
 	// The near plane
-	Near   float32
+	Near float32
 	// The far plane
-	Far    float32
+	Far float32
 
 	oldLeft   float32
 	oldRight  float32

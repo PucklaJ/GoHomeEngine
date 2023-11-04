@@ -2,8 +2,9 @@ package loader
 
 import (
 	"bufio"
-	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
 	"io"
+
+	"github.com/PucklaJ/GoHomeEngine/src/gohome"
 )
 
 type OBJLoader struct {

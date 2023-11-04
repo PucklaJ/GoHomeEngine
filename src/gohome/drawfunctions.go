@@ -1,18 +1,23 @@
 package gohome
 
 import (
-	"github.com/PucklaMotzer09/mathgl/mgl32"
 	"image/color"
+
+	"github.com/PucklaJ/mathgl/mgl32"
 )
 
 // The color in which the shapes will be drawn
 var DrawColor color.Color = Color{255, 255, 255, 255}
+
 // The point size which will be used
 var PointSize float32 = 1.0
+
 // The line width which will be used
 var LineWidth float32 = 1.0
+
 // Wether the shapes should be filled
 var Filled bool = true
+
 // The detail of the curcle. The higher the more detailed
 var CircleDetail int = 30
 

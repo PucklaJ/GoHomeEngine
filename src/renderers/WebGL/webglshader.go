@@ -2,10 +2,11 @@ package renderer
 
 import (
 	"bytes"
-	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
-	"github.com/PucklaMotzer09/mathgl/mgl32"
-	"github.com/gopherjs/gopherjs/js"
 	"strconv"
+
+	"github.com/PucklaJ/GoHomeEngine/src/gohome"
+	"github.com/PucklaJ/mathgl/mgl32"
+	"github.com/gopherjs/gopherjs/js"
 )
 
 type WebGLShader struct {

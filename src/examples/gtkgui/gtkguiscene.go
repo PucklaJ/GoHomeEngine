@@ -3,10 +3,10 @@ package main
 import (
 	"log"
 
-	framework "github.com/PucklaMotzer09/GoHomeEngine/src/frameworks/GTK"
-	"github.com/PucklaMotzer09/GoHomeEngine/src/frameworks/GTK/gtk"
-	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
-	"github.com/PucklaMotzer09/mathgl/mgl32"
+	framework "github.com/PucklaJ/GoHomeEngine/src/frameworks/GTK"
+	"github.com/PucklaJ/GoHomeEngine/src/frameworks/GTK/gtk"
+	"github.com/PucklaJ/GoHomeEngine/src/gohome"
+	"github.com/PucklaJ/mathgl/mgl32"
 )
 
 var gtkf *framework.GTKFramework

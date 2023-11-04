@@ -4,9 +4,9 @@ import (
 	"image/color"
 	"strconv"
 
-	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
-	gl "github.com/PucklaMotzer09/android-go/gles2"
-	"github.com/PucklaMotzer09/mathgl/mgl32"
+	"github.com/PucklaJ/GoHomeEngine/src/gohome"
+	gl "github.com/PucklaJ/android-go/gles2"
+	"github.com/PucklaJ/mathgl/mgl32"
 )
 
 type OpenGLES2Renderer struct {

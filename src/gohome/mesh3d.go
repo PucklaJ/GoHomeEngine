@@ -1,7 +1,7 @@
 package gohome
 
 import (
-	"github.com/PucklaMotzer09/mathgl/mgl32"
+	"github.com/PucklaJ/mathgl/mgl32"
 )
 
 const (
@@ -301,7 +301,7 @@ func Box(name string, size mgl32.Vec3, loadToGPU bool) Mesh3D {
 	return boxMesh
 }
 
-// Creates a plane from the given dimensions. 
+// Creates a plane from the given dimensions.
 // textures defines the scale of the uv coordinates
 func Plane(name string, size mgl32.Vec2, textures float32, loadToGPU bool) Mesh3D {
 	// xAxis := up.Cross([3]float32{0.0, 0.0, 1.0})

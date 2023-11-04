@@ -1,21 +1,22 @@
 package physics2d
 
 import (
-	"github.com/ByteArena/box2d"
-	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
-	"github.com/PucklaMotzer09/mathgl/mgl32"
-	"github.com/PucklaMotzer09/tmx"
 	"runtime"
 	"strconv"
 	"strings"
 	"sync"
+
+	"github.com/ByteArena/box2d"
+	"github.com/PucklaJ/GoHomeEngine/src/gohome"
+	"github.com/PucklaJ/mathgl/mgl32"
+	"github.com/PucklaJ/tmx"
 )
 
 var (
 	// Defines how big one meter is
-	PIXEL_PER_METER     float32 = 100.0
+	PIXEL_PER_METER float32 = 100.0
 	// Defines the size of the world (can be used to remove everything outside of the world)
-	WORLD_SIZE          mgl32.Vec2
+	WORLD_SIZE mgl32.Vec2
 	// The number of velocity iterations of Box2D
 	VELOCITY_ITERATIONS = 6
 	// The number of position iterations of Box2D
@@ -87,7 +88,7 @@ func ToPixelAngle(angle float64) float32 {
 // The manager that handles all 2D physics
 type PhysicsManager2D struct {
 	// The Box2D world
-	World  box2d.B2World
+	World box2d.B2World
 	// Wether the world is paused (no movement)
 	Paused bool
 

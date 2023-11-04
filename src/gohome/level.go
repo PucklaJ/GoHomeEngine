@@ -1,7 +1,7 @@
 package gohome
 
 import (
-	"github.com/PucklaMotzer09/mathgl/mgl32"
+	"github.com/PucklaJ/mathgl/mgl32"
 )
 
 // A wrapper for the TransformableObject
@@ -22,7 +22,7 @@ func (this *LevelTransformableObject) SetTransformMatrix(rmgr *RenderManager) {
 // A struct holding data of an object from a level
 type LevelObject struct {
 	// The name of the object
-	Name      string
+	Name string
 	// The transform matrix of the object
 	Transform LevelTransformableObject
 	// The Entity that is the object
@@ -34,11 +34,11 @@ type LevelObject struct {
 // A level containing level objects
 type Level struct {
 	// The name of the level
-	Name         string
+	Name string
 	// All objects of the level
 	LevelObjects []LevelObject
 	// All entities of the level
-	entities     []*Entity3D
+	entities []*Entity3D
 }
 
 // Adds all objects of the level to the scene

@@ -1,8 +1,9 @@
 package gohome
 
 import (
-	"github.com/PucklaMotzer09/mathgl/mgl32"
 	"image/color"
+
+	"github.com/PucklaJ/mathgl/mgl32"
 )
 
 const (
@@ -16,12 +17,12 @@ type Shape3D struct {
 	Name           string
 	shapeInterface Shape3DInterface
 
-	transform           TransformableObject
+	transform TransformableObject
 	// The transform of this shape
-	Transform           *TransformableObject3D
+	Transform *TransformableObject3D
 	// Wether this shape is visible
-	Visible             bool
-	shader              Shader
+	Visible bool
+	shader  Shader
 	// The index of the camera to which this shape is relative
 	NotRelativeToCamera int
 	rtype               RenderType

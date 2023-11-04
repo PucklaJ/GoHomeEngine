@@ -2,10 +2,11 @@ package loader
 
 import (
 	"errors"
-	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
 	"strconv"
 	"strings"
 	"sync"
+
+	"github.com/PucklaJ/GoHomeEngine/src/gohome"
 )
 
 func (this *OBJLoader) processTriangleFace(posIndices, normalIndices, texCoordIndices []int) (rv []gohome.Mesh3DVertex) {

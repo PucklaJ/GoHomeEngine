@@ -2,7 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
+
+	"github.com/PucklaJ/GoHomeEngine/src/gohome"
 )
 
 type GUIScene struct {

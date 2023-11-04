@@ -1,11 +1,12 @@
 package sdlmixer
 
 import (
-	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
-	"github.com/PucklaMotzer09/go-sdl2/mix"
-	"github.com/PucklaMotzer09/go-sdl2/sdl"
 	"strconv"
 	"time"
+
+	"github.com/PucklaJ/GoHomeEngine/src/gohome"
+	"github.com/PucklaJ/go-sdl2/mix"
+	"github.com/PucklaJ/go-sdl2/sdl"
 )
 
 type MixerAudioManager struct {

@@ -1,7 +1,6 @@
 package gohome
 
 import (
-	"github.com/PucklaMotzer09/GLSLGenerator"
 	"strings"
 )
 
@@ -106,7 +105,7 @@ var (
 				{
 					flippedTexCoord = tc;
 				}
-			
+
 				return flippedTexCoord;`,
 			},
 		},
@@ -124,16 +123,16 @@ var (
 				"vec2 textureRegionToTexCoord(vec2 tc)",
 				`if(!enableTextureRegion)
 				return tc;
-		
+
 			// X: 0 ->      0 -> Min X
 			// Y: 0 ->      0 -> Min Y
 			// Z: WIDTH ->  1 -> Max X
 			// W: HEIGHT -> 1 -> Max Y
-		
+
 			vec2 newTexCoord = tc;
 			newTexCoord.x = newTexCoord.x * (textureRegion.z-textureRegion.x)+textureRegion.x;
 			newTexCoord.y = newTexCoord.y * (textureRegion.w-textureRegion.y)+textureRegion.y;
-		
+
 			return newTexCoord;`,
 			},
 		},

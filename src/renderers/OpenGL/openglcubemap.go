@@ -1,11 +1,12 @@
 package renderer
 
 import (
-	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
-	"github.com/go-gl/gl/all-core/gl"
 	"image"
 	"image/color"
 	"unsafe"
+
+	"github.com/PucklaJ/GoHomeEngine/src/gohome"
+	"github.com/go-gl/gl/all-core/gl"
 )
 
 type OpenGLCubeMap struct {

@@ -1,7 +1,7 @@
 package gohome
 
 import (
-	"github.com/PucklaMotzer09/mathgl/mgl32"
+	"github.com/PucklaJ/mathgl/mgl32"
 )
 
 // A 2D camera used for showing different parts of the world
@@ -9,11 +9,11 @@ type Camera2D struct {
 	// It's position in world space
 	Position mgl32.Vec2
 	// It's zoom (>1.0 -> Zoom In and <1.0 -> Zoom Out)
-	Zoom     float32
+	Zoom float32
 	// It's rotation in degrees
 	Rotation float32
 	// The Origin for rotating and zooming
-	Origin   mgl32.Vec2
+	Origin mgl32.Vec2
 
 	oldPosition mgl32.Vec2
 	oldZoom     float32

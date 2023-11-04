@@ -1,10 +1,11 @@
 package renderer
 
 import (
-	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
-	"github.com/PucklaMotzer09/mathgl/mgl32"
-	"github.com/gopherjs/gopherjs/js"
 	"sync"
+
+	"github.com/PucklaJ/GoHomeEngine/src/gohome"
+	"github.com/PucklaJ/mathgl/mgl32"
+	"github.com/gopherjs/gopherjs/js"
 )
 
 const (

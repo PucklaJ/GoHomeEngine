@@ -2,11 +2,12 @@ package renderer
 
 import (
 	"bytes"
-	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
-	"github.com/PucklaMotzer09/mathgl/mgl32"
-	"github.com/go-gl/gl/all-core/gl"
 	"strconv"
 	"strings"
+
+	"github.com/PucklaJ/GoHomeEngine/src/gohome"
+	"github.com/PucklaJ/mathgl/mgl32"
+	"github.com/go-gl/gl/all-core/gl"
 )
 
 type OpenGLShader struct {

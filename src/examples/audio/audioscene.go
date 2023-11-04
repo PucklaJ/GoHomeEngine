@@ -1,9 +1,10 @@
 package main
 
 import (
-	"github.com/PucklaMotzer09/GoHomeEngine/src/audio"
-	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
 	"runtime"
+
+	"github.com/PucklaJ/GoHomeEngine/src/audio"
+	"github.com/PucklaJ/GoHomeEngine/src/gohome"
 )
 
 type AudioScene struct {

@@ -2,8 +2,8 @@ package physics2d
 
 import (
 	"github.com/ByteArena/box2d"
-	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
-	"github.com/PucklaMotzer09/mathgl/mgl32"
+	"github.com/PucklaJ/GoHomeEngine/src/gohome"
+	"github.com/PucklaJ/mathgl/mgl32"
 	"golang.org/x/image/colornames"
 )
 
@@ -12,17 +12,17 @@ type PhysicsDebugDraw2D struct {
 	gohome.NilRenderObject
 
 	// Wether bodies should be drawn
-	DrawBodies      bool
+	DrawBodies bool
 	// Wether joints shoul be drawn
-	DrawJoints      bool
+	DrawJoints bool
 	// Wether bounding boxes should be drawn
-	DrawAABBs       bool
+	DrawAABBs bool
 	// Wether only static bodies should be drawn
-	OnlyDrawStatic  bool
+	OnlyDrawStatic bool
 	// Wether only dynamic bodies should be drawn
 	OnlyDrawDynamic bool
 	// Wether anything should be drawn
-	Visible         bool
+	Visible bool
 
 	mgr *PhysicsManager2D
 

@@ -1,3 +1,4 @@
+//go:build (linux || windows || darwin) && !android && !js
 // +build linux windows darwin
 // +build !android
 // +build !js
@@ -5,8 +6,8 @@
 package audio
 
 import (
-	"github.com/PucklaMotzer09/GoHomeEngine/src/audio/openal"
-	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
+	"github.com/PucklaJ/GoHomeEngine/src/audio/openal"
+	"github.com/PucklaJ/GoHomeEngine/src/gohome"
 )
 
 func InitAudio() {

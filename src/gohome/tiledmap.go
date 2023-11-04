@@ -1,9 +1,10 @@
 package gohome
 
 import (
-	"github.com/PucklaMotzer09/mathgl/mgl32"
-	"github.com/PucklaMotzer09/tmx"
 	"image/color"
+
+	"github.com/PucklaJ/mathgl/mgl32"
+	"github.com/PucklaJ/tmx"
 )
 
 type sprite2DConfiguration struct {

@@ -1,7 +1,7 @@
 package gohome
 
 import (
-	"github.com/PucklaMotzer09/mathgl/mgl32"
+	"github.com/PucklaJ/mathgl/mgl32"
 )
 
 // The different types of values that can be used for instancing
@@ -66,17 +66,17 @@ type InstancedMesh3D interface {
 	SetF(index int, value []float32)
 	// Sets the Vec2 values of index, value needs to be of size num instances
 	SetV2(index int, value []mgl32.Vec2)
-	// Sets the vec3 values of index, value needs to be of size num instances	
+	// Sets the vec3 values of index, value needs to be of size num instances
 	SetV3(index int, value []mgl32.Vec3)
-	// Sets the vec4 values of index, value needs to be of size num instances	
+	// Sets the vec4 values of index, value needs to be of size num instances
 	SetV4(index int, value []mgl32.Vec4)
-	// Sets the Mat2 values of index, value needs to be of size num instances	
+	// Sets the Mat2 values of index, value needs to be of size num instances
 	SetM2(index int, value []mgl32.Mat2)
-	// Sets the Mat3 values of index, value needs to be of size num instances	
+	// Sets the Mat3 values of index, value needs to be of size num instances
 	SetM3(index int, value []mgl32.Mat3)
-	// Sets the Mat4 values of index, value needs to be of size num instances	
+	// Sets the Mat4 values of index, value needs to be of size num instances
 	SetM4(index int, value []mgl32.Mat4)
-	// Sets the name of a value	
+	// Sets the name of a value
 	SetName(index int, value_type int, value string)
 }
 

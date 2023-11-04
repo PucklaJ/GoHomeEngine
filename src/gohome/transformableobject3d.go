@@ -1,7 +1,7 @@
 package gohome
 
 import (
-	"github.com/PucklaMotzer09/mathgl/mgl32"
+	"github.com/PucklaJ/mathgl/mgl32"
 )
 
 // A transform storing everything needed for the transform matrix
@@ -9,7 +9,7 @@ type TransformableObject3D struct {
 	// The position in the world
 	Position mgl32.Vec3
 	// The scale the multiplies all vertices
-	Scale    mgl32.Vec3
+	Scale mgl32.Vec3
 	// The rotation represented as a Quaternion
 	Rotation mgl32.Quat
 

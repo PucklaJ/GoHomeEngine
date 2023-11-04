@@ -2,8 +2,8 @@ package physics2d
 
 import (
 	"github.com/ByteArena/box2d"
-	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
-	"github.com/PucklaMotzer09/mathgl/mgl32"
+	"github.com/PucklaJ/GoHomeEngine/src/gohome"
+	"github.com/PucklaJ/mathgl/mgl32"
 )
 
 // Connects a transformable object with a body and updates the position and rotation
@@ -11,9 +11,9 @@ type PhysicsConnector2D struct {
 	// The transform to which this object is connected to
 	Transform *gohome.TransformableObject2D
 	// The body to which this object is connected to
-	Body      *box2d.B2Body
+	Body *box2d.B2Body
 	// The offset from the body
-	Offset    mgl32.Vec2
+	Offset mgl32.Vec2
 
 	pmgr *PhysicsManager2D
 }

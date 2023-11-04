@@ -1,8 +1,9 @@
 package gohome
 
 import (
-	"github.com/PucklaMotzer09/mathgl/mgl32"
 	"image/color"
+
+	"github.com/PucklaJ/mathgl/mgl32"
 )
 
 // This interface handles every low level rendering operation

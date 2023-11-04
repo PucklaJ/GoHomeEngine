@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
+	"github.com/PucklaJ/GoHomeEngine/src/gohome"
 	"golang.org/x/image/colornames"
 )
 

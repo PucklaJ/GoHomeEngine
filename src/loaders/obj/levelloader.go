@@ -1,10 +1,11 @@
 package loader
 
 import (
-	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
 	"io/ioutil"
 	"strconv"
 	"strings"
+
+	"github.com/PucklaJ/GoHomeEngine/src/gohome"
 )
 
 func LoadLevelOBJ(name, path string, loadToGPU bool) *gohome.Level {

@@ -1,8 +1,9 @@
 package gohome
 
 import (
-	"github.com/PucklaMotzer09/mathgl/mgl32"
 	"sync"
+
+	"github.com/PucklaJ/mathgl/mgl32"
 )
 
 const (
@@ -17,23 +18,23 @@ const (
 type InstancedEntity3D struct {
 	NilRenderObject
 	// The name of this object
-	Name                        string
+	Name string
 	// The 3D Model
-	Model3D                     *InstancedModel3D
+	Model3D *InstancedModel3D
 	// Wether it is visible
-	Visible                     bool
+	Visible bool
 	// The index of the camera to which it is not relative
 	// or -1 if it relative to every camera
-	NotRelativeToCamera         int
+	NotRelativeToCamera int
 	// Wether it should render after everyting else
-	RenderLast                  bool
+	RenderLast bool
 	// Wether the depth test is enabled
-	DepthTesting                bool
+	DepthTesting bool
 	// Wether the instanced values should be update in every frame or not
 	StopUpdatingInstancedValues bool
 
 	// The shader of the object
-	Shader     Shader
+	Shader Shader
 	// The render type of the object
 	RenderType RenderType
 

@@ -1,7 +1,7 @@
 package gohome
 
 import (
-	"github.com/PucklaMotzer09/mathgl/mgl32"
+	"github.com/PucklaJ/mathgl/mgl32"
 )
 
 // A tween that moves its parent to a certain position
@@ -9,9 +9,9 @@ type TweenPosition2D struct {
 	// The position to which the parent should move
 	Destination mgl32.Vec2
 	// The time in which it should do this in seconds
-	Time        float32
+	Time float32
 	// The type of this tween
-	TweenType   uint8
+	TweenType uint8
 
 	transform   *TransformableObject2D
 	velocity    mgl32.Vec2
@@ -70,9 +70,9 @@ type TweenRotation2D struct {
 	// The rotation to which it should rotate
 	Destination float32
 	// The time in which it should do this
-	Time        float32
+	Time float32
 	// The type of this tween
-	TweenType   uint8
+	TweenType uint8
 
 	transform   *TransformableObject2D
 	velocity    float32
@@ -129,7 +129,7 @@ func (this *TweenRotation2D) Copy() Tween {
 // A tween that does nothing for a given amount of time
 type TweenWait struct {
 	// The amount of time it should do nothing in seconds
-	Time      float32
+	Time float32
 	// The type of this tween
 	TweenType uint8
 
@@ -176,9 +176,9 @@ type BlinkableObject interface {
 // A tween that lets its parent blink for given amount of times
 type TweenBlink struct {
 	// The count of blinks
-	Amount    int
+	Amount int
 	// The time on blink needs in seconds
-	Time      float32
+	Time float32
 	// The type of this tween
 	TweenType uint8
 
@@ -256,9 +256,9 @@ type TweenScale2D struct {
 	// The scale the parent should reach
 	Destination mgl32.Vec2
 	// The time needed for the tween in seconds
-	Time        float32
+	Time float32
 	// The type of this tween
-	TweenType   uint8
+	TweenType uint8
 
 	elapsedTime float32
 	velocity    mgl32.Vec2
@@ -328,9 +328,9 @@ type TweenRegion2D struct {
 	// The texture region the parent should have
 	Destination TextureRegion
 	// The time it should have this region
-	Time        float32
+	Time float32
 	// The type of this tween
-	TweenType   uint8
+	TweenType uint8
 
 	startRegion TextureRegion
 	startSize   mgl32.Vec2
@@ -399,9 +399,9 @@ type TweenTexture2D struct {
 	// The texture the parent should have
 	Destination Texture
 	// The the parent should have the Texture
-	Time        float32
+	Time float32
 	// The type of the tween
-	TweenType   uint8
+	TweenType uint8
 
 	elapsedTime  float32
 	parent       *Sprite2D
@@ -470,9 +470,9 @@ type TweenPosition3D struct {
 	// The position the parent should reach
 	Destination mgl32.Vec3
 	// The time it should need for the movement
-	Time        float32
+	Time float32
 	// The type of the tween
-	TweenType   uint8
+	TweenType uint8
 
 	transform   *TransformableObject3D
 	velocity    mgl32.Vec3
@@ -533,9 +533,9 @@ type TweenRotation3D struct {
 	// The rotation that should be reached
 	Destination mgl32.Quat
 	// The time needed for the rotation
-	Time        float32
+	Time float32
 	// The type of this tween
-	TweenType   uint8
+	TweenType uint8
 
 	transform   *TransformableObject3D
 	start       mgl32.Quat
@@ -594,9 +594,9 @@ type TweenScale3D struct {
 	// The scale that should be reached
 	Destination mgl32.Vec3
 	// The time needed for the transformation
-	Time        float32
+	Time float32
 	// The type of the tween
-	TweenType   uint8
+	TweenType uint8
 
 	elapsedTime float32
 	velocity    mgl32.Vec3

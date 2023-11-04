@@ -2,12 +2,13 @@ package framework
 
 import (
 	"fmt"
-	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
-	"github.com/PucklaMotzer09/GoHomeEngine/src/loaders/defaultlevel"
-	"github.com/PucklaMotzer09/go-sdl2/sdl"
-	"github.com/PucklaMotzer09/mathgl/mgl32"
 	"os"
 	"runtime"
+
+	"github.com/PucklaJ/GoHomeEngine/src/gohome"
+	"github.com/PucklaJ/GoHomeEngine/src/loaders/defaultlevel"
+	"github.com/PucklaJ/go-sdl2/sdl"
+	"github.com/PucklaJ/mathgl/mgl32"
 )
 
 type SDL2Framework struct {

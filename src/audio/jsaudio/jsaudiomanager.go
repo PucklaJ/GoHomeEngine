@@ -1,9 +1,10 @@
 package jsaudio
 
 import (
-	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
-	"github.com/gopherjs/gopherjs/js"
 	"time"
+
+	"github.com/PucklaJ/GoHomeEngine/src/gohome"
+	"github.com/gopherjs/gopherjs/js"
 )
 
 type JSAudioManager struct {

@@ -1,7 +1,7 @@
 package gohome
 
 import (
-	"github.com/PucklaMotzer09/mathgl/mgl32"
+	"github.com/PucklaJ/mathgl/mgl32"
 )
 
 const (
@@ -14,21 +14,21 @@ const (
 type Entity3D struct {
 	NilRenderObject
 	// The name of the Entity
-	Name                string
+	Name string
 	// The 3D Model of the Entity
-	Model3D             *Model3D
+	Model3D *Model3D
 	// Wether it is visible
-	Visible             bool
+	Visible bool
 	// The index of the camera to which it is not relative
 	// or -1 if it relative to every camera
 	NotRelativeToCamera int
 	// Wether it should render after everyting else
-	RenderLast          bool
+	RenderLast bool
 	// Wether the depth test is enabled
-	DepthTesting        bool
+	DepthTesting bool
 
 	// The shader that will be used on this 3D Model
-	Shader     Shader
+	Shader Shader
 	// The render type of the Entity
 	RenderType RenderType
 

@@ -1,12 +1,13 @@
 package renderer
 
 import (
-	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
-	"github.com/gopherjs/gopherjs/js"
 	"image"
 	"image/color"
 	"strconv"
 	"sync"
+
+	"github.com/PucklaJ/GoHomeEngine/src/gohome"
+	"github.com/gopherjs/gopherjs/js"
 )
 
 type WebGLTexture struct {

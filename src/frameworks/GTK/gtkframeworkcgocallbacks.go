@@ -1,8 +1,9 @@
 package framework
 
 import (
-	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
 	"time"
+
+	"github.com/PucklaJ/GoHomeEngine/src/gohome"
 )
 
 var firstFrameDone bool = false

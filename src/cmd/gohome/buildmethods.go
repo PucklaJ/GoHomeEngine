@@ -78,9 +78,9 @@ func generateMain(forandroid bool) (str string) {
 		str += "import \"C\"\n\n"
 	}
 	str += "import (\n"
-	str += "\t\"github.com/PucklaMotzer09/GoHomeEngine/src/frameworks/" + VAR_FRAME + "\"\n"
-	str += "\t\"github.com/PucklaMotzer09/GoHomeEngine/src/gohome\"\n"
-	str += "\t\"github.com/PucklaMotzer09/GoHomeEngine/src/renderers/" + VAR_RENDER + "\"\n"
+	str += "\t\"github.com/PucklaJ/GoHomeEngine/src/frameworks/" + VAR_FRAME + "\"\n"
+	str += "\t\"github.com/PucklaJ/GoHomeEngine/src/gohome\"\n"
+	str += "\t\"github.com/PucklaJ/GoHomeEngine/src/renderers/" + VAR_RENDER + "\"\n"
 	str += ")\n\n"
 	str += "func main() {\n"
 	var frame string
@@ -353,7 +353,7 @@ func (*AndroidBuild) Generate() {
 	if !FileExists("gradlew") {
 		slash := GetSlash()
 		gopath := os.Getenv("GOPATH") + slash
-		androidpath := gopath + "src" + slash + "github.com" + slash + "PucklaMotzer09" + slash + "GoHomeEngine" + slash + "android" + slash
+		androidpath := gopath + "src" + slash + "github.com" + slash + "PucklaJ" + slash + "GoHomeEngine" + slash + "android" + slash
 
 		doCopy(androidpath + "android")
 		doCopy(androidpath + "gradle")

@@ -2,13 +2,14 @@ package renderer
 
 import (
 	// "fmt"
-	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
-	"github.com/go-gl/gl/all-core/gl"
 	"image"
 	"image/color"
 	"strconv"
 	"sync"
 	"unsafe"
+
+	"github.com/PucklaJ/GoHomeEngine/src/gohome"
+	"github.com/go-gl/gl/all-core/gl"
 )
 
 type OpenGLTexture struct {

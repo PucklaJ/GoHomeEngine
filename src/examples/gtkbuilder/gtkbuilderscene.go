@@ -1,12 +1,13 @@
 package main
 
 import (
-	"github.com/PucklaMotzer09/GoHomeEngine/src/frameworks/GTK"
-	"github.com/PucklaMotzer09/GoHomeEngine/src/frameworks/GTK/gtk"
-	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
-	"github.com/PucklaMotzer09/mathgl/mgl32"
 	"log"
 	"strconv"
+
+	framework "github.com/PucklaJ/GoHomeEngine/src/frameworks/GTK"
+	"github.com/PucklaJ/GoHomeEngine/src/frameworks/GTK/gtk"
+	"github.com/PucklaJ/GoHomeEngine/src/gohome"
+	"github.com/PucklaJ/mathgl/mgl32"
 )
 
 type GTKBuilderScene struct {

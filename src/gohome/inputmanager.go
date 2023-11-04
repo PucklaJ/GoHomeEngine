@@ -1,17 +1,18 @@
 package gohome
 
 import (
-	"github.com/PucklaMotzer09/mathgl/mgl32"
 	"image/png"
 	"os"
+
+	"github.com/PucklaJ/mathgl/mgl32"
 )
 
 // A struct holding all data of the mouse
 type Mouse struct {
 	// The current position of the mouse in screen coordinates
-	Pos   [2]int16
+	Pos [2]int16
 	// The relative mouse movement to the last frame
-	DPos  [2]int16
+	DPos [2]int16
 	// The wheel movement values [Horizontal,Vertical]
 	Wheel [2]int8
 }
@@ -96,7 +97,7 @@ type InputManager struct {
 	currentTouches map[uint8]bool
 
 	// The data of the mouse
-	Mouse   Mouse
+	Mouse Mouse
 	// All registered touches
 	Touches map[uint8]Touch
 }

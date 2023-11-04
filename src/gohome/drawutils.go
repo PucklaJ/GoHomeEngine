@@ -1,7 +1,7 @@
 package gohome
 
 import (
-	"github.com/PucklaMotzer09/mathgl/mgl32"
+	"github.com/PucklaJ/mathgl/mgl32"
 )
 
 func toLine3D(pos1 mgl32.Vec3, pos2 mgl32.Vec3) (line Line3D) {

@@ -1,8 +1,8 @@
 package defaultlevel
 
 import (
-	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
-	loader "github.com/PucklaMotzer09/GoHomeEngine/src/loaders/obj"
+	"github.com/PucklaJ/GoHomeEngine/src/gohome"
+	loader "github.com/PucklaJ/GoHomeEngine/src/loaders/obj"
 )
 
 type Loader struct {

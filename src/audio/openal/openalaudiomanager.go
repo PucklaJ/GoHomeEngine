@@ -1,14 +1,15 @@
 package openal
 
 import (
-	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
-	loadmp3 "github.com/PucklaMotzer09/GoHomeEngine/src/loaders/mp3"
-	loadwav "github.com/PucklaMotzer09/GoHomeEngine/src/loaders/wav"
-	al "github.com/PucklaMotzer09/go-openal/openal"
-	"github.com/hajimehoshi/go-mp3"
 	"io"
 	"strconv"
 	"time"
+
+	"github.com/PucklaJ/GoHomeEngine/src/gohome"
+	loadmp3 "github.com/PucklaJ/GoHomeEngine/src/loaders/mp3"
+	loadwav "github.com/PucklaJ/GoHomeEngine/src/loaders/wav"
+	al "github.com/PucklaJ/go-openal/openal"
+	"github.com/hajimehoshi/go-mp3"
 )
 
 type OpenALSound struct {

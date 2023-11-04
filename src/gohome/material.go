@@ -1,9 +1,10 @@
 package gohome
 
 import (
-	"github.com/PucklaMotzer09/mathgl/mgl32"
 	"image/color"
 	"math"
+
+	"github.com/PucklaJ/mathgl/mgl32"
 )
 
 const (
@@ -58,30 +59,30 @@ func (this Color) RGBA() (uint32, uint32, uint32, uint32) {
 // A Material having properties that define the look of 3D geometry
 type Material struct {
 	// The name of the material
-	Name          string
+	Name string
 	// The diffuse color of the material
-	DiffuseColor  color.Color
+	DiffuseColor color.Color
 	// The specular color of the material
 	SpecularColor color.Color
 
 	// The diffuse texture of the material
-	DiffuseTexture  Texture
+	DiffuseTexture Texture
 	// The specular texture of the material
 	SpecularTexture Texture
 	// The normal map of the material
-	NormalMap       Texture
+	NormalMap Texture
 
 	// Defines how much specular light should be applied (0.0-1.0)
-	Shinyness    float32
+	Shinyness float32
 	// The transparency or alpha value of the material
 	Transparency float32
 
 	// Used to tell the shader if this material has a diffuse texture
-	DiffuseTextureLoaded  uint8
+	DiffuseTextureLoaded uint8
 	// Used to tell the shader if this material has a specular texture
 	SpecularTextureLoaded uint8
 	// Used to tell the shader if this material has a normal map
-	NormalMapLoaded       uint8
+	NormalMapLoaded uint8
 }
 
 // Initialises some default values

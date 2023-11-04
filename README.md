@@ -1,7 +1,7 @@
 # GoHomeEngine
-[![godoc](https://godoc.org/github.com/PucklaMotzer09/GoHomeEngine/src/gohome?status.svg)](https://godoc.org/github.com/PucklaMotzer09/GoHomeEngine/src/gohome)
-[![License: Zlib](https://img.shields.io/badge/License-Zlib-green.svg)](https://github.com/PucklaMotzer09/GoHomeEngine/blob/master/LICENSE.md)
-[![GitHub last commit](https://img.shields.io/github/last-commit/PucklaMotzer09/GoHomeEngine.svg)](https://github.com/PucklaMotzer09/GoHomeEngine/commits/master)
+[![godoc](https://godoc.org/github.com/PucklaJ/GoHomeEngine/src/gohome?status.svg)](https://godoc.org/github.com/PucklaJ/GoHomeEngine/src/gohome)
+[![License: Zlib](https://img.shields.io/badge/License-Zlib-green.svg)](https://github.com/PucklaJ/GoHomeEngine/blob/master/LICENSE.md)
+[![GitHub last commit](https://img.shields.io/github/last-commit/PucklaJ/GoHomeEngine.svg)](https://github.com/PucklaJ/GoHomeEngine/commits/master)
 <br>
 A Game Engine for 2D/3D Games written in go
 
@@ -30,11 +30,11 @@ A Game Engine for 2D/3D Games written in go
 * SpotLights
 * Shadows of DirectionalLight and SpotLight
 * Ray Casting
-* [Level Editor](https://github.com/PucklaMotzer09/GoHomeEdit) (in development)
+* [Level Editor](https://github.com/PucklaJ/GoHomeEdit) (in development)
 
 ##### 2D
 * Rendering 2D Sprites
-* Camera (Translating, Rotating and Zooming) 
+* Camera (Translating, Rotating and Zooming)
 * Sprite Animation
 * Rendering 2D Shapes (Point,Line,Rectangle,Polygon, etc.)
 * [Physics](https://box2d.org)
@@ -42,27 +42,27 @@ A Game Engine for 2D/3D Games written in go
 
 ## Platforms
 
-|				|Windows| Linux		| Mac		| Android 	| iOS	| Browser |
-|---------------|-------|-----------|-----------|-----------|-------|---------|
-|Tested 		|	Yes |	Yes		|	No 		|	Yes		|	No 	|	Yes   |
-|Implemented  	|   Yes |   Yes		|	Yes		|   Yes		|   No  |   Yes   |
+|             | Windows | Linux | Mac | Android | iOS | Browser |
+| ----------- | ------- | ----- | --- | ------- | --- | ------- |
+| Tested      | Yes     | Yes   | No  | Yes     | No  | Yes     |
+| Implemented | Yes     | Yes   | Yes | Yes     | No  | Yes     |
 
 ## Dependencies
 
-+ [mathgl](https://github.com/PucklaMotzer09/mathgl) ([Forked from here](https://github.com/go-gl/mathgl))([License](https://github.com/PucklaMotzer09/mathgl/blob/master/LICENSE))
++ [mathgl](https://github.com/PucklaJ/mathgl) ([Forked from here](https://github.com/go-gl/mathgl))([License](https://github.com/PucklaJ/mathgl/blob/master/LICENSE))
 + [tga](https://github.com/blezek/tga) ([License](https://github.com/blezek/tga/blob/master/LICENSE.MIT))
-+ [go-openal](https://github.com/PucklaMotzer09/go-openal) ([Forked from here](https://github.com/timshannon/go-openal)) ([License](https://github.com/PucklaMotzer09/go-openal/blob/master/LICENSE))
-+ [go-wav](https://github.com/PucklaMotzer09/go-wav) ([Forked from here](https://github.com/sdobz/go-wav)) ([License](https://github.com/verdverm/go-wav/blob/master/LICENSE.md))
++ [go-openal](https://github.com/PucklaJ/go-openal) ([Forked from here](https://github.com/timshannon/go-openal)) ([License](https://github.com/PucklaJ/go-openal/blob/master/LICENSE))
++ [go-wav](https://github.com/PucklaJ/go-wav) ([Forked from here](https://github.com/sdobz/go-wav)) ([License](https://github.com/verdverm/go-wav/blob/master/LICENSE.md))
 + [go-mp3](https://github.com/hajimehoshi/go-mp3) ([License](https://github.com/hajimehoshi/go-mp3/blob/master/LICENSE))
 + [box2d](https://github.com/ByteArena/box2d) ([License](https://github.com/ByteArena/box2d/blob/master/LICENSE.md))
-+ [tmx](https://github.com/PucklaMotzer09/tmx) ([Forked from here](https://github.com/elliotmr/tmx)) ([License](https://github.com/PucklaMotzer09/tmx/blob/master/LICENSE))
++ [tmx](https://github.com/PucklaJ/tmx) ([Forked from here](https://github.com/elliotmr/tmx)) ([License](https://github.com/PucklaJ/tmx/blob/master/LICENSE))
 + [glfw](https://github.com/glfw/glfw) ([License](https://github.com/glfw/glfw/blob/master/LICENSE.md))
 + [gtk](https://gtk.org) ([License](http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html))
-+ [go-sdl2](https://github.com/PucklaMotzer09/go-sdl2) ([Forked from here](https://github.com/veandco/go-sdl2)) ([License](https://github.com/PucklaMotzer09/go-sdl2/blob/master/LICENSE))
++ [go-sdl2](https://github.com/PucklaJ/go-sdl2) ([Forked from here](https://github.com/veandco/go-sdl2)) ([License](https://github.com/PucklaJ/go-sdl2/blob/master/LICENSE))
 + [gopherjs](https://github.com/gopherjs/gopherjs) ([License](https://github.com/gopherjs/gopherjs/blob/master/LICENSE))
 + [go-gl/gl](https://github.com/go-gl/gl) ([License](https://github.com/go-gl/gl/blob/master/LICENSE))
-+ [android-go](https://github.com/PucklaMotzer09/android-go) ([Forked from here](https://github.com/xlab/android-go)) ([License](https://github.com/PucklaMotzer09/android-go/blob/master/LICENSE.txt))
-+ [webgl](https://github.com/PucklaMotzer09/webgl) ([Forked from here](https://github.com/gopherjs/webgl)) ([License](https://github.com/PucklaMotzer09/webgl/blob/master/LICENSE))
++ [android-go](https://github.com/PucklaJ/android-go) ([Forked from here](https://github.com/xlab/android-go)) ([License](https://github.com/PucklaJ/android-go/blob/master/LICENSE.txt))
++ [webgl](https://github.com/PucklaJ/webgl) ([Forked from here](https://github.com/gopherjs/webgl)) ([License](https://github.com/PucklaJ/webgl/blob/master/LICENSE))
 
 ## Installation
 1. Install the c-Dependencies:<br>
@@ -85,44 +85,44 @@ A Game Engine for 2D/3D Games written in go
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Desktop
 	// Default (GLFW,OpenGL) if you only want to build desktop applications only execute this command
-	go get -u github.com/PucklaMotzer09/mathgl/mgl32 github.com/PucklaMotzer09/tmx github.com/ByteArena/box2d github.com/PucklaMotzer09/GLSLGenerator github.com/go-gl/glfw/v3.2 github.com/PucklaMotzer09/go-openal/openal github.com/PucklaMotzer09/go-wav github.com/hajimehoshi/go-mp3 github.com/go-gl/gl/all-core/gl
+	go get -u github.com/PucklaJ/mathgl/mgl32 github.com/PucklaJ/tmx github.com/ByteArena/box2d github.com/PucklaJ/GLSLGenerator github.com/go-gl/glfw/v3.2 github.com/PucklaJ/go-openal/openal github.com/PucklaJ/go-wav github.com/hajimehoshi/go-mp3 github.com/go-gl/gl/all-core/gl
 
 	// Use some of the following commands to build for a different platform or if you want to use
 	// a different Framework or Renderer
 
 	// Always Needed
-	go get -u github.com/PucklaMotzer09/mathgl/mgl32 github.com/PucklaMotzer09/tmx github.com/ByteArena/box2d github.com/PucklaMotzer09/GLSLGenerator
+	go get -u github.com/PucklaJ/mathgl/mgl32 github.com/PucklaJ/tmx github.com/ByteArena/box2d github.com/PucklaJ/GLSLGenerator
 
 	// For GLFW
-	go get -u github.com/go-gl/glfw/v3.2 github.com/PucklaMotzer09/go-openal/openal github.com/PucklaMotzer09/go-wav github.com/hajimehoshi/go-mp3
+	go get -u github.com/go-gl/glfw/v3.2 github.com/PucklaJ/go-openal/openal github.com/PucklaJ/go-wav github.com/hajimehoshi/go-mp3
 
 	// For SDL2
-	go get -u github.com/PucklaMotzer09/go-sdl2/sdl github.com/PucklaMotzer09/go-openal/openal github.com/PucklaMotzer09/go-wav github.com/hajimehoshi/go-mp3
+	go get -u github.com/PucklaJ/go-sdl2/sdl github.com/PucklaJ/go-openal/openal github.com/PucklaJ/go-wav github.com/hajimehoshi/go-mp3
 
 	// For GTK
-	go get -u github.com/PucklaMotzer09/go-openal/openal github.com/PucklaMotzer09/go-wav github.com/hajimehoshi/go-mp3
+	go get -u github.com/PucklaJ/go-openal/openal github.com/PucklaJ/go-wav github.com/hajimehoshi/go-mp3
 
 	// For OpenGL
 	go get -u github.com/go-gl/gl/all-core/gl
-    
+
 	// Browser
-	go get -u github.com/gopherjs/gopherjs github.com/PucklaMotzer09/webgl
+	go get -u github.com/gopherjs/gopherjs github.com/PucklaJ/webgl
 
 	// Android
-	go get -u github.com/PucklaMotzer09/go-sdl2/sdl github.com/PucklaMotzer09/android-go/gles2
+	go get -u github.com/PucklaJ/go-sdl2/sdl github.com/PucklaJ/android-go/gles2
 
 	// For OpenGLES2
-	go get -u github.com/PucklaMotzer09/android-go/gles2
+	go get -u github.com/PucklaJ/android-go/gles2
 
 	// For OpenGLES3
-	go get -u github.com/PucklaMotzer09/android-go/gles3
+	go get -u github.com/PucklaJ/android-go/gles3
 
 	// For OpenGLES31
-	go get -u github.com/PucklaMotzer09/android-go/gles31
+	go get -u github.com/PucklaJ/android-go/gles31
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 3. Compile one of the examples to test:<br>
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	cd $GOPATH/src/github.com/PucklaMotzer09/GoHomeEngine/src/examples/basic
+	cd $GOPATH/src/github.com/PucklaJ/GoHomeEngine/src/examples/basic
 	go build && ./basic
 	// You should see a gopher in the middle
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -161,9 +161,9 @@ The following code describes what is needed to write a game with GoHome
 package main
 
 import (
-	"github.com/PucklaMotzer09/GoHomeEngine/src/frameworks/GLFW"
-	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
-	"github.com/PucklaMotzer09/GoHomeEngine/src/renderers/OpenGL"
+	"github.com/PucklaJ/GoHomeEngine/src/frameworks/GLFW"
+	"github.com/PucklaJ/GoHomeEngine/src/gohome"
+	"github.com/PucklaJ/GoHomeEngine/src/renderers/OpenGL"
 )
 
 type StartScene struct {
@@ -192,4 +192,4 @@ This program opens a window with a black background. To learn more you can look 
 ## Build tool
 
 There is a build tool available with which you can build your games easily for different platforms
-Read more [here](https://github.com/PucklaMotzer09/GoHomeEngine/blob/master/src/cmd/gohome/README.md).
+Read more [here](https://github.com/PucklaJ/GoHomeEngine/blob/master/src/cmd/gohome/README.md).

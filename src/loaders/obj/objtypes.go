@@ -1,8 +1,9 @@
 package loader
 
 import (
-	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
 	"image/color"
+
+	"github.com/PucklaJ/GoHomeEngine/src/gohome"
 )
 
 type OBJWaitGroup struct {

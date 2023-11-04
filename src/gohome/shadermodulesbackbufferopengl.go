@@ -1,7 +1,6 @@
 package gohome
 
 import (
-	"github.com/PucklaMotzer09/GLSLGenerator"
 	"strings"
 )
 
@@ -19,7 +18,7 @@ var (
 		vertices[3] = vec2(1.0,1.0);
 		vertices[4] = vec2(-1.0,1.0);
 		vertices[5] = vec2(-1.0,-1.0);
-	
+
 		texCoords[0] = vec2(0.0,0.0);
 		texCoords[1] = vec2(1.0,0.0);
 		texCoords[2] = vec2(1.0,1.0);
@@ -47,13 +46,13 @@ var (
 				"vec4 fetchColor()",
 				`vec4 color = vec4(0.0);
 				ivec2 texCoords = ivec2(fragTexCoord * textureSize(texture0));
-			
+
 				for(int i = 0;i<8;i++)
 				{
 					color += texelFetch(texture0,texCoords,i);
 				}
 				color /= 8.0;
-			
+
 				return color;`,
 			},
 		},

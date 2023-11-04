@@ -9,7 +9,7 @@ import (
 	"os"
 	"unsafe"
 
-	"github.com/PucklaMotzer09/mathgl/mgl32"
+	"github.com/PucklaJ/mathgl/mgl32"
 )
 
 func Init() {

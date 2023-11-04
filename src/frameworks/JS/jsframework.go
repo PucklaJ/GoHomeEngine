@@ -3,15 +3,16 @@ package framework
 import (
 	"errors"
 	"fmt"
-	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
-	"github.com/PucklaMotzer09/GoHomeEngine/src/loaders/defaultlevel"
-	"github.com/PucklaMotzer09/mathgl/mgl32"
-	"github.com/gopherjs/gopherjs/js"
 	"io"
 	"log"
 	"net/http"
 	"strconv"
 	"time"
+
+	"github.com/PucklaJ/GoHomeEngine/src/gohome"
+	"github.com/PucklaJ/GoHomeEngine/src/loaders/defaultlevel"
+	"github.com/PucklaJ/mathgl/mgl32"
+	"github.com/gopherjs/gopherjs/js"
 )
 
 type JSFramework struct {

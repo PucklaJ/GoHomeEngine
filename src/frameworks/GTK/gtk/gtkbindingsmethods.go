@@ -9,7 +9,7 @@ import (
 	"errors"
 	"unsafe"
 
-	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
+	"github.com/PucklaJ/GoHomeEngine/src/gohome"
 )
 
 func (this Window) ConfigureParametersAdv(width, height int, title string) {

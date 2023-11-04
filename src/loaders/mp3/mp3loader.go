@@ -1,9 +1,10 @@
 package loader
 
 import (
-	"github.com/PucklaMotzer09/GoHomeEngine/src/gohome"
-	"github.com/hajimehoshi/go-mp3"
 	"io/ioutil"
+
+	"github.com/PucklaJ/GoHomeEngine/src/gohome"
+	"github.com/hajimehoshi/go-mp3"
 )
 
 func LoadMP3File(fileName string) (*mp3.Decoder, error) {
