@@ -2,6 +2,7 @@ package gohome
 
 import (
 	"strings"
+	glslgen "github.com/PucklaJ/GLSLGenerator"
 )
 
 // 3D
