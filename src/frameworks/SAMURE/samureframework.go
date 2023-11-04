@@ -12,7 +12,7 @@ import (
 )
 
 type SAMUREFramework struct {
-	ctx     samure.Context
+	Ctx     samure.Context
 	gl      samureGL.Backend
 	running bool
 
@@ -34,12 +34,12 @@ func (f *SAMUREFramework) Init(ml *gohome.MainLoop) error {
 	cfg.GL.MinorVersion = 3
 
 	var err error
-	f.ctx, err = samure.CreateContextWithBackend(cfg, &f.gl)
+	f.Ctx, err = samure.CreateContextWithBackend(cfg, &f.gl)
 	if err != nil {
 		return err
 	}
 
-	f.CurrentOutputGeo = f.ctx.Output(0).Geo()
+	f.CurrentOutputGeo = f.Ctx.Output(0).Geo()
 
 	f.gl.MakeContextCurrent()
 
@@ -53,13 +53,13 @@ func (f *SAMUREFramework) Init(ml *gohome.MainLoop) error {
 		gohome.FPSLimit.StartMeasurement()
 
 		f.PollEvents()
-		f.ctx.Update(float64(gohome.FPSLimit.DeltaTime))
+		f.Ctx.Update(float64(gohome.FPSLimit.DeltaTime))
 		gohome.UpdateMgr.Update(gohome.FPSLimit.DeltaTime)
 		gohome.LightMgr.Update()
 		gohome.InputMgr.Update(gohome.FPSLimit.DeltaTime)
 
-		for i := 0; i < f.ctx.LenOutputs(); i++ {
-			f.ctx.RenderOutput(f.ctx.Output(i))
+		for i := 0; i < f.Ctx.LenOutputs(); i++ {
+			f.Ctx.RenderOutput(f.Ctx.Output(i))
 		}
 
 		gohome.FPSLimit.EndMeasurement()
@@ -72,15 +72,15 @@ func (f *SAMUREFramework) Init(ml *gohome.MainLoop) error {
 }
 
 func (f *SAMUREFramework) Update() {
-	f.ctx.Update(float64(gohome.FPSLimit.DeltaTime))
+	f.Ctx.Update(float64(gohome.FPSLimit.DeltaTime))
 }
 
 func (f *SAMUREFramework) Terminate() {
-	f.ctx.Destroy()
+	f.Ctx.Destroy()
 }
 
 func (f *SAMUREFramework) PollEvents() {
-	f.ctx.ProcessEvents()
+	f.Ctx.ProcessEvents()
 }
 
 func (f *SAMUREFramework) CreateWindow(windowWidth, windowHeight int, title string) error {
