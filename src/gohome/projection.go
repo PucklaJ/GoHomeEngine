@@ -70,10 +70,10 @@ func (o2Dp *Ortho2DProjection) GetProjectionMatrix() mgl32.Mat4 {
 }
 
 func (o2Dp *Ortho2DProjection) Update(newViewport Viewport) {
-	o2Dp.Left = 0.0
-	o2Dp.Right = float32(newViewport.Width)
-	o2Dp.Top = 0.0
-	o2Dp.Bottom = float32(newViewport.Height)
+	o2Dp.Left = float32(newViewport.X)
+	o2Dp.Right = float32(newViewport.X + newViewport.Width)
+	o2Dp.Top = float32(newViewport.Y)
+	o2Dp.Bottom = float32(newViewport.Y + newViewport.Height)
 	o2Dp.CalculateProjectionMatrix()
 }
 

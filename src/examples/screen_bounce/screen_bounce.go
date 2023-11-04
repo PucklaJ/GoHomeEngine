@@ -8,12 +8,10 @@ import (
 	"github.com/PucklaJ/GoHomeEngine/src/gohome"
 	renderer "github.com/PucklaJ/GoHomeEngine/src/renderers/OpenGL"
 	"github.com/PucklaJ/mathgl/mgl32"
-	"golang.org/x/image/colornames"
 )
 
 const (
-	Radius = 100.0
-	Speed  = 500.0
+	Speed = 300.0
 
 	MinX = 0.0
 	MinY = 0.0
@@ -22,29 +20,26 @@ const (
 )
 
 type ScreenBounceScene struct {
-	gohome.NilRenderObject
+	fuzzy gohome.Sprite2D
 
-	X, Y       float32
 	DirX, DirY float32
+	radius     float32
 }
 
 func (s *ScreenBounceScene) Init() {
-	gohome.FPSLimit.MaxFPS = math.MaxInt
-	gohome.RenderMgr.EnableBackBuffer = false
-	gohome.Render.SetBackgroundColor(gohome.Color{
-		R: 0,
-		G: 0,
-		B: 0,
-		A: 0,
-	})
+	gohome.ResourceMgr.LoadTexture("fuzzy", "Ten 13.png")
 
-	gohome.RenderMgr.AddObject(s)
+	s.fuzzy.Init("fuzzy")
 
-	s.X = 0.0
-	s.Y = 0.0
+	gohome.RenderMgr.AddObject(&s.fuzzy)
 
-	s.X = float32(math.Min(math.Max(float64(rand.Float32()*MaxX), float64(Radius)), MaxX+Radius))
-	s.Y = float32(math.Min(math.Max(float64(rand.Float32()*MaxY), float64(Radius)), MaxY+Radius))
+	s.fuzzy.Transform.Scale[0] = 0.3
+	s.fuzzy.Transform.Scale[1] = 0.3
+	s.radius = s.fuzzy.Transform.Scale[0] * s.fuzzy.Transform.Size[0] * 0.5
+
+	s.fuzzy.Transform.Origin = mgl32.Vec2{0.5, 0.5}
+	s.fuzzy.Transform.Position[0] = float32(math.Min(math.Max(float64(rand.Float32()*MaxX), float64(s.radius)), MaxX+float64(s.radius)))
+	s.fuzzy.Transform.Position[1] = float32(math.Min(math.Max(float64(rand.Float32()*MaxY), float64(s.radius)), MaxY+float64(s.radius)))
 
 	dir := mgl32.Vec2{
 		(rand.Float32() * 2.0) - 1.0,
@@ -56,39 +51,25 @@ func (s *ScreenBounceScene) Init() {
 }
 
 func (s *ScreenBounceScene) Update(delta_time float32) {
-	s.X += s.DirX * delta_time * Speed
-	s.Y += s.DirY * delta_time * Speed
+	s.fuzzy.Transform.Rotation += delta_time * Speed
+	s.fuzzy.Transform.Position[0] += s.DirX * delta_time * Speed
+	s.fuzzy.Transform.Position[1] += s.DirY * delta_time * Speed
 
-	if (s.X + Radius) > MaxX {
-		s.X = MaxX - Radius
+	if (s.fuzzy.Transform.Position[0] + s.radius) > MaxX {
+		s.fuzzy.Transform.Position[0] = MaxX - s.radius
 		s.DirX *= -1.0
-	} else if s.X-Radius < 0.0 {
-		s.X = Radius
+	} else if s.fuzzy.Transform.Position[0]-s.radius < 0.0 {
+		s.fuzzy.Transform.Position[0] = s.radius
 		s.DirX *= -1.0
 	}
 
-	if (s.Y + Radius) > MaxY {
-		s.Y = MaxY - Radius
+	if (s.fuzzy.Transform.Position[1] + s.radius) > MaxY {
+		s.fuzzy.Transform.Position[1] = MaxY - s.radius
 		s.DirY *= -1.0
-	} else if s.Y-Radius < 0.0 {
-		s.Y = Radius
+	} else if s.fuzzy.Transform.Position[1]-s.radius < 0.0 {
+		s.fuzzy.Transform.Position[1] = s.radius
 		s.DirY *= -1.0
 	}
-}
-
-func (s *ScreenBounceScene) Render() {
-	samure := gohome.Framew.(*framework.SAMUREFramework)
-
-	x, y := samure.CurrentOutputGeo.RelX(float64(s.X)), samure.CurrentOutputGeo.RelY(float64(s.Y))
-
-	gohome.Filled = true
-	gohome.DrawColor = colornames.Lime
-	gohome.DrawCircle2D(mgl32.Vec2{float32(x), float32(y)}, Radius)
-
-	gohome.Filled = false
-	gohome.LineWidth = 20.0
-	gohome.DrawColor = colornames.Blue
-	gohome.DrawCircle2D(mgl32.Vec2{float32(x), float32(y)}, Radius)
 }
 
 func (s *ScreenBounceScene) Terminate() {

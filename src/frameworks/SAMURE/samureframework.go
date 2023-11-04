@@ -2,6 +2,7 @@ package framework
 
 import (
 	"fmt"
+	"math"
 	"os"
 
 	"github.com/PucklaJ/GoHomeEngine/src/gohome"
@@ -46,6 +47,16 @@ func (f *SAMUREFramework) Init(ml *gohome.MainLoop) error {
 	ml.InitWindowAndRenderer()
 	ml.InitManagers()
 	gohome.Render.AfterInit()
+
+	gohome.FPSLimit.MaxFPS = math.MaxInt
+	gohome.RenderMgr.EnableBackBuffer = false
+	gohome.Render.SetBackgroundColor(gohome.Color{
+		R: 0,
+		G: 0,
+		B: 0,
+		A: 0,
+	})
+
 	ml.SetupStartScene()
 
 	f.running = true
@@ -205,6 +216,15 @@ func (a *SAMUREApp) OnEvent(ctx samure.Context, event interface{}) {
 func (a *SAMUREApp) OnRender(ctx samure.Context, layerSurface samure.LayerSurface, outputGeo samure.Rect) {
 	a.f.CurrentOutputGeo = outputGeo
 	a.f.CurrentLayerSurface = layerSurface
+
+	vp := gohome.Viewport{
+		X:      outputGeo.X,
+		Y:      outputGeo.Y,
+		Width:  outputGeo.W,
+		Height: outputGeo.H,
+	}
+	gohome.RenderMgr.Projection2D.Update(vp)
+	gohome.RenderMgr.Projection3D.Update(vp)
 
 	gohome.RenderMgr.Update()
 }
